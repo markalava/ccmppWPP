@@ -10,10 +10,13 @@ Authors@R:
       person(given = "Sara",	     
            family = "Hertog",
            role = c("aut"),
-           email = "hertog@un.org",
+           email = "hertog@un.org"#,
            # comment = c(ORCID = "XXXX-XXXX-XXXX-XXXX")
-	   )
+	   ))
 Description: This package provides R and C implementations of the specific version of the cohort component method of population projection (CCMPP) used in the production of World Population Prospects.
 License: What license it uses
 Encoding: UTF-8
 LazyData: true
+Suggests: 
+    testthat
+RoxygenNote: 7.0.2

@@ -25,8 +25,6 @@
 # PzM male population at time t=z by age group of width z
 # PzF female population at time t=z by age group of width z
 
-library(dplyr)
-
 project_z_by_z <- function(z=1, P0M, P0F, SxM, SxF, asfr, NMxM, NMxF, srb,
                         mig_assumption = c("end of period", "evenly over period", "celade hybrid")) {
 
@@ -76,16 +74,20 @@ project_z_by_z <- function(z=1, P0M, P0F, SxM, SxF, asfr, NMxM, NMxF, srb,
 
   }
 
+    # Remove dependency on dplyr's lag() (and pre-compute some things)
+    lag_pxm <- c(NA, head(pxm, -1))
+    lag_pxf <- c(NA, head(pxf, -1))
+
   # compute deaths from year 0 population and survival ratios
-    DxM <- (1-SxM)*lag(pxm)
+    DxM <- (1-SxM)*lag_pxm
     DxM[nage] <- (1-SxM[nage]) * (pxm[nage-1]+pxm[nage])
-    DxF <- (1-SxF)*lag(pxf)
+    DxF <- (1-SxF)*lag_pxf
     DxF[nage] <- (1-SxF[nage]) * (pxf[nage-1]+pxf[nage])
 
   # project population by age at year +1 from year 0 population and deaths
-    PzM <- round(c(lag(pxm) - DxM + migm_end),0)
+    PzM <- round(c(lag_pxm - DxM + migm_end),0)
     PzM[nage] <- round(pxm[nage-1] + pxm[nage] - DxM[nage] + migm_end[nage], 0)
-    PzF <- round(c(lag(pxf) - DxF + migf_end),0)
+    PzF <- round(c(lag_pxf - DxF + migf_end),0)
     PzF[nage] <- round(pxf[nage-1] + pxf[nage] - DxF[nage] + migf_end[nage], 0)
 
   # compute births from year 0 female population, asfr and srb

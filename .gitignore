@@ -28,6 +28,7 @@ vignettes/*.blg
 vignettes/*.log
 vignettes/*.run.xml
 vignettes/*.tex
+vignettes/auto/*
 
 # produced vignettes
 vignettes/*.html

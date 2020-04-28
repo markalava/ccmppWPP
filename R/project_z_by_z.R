@@ -25,6 +25,8 @@
 # PzM male population at time t=z by age group of width z
 # PzF female population at time t=z by age group of width z
 
+#' @author Sara Hertog
+#' @export
 project_z_by_z <- function(z=1, P0M, P0F, SxM, SxF, asfr, NMxM, NMxF, srb,
                         mig_assumption = c("end of period", "evenly over period", "celade hybrid")) {
 

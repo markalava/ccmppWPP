@@ -20,3 +20,7 @@ LazyData: true
 Suggests: 
     testthat
 RoxygenNote: 7.0.2
+LinkingTo: 
+    Rcpp
+Imports: 
+    Rcpp

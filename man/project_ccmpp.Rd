@@ -25,9 +25,8 @@ migration. It is described in \cite{Preston, et al., (2001)},
 Chapter 6, and many other places.
 }
 \details{
-This implementation is written in C++ using the \pkg{Rcpp}
-package. It projects the baseline population forward once
-\code{step_size} years.
+This implementation is written in C++ and projects the baseline
+population forward once \code{step_size} years.
 }
 \references{
 Preston, S. H., Heuveline, P., and Guillot, M. (2001), \emph{Demography: Measuring and Modeling Population Processes}, Malden, Massachusetts: Blackwell.

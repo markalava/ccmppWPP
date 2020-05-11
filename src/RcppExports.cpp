@@ -25,30 +25,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// proj_pop_cpp_sugar
-DataFrame proj_pop_cpp_sugar(int step_size, NumericVector pop_count_age_m_t0, NumericVector pop_count_age_f_t0, NumericVector surv_prop_age_m, NumericVector surv_prop_age_f, NumericVector fert_rate_age, NumericVector net_mig_count_age_m, NumericVector net_mig_count_age_f, double srb_tot, String mig_assumption);
-RcppExport SEXP _ccmppWPP_proj_pop_cpp_sugar(SEXP step_sizeSEXP, SEXP pop_count_age_m_t0SEXP, SEXP pop_count_age_f_t0SEXP, SEXP surv_prop_age_mSEXP, SEXP surv_prop_age_fSEXP, SEXP fert_rate_ageSEXP, SEXP net_mig_count_age_mSEXP, SEXP net_mig_count_age_fSEXP, SEXP srb_totSEXP, SEXP mig_assumptionSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type step_size(step_sizeSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type pop_count_age_m_t0(pop_count_age_m_t0SEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type pop_count_age_f_t0(pop_count_age_f_t0SEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type surv_prop_age_m(surv_prop_age_mSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type surv_prop_age_f(surv_prop_age_fSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type fert_rate_age(fert_rate_ageSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type net_mig_count_age_m(net_mig_count_age_mSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type net_mig_count_age_f(net_mig_count_age_fSEXP);
-    Rcpp::traits::input_parameter< double >::type srb_tot(srb_totSEXP);
-    Rcpp::traits::input_parameter< String >::type mig_assumption(mig_assumptionSEXP);
-    rcpp_result_gen = Rcpp::wrap(proj_pop_cpp_sugar(step_size, pop_count_age_m_t0, pop_count_age_f_t0, surv_prop_age_m, surv_prop_age_f, fert_rate_age, net_mig_count_age_m, net_mig_count_age_f, srb_tot, mig_assumption));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_ccmppWPP_proj_pop_cpp", (DL_FUNC) &_ccmppWPP_proj_pop_cpp, 10},
-    {"_ccmppWPP_proj_pop_cpp_sugar", (DL_FUNC) &_ccmppWPP_proj_pop_cpp_sugar, 10},
     {NULL, NULL, 0}
 };
 

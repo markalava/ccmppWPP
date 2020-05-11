@@ -120,17 +120,5 @@ cppvers <- function() {
                      srb_tot = sweden_1993$srb,
                      mig_assumption = "even")$pop_count_age_f_t1
     }
-cppvers_sugar <- function() {
-    proj_pop_cpp_sugar(step_size = sweden_1993$n,
-                      pop_count_age_m_t0 = sweden_1993$P0M,
-                      pop_count_age_f_t0 = sweden_1993$P0F,
-                      surv_prop_age_m = sweden_1993$SxM,
-                      surv_prop_age_f = sweden_1993$SxF,
-                      fert_rate_age = sweden_1993$asfr,
-                      net_mig_count_age_m = sweden_1993$NMxM,
-                      net_mig_count_age_f = sweden_1993$NMxF,
-                     srb_tot = sweden_1993$srb,
-                     mig_assumption = "even")$pop_count_age_f_t1
-    }
 
-bench::mark(rvers(), cppvers(), cppvers_sugar(), min_iterations = 1000)
+bench::mark(rvers(), cppvers(), min_iterations = 1000)

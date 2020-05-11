@@ -44,7 +44,7 @@ using namespace Rcpp;
 //' Preston, S. H., Heuveline, P., and Guillot, M. (2001), \emph{Demography: Measuring and Modeling Population Processes}, Malden, Massachusetts: Blackwell.
 //' @export
 // [[Rcpp::export]]
-DataFrame proj_pop_cpp(int step_size,
+DataFrame proj_pop_cpp_sugar(int step_size,
 		  NumericVector pop_count_age_m_t0,
 		  NumericVector pop_count_age_f_t0,
 		  NumericVector surv_prop_age_m,
@@ -80,20 +80,29 @@ DataFrame proj_pop_cpp(int step_size,
   if(mig_assumption == "even") {
     // half of increments between age x and x+1 are added at end of period and do not affect births or deaths in period
     // half of increments between age x-1 and x are added at beginning of period and survived to age x to x+1
-    for(int i = 0; i < nage; ++i) {
-      pop_count_age_f_w_half_mig[i] = pop_count_age_m_t0[i] + net_mig_count_age_m[i] / 2;
-      pop_count_age_m_w_half_mig[i] = pop_count_age_f_t0[i] + net_mig_count_age_f[i] / 2;
-      mig_count_age_m_end_period[i] = net_mig_count_age_m[i] / 2;
-      mig_count_age_f_end_period[i] = net_mig_count_age_f[i] / 2;
-    }
+    
+    // for(int i = 0; i < nage; ++i) {
+    //   pop_count_age_f_w_half_mig[i] = pop_count_age_m_t0[i] + net_mig_count_age_m[i] / 2;
+    //   pop_count_age_m_w_half_mig[i] = pop_count_age_f_t0[i] + net_mig_count_age_f[i] / 2;
+    //   mig_count_age_m_end_period[i] = net_mig_count_age_m[i] / 2;
+    //   mig_count_age_f_end_period[i] = net_mig_count_age_f[i] / 2;
+    // }
+    pop_count_age_f_w_half_mig = pop_count_age_m_t0 + net_mig_count_age_m / 2;
+      pop_count_age_m_w_half_mig = pop_count_age_f_t0 + net_mig_count_age_f / 2;
+      mig_count_age_m_end_period = net_mig_count_age_m / 2;
+      mig_count_age_f_end_period = net_mig_count_age_f / 2;
   }
   else if(mig_assumption == "end") {
-    for(int i = 0; i < nage; ++i) {
-      pop_count_age_m_w_half_mig[i] = pop_count_age_m_t0[i];
-      pop_count_age_f_w_half_mig[i] = pop_count_age_f_t0[i];
-      mig_count_age_m_end_period[i] = 0.0;
-      mig_count_age_f_end_period[i] = 0.0;
-    }
+    // for(int i = 0; i < nage; ++i) {
+    //   pop_count_age_m_w_half_mig[i] = pop_count_age_m_t0[i];
+    //   pop_count_age_f_w_half_mig[i] = pop_count_age_f_t0[i];
+    //   mig_count_age_m_end_period[i] = 0.0;
+    //   mig_count_age_f_end_period[i] = 0.0;
+    // }    
+      pop_count_age_m_w_half_mig = pop_count_age_m_t0;
+      pop_count_age_f_w_half_mig = pop_count_age_f_t0;
+      mig_count_age_m_end_period = 0.0;
+      mig_count_age_f_end_period = 0.0;
   }
 
   /*
@@ -113,11 +122,13 @@ DataFrame proj_pop_cpp(int step_size,
    * compute deaths from year 0 population and survival ratios
    */
 
-  for(int i = 1; i < nage_minus_1; ++i) {
-    // first age group done later so start at i = 1
-    death_count_age_m[i] = (1 - surv_prop_age_m[i]) * lag_pop_count_age_m_w_half_mig[i];  
-    death_count_age_f[i] = (1 - surv_prop_age_f[i]) * lag_pop_count_age_f_w_half_mig[i];
-  }
+  // for(int i = 1; i < nage_minus_1; ++i) {
+  //   // first age group done later so start at i = 1
+  //   death_count_age_m[i] = (1 - surv_prop_age_m[i]) * lag_pop_count_age_m_w_half_mig[i];  
+  //   death_count_age_f[i] = (1 - surv_prop_age_f[i]) * lag_pop_count_age_f_w_half_mig[i];
+  // }
+    death_count_age_m = (1 - surv_prop_age_m) * lag_pop_count_age_m_w_half_mig;  
+    death_count_age_f = (1 - surv_prop_age_f) * lag_pop_count_age_f_w_half_mig;
   
   death_count_age_m[nage_minus_1] = (1 - surv_prop_age_m[nage_minus_1]) *
     (pop_count_age_m_w_half_mig[nage_minus_2] + pop_count_age_m_w_half_mig[nage_minus_1]);
@@ -128,13 +139,18 @@ DataFrame proj_pop_cpp(int step_size,
    * project population by age at year +1 from year 0 population and deaths
    */
 
-  for(int i = 1; i < nage_minus_1; ++i) {
-    // first age group done later so start at i = 1
-    pop_count_age_m_t1[i] = lag_pop_count_age_m_w_half_mig[i] -
-      death_count_age_m[i] + mig_count_age_m_end_period[i];
-    pop_count_age_f_t1[i] = lag_pop_count_age_f_w_half_mig[i] -
-      death_count_age_f[i] + mig_count_age_f_end_period[i];
-  }
+  // for(int i = 1; i < nage_minus_1; ++i) {
+  //   // first age group done later so start at i = 1
+  //   pop_count_age_m_t1[i] = lag_pop_count_age_m_w_half_mig[i] -
+  //     death_count_age_m[i] + mig_count_age_m_end_period[i];
+  //   pop_count_age_f_t1[i] = lag_pop_count_age_f_w_half_mig[i] -
+  //     death_count_age_f[i] + mig_count_age_f_end_period[i];
+  // }
+    pop_count_age_m_t1 = lag_pop_count_age_m_w_half_mig -
+      death_count_age_m + mig_count_age_m_end_period;
+    pop_count_age_f_t1 = lag_pop_count_age_f_w_half_mig -
+      death_count_age_f + mig_count_age_f_end_period;
+    
   pop_count_age_m_t1[nage_minus_1] = pop_count_age_m_w_half_mig[nage_minus_2] +
     pop_count_age_m_w_half_mig[nage_minus_1] -
     death_count_age_m[nage_minus_1] +
@@ -147,13 +163,13 @@ DataFrame proj_pop_cpp(int step_size,
   /*
    * compute births from year 0 female population, fert_rate_age and srb_tot
    */
-
+  
+  birth_count_age_b = step_size * fert_rate_age *
+      (pop_count_age_f_w_half_mig + pop_count_age_f_t1) / 2;
   birth_count_age_b[0] = 0;
   birth_count_age_b[nage_minus_1] = 0;
-
+  
   for(int i = 1; i < nage_minus_1; ++i) {
-    birth_count_age_b[i] = step_size * fert_rate_age[i] *
-      (pop_count_age_f_w_half_mig[i] + pop_count_age_f_t1[i]) / 2;
     birth_count_tot_b += birth_count_age_b[i]; // initialized as zero
   }
   birth_count_tot_f = birth_count_tot_b * (1 / (1 + srb_tot));
@@ -180,10 +196,8 @@ DataFrame proj_pop_cpp(int step_size,
    */
   
   if (mig_assumption == "end") {
-    for(int i = 0; i < nage; ++i) {
-      pop_count_age_m_t1[i] += net_mig_count_age_m[i];
-      pop_count_age_f_t1[i] += net_mig_count_age_f[i];
-    }
+      pop_count_age_m_t1  += net_mig_count_age_m;
+      pop_count_age_f_t1 += net_mig_count_age_f;
   }
 
   /*

@@ -24,7 +24,7 @@
 # Bx births by age of mother by age group of width z
 # PzM male population at time t=z by age group of width z
 # PzF female population at time t=z by age group of width z
-
+#' @export
 project_z_by_z <- function(z=1, P0M, P0F, SxM, SxF, asfr, NMxM, NMxF, srb,
                         mig_assumption = c("end", "even")) {
 
@@ -35,7 +35,7 @@ project_z_by_z <- function(z=1, P0M, P0F, SxM, SxF, asfr, NMxM, NMxF, srb,
 
   nage <- length(P0M) # number of age groups
 
-### Two possible migration assumptions: end of period or evenly over period 
+### Two possible migration assumptions: end of period or evenly over period
   # here we set up some interim vectors according to the migration assumptions
   # pxm and pxf are population at time 0 unaltered from the input if mig_assumption is end of period
   # or with half of net migration added if mig_assumption is evenly over period
@@ -43,8 +43,8 @@ project_z_by_z <- function(z=1, P0M, P0F, SxM, SxF, asfr, NMxM, NMxF, srb,
   # births are computed using mid-year female population and asfr.  These are set to 0 if
   # mig_assumption is end of period and to half of net migration if mig_assumption is evenly over period.
   # When mig_assumption is end of period, net migration is added only after all deaths and births
-  # have been computed. 
-  
+  # have been computed.
+
   if (mig_assumption == "end") {
 
     # all migrants are added/removed at end of period and thus have no effect on births and deaths
@@ -62,7 +62,7 @@ project_z_by_z <- function(z=1, P0M, P0F, SxM, SxF, asfr, NMxM, NMxF, srb,
     migm_end <- NMxM/2
     migf_end <- NMxF/2
 
-  } 
+  }
 
     # Remove dependency on dplyr's lag() (and pre-compute some things)
     lag_pxm <- c(NA, head(pxm, -1))
@@ -101,7 +101,7 @@ project_z_by_z <- function(z=1, P0M, P0F, SxM, SxF, asfr, NMxM, NMxF, srb,
       PzF <- PzF + NMxF
     }
 
-  # ensure no negative population by age and sex (0.0005 is same as Abacus) 
+  # ensure no negative population by age and sex (0.0005 is same as Abacus)
     PzM[which(PzM<0)] <- 0.0005
     PzF[which(PzF<0)] <- 0.0005
 

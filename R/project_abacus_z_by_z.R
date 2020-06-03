@@ -1,20 +1,14 @@
-# algebra for cohort component projection with flexible migration assumption
-# also flexible number and width of age groups and flexible open age group
-# 16 April 2020
-# modified 29 April 2020 to remove intermediate rounding and hybrid migration option
-# modified 22 May 2020 to adopt WPP naming conventions and roxygen documentation
-# modified 2 June 2020 to rename output deaths as cohort-period deaths as opposed to age-period deaths
 
 
 #------------------------------------------------------------
 
-#' One-step cohort component population projection with flexible migration assumption
+#' R implementation of the one-step cohort component population projection approach from legacy Abacus
 #'
-#' @description This function takes a set of base population and demographic inputs for the period base year to base year+z years with age groups of width z and projects population forward z years.
+#' @description This function takes a set of base population and demographic inputs for the period base year to base year+z years with age groups of width z and projects population forward z years according to the logic implemented in Abacus for WPP revisions 2019 and earlier.
 #'
 #' @author Sara Hertog
 #'
-#' @param z width of age groups = length of one-step projection horizon
+#' @param z width of age groups = length of one-step projection horizon (Abacus was 5 years only)
 #' @param pop_count_age_m_begin a vector of male population counts at the base year (time 0) by age
 #' @param pop_count_age_f_begin a vector of female population counts at the base year (time 0) by age
 #' @param survival_ratio_age_m a vector of survival ratios by age for males from a life table referencing the period 0 to 0+z
@@ -23,21 +17,26 @@
 #' @param srb a scalar for the sex ratio at birth for the period 0 to 0+z (male births/female births)
 #' @param mig_net_count_age_m a vector of net migration counts for males by age referencing the period 0 to 0+z
 #' @param mig_net_count_age_f a vector of net migration counts for females by age referencing the period 0 to 0+z
-#' @param mig_assumption a control for the migration assumption. "end" means migration is accounted at end of projection period and has no 
-#' influence on births or deaths during the period. "even" accounts for migration evenly distributed over the period and thus does influence 
-#' births and deaths
+#' @param mig_assumption a control for the migration assumption. This is what differentiates the Abacus implementation here from the
+#' implementation in the project_ccmpp_z_by_z function.  In Abacus, "end" means migration is accounted at end of projection period, but 
+#' there is still some exposure of female migrants to fertility and thus births are affected by the level of net migration.
+#' "even" in Abacus accounts for migration evenly distributed over the period, but 
+#' excludes beginning of period migrants from exposure to fertility. This is because Abacus first projects population and applies
+#' the migration assumption and then computes births by exposing (beginning period females + end of period females)/2 to the age specific
+#' fertility rates of the period.  We have deemed this to be not the ideal implementation of the migration assumption and have thus
+#' adopted the cleaner approach in project_ccmpp_z_by_z for WPP 2021 
 #' #'
 #' @details This function will accept any width of age group and projection horizon as long as those are equal
 #' e.g., use z=1 for a 1x1 projection of population by single year of age and 1 year projection horizon
-#' or use z=5 for a 5x5 projection of population by 5-year age groups and 5-year projection horizon
+#' or use z=5 for a 5x5 projection of population by 5-year age groups and 5-year projection horizon (this is what Abacus does)
 #'
-#' @return a list of objects including projected population by age and sex, deaths by cohort and sex,
+#' @return a list of objects including projected population by age and sex, deaths by age and sex,
 #' births by mother's age, total births, and births by sex
 #' 
 #' @export
 
 
-project_ccmpp_z_by_z <- function(z=1, 
+project_abacus_z_by_z <- function(z=5, 
                            pop_count_age_m_begin, 
                            pop_count_age_f_begin, 
                            survival_ratio_age_m, 
@@ -72,18 +71,18 @@ project_ccmpp_z_by_z <- function(z=1,
 
   if (mig_assumption == "end") {
 
-    # all migrants are added/removed at end of period and thus have no effect on births and deaths
+    # all migrants are added/removed at end of period but before births are computed
     # migration-adjusted beginning of period population by age and sex
     pop_count_age_m_begin_mig_adj <- pop_count_age_m_begin
     pop_count_age_f_begin_mig_adj <- pop_count_age_f_begin
     # net migration to be added to end of period population by age and sex *before* period births are computed
-    mig_net_count_age_m_end <- rep(0,nage)
-    mig_net_count_age_f_end <- rep(0,nage)
+    mig_net_count_age_m_end <- mig_net_count_age_m
+    mig_net_count_age_f_end <- mig_net_count_age_f
 
   } else if (mig_assumption == "even") { # add/remove half of migrants at beginning of period
 
-    # half of increments between age x and x+1 are added at end of period and do not affect births or deaths in period
-    # half of increments between age x-1 and x are added at beginning of period and survived to age x to x+1
+    # half of increments between age x and x+1 are added at end of period but before births are computed
+    # half of increments between age x-1 and x are added at beginning of period and survived to age x to x+1, but are not exposed to fertility in the period
     # migration-adjusted beginning of period population by age and sex
     pop_count_age_m_begin_mig_adj <- pop_count_age_m_begin + mig_net_count_age_m/2
     pop_count_age_f_begin_mig_adj <- pop_count_age_f_begin + mig_net_count_age_f/2
@@ -112,7 +111,7 @@ project_ccmpp_z_by_z <- function(z=1,
     pop_count_age_f_end[nage] <- pop_count_age_f_begin_mig_adj[nage-1] + pop_count_age_f_begin_mig_adj[nage] - death_count_cohort_f[nage] + mig_net_count_age_f_end[nage]
 
   # compute births from female population, age-specific fertility rates and sex ratio at birth
-    birth_count_age_b <- z * fert_rate_age_f * (pop_count_age_f_begin_mig_adj + pop_count_age_f_end)/2
+    birth_count_age_b <- z * fert_rate_age_f * (pop_count_age_f_begin + pop_count_age_f_end)/2 #begin period exposure is *not* migration-adjusted in Abacus
     birth_count_age_b[c(1,nage)] <- 0
     birth_count_tot_b <- sum(birth_count_age_b)
     birth_count_tot_f <- birth_count_tot_b * (1/(1+srb))
@@ -126,13 +125,7 @@ project_ccmpp_z_by_z <- function(z=1,
     pop_count_age_m_end[1] <- birth_count_tot_m - death_count_cohort_m[1] + mig_net_count_age_m_end[1]
     pop_count_age_f_end[1] <- birth_count_tot_f - death_count_cohort_f[1] + mig_net_count_age_f_end[1]
 
-  # if end-of-period assumption then add migrants
-    if (mig_assumption == "end") {
-      pop_count_age_m_end <- pop_count_age_m_end + mig_net_count_age_m
-      pop_count_age_f_end <- pop_count_age_f_end + mig_net_count_age_f
-    }
-
-  # ensure no negative population by age and sex (0.0005 is same as Abacus)
+  # ensure no negative population by age and sex 
     pop_count_age_m_end[which(pop_count_age_m_end<0)] <- 0.0005
     pop_count_age_f_end[which(pop_count_age_f_end<0)] <- 0.0005
 
@@ -151,10 +144,5 @@ project_ccmpp_z_by_z <- function(z=1,
     return(proj_list)
 
     }
-
-
-    ## need to look closely at first and last age group
-    ## also need to determine whether lead(migm_end) should be used in P1M calc instead of just migm_end
-
 
 

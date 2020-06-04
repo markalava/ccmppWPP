@@ -57,6 +57,7 @@
 #'
 #' @format A list with elements
 #' \describe{
+#' \item{LocID}{A numeric location identifier for the country, in this case 124".}
 #' \item{variant}{A character string identifying the projection variant, in this case "Estimates".}
 #' \item{year_base}{The base (starting) year of the projection, in this case 1950.}
 #' \item{year_stop}{The year to stop the projection, in this case 2020.}

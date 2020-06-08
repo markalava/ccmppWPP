@@ -82,10 +82,10 @@
 #'
 #' @format A list with elements
 #' \describe{
-#' \item{LocID}{A numeric location identifier for the country, in this case 124".}
+#' \item{LocID}{A numeric location identifier for the country, in this case 124.}
 #' \item{variant}{A character string identifying the projection variant, in this case "Estimates".}
 #' \item{pop_count_age_sex_1x1}{A data frame with population counts in the value column, by year, sex and single year of age.}
-#' \item{pop_count_age_sex_1x1}{A data frame with population counts in the value column, by year, sex and five year age group.}
+#' \item{pop_count_age_sex_5x1}{A data frame with population counts in the value column, by year, sex and five year age group.}
 #' \item{pop_count_tot_sex}{A data frame with total population counts in the value column, by year and sex.}
 #' \item{birth_count_age_b_1x1}{A data frame with birth counts (both sexes) in the value column, by year and single year of age of mother.}
 #' \item{birth_count_age_b_5x1}{A data frame with birth counts (both sexes) in the value column, by year and five year age group of mother.}
@@ -115,4 +115,4 @@
 #' }
 "canada_wpp_1950_2020_ccmppWPP_outputs.rda"
 
-
+save(canada_wpp_1950_2020_ccmppWPP_outputs, file="data/canada_wpp_1950_2020_ccmppWPP_outputs.rda")

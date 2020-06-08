@@ -115,4 +115,3 @@
 #' }
 "canada_wpp_1950_2020_ccmppWPP_outputs.rda"
 
-save(canada_wpp_1950_2020_ccmppWPP_outputs, file="data/canada_wpp_1950_2020_ccmppWPP_outputs.rda")

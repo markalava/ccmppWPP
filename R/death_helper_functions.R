@@ -81,10 +81,11 @@ death_age_sex_loop_over_time <- function(mx, exp, distribute_residual = TRUE, dt
       
       death_output_list[[n]] <- data.frame(time_start = time,
                                            time_span  = time_span,
-                                           sex        = sex,
+                                           sex        = as.character(sex),
                                            age_start  = age_start,
                                            age_span   = c(rep(time_span, nage-1), 1000),
-                                           value      = dth)
+                                           value      = dth,
+                                           stringsAsFactors = FALSE)
     }
   }
   death_count_age_sex <- do.call(rbind, death_output_list)

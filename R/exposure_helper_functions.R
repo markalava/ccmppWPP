@@ -71,7 +71,8 @@ exposure_age_sex_loop_over_time <- function(pop, mig_assumption, mig) {
                                               sex        = sex,
                                               age_start  = age_start,
                                               age_span   = c(rep(time_span, nage-1), 1000),
-                                              value      = exp)
+                                              value      = exp,
+                                              stringsAsFactors = FALSE)
     }
   }
   exposure_count_age_sex <- do.call(rbind, exposure_output_list)

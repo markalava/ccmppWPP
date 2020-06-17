@@ -26,7 +26,6 @@ sum_last_column <- function(indata) {
 
 sum_five_year_age_groups <- function(indata, byvar) {
   
-  # deaths
   age_start                  <- floor(indata$age_start/5)*5
   df5    <- sum_last_column(cbind(age_start,
                                   indata[,c(byvar, "value")]))

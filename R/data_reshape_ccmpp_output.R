@@ -70,13 +70,16 @@ data_reshape_ccmpp_output <- function(ccmpp_output) {
   # total births by sex
     bth_f <- data.frame(time_start = seq(time_start, time_end-time_span, time_span),
                         sex = "female", 
-                        value = sapply(ccmpp_output, "[[", "birth_count_tot_f"))
+                        value = sapply(ccmpp_output, "[[", "birth_count_tot_f"),
+                        stringsAsFactors = FALSE)
     bth_m <- data.frame(time_start = seq(time_start, time_end-time_span, time_span),
                         sex = "male", 
-                        value = sapply(ccmpp_output, "[[", "birth_count_tot_m"))
+                        value = sapply(ccmpp_output, "[[", "birth_count_tot_m"),
+                        stringsAsFactors = FALSE)
     bth_b <- data.frame(time_start = seq(time_start, time_end-time_span, time_span),
                         sex = "both", 
-                        value = sapply(ccmpp_output, "[[", "birth_count_tot_b"))
+                        value = sapply(ccmpp_output, "[[", "birth_count_tot_b"),
+                        stringsAsFactors = FALSE)
 
     bth     <- rbind(bth_f, bth_m, bth_b)
     bth$time_span <- time_span

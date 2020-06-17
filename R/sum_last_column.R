@@ -24,6 +24,19 @@ sum_last_column <- function(indata) {
   return(outdata)
 }
 
-
+sum_five_year_age_groups <- function(indata, byvar) {
+  
+  # deaths
+  age_start                  <- floor(indata$age_start/5)*5
+  df5    <- sum_last_column(cbind(age_start,
+                                  indata[,c(byvar, "value")]))
+  df5$age_span <- ifelse(df5$age_start == max(df5$age_start),
+                                             1000,
+                                             5)
+  df5    <- df5[, c(byvar, "age_start", "age_span", "value")]
+  
+  return(df5)
+  
+}
 
 

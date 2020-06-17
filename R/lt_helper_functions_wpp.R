@@ -20,10 +20,12 @@ lt_long <- function(life_table_df) {
                      times=names(life_table_df)[3:ncol(life_table_df)],
                      timevar = "indicator",
                      v.names="value", direction = "long")
-  lt_long$age <- lt_long$Age
+  lt_long$age_start <- lt_long$Age
+  lt_long$age_span  <- c(diff(lt_long$age_start), NA)
+  lt_long$age_span[which(lt_long$age_start == max(lt_long$age_start))] <- 1000
   lt_long$indicator <- paste0("lt_", lt_long$indicator)
   
-  lt_long <- lt_long[, c("indicator", "age", "value")]
+  lt_long <- lt_long[, c("indicator", "age_start", "age_span", "value")]
   
   return(lt_long)
   
@@ -78,8 +80,8 @@ lt_abridged_from_complete <- function(age_complete, lx_complete, sex) {
 lt_summary <- function(lt_data, byvar) {
   
   # compute summary qx from lx
-  lt_lx           <- lt_data[lt_data$indicator=="lt_lx", c(byvar, "age", "value")]
-  lt_lx           <- reshape(lt_lx, idvar=byvar, v.names="value", timevar="age", direction="wide")
+  lt_lx           <- lt_data[lt_data$indicator=="lt_lx", c(byvar, "age_start", "value")]
+  lt_lx           <- reshape(lt_lx, idvar=byvar, v.names="value", timevar="age_start", direction="wide")
   lt_lx$lt_1q0    <- 1-(lt_lx$value.1 / lt_lx$value.0)
   lt_lx$lt_4q1    <- 1-(lt_lx$value.5 / lt_lx$value.1)
   lt_lx$lt_5q0    <- 1-(lt_lx$value.5 / lt_lx$value.0)
@@ -98,14 +100,94 @@ lt_summary <- function(lt_data, byvar) {
                              timevar = "indicator",
                              v.names="value", direction = "long")
   
+  label <- str_split_fixed(lt_lx$indicator, "_", 2)[,2]
+  label <- str_split_fixed(label, "q", 2)
+  lt_lx$age_start <- label[,2]
+  lt_lx$age_span  <- label[,1]
+  
   # extract summary ex
-  lt_ex           <- lt_data[lt_data$indicator=="lt_ex" & lt_data$age %in% c(0,15,50,60,65,80,85,100,110), 
-                             c(byvar, "age", "value")]
-  lt_ex$indicator <- paste0("lt_e", lt_ex$age)
-  lt_ex           <- lt_ex[, c(byvar, "indicator", "value")]
+  lt_ex           <- lt_data[lt_data$indicator=="lt_ex" & lt_data$age_start %in% c(0,15,50,60,65,80,85,100,110), 
+                             c(byvar, "age_start", "value")]
+  lt_ex$indicator <- paste0("lt_e", lt_ex$age_start)
+  lt_ex$age_span  <- 1000
+  lt_ex           <- lt_ex[, c(byvar, "indicator", "age_start", "age_span", "value")]
   
   lt_summary      <- rbind(lt_lx, lt_ex)
   
   return(lt_summary)
+  
+}
+
+#' Compute complete life tables for multiple time periods
+#' 
+#' @description This function computes complete life table values, looping over time periods and using the 
+#' lt_single_mx() function in DemoTools.
+#'
+#' @author Sara Hertog
+#'
+#' @param mx data frame. "value" column contains age-specific mortality rates by time_start and age_start for one sex. 
+#' @param sex character. string indicating "m" male, "f" female, or "b" both sexes.
+#'
+#' @return a data frame with "indicator" labeling the life table column name and "value" containing the value of 
+#' that measure, by single year of age_start and time_start
+#' @export
+lt_complete_loop_over_time <- function(mx, sex) {
+  
+  # initialize output list
+  lt_output_list <- list()
+  n <- 0
+  
+  time_span              <- 1
+  time_start             <- min(mx$time_start)
+  time_end               <- max(mx$time_start + time_span)
+  age_start              <- unique(mx$age_start) 
+  
+  for (time in seq(time_start, time_end-time_span, time_span)) {
+    
+    n   <- n+1
+    
+    lt <- lt_single_mx(nMx = mx$value[which(mx$time_start == time)],
+                       Age = mx$age_start[which(mx$time_start == time)],
+                       sex = substr(sex,1,1))
+    lt <- lt_long(lt)
+    lt$time_start <- time
+    
+    lt_output_list[[n]] <- lt
+    
+  }
+  life_table <- do.call(rbind, lt_output_list)
+  life_table$sex <- sex
+  life_table$time_span <- 1
+  life_table <- life_table[, c("indicator", "time_start", "time_span", "sex", "age_start", "age_span", "value")]
+  
+  return(life_table)
+  
+}
+
+lt_abridged_from_complete_loop_over_time <- function(lx, sex) {
+  
+  # initialize output list
+  lt_output_list <- list()
+  n <- 0
+  
+  times                  <- unique(lx$time_start)
+  time_span              <- diff(times)
+
+  for (time in times) {
+
+    n   <- n+1
+    lt <- lt_abridged_from_complete(age_complete = lx[which(lx$time_start == time & lx$sex == sex), "age_start"],
+                                    lx_complete = lx[which(lx$time_start == time & lx$sex == sex), "value"],
+                                    sex = substr(sex,1,1))
+    lt$time_start <- time
+    lt$time_span  <- 1
+    lt$sex        <- sex
+    lt_output_list[[n]] <- lt
+    
+  }
+  life_table <- do.call(rbind, lt_output_list)
+  life_table <- life_table[, c("indicator", "time_start", "time_span", "sex", "age_start", "age_span", "value")]
+  
+  return(life_table)
   
 }

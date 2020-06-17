@@ -19,14 +19,19 @@
 #' @export
 fert_pasfr               <- function(fert_data_age, byvar) {
   
-  age_width              <- fert_data_age$age[2] - fert_data_age$age[1]
+  bylist <- list()
+  for (i in 1:length(byvar)) {
+    bylist[[i]] <- fert_data_age[, byvar[i]]
+  }
+  
+  age_width              <- fert_data_age$age_start[2] - fert_data_age$age_start[1]
   fert_rate_total        <- aggregate(fert_data_age$value * age_width,
-                                      by = list(fert_data_age[,c(byvar)]),
+                                      by = bylist,
                                       sum)
   names(fert_rate_total) <- c(byvar, "tfr")
   pasfr                  <- merge(fert_data_age, fert_rate_total, by=byvar)
   pasfr$value            <- pasfr$value * age_width / pasfr$tfr * 100
-  pasfr                  <- pasfr[, c(byvar, "age", "value")]
+  pasfr                  <- pasfr[, c(byvar, "age_start", "age_span", "value")]
   return(pasfr)
   
 }
@@ -47,12 +52,17 @@ fert_pasfr               <- function(fert_data_age, byvar) {
 #' @export
 fert_mac                  <- function(fert_data_age, byvar) {
   
-  age_width               <- fert_data_age$age[2] - fert_data_age$age[1]
-  sum_fert_rate_times_age <- aggregate(fert_data_age$value * (fert_data_age$age + age_width/2),
-                                       by = list(fert_data_age[,c(byvar)]),
+  bylist <- list()
+  for (i in 1:length(byvar)) {
+    bylist[[i]] <- fert_data_age[, byvar[i]]
+  }
+  
+  age_width               <- fert_data_age$age_start[2] - fert_data_age$age_start[1]
+  sum_fert_rate_times_age <- aggregate(fert_data_age$value * (fert_data_age$age_start + age_width/2),
+                                       by = bylist,
                                        sum)
   sum_fert_rate           <- aggregate(fert_data_age$value,
-                                       by = list(fert_data_age[,c(byvar)]),
+                                       by = bylist,
                                        sum)
   value                   <- sum_fert_rate_times_age$x / sum_fert_rate$x
   mac                     <- as.data.frame(cbind(sum_fert_rate[,1:(ncol(sum_fert_rate)-1)],

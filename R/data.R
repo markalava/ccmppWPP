@@ -71,13 +71,13 @@
 #' \item{mig_assumption}{A data frame with indicator of whether migration should be accounted at "end" of period or "even" over period by year from 1950-2019.}
 #' }
 #' @source Interpolated from estimates published in United Nations, \emph{World Population Prospects 2019}.
-"canada_wpp_1950_2020_ccmpp_inputs_1x1.rda"
+"canada_wpp_1950_2020_ccmpp_inputs_1x1"
 
 #' Example outputs file for 1x1 cohort component population projection for Canada 1950-2020
 #'
 #' All estimates generated for one country-variant by the full cohort component population projection.
 #' This example  for Canada by single year of age and in one-year steps (1x1) from 1950-2020
-#' Output is from function call 
+#' Output is from function call
 #' project_ccmppWPP_one_country_variant(ccmpp_input = canada_wpp_1950_2020_ccmpp_inputs_1x1)
 #'
 #' @format A list with elements
@@ -102,16 +102,16 @@
 #' \item{death_count_cohort_sex_1x1}{A data frame with death counts in the value column, by year, sex and single year age cohort.}
 #' \item{exposure_count_age_sex_1x1}{A data frame with person-years of exposure in the value column, by year, sex and single year of age.}
 #' \item{exposure_count_age_sex_5x1}{A data frame with person-years of exposure in the value column, by year, sex and five year age group.}
-#' \item{lt_complete_age_sex}{A data frame with life table column labels in the indicator column and life table values 
+#' \item{lt_complete_age_sex}{A data frame with life table column labels in the indicator column and life table values
 #' in the value column, by year, sex and single year of age.}
-#' \item{lt_abridged_age_sex}{A data frame with life table column labels in the indicator column and life table values 
+#' \item{lt_abridged_age_sex}{A data frame with life table column labels in the indicator column and life table values
 #' in the value column, by year, sex and abridged age groups (0,1,5,10,15....)}
-#' \item{lt_summary}{A data frame with life table summary indicator labels in the indicator column and life table values 
+#' \item{lt_summary}{A data frame with life table summary indicator labels in the indicator column and life table values
 #' in the value column, by sex (example labels: lt_1q0, lt_4q1, lt_35q15, lt_e0, lt_e60, etc.).}
 #' \item{mig_net_count_age_sex_1x1}{A data frame with net migrant counts in the value column, by year, sex and single year of age.}
 #' \item{mig_net_count_age_sex_5x1}{A data frame with net migrant counts in the value column, by year, sex and five year age group.}
 #' \item{mig_net_count_tot_sex}{A data frame with total net migrant counts in the value column, by year and sex.}
 #' \item{mig_assumption}{A data frame with whether migration is accounted at "end" of period or "even" over period in the value column, by year.}
 #' }
-"canada_wpp_1950_2020_ccmppWPP_outputs.rda"
+"canada_wpp_1950_2020_ccmppWPP_outputs"
 

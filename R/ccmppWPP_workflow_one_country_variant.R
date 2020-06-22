@@ -20,11 +20,6 @@
 #' @export
 #' 
 
-# This code needs these packages in order to work.  We need to add these to the import entry in the ccmppWPP
-# package DESCRIPTION but I am not sure how to do this correctly
-
-library(DemoTools)
-library(stringr)
 
 ccmppWPP_workflow_one_country_variant <- function(wpp_input) {
 

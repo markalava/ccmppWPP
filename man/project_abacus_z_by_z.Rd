@@ -6,8 +6,8 @@
 \usage{
 project_abacus_z_by_z(
   z = 5,
-  pop_count_age_m_begin,
-  pop_count_age_f_begin,
+  pop_count_age_m_start,
+  pop_count_age_f_start,
   survival_ratio_age_m,
   survival_ratio_age_f,
   fert_rate_age_f,
@@ -20,9 +20,9 @@ project_abacus_z_by_z(
 \arguments{
 \item{z}{width of age groups = length of one-step projection horizon (Abacus was 5 years only)}
 
-\item{pop_count_age_m_begin}{a vector of male population counts at the base year (time 0) by age}
+\item{pop_count_age_m_start}{a vector of male population counts at the base year (time 0) by age}
 
-\item{pop_count_age_f_begin}{a vector of female population counts at the base year (time 0) by age}
+\item{pop_count_age_f_start}{a vector of female population counts at the base year (time 0) by age}
 
 \item{survival_ratio_age_m}{a vector of survival ratios by age for males from a life table referencing the period 0 to 0+z}
 

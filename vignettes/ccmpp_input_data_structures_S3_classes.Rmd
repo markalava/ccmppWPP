@@ -1,0 +1,278 @@
+---
+title: "S3 Classes for CCMPP Input Data Structures"
+author: ""
+date: |
+    | `r Sys.Date()`
+    | (`r paste0("_ccmppWPP_ version ", packageVersion("ccmppWPP"), ")")`
+# output:
+#     function(...) rmarkdown::html_vignette(..., css=c(system.file("rmarkdown", "templates", "html_vignette", "resources", "vignette.css", package = "rmarkdown"), "vignette2.css")):
+#       toc: true
+bibliography: bibliography.bib
+link-citations: true
+vignette: >
+  %\VignetteIndexEntry{Introduction to FPEMglobal}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+output:
+  word_document:
+    reference_docx: docx_reference.docx
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = TRUE,
+  results = TRUE
+)
+
+## set global chunk options
+options(formatR.arrow=TRUE,width=80)
+```
+
+<!-- 
+STYLE CONVENTIONS
+- Filenames: single quoted
+- Software: italics
+-->
+
+
+```{r source-package-functions, echo = FALSE, results = "hide"}
+library(ccmppWPP)
+```
+
+
+# Introduction
+
+This document presents a general framework for a set of S3 classes that will be used for objects that are inputs and outputs to CCMPP functions. 
+
+
+# Base Class: `vital_rate_df`
+
+The base class is a data frame with meta data (known as "`attributes`") currently called `vital_rate_df`^['`df`' for 'data frame'.]. Suggestions for a better name are welcome! 
+
+The class was designed with reference to 
+
+```{r test-data-wpp}
+data(wpp_input_example)
+head(wpp_input_example$mig_net_count_age_sex)
+```
+
+which is a data frame of a variable broken down by time, age, and sex. 
+
+The full set of CCMPP inputs consists of a list of data frames with all or some of these dimensions. For example, the sex ratio at birth component has only the time dimension, the fertility rate component has only the time and age dimensions. These will be handled as subclasses with different validity condidions. *This is in progress* so please read the below with the understanding that I still need to make more specific classes for the various subtypes contained in the input list. These should be straightforward to code once the base type is finalized.
+
+I noticed that the input list also contains a life table. I think we should make a life table class because it will be useful anyway. 
+
+  - **We need to decide** if we want the full life table to be part of the official input spec or only one or two of the columns.
+
+
+## Purpose
+
+The purpose of this S3 object class is to specify the structure a set of inputs to CCMPP functions requires to be valid. It is not intended to be a class for a data base or any other use-case. In order to minimize errors, especially invisible errors, the inputs to functions should be checked to ensure they contain valid values. To achieve this using classes:
+
+1. A complete description of the object class encoded in a series of *R* functions that *create* and *validate* objects as members of the class.
+2. Functions that take objects of the class as their primary input should be *generics* with *methods* for the class. This provides only a *minimal* amount of safety but makes a clear statement to the user that the object expected should conform to expectations.
+3. Functions *validate* the input object before doing any calculations. This should prevent any invalid inputs making their way into the function calculations potentially causing undetected errors. *Subsequent* calculation errors due to the function's own operations are the responsibility of the function, not the class.
+
+
+## General Format
+
+The class shall consist of a `data.frame` holding the data and a set of `attributes` holding meta data. What goes where is a design decision; we can discuss and modify as we go through the development phase. 
+
+Currently, the data frame component has columns 
+
+- `age_start`
+- `sex`
+- `time_start`
+- `value`
+
+The attributes are 
+
+- `age_span`
+- `time_span`
+
+
+## Definition
+
+The definition of a valid object this class is as follows:
+
+Data frame component
+
+:    - The data frame contains columns with exact names: 
+       - `age_start`
+       - `sex`
+       - `time_start`
+       - `value`
+    - The data frame has exactly one finite and non-missing value per `age_start`$\times$`sex`$\times$`time_start` combination because this is what CCMPP requires (this is not as class for a data base of many possible inputs). 
+    - For every unique `time_start` there is an `age_start` that equals 0; i.e., the age breakdown must start at age 0.
+    - Both `time_start` and `age_start` must be complete sequences in steps of `time_span` and `age_span`, respectively. That is, if `age_span == 1` then, within each `time_span`$\times$`sex` block, `age_start` must be 0, 1, 2, ... .
+    - The only values for `sex` are `both`, `female`, or `male`. 
+	
+Attributes component
+
+:    - `age_span` and `time_span` are finite non-missing scalars.
+
+The definition of the class is contained in the documentation of the function: `?vital_rate_df` (the documentation file is *to be completed*). 
+
+
+## Construction and Validation
+
+### Main Constructor Function
+
+A user-level constructor is provided which takes as input the base data frame object plus arguments specifying the age and time spans:
+
+```{r construct-vital-rate-df-1}
+mig_vr_df <- vital_rate_df(x = wpp_input_example$mig_net_count_age_sex,
+                           age_span = 1,
+                           time_span = 1)
+```
+
+The age and time spans may be part of the data frame, in which case they will be read in automatically as long as they are valid:
+
+```{r construct-vital-rate-df-2}
+mig_vr_df <- vital_rate_df(x = wpp_input_example$mig_net_count_age_sex)
+```
+
+The class of the object is contained in the "class" attribute accessed with base *R* function `class()`
+
+```{r class-of-vrdf}
+class(mig_vr_df)
+```
+
+Note that the `data.frame` is the second element of the class. This indicates that objects of class `vital_rate_df` explicitly *inherit* from the base class `data.frame`. Inheritance is part of *R*'s S3 object oriented programming system. In effect it means that when in doubt *R* will act as if `vital_rate_df`s are `data.frame`s, which makes the most sense since that is the class they are based upon. Inheritance is relevant for the creation of generic functions and class-specific methods which will be demonstrated below. 
+
+
+### Validation
+
+The function `validate_vital_rate_df()` is available to validate an object as a member of the class. As per convention, if the object is valid it is returned; if not, an error is signalled:
+
+```{r validate-vr-class}
+x <- validate_vital_rate_df(x = mig_vr_df)
+class(x)
+
+## Not run:
+## y <- validate_vital_rate_df(x = wpp_input_example$mig_net_count_age_sex)
+## > Error in validate_vital_rate_df(x = wpp_input_example$mig_net_count_age_sex) : 
+##   'x' must have attributes 'class', 'names', 'row.names', 'age_span', 'time_span'; some are missing.
+```
+
+
+### Construction Conveniences
+
+`vital_rate_df()` can be designed to provide various conveniences to the user. Currently:
+
+- The user can supply `time_span` and `age_span` as columns in the input data frame. `vital_rate_df` will extract and check them, and set them as attributes in the constructed object (see above).
+- Pre-sorting is not required; `vital_rate_df` will sort the input data frame properly according to the specification. 
+
+    ```{r construction-sorting-done}
+z <- wpp_input_example$mig_net_count_age_sex
+z[, "age_start"] <- rev(z$age_start)
+z <- vital_rate_df(x = z, age_span = 1, time_span = 1)
+class(z)
+	```
+	
+
+### Restrictions
+
+- No extra columns or rows are allowed; the object is intended to be the minimal required to run CCMPP correctly, not a databse type object with unnecessary information. These will be silently dropped:
+
+    ```{r construction-drop-extra-cols}
+x <- wpp_input_example$mig_net_count_age_sex
+z <- data.frame(x, source = "census")
+head(z)
+
+z <- vital_rate_df(x = z)
+head(z)
+```
+
+Expectations of the user include:
+
+- Exactly one row per `age_start`$\times$`sex`$\times$`time_start` combination is expected; `vital_rate_df()` will not attempt to figure out which from several combinations the user wants in the finished object. Use `dplyr` or similar before passing to `vital_rate_df()`.
+- The sequencing of `age_start` and `time_start` must be correct and must match `age_span` and `time_span`.
+- No missing values are allowed; CCMPP won't work with them. 
+- `sex` must use the values `both`, `female`, and `male` (or some subset). Eg., "`Both`", "`MALE`", etc. won't work and won't be corrected.
+
+We can modify some of the conveniences but I recommend including as few as possible for clarity of purpose and ease of maintenance^[Allowing case insensitive values for `sex` in the input might be OK.]. 
+
+
+# Methods
+
+The main reason for creating `vital_rate_df` is to have a definition and validation system for inputs and outputs of the CCMPP functions. However, the object oriented programming system is really designed to allow specific behaviour of functions based on the class of the objects passed as inputs. It makes sense to define some basic methods for `vital_rate_df`.
+
+
+## Subsetting
+
+*R*'s basic subset and replacement functions have been given methods for the class. If a `vital_rate_df` object is subsetted in any way the result looses the class as it cannot be gauranteed the required criteria will still be met after extraction. A warning will be issued if used interactively:
+
+```{r subsetting-vrdf-1-col}
+## Extract one column:
+z <- mig_vr_df[, "age_start"]
+str(z)
+```
+
+```{r subsetting-vrdf-data-frame}
+## Extract a sub-data frame
+z <- mig_vr_df[mig_vr_df$time_start == 1950, ]
+class(z)
+head(z)
+```
+
+The warning is only issued if "`[`" (or "`$`", or "`[[`") are called at the top level. E.g.,
+
+```{r subsetting-vrdf-via-subset}
+## Same effect as `[` above but no warning
+z <- subset(mig_vr_df, time_start == 1950)
+class(z)
+```
+
+To create a valid subset, re-make the object as a member of the class (`suppressWarnings()` is optional):
+
+```{r subset-vrdf-remake}
+z <- vital_rate_df(suppressWarnings(mig_vr_df[mig_vr_df$time_start == 1950, ]),
+                   age_span = attr(mig_vr_df, "age_span"),
+                   time_span = attr(mig_vr_df, "time_span"))
+class(z)
+head(z) 
+```
+
+We could define some functions to do this if we think it will be a common operation. E.g., a method for `subset` could be written or the existing method for `[` could be enhanced to automatically keep the class if the result is a valid member. *However* this would then mean that subsetting could have multiple different outcomes depending on the validity of the subsetted data frame as a member of the class. This might be confusing and difficult to use. An advantage of the current design is that the user always knows subsetting will remove the class and that they need to explicitly re-create (and, hence, validate) it if they want the class.
+
+
+## Replacement
+
+The user can replace a column in a `vital_rate_df` and if it is valid the class will be retained. If not an error is signalled.
+
+```{r replacement-vrdf}
+z <- mig_vr_df
+z[, "age_start"] <- z$age_start #trivially replace the age column but note the class is retained
+class(z)
+```
+
+
+## `print` and `summary`
+
+`print` and `summary` are two common functions for examining objects. Special methods have been written to make these useful for the `vital_rate_df` class. The `print` method takes inspiration from the method for `tibble`s:
+
+```{r print-vrdf}
+mig_vr_df 
+```
+
+`summary` is based on the `data.frame` method with a few extra bits of information:
+
+```{r summary-vrdf}
+summary(mig_vr_df)
+```
+
+
+# What Next?
+
+1. The next essential step is to accommodate the different sub-types present in the example CCMPP input list, namely vital rate data frames broken down only by age, or time, or sex, or a combination of two. I plan to do this by adding an attribute to the current class marking its subtype. The validation function will then allow for, e.g., the `sex` column to be missing, or the `age_start` to be missing.
+
+2. Following (1), I will create some superficial classes for the specific vital rates (fertility, migration, sex ratio at birth) etc. These will be a very thin layer on top of the appropriate base class. Where appropriate I will add the requirement of non-negative values or values between 0 and 1. 
+
+3. I will add a life table class to hold life tables. *Alternatively* we can search for an existing class of which I'm sure there are several already on *CRAN*. 
+
+    **Question:** does *DemoTools* already have a life table class? 
+
+3. I will create a `ccmpp_input_list` class that is a list with the required data frames as elements. This will be able to use all the existing creation and validation functions as the elements will be of class `vital_rate_df`. This will ensure that the inputs passed to the CCMPP functions are complete and valid.

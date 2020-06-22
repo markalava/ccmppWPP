@@ -1,4 +1,4 @@
-context("Test methods for S3 class 'vital_rate_df_time_age_sex'")
+context("Test methods for S3 class 'vital_rate_df'")
 
 test_that("subsetting works as desired", {
 
@@ -9,14 +9,14 @@ test_that("subsetting works as desired", {
 
     data("S3_vital_rate_time_age_sex_test_df")
     x <- S3_vital_rate_time_age_sex_test_df
-    y <- vital_rate_df_time_age_sex(x)
-    expect_s3_class(y, "vital_rate_df_time_age_sex")
+    y <- vital_rate_df(x)
+    expect_s3_class(y, "vital_rate_df")
     expect_s3_class(y, "data.frame")
 
     ## NB Warning only issued if run from top level
-    expect_not_s3_class(y[, "age_start"], "vital_rate_df_time_age_sex")
-    expect_not_s3_class(y$age_start, "vital_rate_df_time_age_sex")
-    expect_not_s3_class(y[["age_start"]], "vital_rate_df_time_age_sex")
+    expect_not_s3_class(y[, "age_start"], "vital_rate_df")
+    expect_not_s3_class(y$age_start, "vital_rate_df")
+    expect_not_s3_class(y[["age_start"]], "vital_rate_df")
 })
 
 
@@ -24,47 +24,47 @@ test_that("replacement with valid columns passes", {
 
     data("S3_vital_rate_time_age_sex_test_df")
     x <- S3_vital_rate_time_age_sex_test_df
-    y <- vital_rate_df_time_age_sex(x)
-    expect_s3_class(y, "vital_rate_df_time_age_sex")
+    y <- vital_rate_df(x)
+    expect_s3_class(y, "vital_rate_df")
     expect_s3_class(y, "data.frame")
 
     z <- y
     z[, "age_start"] <- z$age_start
-    expect_s3_class(z, "vital_rate_df_time_age_sex")
+    expect_s3_class(z, "vital_rate_df")
     z <- y
     z$age_start <- z$age_start
-    expect_s3_class(z, "vital_rate_df_time_age_sex")
+    expect_s3_class(z, "vital_rate_df")
     z <- y
     z[["age_start"]] <- z$age_start
-    expect_s3_class(z, "vital_rate_df_time_age_sex")
+    expect_s3_class(z, "vital_rate_df")
 
     z <- y
     z[, "time_start"] <- z$time_start
-    expect_s3_class(z, "vital_rate_df_time_age_sex")
+    expect_s3_class(z, "vital_rate_df")
     z <- y
     z$time_start <- z$time_start
-    expect_s3_class(z, "vital_rate_df_time_age_sex")
+    expect_s3_class(z, "vital_rate_df")
     z <- y
     z[["time_start"]] <- z$time_start
-    expect_s3_class(z, "vital_rate_df_time_age_sex")
+    expect_s3_class(z, "vital_rate_df")
 
     z <- y
     z[, "sex"] <- z$sex
-    expect_s3_class(z, "vital_rate_df_time_age_sex")
+    expect_s3_class(z, "vital_rate_df")
     z <- y
     z$sex <- z$sex
-    expect_s3_class(z, "vital_rate_df_time_age_sex")
+    expect_s3_class(z, "vital_rate_df")
     z <- y
     z[["sex"]] <- z$sex
-    expect_s3_class(z, "vital_rate_df_time_age_sex")
-})
+    expect_s3_class(z, "vital_rate_df")
+ })
 
 
 test_that("bad sorting is detected", {
 
     data("S3_vital_rate_time_age_sex_test_df")
-    y <- vital_rate_df_time_age_sex(S3_vital_rate_time_age_sex_test_df)
-    expect_s3_class(y, "vital_rate_df_time_age_sex")
+    y <- vital_rate_df(S3_vital_rate_time_age_sex_test_df)
+    expect_s3_class(y, "vital_rate_df")
     expect_s3_class(y, "data.frame")
 
     z <- y
@@ -94,8 +94,8 @@ test_that("bad sorting is detected", {
 test_that("superfluous columns are detected", {
     data("S3_vital_rate_time_age_sex_test_df")
 
-    y <- vital_rate_df_time_age_sex(S3_vital_rate_time_age_sex_test_df)
-    expect_s3_class(y, "vital_rate_df_time_age_sex")
+    y <- vital_rate_df(S3_vital_rate_time_age_sex_test_df)
+    expect_s3_class(y, "vital_rate_df")
     expect_s3_class(y, "data.frame")
 
     expect_error((y$source <- "census"), "superfluous columns")

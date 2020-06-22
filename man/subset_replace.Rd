@@ -2,19 +2,19 @@
 % Please edit documentation in R/S3_methods.R
 \name{subset_replace}
 \alias{subset_replace}
-\alias{[.vital_rate_df_time_age_sex}
-\alias{[<-.vital_rate_df_time_age_sex}
-\alias{$<-.vital_rate_df_time_age_sex}
-\alias{[[<-.vital_rate_df_time_age_sex}
-\title{Extract or Replace Parts of a \code{vital_rate_df_time_age_sex}}
+\alias{[.vital_rate_df}
+\alias{[<-.vital_rate_df}
+\alias{$<-.vital_rate_df}
+\alias{[[<-.vital_rate_df}
+\title{Extract or Replace Parts of a \code{vital_rate_df}}
 \usage{
-\method{[}{vital_rate_df_time_age_sex}(x, i, j, drop)
+\method{[}{vital_rate_df}(x, i, j, drop)
 
-\method{[}{vital_rate_df_time_age_sex}(x, i, j) <- value
+\method{[}{vital_rate_df}(x, i, j) <- value
 
-\method{$}{vital_rate_df_time_age_sex}(x, name) <- value
+\method{$}{vital_rate_df}(x, name) <- value
 
-\method{[[}{vital_rate_df_time_age_sex}(x, i, j) <- value
+\method{[[}{vital_rate_df}(x, i, j) <- value
 }
 \arguments{
 \item{x}{data frame.}
@@ -48,31 +48,31 @@
 Extraction could return a \code{data.frame},
     one-dimensional vector, or scalar depending on the dimensions
     of the extracted values. Replacement will
-    attempt to return a \code{vital_rate_df_time_age_sex}.
+    attempt to return a \code{vital_rate_df}.
 }
 \description{
 These are methods for the subset operator and its companion
 replacement function for objects of class
-\code{vital_rate_df_time_age_sex}. The return values differ and,
+\code{vital_rate_df}. The return values differ and,
 importantly, subsetting does not return an object of class
-\code{vital_rate_df_time_age_sex} (see \dQuote{Details}).
+\code{vital_rate_df} (see \dQuote{Details}).
 }
 \details{
 The object resulting from a subset operation via \code{`[`} will no
-longer inherit from class \code{vital_rate_df_time_age_sex} and the
+longer inherit from class \code{vital_rate_df} and the
 attributes specific to that class will be lost. To create a
 \code{vital_rate_time_age_sex_df} object from a subset call
-\code{\link{vital_rate_df_time_age_sex}} explicitly (e.g.,
-\code{vital_rate_df_time_age_sex(x[x$time_start == 1960,])}).
+\code{\link{vital_rate_df}} explicitly (e.g.,
+\code{vital_rate_df(x[x$time_start == 1960,])}).
 
 Replacement via \code{`[<-`} will attempt to return a
 \code{vital_rate_matrix}. The user is responsible for making sure
 the new object is a valid member of this class (see
-\code{\link{vital_rate_df_time_age_sex}}). If the result is not a valid
+\code{\link{vital_rate_df}}). If the result is not a valid
 member an error will be signalled.
 }
 \seealso{
-\code{\link{vital_rate_df_time_age_sex}}.
+\code{\link{vital_rate_df}}.
 }
 \author{
 Mark Wheldon

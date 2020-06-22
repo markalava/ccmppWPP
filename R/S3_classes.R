@@ -8,7 +8,7 @@
 ### * Helper Functions
 
 ## Helper functions defining the proper sort order of the class
-sort_vital_rate_df_time_age_sex <- function(x) {
+sort_vital_rate_df <- function(x) {
     x <- x[order(x$time_start, rev(x$sex), x$age_start), ]
 }
 
@@ -46,25 +46,25 @@ sort_vital_rate_df_time_age_sex <- function(x) {
 
 
 
-#' Low-level constructor for class \code{vital_rate_df_time_age_sex}.
+#' Low-level constructor for class \code{vital_rate_df}.
 #'
 #' @description
-#' Creates an object of class \code{vital_rate_df_time_age_sex}. Minimal
+#' Creates an object of class \code{vital_rate_df}. Minimal
 #' checks are done; for interactive use see
-#' \code{\link{validate_vital_rate_df_time_age_sex}}.
+#' \code{\link{validate_vital_rate_df}}.
 #'
 #' This function is not exported. The user-level constructor is
-#' \code{\link{vital_rate_df_time_age_sex}}.
+#' \code{\link{vital_rate_df}}.
 #'
-#' @seealso vital_rate_df_time_age_sex
+#' @seealso vital_rate_df
 #'
-#' @family vital_rate_df_time_age_sex class non-exported functions
+#' @family vital_rate_df class non-exported functions
 #'
 #' @param age_span Scalar indicating the span of the age groups.
 #' @param time_span Scalar indicating the span of the time periods.
-#' @return An object of class \code{vital_rate_df_time_age_sex}.
+#' @return An object of class \code{vital_rate_df}.
 #' @author Mark Wheldon
-new_vital_rate_df_time_age_sex <-
+new_vital_rate_df <-
     function(x, age_span, time_span,
              ..., class = character()) {
         stopifnot(is.data.frame(x))
@@ -72,15 +72,20 @@ new_vital_rate_df_time_age_sex <-
                   age_span = age_span,
                   time_span = time_span,
                   ...,
-                  class = c(class, "vital_rate_df_time_age_sex", "data.frame"))
+                  class = c(class, "vital_rate_df", "data.frame"))
     }
 
 
-#' Constructor for class \code{vital_rate_df_time_age_sex}
+#' Constructor for class \code{vital_rate_df}
 #'
 #' @description
 #'
-#' Creates an object of class \code{vital_rate_df_time_age_sex}. This is the
+#' \describe{
+#' \item{\code{vital_rate_df}}{Creates objects of class \code{vital_rate_df} from a given set of values.}
+#' \item{\code{as.vital_rate_df}}{Attempts to turn its argument into a \code{vital_rate_df}.}
+#' \item{\code{is.vital_rate_df}}{Tests if its argument is a \code{vital_rate_df}. \emph{Note:} This only checks inheritance (via \code{\link{base::inherits}}), not validity. To validate an object use \code{\link{validate_vital_rate_df}}.}
+#'
+#' \code{vital_rate_df} is the
 #' parent class of a family of classes for holding age- time-specific
 #' demographic vital rates, such as fertility and mortality rates,
 #' population counts, and migration rates. It is not intended as a
@@ -90,7 +95,7 @@ new_vital_rate_df_time_age_sex <-
 #' input are correctly formatted.
 #'
 #' Objects of this class have class attribute
-#' \code{c("vital_rate_df_time_age_sex", "data_frame")}.
+#' \code{c("vital_rate_df", "data_frame")}.
 #'
 #' @details
 #'
@@ -129,7 +134,7 @@ new_vital_rate_df_time_age_sex <-
 #' have methods convert to factor when advantageous.
 #'
 #'
-#' @family vital_rate_df_time_age_sex constructor functions
+#' @family vital_rate_df constructor functions
 #'
 #' @param x A data frame with columns \dQuote{age_start},
 #'     \dQuote{age_span}, \dQuote{sex}, \dQuote{time_start},
@@ -139,10 +144,16 @@ new_vital_rate_df_time_age_sex <-
 #'     \code{x} an attempt will be made to infer it from that column.
 #' @param time_span Scalar indicating the span of the time periods; similar behaviour to \code{age_span}.
 #' @param ... Passed to the low-level constructor.
-#' @return An object of class \code{vital_rate_df_time_age_sex}.
+#' @return An object of class \code{vital_rate_df}.
 #' @author Mark Wheldon
+#'
+#' @name construct_vital_rate_df
+NULL
+
+
+#' @rdname construct_vital_rate_df
 #' @export
-vital_rate_df_time_age_sex <-
+vital_rate_df <-
     function(x, age_span = NULL, time_span = NULL, ...) {
 
         if (!is.data.frame(x))
@@ -189,20 +200,36 @@ vital_rate_df_time_age_sex <-
         }
 
         ## Sort by time, then sex, then age
-        x <- sort_vital_rate_df_time_age_sex(x)
+        x <- sort_vital_rate_df(x)
 
         ## row.names might have been muddled by sorting so reset
         row.names(x) <- NULL
 
         ## Create/Validate
-        validate_vital_rate_df_time_age_sex(
-            new_vital_rate_df_time_age_sex(x,
+        validate_vital_rate_df(
+            new_vital_rate_df(x,
                                       age_span = age_span,
                                       time_span = time_span,
                                       ...
                                       )
         )
     }
+
+
+#' @rdname construct_vital_rate_df
+#' @export
+as.vital_rate_df <- function(x, ...) {
+    if (is.vital_rate_df(x)) return(x)
+    x <- as.data.frame(x)
+    vital_rate_df(x)
+}
+
+
+#' @rdname construct_vital_rate_df
+#' @export
+is.vital_rate_df <- function(x) {
+    inherits(x, "vital_rate_df")
+}
 
 ###-----------------------------------------------------------------------------
 ### * Validation Functions
@@ -216,7 +243,7 @@ vital_rate_df_time_age_sex <-
 ###-----------------------------------------------------------------------------
 ### ** Validate time_age_sex version
 
-#' Validate objects of class \code{vital_rate_df_time_age_sex}.
+#' Validate objects of class \code{vital_rate_df}.
 #'
 #' @description
 #' Checks that an object with \code{class} attribute
@@ -232,7 +259,7 @@ vital_rate_df_time_age_sex <-
 #' @return Either an error or the object \code{x}.
 #' @author Mark Wheldon
 #' @export
-validate_vital_rate_df_time_age_sex <-
+validate_vital_rate_df <-
     function(x) {
 
         ## -------* Colnames
@@ -280,7 +307,7 @@ validate_vital_rate_df_time_age_sex <-
 
         order_cols <- which(colnames(x) != "value")
         if (!identical(x[, order_cols],
-                       sort_vital_rate_df_time_age_sex(x)[, order_cols]))
+                       sort_vital_rate_df(x)[, order_cols]))
             stop("'x' must be sorted by rev(sex), age_start, time_start (i.e., x <- x[order(rev(x$sex), x$time_start, x$age_start), ]).")
 
         ## -------* Check squareness
@@ -342,4 +369,32 @@ validate_vital_rate_df_time_age_sex <-
             stop("Not all 'x$sex' are in ('female', 'male', 'both'); values other than these are not supported.")
 
     return(x)
+}
+
+###-----------------------------------------------------------------------------
+### * Get Attributes
+
+#' Extract attributes specific to \code{vital_rate_df}s
+#'
+#' All attributes that are not attributes of \code{data.frame} objects
+#' are extracted. This function is designed to work with objects of
+#' class \code{vital_rate_df}; behaviour for other classes is
+#' not defined.
+#'
+#' @param x An object from which to extract attributes.
+#' @return A list of attributes.
+#' @author Mark Wheldon
+#' @export
+vital_rate_attributes <- function(x) {
+    UseMethod("vital_rate_attributes")
+}
+
+
+#' @author Mark Wheldon
+#' @export
+vital_rate_attributes.vital_rate_df <- function(x) {
+    attrx <- attributes(x)
+    attr_names <- names(attrx)
+    attr_names <- attr_names[!(attr_names %in% c("names", "row.names", "class"))]
+    return(attrx[attr_names])
 }

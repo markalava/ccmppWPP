@@ -68,7 +68,7 @@
 #' whether migration should be accounted at "end" of period or "even" over period by year from 1950-2019.}
 #' }
 #' @source Interpolated from estimates for Canada published in United Nations, \emph{World Population Prospects 2019}.
-"wpp_input_example.rda"
+"wpp_input_example"
 
 #' Example outputs file for WPP 1x1 workflow, one country and variant
 #'
@@ -111,5 +111,5 @@
 #' \item{mig_net_count_tot_sex}{A data frame with total net migrant counts in the value column, by year and sex.}
 #' \item{mig_assumption}{A data frame with whether migration is accounted at "end" of period or "even" over period in the value column, by year.}
 #' }
-"wpp_output_example.rda"
+"wpp_output_example"
 

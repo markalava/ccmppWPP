@@ -9,8 +9,8 @@
 #' @author Sara Hertog
 #'
 #' @param z width of age groups = length of one-step projection horizon (Abacus was 5 years only)
-#' @param pop_count_age_m_begin a vector of male population counts at the base year (time 0) by age
-#' @param pop_count_age_f_begin a vector of female population counts at the base year (time 0) by age
+#' @param pop_count_age_m_start a vector of male population counts at the base year (time 0) by age
+#' @param pop_count_age_f_start a vector of female population counts at the base year (time 0) by age
 #' @param survival_ratio_age_m a vector of survival ratios by age for males from a life table referencing the period 0 to 0+z
 #' @param survival_ratio_age_f a vector of survival ratios by age for females from a life table referencing the period 0 to 0+z
 #' @param fert_rate_age_f a vector of age-specific fertility rates referencing the period 0 to 0+z
@@ -37,8 +37,8 @@
 
 
 project_abacus_z_by_z <- function(z=5, 
-                           pop_count_age_m_begin, 
-                           pop_count_age_f_begin, 
+                           pop_count_age_m_start, 
+                           pop_count_age_f_start, 
                            survival_ratio_age_m, 
                            survival_ratio_age_f,
                            fert_rate_age_f, 
@@ -48,16 +48,16 @@ project_abacus_z_by_z <- function(z=5,
                            mig_assumption = c("end", "even")) {
 
   # check that lengths of inputs agree
-  check_length <- min(length(pop_count_age_m_begin),length(pop_count_age_f_begin),
+  check_length <- min(length(pop_count_age_m_start),length(pop_count_age_f_start),
                       length(survival_ratio_age_m),length(survival_ratio_age_f),
                       length(fert_rate_age_f),
                       length(mig_net_count_age_m),length(mig_net_count_age_f)) ==
-    max(length(pop_count_age_m_begin),length(pop_count_age_f_begin),
+    max(length(pop_count_age_m_start),length(pop_count_age_f_start),
         length(survival_ratio_age_m),length(survival_ratio_age_f),
         length(fert_rate_age_f),length(mig_net_count_age_m),length(mig_net_count_age_f))
   if (isFALSE(check_length)) { stop("Input columns are not all the same length")}
 
-  nage <- length(pop_count_age_m_begin) # number of age groups
+  nage <- length(pop_count_age_m_start) # number of age groups
 
 ### Two possible migration assumptions: end of period or evenly over period
   # here we set up some interim vectors according to the migration assumptions
@@ -73,8 +73,8 @@ project_abacus_z_by_z <- function(z=5,
 
     # all migrants are added/removed at end of period but before births are computed
     # migration-adjusted beginning of period population by age and sex
-    pop_count_age_m_begin_mig_adj <- pop_count_age_m_begin
-    pop_count_age_f_begin_mig_adj <- pop_count_age_f_begin
+    pop_count_age_m_start_mig_adj <- pop_count_age_m_start
+    pop_count_age_f_start_mig_adj <- pop_count_age_f_start
     # net migration to be added to end of period population by age and sex *before* period births are computed
     mig_net_count_age_m_end <- mig_net_count_age_m
     mig_net_count_age_f_end <- mig_net_count_age_f
@@ -84,8 +84,8 @@ project_abacus_z_by_z <- function(z=5,
     # half of increments between age x and x+1 are added at end of period but before births are computed
     # half of increments between age x-1 and x are added at beginning of period and survived to age x to x+1, but are not exposed to fertility in the period
     # migration-adjusted beginning of period population by age and sex
-    pop_count_age_m_begin_mig_adj <- pop_count_age_m_begin + mig_net_count_age_m/2
-    pop_count_age_f_begin_mig_adj <- pop_count_age_f_begin + mig_net_count_age_f/2
+    pop_count_age_m_start_mig_adj <- pop_count_age_m_start + mig_net_count_age_m/2
+    pop_count_age_f_start_mig_adj <- pop_count_age_f_start + mig_net_count_age_f/2
     # net migration to be added to end of period population by age and sex *before* period births are computed
     mig_net_count_age_m_end <- mig_net_count_age_m/2
     mig_net_count_age_f_end <- mig_net_count_age_f/2
@@ -93,25 +93,25 @@ project_abacus_z_by_z <- function(z=5,
   }
 
   # Pre-compute lagged variables
-    lag_pop_count_age_m_begin_mig_adj <- c(NA, head(pop_count_age_m_begin_mig_adj, -1))
-    lag_pop_count_age_f_begin_mig_adj <- c(NA, head(pop_count_age_f_begin_mig_adj, -1))
+    lag_pop_count_age_m_start_mig_adj <- c(NA, head(pop_count_age_m_start_mig_adj, -1))
+    lag_pop_count_age_f_start_mig_adj <- c(NA, head(pop_count_age_f_start_mig_adj, -1))
 
   # compute deaths from year 0 population and survival ratios
-    death_count_cohort_m <- (1-survival_ratio_age_m)*lag_pop_count_age_m_begin_mig_adj
-    death_count_cohort_m[nage] <- (1-survival_ratio_age_m[nage]) * (pop_count_age_m_begin_mig_adj[nage-1]+pop_count_age_m_begin_mig_adj[nage])
+    death_count_cohort_m <- (1-survival_ratio_age_m)*lag_pop_count_age_m_start_mig_adj
+    death_count_cohort_m[nage] <- (1-survival_ratio_age_m[nage]) * (pop_count_age_m_start_mig_adj[nage-1]+pop_count_age_m_start_mig_adj[nage])
     
-    death_count_cohort_f <- (1-survival_ratio_age_f)*lag_pop_count_age_f_begin_mig_adj
-    death_count_cohort_f[nage] <- (1-survival_ratio_age_f[nage]) * (pop_count_age_f_begin_mig_adj[nage-1]+pop_count_age_f_begin_mig_adj[nage])
+    death_count_cohort_f <- (1-survival_ratio_age_f)*lag_pop_count_age_f_start_mig_adj
+    death_count_cohort_f[nage] <- (1-survival_ratio_age_f[nage]) * (pop_count_age_f_start_mig_adj[nage-1]+pop_count_age_f_start_mig_adj[nage])
 
   # project population by age at year +z from year 0 population and deaths
-    pop_count_age_m_end <- lag_pop_count_age_m_begin_mig_adj - death_count_cohort_m + mig_net_count_age_m_end
-    pop_count_age_m_end[nage] <- pop_count_age_m_begin_mig_adj[nage-1] + pop_count_age_m_begin_mig_adj[nage] - death_count_cohort_m[nage] + mig_net_count_age_m_end[nage]
+    pop_count_age_m_end <- lag_pop_count_age_m_start_mig_adj - death_count_cohort_m + mig_net_count_age_m_end
+    pop_count_age_m_end[nage] <- pop_count_age_m_start_mig_adj[nage-1] + pop_count_age_m_start_mig_adj[nage] - death_count_cohort_m[nage] + mig_net_count_age_m_end[nage]
     
-    pop_count_age_f_end <- lag_pop_count_age_f_begin_mig_adj - death_count_cohort_f + mig_net_count_age_f_end
-    pop_count_age_f_end[nage] <- pop_count_age_f_begin_mig_adj[nage-1] + pop_count_age_f_begin_mig_adj[nage] - death_count_cohort_f[nage] + mig_net_count_age_f_end[nage]
+    pop_count_age_f_end <- lag_pop_count_age_f_start_mig_adj - death_count_cohort_f + mig_net_count_age_f_end
+    pop_count_age_f_end[nage] <- pop_count_age_f_start_mig_adj[nage-1] + pop_count_age_f_start_mig_adj[nage] - death_count_cohort_f[nage] + mig_net_count_age_f_end[nage]
 
   # compute births from female population, age-specific fertility rates and sex ratio at birth
-    birth_count_age_b <- z * fert_rate_age_f * (pop_count_age_f_begin + pop_count_age_f_end)/2 #begin period exposure is *not* migration-adjusted in Abacus
+    birth_count_age_b <- z * fert_rate_age_f * (pop_count_age_f_start + pop_count_age_f_end)/2 #begin period exposure is *not* migration-adjusted in Abacus
     birth_count_age_b[c(1,nage)] <- 0
     birth_count_tot_b <- sum(birth_count_age_b)
     birth_count_tot_f <- birth_count_tot_b * (1/(1+srb))

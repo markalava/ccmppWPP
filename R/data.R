@@ -50,45 +50,42 @@
 #' @source Preston, S. H., Heuveline, P., and Guillot, M. (2001), \emph{Demography: Measuring and Modeling Population Processes}, Malden, Massachusetts: Blackwell.
 "sweden_1993_Preston_5x5"
 
-#' Example inputs file for 1x1 cohort component population projection for Canada 1950-2020
+#' Example inputs file for WPP 1x1 workflow, one country and variant
 #'
-#' All inputs needed to perform a cohort component population projection for Canada
+#' All inputs needed to perform a cohort component population projection
 #' by single year of age and in one-year steps for the projection (1x1) from 1950-2020
 #'
 #' @format A list with elements
 #' \describe{
-#' \item{LocID}{A numeric location identifier for the country, in this case 124".}
-#' \item{variant}{A character string identifying the projection variant, in this case "Estimates".}
-#' \item{year_base}{The base (starting) year of the projection, in this case 1950.}
-#' \item{year_stop}{The year to stop the projection, in this case 2020.}
-#' \item{age}{A vector of ages associated with the input data, in this case 0:100.}
-#' \item{age_width}{The width of age groups associated with the input data, in this case 1.}
 #' \item{pop_count_age_sex_base}{A data frame with population counts by age and sex in the base year.}
 #' \item{life_table_age_sex}{A data frame of life table values by single year of age and sex by year from 1950 to 2019.}
 #' \item{fert_rate_age_f}{A data frame of age-specific fertility rates by single year of age by year from 1950 to 2019.}
-#' \item{mig_net_count_age_sex}{A data frame of net migrant counts by single year of age and sex by year from 1950-2019.}
 #' \item{srb}{A data frame of the sex ratio at birth (males/females) by year from 1950-2019.}
-#' \item{mig_assumption}{A data frame with indicator of whether migration should be accounted at "end" of period or "even" over period by year from 1950-2019.}
+#' \item{mig_net_count_age_sex}{A data frame of net migrant counts by single year of age and sex by year from 1950-2019.}
+#' \item{mig_net_rate_age_sex}{A data frame of net migrant rates by single year of age and sex by year from 1950-2019.}
+#' \item{mig_net_count_tot_b}{A data frame of total net migrant counts (both sexes) year from 1950-2019.}
+#' \item{mig_parameter}{A data frame with indicators of what type of net migration input to use ("counts", "rates", or "totals") and
+#' whether migration should be accounted at "end" of period or "even" over period by year from 1950-2019.}
 #' }
-#' @source Interpolated from estimates published in United Nations, \emph{World Population Prospects 2019}.
-"canada_wpp_1950_2020_ccmpp_inputs_1x1"
+#' @source Interpolated from estimates for Canada published in United Nations, \emph{World Population Prospects 2019}.
+"wpp_input_example.rda"
 
-#' Example outputs file for 1x1 cohort component population projection for Canada 1950-2020
+#' Example outputs file for WPP 1x1 workflow, one country and variant
 #'
-#' All estimates generated for one country-variant by the full cohort component population projection.
+#' All estimates generated for one country-variant by the WPP cohort component population projection
+#' and assembly of indicators.
 #' This example  for Canada by single year of age and in one-year steps (1x1) from 1950-2020
 #' Output is from function call
-#' project_ccmppWPP_one_country_variant(ccmpp_input = canada_wpp_1950_2020_ccmpp_inputs_1x1)
+#' ccmppWPP_workflow_one_country_variant(wpp_input = wpp_input_example)
 #'
 #' @format A list with elements
 #' \describe{
-#' \item{LocID}{A numeric location identifier for the country, in this case 124.}
-#' \item{variant}{A character string identifying the projection variant, in this case "Estimates".}
 #' \item{pop_count_age_sex_1x1}{A data frame with population counts in the value column, by year, sex and single year of age.}
 #' \item{pop_count_age_sex_5x1}{A data frame with population counts in the value column, by year, sex and five year age group.}
 #' \item{pop_count_tot_sex}{A data frame with total population counts in the value column, by year and sex.}
 #' \item{birth_count_age_b_1x1}{A data frame with birth counts (both sexes) in the value column, by year and single year of age of mother.}
 #' \item{birth_count_age_b_5x1}{A data frame with birth counts (both sexes) in the value column, by year and five year age group of mother.}
+#' \item{birth_count_tot_sex}{A data frame with total birth counts in the value column, by year and sex.}
 #' \item{fert_rate_age_f_1x1}{A data frame with females' age-specific fertility rates in the value column, by year and single year of age.}
 #' \item{fert_rate_age_f_5x1}{A data frame with females' age-specific fertility rates in the value column, by year and five year age group.}
 #' \item{fert_pct_age_f_1x1}{A data frame with females' percentage age-specific fertility rates in the value column, by year and single year of age.}
@@ -100,6 +97,7 @@
 #' \item{death_count_age_sex_5x1}{A data frame with death counts in the value column, by year, sex and five year age group.}
 #' \item{death_count_tot_sex}{A data frame with total death counts in the value column, by year and sex.}
 #' \item{death_count_cohort_sex_1x1}{A data frame with death counts in the value column, by year, sex and single year age cohort.}
+#' \item{death_count_cohort_sex_5x1}{A data frame with death counts in the value column, by year, sex and five year age cohort.}
 #' \item{exposure_count_age_sex_1x1}{A data frame with person-years of exposure in the value column, by year, sex and single year of age.}
 #' \item{exposure_count_age_sex_5x1}{A data frame with person-years of exposure in the value column, by year, sex and five year age group.}
 #' \item{lt_complete_age_sex}{A data frame with life table column labels in the indicator column and life table values
@@ -113,5 +111,5 @@
 #' \item{mig_net_count_tot_sex}{A data frame with total net migrant counts in the value column, by year and sex.}
 #' \item{mig_assumption}{A data frame with whether migration is accounted at "end" of period or "even" over period in the value column, by year.}
 #' }
-"canada_wpp_1950_2020_ccmppWPP_outputs"
+"wpp_output_example.rda"
 

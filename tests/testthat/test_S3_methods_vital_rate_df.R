@@ -7,11 +7,8 @@ test_that("subsetting works as desired", {
                                      exact = exact))
     }
 
-    data("S3_vital_rate_time_age_sex_test_df")
     x <- S3_vital_rate_time_age_sex_test_df
-    y <- vital_rate_df(x)
-    expect_s3_class(y, "vital_rate_df")
-    expect_s3_class(y, "data.frame")
+    y <- vital_rate_df(x, dimensions = c("time", "age", "sex"))
 
     ## NB Warning only issued if run from top level
     expect_not_s3_class(y[, "age_start"], "vital_rate_df")
@@ -20,13 +17,10 @@ test_that("subsetting works as desired", {
 })
 
 
-test_that("replacement with valid columns passes", {
+test_that("replacement with valid columns passes (time, age, sex)", {
 
-    data("S3_vital_rate_time_age_sex_test_df")
     x <- S3_vital_rate_time_age_sex_test_df
-    y <- vital_rate_df(x)
-    expect_s3_class(y, "vital_rate_df")
-    expect_s3_class(y, "data.frame")
+    y <- vital_rate_df(x, dimensions = c("time", "age", "sex"))
 
     z <- y
     z[, "age_start"] <- z$age_start
@@ -60,12 +54,64 @@ test_that("replacement with valid columns passes", {
  })
 
 
-test_that("bad sorting is detected", {
+test_that("replacement with valid columns passes (time, age)", {
 
-    data("S3_vital_rate_time_age_sex_test_df")
-    y <- vital_rate_df(S3_vital_rate_time_age_sex_test_df)
-    expect_s3_class(y, "vital_rate_df")
-    expect_s3_class(y, "data.frame")
+    x <- S3_vital_rate_time_age_test_df
+    y <- vital_rate_df(x, dimensions = c("time", "age"))
+
+    z <- y
+    z[, "age_start"] <- z$age_start
+    expect_s3_class(z, "vital_rate_df")
+    z <- y
+    z$age_start <- z$age_start
+    expect_s3_class(z, "vital_rate_df")
+    z <- y
+    z[["age_start"]] <- z$age_start
+    expect_s3_class(z, "vital_rate_df")
+
+    z <- y
+    z[, "time_start"] <- z$time_start
+    expect_s3_class(z, "vital_rate_df")
+    z <- y
+    z$time_start <- z$time_start
+    expect_s3_class(z, "vital_rate_df")
+    z <- y
+    z[["time_start"]] <- z$time_start
+    expect_s3_class(z, "vital_rate_df")
+ })
+
+
+test_that("replacement with valid columns passes (time, sex)", {
+
+    x <- S3_vital_rate_time_sex_test_df
+    y <- vital_rate_df(x, dimensions = c("time", "sex"))
+
+    z <- y
+    z[, "time_start"] <- z$time_start
+    expect_s3_class(z, "vital_rate_df")
+    z <- y
+    z$time_start <- z$time_start
+    expect_s3_class(z, "vital_rate_df")
+    z <- y
+    z[["time_start"]] <- z$time_start
+    expect_s3_class(z, "vital_rate_df")
+
+    z <- y
+    z[, "sex"] <- z$sex
+    expect_s3_class(z, "vital_rate_df")
+    z <- y
+    z$sex <- z$sex
+    expect_s3_class(z, "vital_rate_df")
+    z <- y
+    z[["sex"]] <- z$sex
+    expect_s3_class(z, "vital_rate_df")
+ })
+
+
+test_that("bad sorting is detected (time, age, sex)", {
+
+    y <- vital_rate_df(S3_vital_rate_time_age_sex_test_df,
+                       dimensions = c("time", "age", "sex"))
 
     z <- y
     expect_error((z[, "age_start"] <- rev(z$age_start)),
@@ -91,12 +137,70 @@ test_that("bad sorting is detected", {
 })
 
 
-test_that("superfluous columns are detected", {
-    data("S3_vital_rate_time_age_sex_test_df")
+test_that("bad sorting is detected (time, age)", {
 
-    y <- vital_rate_df(S3_vital_rate_time_age_sex_test_df)
-    expect_s3_class(y, "vital_rate_df")
-    expect_s3_class(y, "data.frame")
+    y <- vital_rate_df(S3_vital_rate_time_age_test_df,
+                       dimensions = c("time", "age"))
+
+    z <- y
+    expect_error((z[, "age_start"] <- rev(z$age_start)),
+                 "must be sorted")
+    expect_error((z$age_start <- rev(z$age_start)),
+                 "must be sorted")
+    expect_error((z[["age_start"]] <- rev(z$age_start)),
+                 "must be sorted")
+
+    expect_error((z[, "time_start"] <- rev(z$time_start)),
+                 "must be sorted")
+    expect_error((z$time_start <- rev(z$time_start)),
+                 "must be sorted")
+    expect_error((z[["time_start"]] <- rev(z$time_start)),
+                 "must be sorted")
+})
+
+
+test_that("bad sorting is detected (time, sex)", {
+
+    y <- vital_rate_df(S3_vital_rate_time_sex_test_df,
+                       dimensions = c("time", "sex"))
+
+    z <- y
+    expect_error((z[, "time_start"] <- rev(z$time_start)),
+                 "must be sorted")
+    expect_error((z$time_start <- rev(z$time_start)),
+                 "must be sorted")
+    expect_error((z[["time_start"]] <- rev(z$time_start)),
+                 "must be sorted")
+
+    set.seed(1)
+    expect_error((z[, "sex"] <- sample(c("male", "female"), size = nrow(z), replace = TRUE)),
+                 "must be sorted")
+    expect_error((z$sex <- sample(c("male", "female"), size = nrow(z), replace = TRUE)),
+                 "must be sorted")
+    expect_error((z[["sex"]] <- sample(c("male", "female"), size = nrow(z), replace = TRUE)),
+                 "must be sorted")
+})
+
+
+test_that("bad sorting is detected (time)", {
+
+    y <- vital_rate_df(S3_vital_rate_time_test_df,
+                       dimensions = c("time"))
+
+    z <- y
+    expect_error((z[, "time_start"] <- rev(z$time_start)),
+                 "must be sorted")
+    expect_error((z$time_start <- rev(z$time_start)),
+                 "must be sorted")
+    expect_error((z[["time_start"]] <- rev(z$time_start)),
+                 "must be sorted")
+})
+
+
+test_that("superfluous columns are detected", {
+
+    y <- vital_rate_df(S3_vital_rate_time_age_sex_test_df,
+                       dimensions = c("time", "age", "sex"))
 
     expect_error((y$source <- "census"), "superfluous columns")
     expect_error((y[, "source"] <- "census"), "superfluous columns")

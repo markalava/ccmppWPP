@@ -67,7 +67,8 @@ NULL
 `[<-.vital_rate_df` <- function(x, i, j, value) {
     validate_vital_rate_df(new_vital_rate_df(NextMethod(),
                           age_span = attr(x, "age_span"),
-                          time_span = attr(x, "time_span")
+                          time_span = attr(x, "time_span"),
+                          dimensions = attr(x, "dimensions")
                           ))
     }
 
@@ -77,7 +78,8 @@ NULL
 `$<-.vital_rate_df` <- function(x, name, value) {
     validate_vital_rate_df(new_vital_rate_df(NextMethod(),
                           age_span = attr(x, "age_span"),
-                          time_span = attr(x, "time_span")
+                          time_span = attr(x, "time_span"),
+                          dimensions = attr(x, "dimensions")
                           ))
     }
 
@@ -87,7 +89,8 @@ NULL
 `[[<-.vital_rate_df` <- function(x, i, j, value) {
     validate_vital_rate_df(new_vital_rate_df(NextMethod(),
                           age_span = attr(x, "age_span"),
-                          time_span = attr(x, "time_span")
+                          time_span = attr(x, "time_span"),
+                          dimensions = attr(x, "dimensions")
                           ))
     }
 
@@ -149,7 +152,7 @@ as.list.vital_rate_df <- function(x) {
 
 #' Print Values of a \code{vital_rate_df}
 #'
-#' This is a method for the generic \code{\link{print}} function. Only
+#' This is a method for the generic \code{\link{base::print}} function. Only
 #' the first \code{n} rows are printed for convenience (by default). If all rows are desired use
 #' \code{as.data.frame(x)} or see the definition of argument \code{n}.
 #'
@@ -167,16 +170,19 @@ print.vital_rate_df <-
 
         attr_names <- names(vital_rate_attributes(x))
         attr_msgs <- sapply(attr_names, function(z) {
-            paste0(z, " = '", attr(x, z), "'")
+            paste0(z, " = '", paste(attr(x, z), collapse = ", "), "'")
         })
         attr_msgs <- paste(attr_msgs, collapse = ", ")
 
-        cat("# A '", class(x)[1], "' with ", format(nrow(x), big.mark = ","),
-            " rows and attributes: ", attr_msgs,
-            ".\n",
-            "# 'sex' has levels: ", paste(levels(factor(x$sex)), collapse = ", "),
+        cat_msg <- paste0("# A '", class(x)[1], "' with ", format(nrow(x), big.mark = ","),
+            " rows.",
+            "\n# ", attr_msgs,
+            ".\n")
+        if(is_by_sex(x))
+            cat_msg <- c(cat_msg, "# 'sex' has levels: ", paste(sexes(x), collapse = ", "),
             ".\n",
             sep = "")
+        cat(cat_msg)
         print.data.frame(head(x, n = n), ..., digits = digits, quote = quote, right = right,
                          row.names = row.names, max = max)
         cat("# ... etc.\n")
@@ -197,22 +203,15 @@ summary.vital_rate_df <-
     function(object, maxsum = 7,
              digits = max(3, getOption("digits") - 3), ...) {
 
-        ## attr_names <- names(vital_rate_attributes(object))
-        ## attr_msgs <- sapply(attr_names, function(z) {
-        ##     paste0(z, " = '", attr(object, z), "'")
-        ## })
-        ## attr_msgs <- paste(attr_msgs, collapse = ", ")
-
-        cat(## "# A '", class(object)[1], "' with ", format(nrow(object), big.mark = ","),
-            ## " rows and attributes: ", attr_msgs,
-            ## ".\n",
-            ## As long as 'sex' is not required to be a factor print
+        if(is_by_sex(object))
+            cat(## As long as 'sex' is not required to be a factor print
             ## its levels. If it is subsequently required to be a
             ## factor this next bit isn't necessary as the default for
             ## summary will display the levels.
             "# 'sex' has levels: ", paste(levels(factor(object$sex)), collapse = ", "),
             ".\n",
             sep = "")
+
         NextMethod(object = object)
     }
 

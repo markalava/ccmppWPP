@@ -6,7 +6,7 @@ date: |
     | (`r paste0("_ccmppWPP_ version ", packageVersion("ccmppWPP"), ")")`
 # output:
 #     function(...) rmarkdown::html_vignette(..., css=c(system.file("rmarkdown", "templates", "html_vignette", "resources", "vignette.css", package = "rmarkdown"), "vignette2.css")):
-#       toc: true
+#       toc: trueq
 bibliography: bibliography.bib
 link-citations: true
 vignette: >

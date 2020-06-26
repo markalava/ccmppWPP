@@ -79,14 +79,14 @@ age_span.vital_rate_df <- function(x) {
 #' @rdname extract_vital_rate_attributes
 #' @export
 time_span <- function(x) {
-    if (!is_by_time(x))
-        stop("'time' is not a dimension of 'x'.")
     UseMethod("time_span")
 }
 
 #' @author Mark Wheldon
 #' @export
 time_span.vital_rate_df <- function(x) {
+    if (!is_by_time(x))
+        stop("'time' is not a dimension of 'x'.")
     attr(x, "time_span")
 }
 

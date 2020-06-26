@@ -4,7 +4,13 @@
 \alias{summary.vital_rate_df}
 \title{Summarize a \code{vital_rate_df}}
 \usage{
-\method{summary}{vital_rate_df}(object, maxsum = 7, digits = max(3, getOption("digits") - 3), ...)
+\method{summary}{vital_rate_df}(
+  object,
+  maxsum = 7,
+  digits = max(3, getOption("digits") - 3),
+  vsep,
+  ...
+)
 }
 \arguments{
 \item{object}{An object of class \code{vital_rate_df}.}
@@ -21,6 +27,9 @@
     only round in the \code{print} and \code{format} methods).}
 
 \item{...}{additional arguments affecting the summary produced.}
+}
+\value{
+A list with elements \code{time}, \code{age}, \code{sex}, and \code{table}.
 }
 \description{
 

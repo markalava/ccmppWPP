@@ -192,27 +192,72 @@ print.vital_rate_df <-
 #' Summarize a \code{vital_rate_df}
 #'
 #' A method for the generic \code{\link{summary}} function for objects
-#' of class \code{vital_rate_df}}.
+#' of class \code{vital_rate_df}}. Summary statistics are returned invisibly in a named list.
 #'
 #' @inheritParams base::summary
 #'
 #' @param object An object of class \code{vital_rate_df}.
+#' @return A list with elements \code{time}, \code{age}, \code{sex}, and \code{table}.
 #' @author Mark Wheldon
 #' @export
 summary.vital_rate_df <-
     function(object, maxsum = 7,
-             digits = max(3, getOption("digits") - 3), ...) {
+             digits = max(3, getOption("digits") - 3), vsep, ...) {
 
-        if(is_by_sex(object))
-            cat(## As long as 'sex' is not required to be a factor print
-            ## its levels. If it is subsequently required to be a
-            ## factor this next bit isn't necessary as the default for
-            ## summary will display the levels.
-            "# 'sex' has levels: ", paste(levels(factor(object$sex)), collapse = ", "),
-            ".\n",
-            sep = "")
+        if (missing(vsep))
+            vsep <- strrep("-", 0.75 * getOption("width"))
 
-        NextMethod(object = object)
+        msg <- character(0)
+
+        ## Time
+        if (is_by_time(object)) {
+            time <- list(range = c("time_start" = min(object$time_start),
+                                   "time_end" = max(object$time_start)),
+                         span = time_span(object))
+            msg <- paste0(msg, "time:\trange = [",
+                          paste(time$range, collapse = ", "),
+                          "]\tspan = ",
+                          paste0(time$span),
+                          "\n")
+        } else {
+            time <- NULL
+        }
+
+        ## Age
+        if (is_by_age(object)) {
+            age <- list(range = c("age_start" = min(object$age_start),
+                                  "age_end" = max(object$age_start)),
+                        span = age_span(object))
+            msg <- paste0(msg, " age:\trange = [",
+                          paste(age$range, collapse = ", "),
+                          "]\tspan = ",
+                          paste0(age$span),
+                          "\n")
+        } else {
+            age <- NULL
+        }
+
+        ## Sex
+        if (is_by_sex(object)) {
+            sex <- list(levels = levels(as.factor(object$sex)))
+            msg <- paste0(msg, " sex:\tlevels = ",
+                          paste(sex$levels, collapse = ", "),
+                          "\n")
+        } else {
+            sex <- NULL
+        }
+
+        ## Stats
+        table <- NextMethod()
+
+        ## Print
+        if (length(msg > 0))
+            msg <- paste0(msg, vsep, "\n")
+
+        cat(msg, "table:\n", sep = "")
+        print(table)
+
+        return(invisible(list(time = time, age = age, sex = sex, table = table)))
     }
 
 

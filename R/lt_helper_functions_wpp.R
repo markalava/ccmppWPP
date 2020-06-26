@@ -50,9 +50,9 @@ lt_abridged_from_complete <- function(age_complete, lx_complete, sex) {
   
   lx     <- lx_complete[which(age_complete %in% c(0,1,seq(5,150,5)))]
   age    <- c(0,1,seq(5,150,5))[1:length(lx)]
-  lt_abr <- lt_abridged(Age = age, 
-                        lx=lx, 
-                        sex=substr(sex,1,1))
+  lt_abr <- DemoTools::lt_abridged(Age = age, 
+                                   lx=lx, 
+                                   sex=substr(sex,1,1))
   lt_abr <- lt_long(lt_abr)
   
   return(lt_abr)
@@ -100,8 +100,8 @@ lt_summary <- function(lt_data, byvar) {
                              timevar = "indicator",
                              v.names="value", direction = "long")
   
-  label <- str_split_fixed(lt_lx$indicator, "_", 2)[,2]
-  label <- str_split_fixed(label, "q", 2)
+  label <- stringr::str_split_fixed(lt_lx$indicator, "_", 2)[,2]
+  label <- stringr::str_split_fixed(label, "q", 2)
   lt_lx$age_start <- label[,2]
   lt_lx$age_span  <- label[,1]
   
@@ -146,9 +146,15 @@ lt_complete_loop_over_time <- function(mx, sex) {
     
     n   <- n+1
     
-    lt <- lt_single_mx(nMx = mx$value[which(mx$time_start == time)],
-                       Age = mx$age_start[which(mx$time_start == time)],
-                       sex = substr(sex,1,1))
+    lt <- DemoTools::lt_single_mx(nMx = mx$value[which(mx$time_start == time)],
+                                  Age = mx$age_start[which(mx$time_start == time)],
+                                  sex = substr(sex,1,1))
+    
+    # The above gives a warning message and I'm not sure why.  Still seems to work though:
+    # Warning message:
+    #   In if (as.character(match.call()[[1]]) == "lt_single_simple") { :
+    #       the condition has length > 1 and only the first element will be used
+        
     lt <- lt_long(lt)
     lt$time_start <- time
     

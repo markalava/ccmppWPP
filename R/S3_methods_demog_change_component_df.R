@@ -7,35 +7,35 @@
 ###-----------------------------------------------------------------------------
 ### * Fundamentals
 
-#' Extract or Replace Parts of a \code{vital_rate_df}
+#' Extract or Replace Parts of a \code{demog_change_component_df}
 #'
 #' These are methods for the subset operator and its companion
 #' replacement function for objects of class
-#' \code{vital_rate_df}. The return values differ and,
+#' \code{demog_change_component_df}. The return values differ and,
 #' importantly, subsetting does not return an object of class
-#' \code{vital_rate_df} (see \dQuote{Details}).
+#' \code{demog_change_component_df} (see \dQuote{Details}).
 #'
 #' The object resulting from a subset operation via \code{`[`} will no
-#' longer inherit from class \code{vital_rate_df} and the
+#' longer inherit from class \code{demog_change_component_df} and the
 #' attributes specific to that class will be lost. To create a
 #' \code{vital_rate_time_age_sex_df} object from a subset call
-#' \code{\link{vital_rate_df}} explicitly (e.g.,
-#' \code{vital_rate_df(x[x$time_start == 1960,])}).
+#' \code{\link{demog_change_component_df}} explicitly (e.g.,
+#' \code{demog_change_component_df(x[x$time_start == 1960,])}).
 #'
 #' Replacement via \code{`[<-`} will attempt to return a
 #' \code{vital_rate_matrix}. The user is responsible for making sure
 #' the new object is a valid member of this class (see
-#' \code{\link{vital_rate_df}}). If the result is not a valid
+#' \code{\link{demog_change_component_df}}). If the result is not a valid
 #' member an error will be signalled.
 #'
-#' @seealso \code{\link{vital_rate_df}}.
+#' @seealso \code{\link{demog_change_component_df}}.
 #'
 #' @inheritParams base::`[.data.frame`
 #' @inheritParams base::`[<-.data.frame`
 #' @return Extraction could return a \code{data.frame},
 #'     one-dimensional vector, or scalar depending on the dimensions
 #'     of the extracted values. Replacement will
-#'     attempt to return a \code{vital_rate_df}.
+#'     attempt to return a \code{demog_change_component_df}.
 #' @author Mark Wheldon
 #'
 #' @name subset_replace
@@ -44,17 +44,17 @@ NULL
 
 #' @rdname subset_replace
 #' @export
-`[.vital_rate_df` <- function(x, i, j, drop) {
+`[.demog_change_component_df` <- function(x, i, j, drop) {
 
     if (identical(parent.frame(), .GlobalEnv)) {
-        warning("Subsetting a 'vital_rate_df' will not preserve the class or attributes.")
+        warning("Subsetting a 'demog_change_component_df' will not preserve the class or attributes.")
     }
 
     x <- NextMethod()
-    if(is.vital_rate_df(x)) return(as.data.frame(x))
+    if(is.demog_change_component_df(x)) return(as.data.frame(x))
                                 # 'NextMethod()' will preseve the
-                                # 'vital_rate_df' class so the
-                                # 'vital_rate_df' method for
+                                # 'demog_change_component_df' class so the
+                                # 'demog_change_component_df' method for
                                 # 'as.data.frame' will be called. This
                                 # will then produce a simple data
                                 # frame with no extra attributes.
@@ -64,8 +64,8 @@ NULL
 
 #' @rdname subset_replace
 #' @export
-`[<-.vital_rate_df` <- function(x, i, j, value) {
-    validate_vital_rate_df(new_vital_rate_df(NextMethod(),
+`[<-.demog_change_component_df` <- function(x, i, j, value) {
+    validate_demog_change_component_df(new_demog_change_component_df(NextMethod(),
                           age_span = attr(x, "age_span"),
                           time_span = attr(x, "time_span"),
                           dimensions = attr(x, "dimensions")
@@ -75,8 +75,8 @@ NULL
 
 #' @rdname subset_replace
 #' @export
-`$<-.vital_rate_df` <- function(x, name, value) {
-    validate_vital_rate_df(new_vital_rate_df(NextMethod(),
+`$<-.demog_change_component_df` <- function(x, name, value) {
+    validate_demog_change_component_df(new_demog_change_component_df(NextMethod(),
                           age_span = attr(x, "age_span"),
                           time_span = attr(x, "time_span"),
                           dimensions = attr(x, "dimensions")
@@ -86,8 +86,8 @@ NULL
 
 #' @rdname subset_replace
 #' @export
-`[[<-.vital_rate_df` <- function(x, i, j, value) {
-    validate_vital_rate_df(new_vital_rate_df(NextMethod(),
+`[[<-.demog_change_component_df` <- function(x, i, j, value) {
+    validate_demog_change_component_df(new_demog_change_component_df(NextMethod(),
                           age_span = attr(x, "age_span"),
                           time_span = attr(x, "time_span"),
                           dimensions = attr(x, "dimensions")
@@ -100,15 +100,15 @@ NULL
 ## Coercion removes the class and all attributes. Note that the
 ## default 'as.matrix' will remove them; a method is not required.
 
-#' Coerce a \code{vital_rate_df} to \code{data.frame}
+#' Coerce a \code{demog_change_component_df} to \code{data.frame}
 #'
 #' The class-specific attributes will be lost.
 #'
-#' @param x An object of class \code{vital_rate_df}.
+#' @param x An object of class \code{demog_change_component_df}.
 #' @return A \code{data.frame}.
 #' @author Mark Wheldon
 #' @export
-as.numeric.vital_rate_df <- function(x) {
+as.numeric.demog_change_component_df <- function(x) {
     if (identical(parent.frame(), .GlobalEnv)) {
         warning("The result of the coercion will not inherit from class 'vital_rate_matrix' and will not have any attributes specific to that class.")
     }
@@ -116,15 +116,15 @@ as.numeric.vital_rate_df <- function(x) {
 }
 
 
-#' Coerce a \code{vital_rate_df} to \code{data.frame}
+#' Coerce a \code{demog_change_component_df} to \code{data.frame}
 #'
 #' The class-specific attributes will be lost.
 #'
-#' @param x An object of class \code{vital_rate_df}.
+#' @param x An object of class \code{demog_change_component_df}.
 #' @return A \code{data.frame}.
 #' @author Mark Wheldon
 #' @export
-as.data.frame.vital_rate_df <- function(x) {
+as.data.frame.demog_change_component_df <- function(x) {
     if (identical(parent.frame(), .GlobalEnv)) {
         warning("The result of the coercion will not inherit from class 'vital_rate_matrix' and will not have any attributes specific to that class.")
     }
@@ -132,15 +132,15 @@ as.data.frame.vital_rate_df <- function(x) {
 }
 
 
-#' Coerce a \code{vital_rate_df} to \code{list}
+#' Coerce a \code{demog_change_component_df} to \code{list}
 #'
 #' The class-specific attributes will be lost.
 #'
-#' @param x An object of class \code{vital_rate_df}.
+#' @param x An object of class \code{demog_change_component_df}.
 #' @return A \code{list}.
 #' @author Mark Wheldon
 #' @export
-as.list.vital_rate_df <- function(x) {
+as.list.demog_change_component_df <- function(x) {
     if (identical(parent.frame(), .GlobalEnv)) {
         warning("The result of the coercion will not inherit from class 'vital_rate_matrix' and will not have any attributes specific to that class.")
     }
@@ -150,7 +150,7 @@ as.list.vital_rate_df <- function(x) {
 ###-----------------------------------------------------------------------------
 ### * Print, Summary, and Friends
 
-#' Print Values of a \code{vital_rate_df}
+#' Print Values of a \code{demog_change_component_df}
 #'
 #' This is a method for the generic \code{\link{base::print}} function. Only
 #' the first \code{n} rows are printed for convenience (by default). If all rows are desired use
@@ -158,13 +158,13 @@ as.list.vital_rate_df <- function(x) {
 #'
 #' @inheritParams base::print.data.frame
 #'
-#' @param x An object of class \code{vital_rate_df}.
+#' @param x An object of class \code{demog_change_component_df}.
 #' @param n Integer controlling how many rows of \code{x} are
 #'     printed. Passed to \code{link{head}}; see the documentation of
 #'     that function for valid values and associated behaviours.
 #' @author Mark Wheldon
 #' @export
-print.vital_rate_df <-
+print.demog_change_component_df <-
     function(x, ..., n = 6L, digits = NULL,
              quote = FALSE, right = TRUE, row.names = TRUE, max = NULL) {
 
@@ -189,18 +189,18 @@ print.vital_rate_df <-
     }
 
 
-#' Summarize a \code{vital_rate_df}
+#' Summarize a \code{demog_change_component_df}
 #'
 #' A method for the generic \code{\link{summary}} function for objects
-#' of class \code{vital_rate_df}}. Summary statistics are returned invisibly in a named list.
+#' of class \code{demog_change_component_df}}. Summary statistics are returned invisibly in a named list.
 #'
 #' @inheritParams base::summary
 #'
-#' @param object An object of class \code{vital_rate_df}.
+#' @param object An object of class \code{demog_change_component_df}.
 #' @return A list with elements \code{time}, \code{age}, \code{sex}, and \code{table}.
 #' @author Mark Wheldon
 #' @export
-summary.vital_rate_df <-
+summary.demog_change_component_df <-
     function(object, maxsum = 7,
              digits = max(3, getOption("digits") - 3), vsep, ...) {
 

@@ -3,11 +3,11 @@
 ###-----------------------------------------------------------------------------
 ### * Access Attributes
 
-#' Extract attributes specific to \code{vital_rate_df}s
+#' Extract attributes specific to \code{demog_change_component_df}s
 #'
 #' All attributes that are not attributes of \code{data.frame} objects
 #' are extracted. This function is designed to work with objects of
-#' class \code{vital_rate_df}; behaviour for other classes is
+#' class \code{demog_change_component_df}; behaviour for other classes is
 #' not defined.
 #'
 #' @param x An object from which to extract attributes.
@@ -20,7 +20,7 @@ vital_rate_attributes <- function(x) {
 
 #' @author Mark Wheldon
 #' @export
-vital_rate_attributes.vital_rate_df <- function(x) {
+vital_rate_attributes.demog_change_component_df <- function(x) {
     attrx <- attributes(x)
     attr_names <- names(attrx)
     attr_names <-
@@ -32,7 +32,7 @@ vital_rate_attributes.vital_rate_df <- function(x) {
 #' Extract the \dQuote{dimensions} attribute
 #'
 #' Extracts the non-data.frame attributes. The only method that exists
-#' is for \code{vital_rate_df} objects.
+#' is for \code{demog_change_component_df} objects.
 #'
 #' @param x An object from which to extract attributes.
 #' @return The extracted attribute
@@ -44,7 +44,7 @@ vital_rate_dimensions <- function(x) {
 
 #' @author Mark Wheldon
 #' @export
-vital_rate_dimensions.vital_rate_df <- function(x) {
+vital_rate_dimensions.demog_change_component_df <- function(x) {
     attr(x, "dimensions")
 }
 
@@ -52,7 +52,7 @@ vital_rate_dimensions.vital_rate_df <- function(x) {
 #' Extract specific vital rate attributes
 #'
 #' These functions extract specific attributes of
-#' \code{vital_rate_df}s. Methods for other classes are not defined.
+#' \code{demog_change_component_df}s. Methods for other classes are not defined.
 #'
 #' @param x An object from which to extract attributes.
 #' @return The extracted attribute.
@@ -69,7 +69,7 @@ age_span <- function(x) {
 
 #' @author Mark Wheldon
 #' @export
-age_span.vital_rate_df <- function(x) {
+age_span.demog_change_component_df <- function(x) {
     if (!is_by_age(x))
         stop("'age' is not a dimension of 'x'.")
     attr(x, "age_span")
@@ -84,7 +84,7 @@ time_span <- function(x) {
 
 #' @author Mark Wheldon
 #' @export
-time_span.vital_rate_df <- function(x) {
+time_span.demog_change_component_df <- function(x) {
     if (!is_by_time(x))
         stop("'time' is not a dimension of 'x'.")
     attr(x, "time_span")
@@ -99,7 +99,7 @@ sexes <- function(x) {
 
 #' @author Mark Wheldon
 #' @export
-sexes.vital_rate_df <- function(x) {
+sexes.demog_change_component_df <- function(x) {
     if (!is_by_sex(x))
         stop("'sex' is not a dimension of 'x'.")
     levels(factor(x$sex))
@@ -109,7 +109,7 @@ sexes.vital_rate_df <- function(x) {
 #' Test for vital rate dimensions
 #'
 #' These functions test whether an object has a particular vital rate
-#' dimension. For objects of class \code{vital_rate_df} this uses the
+#' dimension. For objects of class \code{demog_change_component_df} this uses the
 #' attributes. For data frames it merely checks the presence of the
 #' appropriate column.
 #'
@@ -129,7 +129,7 @@ is_by_time <- function(x) {
 #' @author Mark Wheldon
 #' @rdname test_vital_rate_dimensions
 #' @export
-is_by_time.vital_rate_df <- function(x) {
+is_by_time.demog_change_component_df <- function(x) {
     isTRUE(get_allowed_dimensions()["time"] %in% vital_rate_dimensions(x))
     }
 
@@ -151,7 +151,7 @@ is_by_age <- function(x) {
 #' @author Mark Wheldon
 #' @rdname test_vital_rate_dimensions
 #' @export
-is_by_age.vital_rate_df <- function(x) {
+is_by_age.demog_change_component_df <- function(x) {
     isTRUE(get_allowed_dimensions()["age"] %in% vital_rate_dimensions(x))
 }
 
@@ -173,7 +173,7 @@ is_by_sex <- function(x) {
 #' @author Mark Wheldon
 #' @rdname test_vital_rate_dimensions
 #' @export
-is_by_sex.vital_rate_df <- function(x) {
+is_by_sex.demog_change_component_df <- function(x) {
     isTRUE(get_allowed_dimensions()["sex"] %in% vital_rate_dimensions(x))
     }
 

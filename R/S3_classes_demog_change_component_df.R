@@ -2,6 +2,15 @@
 ###
 ### S3 Classes for CCMPP Objects
 ###
+###-----------------------------------------------------------------------------
+###
+### TO DO:
+###
+### * Look through SH and PG's comments in the vignette.
+### * Add a 'value type' attribute that marks the 'value' column as 'rate',
+###   'count', 'proportion', etc. Modify the validator so that these are checked
+###   for validity (e.g., proportions are in [0, 1]).
+###
 ################################################################################
 
 ###-----------------------------------------------------------------------------
@@ -60,7 +69,7 @@ get_attr_col_name <- function(label) {
     }
 
 ## Definine the proper sort order of the class
-sort_vital_rate_df <- function(x) {
+sort_demog_change_component_df <- function(x) {
     coln_x <- colnames(x)
     coln_info_x <- get_dim_col_info(dimensions = get_allowed_dimensions())
     coln_info_x <- coln_info_x[coln_info_x$colname %in% coln_x, ]
@@ -99,7 +108,7 @@ sort_vital_rate_df <- function(x) {
 }
 
 ## Tabulate to check squareness
-tabulate_vital_rate_df <- function(x) {
+tabulate_demog_change_component_df <- function(x) {
     coln_x <- colnames(x)
     coln_info_x <- get_dim_col_info(dimensions = get_allowed_dimensions())
     coln_info_x <- coln_info_x[coln_info_x$colname %in% coln_x, ]
@@ -172,7 +181,7 @@ get_min_age_in_dims <- function(x) {
 ## !!!!!!!!!!!!!!!!!!! HOW TO HANDLE DIFFERENT TYPES OF DFs
 ##
 ## 1. Create different classes: time, time_age, time_age_sex.
-## 2. Have an attribute that classifies vital_rate_df as one of the three subclasses.
+## 2. Have an attribute that classifies demog_change_component_df as one of the three subclasses.
 ## 3. Add a 'sex' attribute to the existing class definition. Set
 ## combinations of 'age_span', 'time_span', 'sex' to 'NULL' to
 ## indicate which subclass it is.
@@ -194,27 +203,27 @@ get_min_age_in_dims <- function(x) {
 
 
 
-#' Low-level constructor for class \code{vital_rate_df}.
+#' Low-level constructor for class \code{demog_change_component_df}.
 #'
 #' @description
-#' Creates an object of class \code{vital_rate_df}. Minimal
+#' Creates an object of class \code{demog_change_component_df}. Minimal
 #' checks are done; for interactive use see
-#' \code{\link{validate_vital_rate_df}}.
+#' \code{\link{validate_demog_change_component_df}}.
 #'
 #' This function is not exported. The user-level constructor is
-#' \code{\link{vital_rate_df}}.
+#' \code{\link{demog_change_component_df}}.
 #'
-#' @seealso vital_rate_df
+#' @seealso demog_change_component_df
 #'
-#' @family vital_rate_df class non-exported functions
+#' @family demog_change_component_df class non-exported functions
 #'
 #' @param age_span Scalar indicating the span of the age groups.
 #' @param time_span Scalar indicating the span of the time periods.
 #' @param dimensions Character vector listing the dimensions such as
 #'     \dQuote{time}, \dQuote{age}, \dQuote{sex}.
-#' @return An object of class \code{vital_rate_df}.
+#' @return An object of class \code{demog_change_component_df}.
 #' @author Mark Wheldon
-new_vital_rate_df <-
+new_demog_change_component_df <-
     function(x, age_span, time_span, dimensions,
              ..., class = character()) {
         stopifnot(is.data.frame(x))
@@ -223,23 +232,23 @@ new_vital_rate_df <-
                   time_span = time_span,
                   dimensions = dimensions,
                   ...,
-                  class = c(class, "vital_rate_df", "data.frame"))
+                  class = c(class, "demog_change_component_df", "data.frame"))
     }
 
 
-#' Constructor for class \code{vital_rate_df}
+#' Constructor for class \code{demog_change_component_df}
 #'
 #' @description
 #'
-#' \describe{ \item{\code{vital_rate_df}}{Creates objects of class
-#' \code{vital_rate_df} from a given set of values.}
-#' \item{\code{as.vital_rate_df}}{Attempts to turn its argument into a
-#' \code{vital_rate_df}.}  \item{\code{is.vital_rate_df}}{Tests if its
-#' argument is a \code{vital_rate_df}. \emph{Note:} This only checks
+#' \describe{ \item{\code{demog_change_component_df}}{Creates objects of class
+#' \code{demog_change_component_df} from a given set of values.}
+#' \item{\code{as.demog_change_component_df}}{Attempts to turn its argument into a
+#' \code{demog_change_component_df}.}  \item{\code{is.demog_change_component_df}}{Tests if its
+#' argument is a \code{demog_change_component_df}. \emph{Note:} This only checks
 #' inheritance (via \code{\link{base::inherits}}), not validity. To
-#' validate an object use \code{\link{validate_vital_rate_df}}.}
+#' validate an object use \code{\link{validate_demog_change_component_df}}.}
 #'
-#' \code{vital_rate_df} is the
+#' \code{demog_change_component_df} is the
 #' parent class of a family of classes for holding age- time-specific
 #' demographic vital rates, such as fertility and mortality rates,
 #' population counts, and migration rates. It is not intended as a
@@ -249,7 +258,7 @@ new_vital_rate_df <-
 #' input are correctly formatted.
 #'
 #' Objects of this class have class attribute
-#' \code{c("vital_rate_df", "data_frame")}.
+#' \code{c("demog_change_component_df", "data_frame")}.
 #'
 #' @details
 #'
@@ -288,7 +297,7 @@ new_vital_rate_df <-
 #' have methods convert to factor when advantageous.
 #'
 #'
-#' @family vital_rate_df constructor functions
+#' @family demog_change_component_df constructor functions
 #'
 #' @param x A data frame with columns \dQuote{age_start},
 #'     \dQuote{age_span}, \dQuote{sex}, \dQuote{time_start},
@@ -301,16 +310,16 @@ new_vital_rate_df <-
 #' @param dimensions Character vector listing the dimensions such as
 #'     \dQuote{time}, \dQuote{age}, \dQuote{sex}.
 #' @param ... Passed to the low-level constructor.
-#' @return An object of class \code{vital_rate_df}.
+#' @return An object of class \code{demog_change_component_df}.
 #' @author Mark Wheldon
 #'
-#' @name construct_vital_rate_df
+#' @name construct_demog_change_component_df
 NULL
 
 
-#' @rdname construct_vital_rate_df
+#' @rdname construct_demog_change_component_df
 #' @export
-vital_rate_df <-
+demog_change_component_df <-
     function(x, age_span = NULL, time_span = NULL,
              dimensions = NULL, ...) {
 
@@ -386,7 +395,7 @@ vital_rate_df <-
         }
 
         ## Sort by time, then sex, then age
-        x <- sort_vital_rate_df(x)
+        x <- sort_demog_change_component_df(x)
 
         ## row.names might have been muddled by sorting so reset
         row.names(x) <- NULL
@@ -394,8 +403,8 @@ vital_rate_df <-
         ## -------* End
 
         ## Create/Validate
-        validate_vital_rate_df(
-            new_vital_rate_df(x,
+        validate_demog_change_component_df(
+            new_demog_change_component_df(x,
                               age_span = age_span,
                               time_span = time_span,
                               dimensions = dimensions,
@@ -405,19 +414,19 @@ vital_rate_df <-
     }
 
 
-#' @rdname construct_vital_rate_df
+#' @rdname construct_demog_change_component_df
 #' @export
-as.vital_rate_df <- function(x, ...) {
-    if (is.vital_rate_df(x)) return(x)
+as.demog_change_component_df <- function(x, ...) {
+    if (is.demog_change_component_df(x)) return(x)
     x <- as.data.frame(x)
-    vital_rate_df(x)
+    demog_change_component_df(x)
 }
 
 
-#' @rdname construct_vital_rate_df
+#' @rdname construct_demog_change_component_df
 #' @export
-is.vital_rate_df <- function(x) {
-    inherits(x, "vital_rate_df")
+is.demog_change_component_df <- function(x) {
+    inherits(x, "demog_change_component_df")
 }
 
 ###-----------------------------------------------------------------------------
@@ -426,7 +435,7 @@ is.vital_rate_df <- function(x) {
 ###-----------------------------------------------------------------------------
 ### ** Validate time_age_sex version
 
-#' Validate objects of class \code{vital_rate_df}.
+#' Validate objects of class \code{demog_change_component_df}.
 #'
 #' @description
 #' Checks that an object with \code{class} attribute
@@ -440,13 +449,13 @@ is.vital_rate_df <- function(x) {
 #' @return Either an error or the object \code{x}.
 #' @author Mark Wheldon
 #' @export
-validate_vital_rate_df <-
+validate_demog_change_component_df <-
     function(x) {
 
         ## -------* Inherits
 
-        if (!is.vital_rate_df(x))
-            stop("'x' does not inherit from class 'vital_rate_df'.")
+        if (!is.demog_change_component_df(x))
+            stop("'x' does not inherit from class 'demog_change_component_df'.")
 
         ## -------* Attributes
 
@@ -456,7 +465,7 @@ validate_vital_rate_df <-
             !all(vital_rate_dims_x %in% get_allowed_dimensions()))
             stop("'dimensions' attribute of 'x' is not valid. 'dimensions' must be in '",
                  paste(get_allowed_dimensions(), collapse = ", "),
-                 "' and cannot be missing or duplicated. See ?vital_rate_df for class definition.")
+                 "' and cannot be missing or duplicated. See ?demog_change_component_df for class definition.")
 
         req_attr <- get_req_attr_names(vital_rate_dims_x)
         if (!all(req_attr %in% names(attributes(x))))
@@ -501,14 +510,14 @@ validate_vital_rate_df <-
         order_cols <-
             get_dim_col_info(dimensions = vital_rate_dims_x)$colname
         if (!identical(x[, order_cols],
-                       sort_vital_rate_df(x)[, order_cols]))
-            stop("'x' must be sorted by time, rev(sex), age_start (see ?vital_rate_df for class definition).")
+                       sort_demog_change_component_df(x)[, order_cols]))
+            stop("'x' must be sorted by time, rev(sex), age_start (see ?demog_change_component_df for class definition).")
 
         ## -------* Check squareness
 
-        x_tbl <- tabulate_vital_rate_df(x)
+        x_tbl <- tabulate_demog_change_component_df(x)
         if (!identical(as.double(sum(x_tbl != 1)), 0))
-            stop("'x' does not have exactly one 'value' per 'age' * 'sex' * 'time' combination (see ?vital_rate_df for class definition).")
+            stop("'x' does not have exactly one 'value' per 'age' * 'sex' * 'time' combination (see ?demog_change_component_df for class definition).")
 
         ## -------* Spans
 

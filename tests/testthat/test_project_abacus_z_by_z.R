@@ -5,9 +5,9 @@ test_that("Function returns Mexico 2000-2005 projection with end-period migratio
     data(mexico_wpp_2000_2005)
 
     abacus_r_mig <-
-        project_abacus_z_by_z(z = 5, 
-                       pop_count_age_m_begin = mexico_wpp_2000_2005$pop_count_age_m_begin, 
-                       pop_count_age_f_begin = mexico_wpp_2000_2005$pop_count_age_f_begin,
+        project_abacus_z_by_z(z = 5,
+                       pop_count_age_m_start = mexico_wpp_2000_2005$pop_count_age_m_begin,
+                       pop_count_age_f_start = mexico_wpp_2000_2005$pop_count_age_f_begin,
                        survival_ratio_age_m = mexico_wpp_2000_2005$survival_ratio_age_m,
                        survival_ratio_age_f = mexico_wpp_2000_2005$survival_ratio_age_f,
                        fert_rate_age_f = mexico_wpp_2000_2005$fert_rate_age_f,
@@ -20,12 +20,12 @@ test_that("Function returns Mexico 2000-2005 projection with end-period migratio
     }) # we don't expect results to match to the person because of differences in rounding
 
 test_that("Function returns Kuwait 2010-2015 projection with even-over-period migration assumption", {
-    
+
     data(kuwait_wpp_2010_2015)
-    
+
     abacus_r_mig <-
-        project_abacus_z_by_z(z = 5, 
-                              pop_count_age_m_begin = kuwait_wpp_2010_2015$pop_count_age_m_begin, 
+        project_abacus_z_by_z(z = 5,
+                              pop_count_age_m_begin = kuwait_wpp_2010_2015$pop_count_age_m_begin,
                               pop_count_age_f_begin = kuwait_wpp_2010_2015$pop_count_age_f_begin,
                               survival_ratio_age_m = kuwait_wpp_2010_2015$survival_ratio_age_m,
                               survival_ratio_age_f = kuwait_wpp_2010_2015$survival_ratio_age_f,

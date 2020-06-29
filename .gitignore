@@ -51,3 +51,6 @@ vignettes/*.pdf
 
 # pkgdown site
 docs/
+
+# Local files
+_no_install/

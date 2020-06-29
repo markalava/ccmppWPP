@@ -10,198 +10,16 @@
 ### * Add a 'value type' attribute that marks the 'value' column as 'rate',
 ###   'count', 'proportion', etc. Modify the validator so that these are checked
 ###   for validity (e.g., proportions are in [0, 1]).
+### * OTHER: Add functions to compute years, ages, and sexes present
+###   in the object. Don't think these need to be attributes.
 ###
 ################################################################################
-
-###-----------------------------------------------------------------------------
-### * Helper Functions
-
-## Define required attributes
-get_req_attr_names <- function(dimensions) {
-    out <- c(names(attributes(data.frame())), "dimensions")
-    if ("time" %in% dimensions)
-        out <- c(out, "time_span")
-    if ("age" %in% dimensions)
-        out <- c(out, "age_span")
-    return(out)
-}
-
-## Attributes with corresponding '_span'
-get_attr_w_span_names <- function() {
-    c("time", "age")
-    }
-
-## Define allowed dimensions
-get_allowed_dimensions <- function() {
-    ## The name component is a label for internal indexing. The data
-    ## component is the actual name of the dimension.
-    c("time" = "time", "age" = "age", "sex" = "sex")
-    }
-
-## Data base of column names, types, and corresp. dimension.
-get_dim_col_info <- function(dimensions) {
-    x <- data.frame(dimension = c(get_allowed_dimensions()),
-               colname = c("time_start", "age_start", "sex"),
-               type = c("numeric", "numeric", "character"))
-                                # rownames will have the dimension
-                                # 'names' from
-                                # 'get_allowed_dimensions()'
-    return(x[x$dimension %in% dimensions, ])
-}
-
-## All required columns
-get_all_req_col_names <- function(dimensions) {
-    c(get_dim_col_info(dimensions)$colname, "value")
-}
-
-## All column types
-get_all_req_col_types <- function(dimensions) {
-    c(get_dim_col_info(dimensions)$type, "numeric")
-}
-
-## Get the column name in a data frame corresponding to the given
-## attribute label (as in 'get_dim_col_info()')
-get_attr_col_name <- function(label) {
-    all_d <- get_allowed_dimensions()
-    stopifnot(label %in% all_d)
-    dim_col_info <- get_dim_col_info(dimensions = all_d)
-    dim_col_info[label, "colname"]
-    }
-
-## Definine the proper sort order of the class
-sort_demog_change_component_df <- function(x) {
-    coln_x <- colnames(x)
-    coln_info_x <- get_dim_col_info(dimensions = get_allowed_dimensions())
-    coln_info_x <- coln_info_x[coln_info_x$colname %in% coln_x, ]
-    dims_names_x <- rownames(coln_info_x)
-
-    get_x_col <- function(rowname) {
-        x[[coln_info_x[rowname, "colname"]]]
-    }
-
-    if (all(c("time", "sex", "age") %in% dims_names_x))
-        return(x[order(get_x_col("time"),
-                       rev(get_x_col("sex")),
-                       get_x_col("age")
-                       ), ])
-    else if (all(c("time", "sex") %in% dims_names_x))
-        return(x[order(get_x_col("time"),
-                       rev(get_x_col("sex"))
-                           ), ])
-    else if (all(c("time", "age") %in% dims_names_x))
-        return(x[order(get_x_col("time"),
-                       get_x_col("age")
-                       ), ])
-    else if (all(c("sex", "age") %in% dims_names_x))
-        return(x[order(rev(get_x_col("sex")),
-                       get_x_col("age")
-                       ), ])
-    else if ("time" %in% dims_names_x)
-        return(x[order(get_x_col("time")
-                       ), ])
-    else if ("age" %in% dims_names_x)
-        return(x[order(get_x_col("age")
-                       ), ])
-    else if ("sex" %in% dims_names_x)
-        return(x[order(get_x_col("sex")
-                       ), ])
-}
-
-## Tabulate to check squareness
-tabulate_demog_change_component_df <- function(x) {
-    coln_x <- colnames(x)
-    coln_info_x <- get_dim_col_info(dimensions = get_allowed_dimensions())
-    coln_info_x <- coln_info_x[coln_info_x$colname %in% coln_x, ]
-    dims_names_x <- rownames(coln_info_x)
-
-    get_x_col <- function(rowname) {
-        x[[coln_info_x[rowname, "colname"]]]
-    }
-
-    if (all(c("time", "sex", "age") %in% dims_names_x))
-        return(table(get_x_col("time"),
-                     get_x_col("sex"),
-                     get_x_col("age")))
-    else if (all(c("time", "sex") %in% dims_names_x))
-        return(table(get_x_col("time"),
-                     get_x_col("sex")))
-    else if (all(c("time", "age") %in% dims_names_x))
-        return(table(get_x_col("time"),
-                     get_x_col("age")))
-    else if (all(c("sex", "age") %in% dims_names_x))
-        return(table(get_x_col("sex"),
-                     get_x_col("age")))
-    else if ("time" %in% dims_names_x)
-        return(table(get_x_col("time")))
-    else if ("age" %in% dims_names_x)
-        return(table(get_x_col("age")))
-    else if ("sex" %in% dims_names_x)
-        return(table(get_x_col("sex")))
-}
-
-## Get min age within each dimension
-get_min_age_in_dims <- function(x) {
-    stopifnot(is_by_age(x))
-
-    coln_x <- colnames(x)
-    coln_info_x <- get_dim_col_info(dimensions = get_allowed_dimensions())
-    coln_info_x <- coln_info_x[coln_info_x$colname %in% coln_x, ]
-    dims_names_x <- rownames(coln_info_x)
-
-    get_x_col <- function(rowname) {
-        x[[coln_info_x[rowname, "colname"]]]
-    }
-
-    if (all(c("time", "sex", "age") %in% dims_names_x))
-        return(tapply(get_x_col("age"),
-                      INDEX = list(get_x_col("sex"),
-                                   get_x_col("time")),
-                      FUN = "min"))
-    else if (all(c("time", "age") %in% dims_names_x))
-        return(tapply(get_x_col("age"),
-                      INDEX = list(get_x_col("time")),
-                      FUN = "min"))
-    else if (all(c("sex", "age") %in% dims_names_x))
-        return(tapply(get_x_col("age"),
-                      INDEX = list(get_x_col("sex")),
-                      FUN = "min"))
-    else if ("age" %in% dims_names_x)
-        return(min(get_x_col("age")))
-}
 
 ###-----------------------------------------------------------------------------
 ### * Base Type Class Definitions/Constructors
 
 ###-----------------------------------------------------------------------------
 ### ** Vital Rate Data Frame Age and Time and Sex
-
-
-
-
-## !!!!!!!!!!!!!!!!!!! HOW TO HANDLE DIFFERENT TYPES OF DFs
-##
-## 1. Create different classes: time, time_age, time_age_sex.
-## 2. Have an attribute that classifies demog_change_component_df as one of the three subclasses.
-## 3. Add a 'sex' attribute to the existing class definition. Set
-## combinations of 'age_span', 'time_span', 'sex' to 'NULL' to
-## indicate which subclass it is.
-##
-## Pref: (2). Seems a good compromise. (1) is too much coding and hard
-## to make it efficient [how would inheritance work? - would be very
-## complicated]. (3) feels like its asking attributes to do double
-## duty and could lead to conflicts if extensions are added later.
-##
-## With (2), would hopefully just need to add some 'if/else' clauses
-## to the existing functions to turn on/off the various validation and
-## construction parts. The 'new_' constructor maybe doesn't need
-## changing at all.
-##
-## OTHER: Add functions to compute years, ages, and sexes present in
-## the object. Don't think these need to be attributes.
-
-
-
-
 
 #' Low-level constructor for class \code{demog_change_component_df}.
 #'
@@ -221,16 +39,19 @@ get_min_age_in_dims <- function(x) {
 #' @param time_span Scalar indicating the span of the time periods.
 #' @param dimensions Character vector listing the dimensions such as
 #'     \dQuote{time}, \dQuote{age}, \dQuote{sex}.
+#' @param value_type Scalar indicating the type of the \dQuote{value}
+#'     column (e.g., \dQuote{count}, \dQuote{rate}, etc.).
 #' @return An object of class \code{demog_change_component_df}.
 #' @author Mark Wheldon
 new_demog_change_component_df <-
-    function(x, age_span, time_span, dimensions,
+    function(x, age_span, time_span, dimensions, value_type,
              ..., class = character()) {
         stopifnot(is.data.frame(x))
         structure(x,
                   age_span = age_span,
                   time_span = time_span,
                   dimensions = dimensions,
+                  value_type = value_type,
                   ...,
                   class = c(class, "demog_change_component_df", "data.frame"))
     }
@@ -309,6 +130,8 @@ new_demog_change_component_df <-
 #'     similar behaviour to \code{age_span}.
 #' @param dimensions Character vector listing the dimensions such as
 #'     \dQuote{time}, \dQuote{age}, \dQuote{sex}.
+#' @param value_type Scalar indicating the type of the \dQuote{value}
+#'     column (e.g., \dQuote{count}, \dQuote{rate}, etc.).
 #' @param ... Passed to the low-level constructor.
 #' @return An object of class \code{demog_change_component_df}.
 #' @author Mark Wheldon
@@ -321,7 +144,9 @@ NULL
 #' @export
 demog_change_component_df <-
     function(x, age_span = NULL, time_span = NULL,
-             dimensions = NULL, ...) {
+             dimensions = NULL,
+             value_type = NULL,
+             ...) {
 
         if (!is.data.frame(x))
             stop("'x' is not a data.frame.")
@@ -381,6 +206,13 @@ demog_change_component_df <-
         if (is.null(time_span)) time_span <- x$time_span[1]
         if (is.null(age_span) && is_by_age) age_span <- x$age_span[1]
 
+        ## -------* Values
+
+        if (is.null(value_type)) {
+            value_type <- "real"
+            message("Argument 'value_type' is 'NULL'; setting 'value_type' to 'real'.")
+        }
+
         ## -------* Other
 
         ## Clean 'x' and make sure there are no factor columns
@@ -408,6 +240,7 @@ demog_change_component_df <-
                               age_span = age_span,
                               time_span = time_span,
                               dimensions = dimensions,
+                              value_type = value_type,
                               ...
                               )
         )
@@ -439,13 +272,13 @@ is.demog_change_component_df <- function(x) {
 #'
 #' @description
 #' Checks that an object with \code{class} attribute
-#' \code{vital_rate_data_frame} is a valid object of this type.
+#' \code{demog_change_component_df} is a valid object of this type.
 #'
-#' @seealso vital_rate_data_frame
+#' @seealso demog_change_component_df
 #'
-#' @family vital_rate_data_frame class non-exported functions
+#' @family demog_change_component_df class non-exported functions
 #'
-#' @param x An object of class \code{vital_rate_data_frame}.
+#' @param x An object of class \code{demog_change_component_df}.
 #' @return Either an error or the object \code{x}.
 #' @author Mark Wheldon
 #' @export
@@ -459,15 +292,15 @@ validate_demog_change_component_df <-
 
         ## -------* Attributes
 
-        vital_rate_dims_x <- vital_rate_dimensions(x)
-        if (is.na(vital_rate_dims_x) || !is.character(vital_rate_dims_x) ||
-            length(vital_rate_dims_x) < 1 ||
-            !all(vital_rate_dims_x %in% get_allowed_dimensions()))
+        demog_change_component_dims_x <- demog_change_component_dimensions(x)
+        if (is.na(demog_change_component_dims_x) || !is.character(demog_change_component_dims_x) ||
+            length(demog_change_component_dims_x) < 1 ||
+            !all(demog_change_component_dims_x %in% get_allowed_dimensions()))
             stop("'dimensions' attribute of 'x' is not valid. 'dimensions' must be in '",
                  paste(get_allowed_dimensions(), collapse = ", "),
                  "' and cannot be missing or duplicated. See ?demog_change_component_df for class definition.")
 
-        req_attr <- get_req_attr_names(vital_rate_dims_x)
+        req_attr <- get_req_attr_names(demog_change_component_dims_x)
         if (!all(req_attr %in% names(attributes(x))))
             stop("'x' must have attributes '",
                  paste(req_attr, collapse = "', '"),
@@ -477,7 +310,7 @@ validate_demog_change_component_df <-
 
         coln_x <- colnames(x)
         req_cols <-
-            get_all_req_col_names(dimensions = vital_rate_dims_x)
+            get_all_req_col_names(dimensions = demog_change_component_dims_x)
 
         if (!all(req_cols %in% coln_x))
             stop("'x' must have columns '",
@@ -498,8 +331,19 @@ validate_demog_change_component_df <-
         if (!inherits(x, "data.frame"))
             stop("'x' does not inherit from 'data.frame'.")
 
-        if (!all(is.finite(x$values)))
-            stop("Not all 'x$value' are finite and non-missing.")
+        value_type <- attr(x, "value_type")
+
+        if (!identical(length(value_type), 1L) || !is.character(value_type)) {
+            stop("'value_type' must be a single character string, or 'NULL'.")
+        }
+
+        allowed_value_types <- get_allowed_value_types()
+        if (!(value_type %in% allowed_value_types))
+            stop("'value_type' must be one of '",
+                 paste(allowed_value_types, collapse = "', '"),
+                 "'.")
+
+        check_value_type(value = x$value, type = value_type)
 
         ## -------* Must be Sorted
 
@@ -508,7 +352,7 @@ validate_demog_change_component_df <-
         ## results. The class imposes full sorting.
 
         order_cols <-
-            get_dim_col_info(dimensions = vital_rate_dims_x)$colname
+            get_dim_col_info(dimensions = demog_change_component_dims_x)$colname
         if (!identical(x[, order_cols],
                        sort_demog_change_component_df(x)[, order_cols]))
             stop("'x' must be sorted by time, rev(sex), age_start (see ?demog_change_component_df for class definition).")
@@ -524,7 +368,7 @@ validate_demog_change_component_df <-
         attr_w_span_names <- get_attr_w_span_names()
 
         for (att in
-             attr_w_span_names[attr_w_span_names %in% vital_rate_dims_x]
+             attr_w_span_names[attr_w_span_names %in% demog_change_component_dims_x]
              ) {
             ## Create names of the '_span' and '_start' variables for
             ## use later.

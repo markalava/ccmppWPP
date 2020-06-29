@@ -14,13 +14,13 @@
 #' @return A list of attributes.
 #' @author Mark Wheldon
 #' @export
-vital_rate_attributes <- function(x) {
-    UseMethod("vital_rate_attributes")
+demog_change_component_attributes <- function(x) {
+    UseMethod("demog_change_component_attributes")
 }
 
 #' @author Mark Wheldon
 #' @export
-vital_rate_attributes.demog_change_component_df <- function(x) {
+demog_change_component_attributes.demog_change_component_df <- function(x) {
     attrx <- attributes(x)
     attr_names <- names(attrx)
     attr_names <-
@@ -38,18 +38,18 @@ vital_rate_attributes.demog_change_component_df <- function(x) {
 #' @return The extracted attribute
 #' @author Mark Wheldon
 #' @export
-vital_rate_dimensions <- function(x) {
-    UseMethod("vital_rate_dimensions")
+demog_change_component_dimensions <- function(x) {
+    UseMethod("demog_change_component_dimensions")
 }
 
 #' @author Mark Wheldon
 #' @export
-vital_rate_dimensions.demog_change_component_df <- function(x) {
+demog_change_component_dimensions.demog_change_component_df <- function(x) {
     attr(x, "dimensions")
 }
 
 
-#' Extract specific vital rate attributes
+#' Extract specific attributes
 #'
 #' These functions extract specific attributes of
 #' \code{demog_change_component_df}s. Methods for other classes are not defined.
@@ -57,11 +57,11 @@ vital_rate_dimensions.demog_change_component_df <- function(x) {
 #' @param x An object from which to extract attributes.
 #' @return The extracted attribute.
 #' @author Mark Wheldon
-#' @name extract_vital_rate_attributes
+#' @name extract_demog_change_component_attributes
 NULL
 
 #' @author Mark Wheldon
-#' @rdname extract_vital_rate_attributes
+#' @rdname extract_demog_change_component_attributes
 #' @export
 age_span <- function(x) {
     UseMethod("age_span")
@@ -76,7 +76,7 @@ age_span.demog_change_component_df <- function(x) {
 }
 
 #' @author Mark Wheldon
-#' @rdname extract_vital_rate_attributes
+#' @rdname extract_demog_change_component_attributes
 #' @export
 time_span <- function(x) {
     UseMethod("time_span")
@@ -91,7 +91,7 @@ time_span.demog_change_component_df <- function(x) {
 }
 
 #' @author Mark Wheldon
-#' @rdname extract_vital_rate_attributes
+#' @rdname extract_demog_change_component_attributes
 #' @export
 sexes <- function(x) {
     UseMethod("sexes")
@@ -116,25 +116,25 @@ sexes.demog_change_component_df <- function(x) {
 #' @param x An object to test.
 #' @return \code{TRUE} or \code{FALSE} depending on the result.
 #' @author Mark Wheldon
-#' @name test_vital_rate_dimensions
+#' @name test_demog_change_component_dimensions
 NULL
 
 #' @author Mark Wheldon
-#' @rdname test_vital_rate_dimensions
+#' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_time <- function(x) {
     UseMethod("is_by_time")
 }
 
 #' @author Mark Wheldon
-#' @rdname test_vital_rate_dimensions
+#' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_time.demog_change_component_df <- function(x) {
-    isTRUE(get_allowed_dimensions()["time"] %in% vital_rate_dimensions(x))
+    isTRUE(get_allowed_dimensions()["time"] %in% demog_change_component_dimensions(x))
     }
 
 #' @author Mark Wheldon
-#' @rdname test_vital_rate_dimensions
+#' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_time.data.frame <- function(x) {
     time_col_name <- get_attr_col_name("time")
@@ -142,21 +142,21 @@ is_by_time.data.frame <- function(x) {
     }
 
 #' @author Mark Wheldon
-#' @rdname test_vital_rate_dimensions
+#' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_age <- function(x) {
     UseMethod("is_by_age")
 }
 
 #' @author Mark Wheldon
-#' @rdname test_vital_rate_dimensions
+#' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_age.demog_change_component_df <- function(x) {
-    isTRUE(get_allowed_dimensions()["age"] %in% vital_rate_dimensions(x))
+    isTRUE(get_allowed_dimensions()["age"] %in% demog_change_component_dimensions(x))
 }
 
 #' @author Mark Wheldon
-#' @rdname test_vital_rate_dimensions
+#' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_age.data.frame <- function(x) {
     age_col_name <- get_attr_col_name("age")
@@ -164,21 +164,21 @@ is_by_age.data.frame <- function(x) {
     }
 
 #' @author Mark Wheldon
-#' @rdname test_vital_rate_dimensions
+#' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_sex <- function(x) {
     UseMethod("is_by_sex")
 }
 
 #' @author Mark Wheldon
-#' @rdname test_vital_rate_dimensions
+#' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_sex.demog_change_component_df <- function(x) {
-    isTRUE(get_allowed_dimensions()["sex"] %in% vital_rate_dimensions(x))
+    isTRUE(get_allowed_dimensions()["sex"] %in% demog_change_component_dimensions(x))
     }
 
 #' @author Mark Wheldon
-#' @rdname test_vital_rate_dimensions
+#' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_sex.data.frame <- function(x) {
     sex_col_name <- get_attr_col_name("sex")

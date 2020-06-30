@@ -6,20 +6,21 @@
 \usage{
 new_demog_change_component_df(
   x,
+  dimensions,
   age_span,
   time_span,
-  dimensions,
+  value_type,
   ...,
   class = character()
 )
 }
 \arguments{
+\item{dimensions}{Character vector listing the dimensions such as
+\dQuote{time}, \dQuote{age}, \dQuote{sex}.}
+
 \item{age_span}{Scalar indicating the span of the age groups.}
 
 \item{time_span}{Scalar indicating the span of the time periods.}
-
-\item{dimensions}{Character vector listing the dimensions such as
-\dQuote{time}, \dQuote{age}, \dQuote{sex}.}
 
 \item{value_type}{Scalar indicating the type of the \dQuote{value}
 column (e.g., \dQuote{count}, \dQuote{rate}, etc.).}
@@ -37,6 +38,9 @@ This function is not exported. The user-level constructor is
 }
 \seealso{
 demog_change_component_df
+
+Other demog_change_component_df class non-exported functions: 
+\code{\link{validate_demog_change_component_df}()}
 }
 \author{
 Mark Wheldon

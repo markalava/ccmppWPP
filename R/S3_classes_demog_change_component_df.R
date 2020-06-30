@@ -44,13 +44,13 @@
 #' @return An object of class \code{demog_change_component_df}.
 #' @author Mark Wheldon
 new_demog_change_component_df <-
-    function(x, age_span, time_span, dimensions, value_type,
+    function(x, dimensions, age_span, time_span, value_type,
              ..., class = character()) {
         stopifnot(is.data.frame(x))
         structure(x,
+                  dimensions = dimensions,
                   age_span = age_span,
                   time_span = time_span,
-                  dimensions = dimensions,
                   value_type = value_type,
                   ...,
                   class = c(class, "demog_change_component_df", "data.frame"))
@@ -139,12 +139,12 @@ new_demog_change_component_df <-
 #' @name construct_demog_change_component_df
 NULL
 
-
 #' @rdname construct_demog_change_component_df
 #' @export
 demog_change_component_df <-
-    function(x, age_span = NULL, time_span = NULL,
+    function(x,
              dimensions = NULL,
+             age_span = NULL, time_span = NULL,
              value_type = NULL,
              ...) {
 
@@ -237,9 +237,9 @@ demog_change_component_df <-
         ## Create/Validate
         validate_demog_change_component_df(
             new_demog_change_component_df(x,
+                              dimensions = dimensions,
                               age_span = age_span,
                               time_span = time_span,
-                              dimensions = dimensions,
                               value_type = value_type,
                               ...
                               )
@@ -407,8 +407,11 @@ validate_demog_change_component_df <-
 
         ## -------* Sex
 
+        allowed_sexes <- get_allowed_sexes()
         if (!all(x$sex %in% c("female", "male", "both")))
-            stop("Not all 'x$sex' are in ('female', 'male', 'both'); values other than these are not supported.")
+            stop("Not all 'x$sex' are in '",
+                 paste0(allowed_sexes, collapse = "', '"),
+            "'; values other than these are not supported.")
 
     return(x)
 }

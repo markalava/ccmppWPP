@@ -13,12 +13,13 @@
 #' @param x An object from which to extract attributes.
 #' @return A list of attributes.
 #' @author Mark Wheldon
+#' @name demog_change_component_attributes
 #' @export
 demog_change_component_attributes <- function(x) {
     UseMethod("demog_change_component_attributes")
 }
 
-#' @author Mark Wheldon
+#' @rdname demog_change_component_attributes
 #' @export
 demog_change_component_attributes.demog_change_component_df <- function(x) {
     attrx <- attributes(x)
@@ -37,12 +38,13 @@ demog_change_component_attributes.demog_change_component_df <- function(x) {
 #' @param x An object from which to extract attributes.
 #' @return The extracted attribute
 #' @author Mark Wheldon
+#' @name demog_change_component_dimensions
 #' @export
 demog_change_component_dimensions <- function(x) {
     UseMethod("demog_change_component_dimensions")
 }
 
-#' @author Mark Wheldon
+#' @rdname demog_change_component_dimensions
 #' @export
 demog_change_component_dimensions.demog_change_component_df <- function(x) {
     attr(x, "dimensions")
@@ -60,14 +62,13 @@ demog_change_component_dimensions.demog_change_component_df <- function(x) {
 #' @name extract_demog_change_component_attributes
 NULL
 
-#' @author Mark Wheldon
 #' @rdname extract_demog_change_component_attributes
 #' @export
 age_span <- function(x) {
     UseMethod("age_span")
 }
 
-#' @author Mark Wheldon
+#' @rdname extract_demog_change_component_attributes
 #' @export
 age_span.demog_change_component_df <- function(x) {
     if (!is_by_age(x))
@@ -75,14 +76,27 @@ age_span.demog_change_component_df <- function(x) {
     attr(x, "age_span")
 }
 
-#' @author Mark Wheldon
+#' @rdname extract_demog_change_component_attributes
+#' @export
+ages <- function(x) {
+    UseMethod("ages")
+}
+
+#' @rdname extract_demog_change_component_attributes
+#' @export
+ages.demog_change_component_df <- function(x) {
+    if (!is_by_age(x))
+        stop("'age' is not a dimension of 'x'.")
+    unique(x$age_start)
+}
+
 #' @rdname extract_demog_change_component_attributes
 #' @export
 time_span <- function(x) {
     UseMethod("time_span")
 }
 
-#' @author Mark Wheldon
+#' @rdname extract_demog_change_component_attributes
 #' @export
 time_span.demog_change_component_df <- function(x) {
     if (!is_by_time(x))
@@ -90,19 +104,44 @@ time_span.demog_change_component_df <- function(x) {
     attr(x, "time_span")
 }
 
-#' @author Mark Wheldon
+#' @rdname extract_demog_change_component_attributes
+#' @export
+times <- function(x) {
+    UseMethod("times")
+}
+
+#' @rdname extract_demog_change_component_attributes
+#' @export
+times.demog_change_component_df <- function(x) {
+    if (!is_by_time(x))
+        stop("'time' is not a dimension of 'x'.")
+    unique(x$time_start)
+}
+
 #' @rdname extract_demog_change_component_attributes
 #' @export
 sexes <- function(x) {
     UseMethod("sexes")
 }
 
-#' @author Mark Wheldon
+#' @rdname extract_demog_change_component_attributes
 #' @export
 sexes.demog_change_component_df <- function(x) {
     if (!is_by_sex(x))
         stop("'sex' is not a dimension of 'x'.")
     levels(factor(x$sex))
+}
+
+#' @rdname extract_demog_change_component_attributes
+#' @export
+value_type <- function(x) {
+    UseMethod("value_type")
+}
+
+#' @rdname extract_demog_change_component_attributes
+#' @export
+value_type.demog_change_component_df <- function(x) {
+    attr(x, "value_type")
 }
 
 
@@ -182,5 +221,6 @@ is_by_sex.demog_change_component_df <- function(x) {
 #' @export
 is_by_sex.data.frame <- function(x) {
     sex_col_name <- get_attr_col_name("sex")
-    isTRUE(sex_col_name %in% colnames(x))
+    isTRUE(sex_col_name %in% colnames(x) &&
+           length(unique(x[[sex_col_name]]) > 1))
     }

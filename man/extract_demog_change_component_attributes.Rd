@@ -4,15 +4,42 @@
 \name{extract_demog_change_component_attributes}
 \alias{extract_demog_change_component_attributes}
 \alias{age_span}
+\alias{age_span.demog_change_component_df}
+\alias{ages}
+\alias{ages.demog_change_component_df}
 \alias{time_span}
+\alias{time_span.demog_change_component_df}
+\alias{times}
+\alias{times.demog_change_component_df}
 \alias{sexes}
-\title{Extract specific vital rate attributes}
+\alias{sexes.demog_change_component_df}
+\alias{value_type}
+\alias{value_type.demog_change_component_df}
+\title{Extract specific attributes}
 \usage{
 age_span(x)
 
+\method{age_span}{demog_change_component_df}(x)
+
+ages(x)
+
+\method{ages}{demog_change_component_df}(x)
+
 time_span(x)
 
+\method{time_span}{demog_change_component_df}(x)
+
+times(x)
+
+\method{times}{demog_change_component_df}(x)
+
 sexes(x)
+
+\method{sexes}{demog_change_component_df}(x)
+
+value_type(x)
+
+\method{value_type}{demog_change_component_df}(x)
 }
 \arguments{
 \item{x}{An object from which to extract attributes.}
@@ -25,11 +52,5 @@ These functions extract specific attributes of
 \code{demog_change_component_df}s. Methods for other classes are not defined.
 }
 \author{
-Mark Wheldon
-
-Mark Wheldon
-
-Mark Wheldon
-
 Mark Wheldon
 }

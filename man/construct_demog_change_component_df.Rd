@@ -9,9 +9,9 @@
 \usage{
 demog_change_component_df(
   x,
+  dimensions = NULL,
   age_span = NULL,
   time_span = NULL,
-  dimensions = NULL,
   value_type = NULL,
   ...
 )
@@ -25,15 +25,15 @@ is.demog_change_component_df(x)
 \dQuote{age_span}, \dQuote{sex}, \dQuote{time_start},
 \dQuote{time_span}, and \dQuote{value}.}
 
+\item{dimensions}{Character vector listing the dimensions such as
+\dQuote{time}, \dQuote{age}, \dQuote{sex}.}
+
 \item{age_span}{Scalar indicating the span of the age groups. If
 \code{NULL} and a column \dQuote{age_span} is present in
 \code{x} an attempt will be made to infer it from that column.}
 
 \item{time_span}{Scalar indicating the span of the time periods;
 similar behaviour to \code{age_span}.}
-
-\item{dimensions}{Character vector listing the dimensions such as
-\dQuote{time}, \dQuote{age}, \dQuote{sex}.}
 
 \item{value_type}{Scalar indicating the type of the \dQuote{value}
 column (e.g., \dQuote{count}, \dQuote{rate}, etc.).}

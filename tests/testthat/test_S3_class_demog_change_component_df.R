@@ -138,6 +138,7 @@ test_that("superfluous columns are caught", {
                                                  c("age", "time", "sex")),
                                "source")],
                              age_span = 1, time_span = 1,
+                             value_type = "real",
                        dimensions = c("time", "age", "sex"))
     expect_error(## Fail: Catches the extra column
         validate_demog_change_component_df(y),
@@ -184,6 +185,12 @@ test_that("'value_type' is checked properly", {
         expect_error(demog_change_component_df(x, age_span = 1, time_span = 1,
                                            value_type = "proportion"),
                      "values less than 0 or greater than 1 are present")
-    })
+})
 
-
+test_that("dimensions are correctly detected", {
+    y <- demog_change_component_df(S3_demog_change_component_time_age_sex_test_df,
+                                   dimensions = c("time", "age", "sex"))
+    expect_true(is_by_time(y))
+    expect_true(is_by_age(y))
+    expect_true(is_by_sex(y))
+})

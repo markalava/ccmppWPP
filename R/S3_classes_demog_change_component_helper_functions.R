@@ -160,6 +160,13 @@ get_min_age_in_dims <- function(x) {
 }
 
 ###-----------------------------------------------------------------------------
+### * sexes
+
+get_allowed_sexes <- function() {
+    c("female", "male", "both")
+    }
+
+###-----------------------------------------------------------------------------
 ### * 'value_type' Attribute
 
 ## Define allowed 'value_type'
@@ -185,6 +192,9 @@ check_value_type <- function(value, type) {
     } else if (identical(type, "proportion")) {
         if (any(value < 0 | value > 1))
             stop(stop_msg("values less than 0 or greater than 1 are present."))
+    } else if (identical(type, "percentage")) {
+        if (any(value < 0 | value > 100))
+            stop(stop_msg("values less than 0 or greater than 100 are present."))
     } else {
         return(invisible(value))
     }

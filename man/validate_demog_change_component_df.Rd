@@ -7,19 +7,22 @@
 validate_demog_change_component_df(x)
 }
 \arguments{
-\item{x}{An object of class \code{vital_rate_data_frame}.}
+\item{x}{An object of class \code{demog_change_component_df}.}
 }
 \value{
 Either an error or the object \code{x}.
 }
 \description{
 Checks that an object with \code{class} attribute
-\code{vital_rate_data_frame} is a valid object of this type.
+\code{demog_change_component_df} is a valid object of this type.
 }
 \seealso{
-vital_rate_data_frame
+demog_change_component_df
+
+Other demog_change_component_df class non-exported functions: 
+\code{\link{new_demog_change_component_df}()}
 }
 \author{
 Mark Wheldon
 }
-\concept{vital_rate_data_frame class non-exported functions}
+\concept{demog_change_component_df class non-exported functions}

@@ -66,7 +66,8 @@ NULL
     validate_demog_change_component_df(new_demog_change_component_df(NextMethod(),
                           age_span = attr(x, "age_span"),
                           time_span = attr(x, "time_span"),
-                          dimensions = attr(x, "dimensions")
+                          dimensions = attr(x, "dimensions"),
+                          value_type = attr(x, "value_type")
                           ))
     }
 
@@ -77,7 +78,8 @@ NULL
     validate_demog_change_component_df(new_demog_change_component_df(NextMethod(),
                           age_span = attr(x, "age_span"),
                           time_span = attr(x, "time_span"),
-                          dimensions = attr(x, "dimensions")
+                          dimensions = attr(x, "dimensions"),
+                          value_type = attr(x, "value_type")
                           ))
     }
 
@@ -88,7 +90,8 @@ NULL
     validate_demog_change_component_df(new_demog_change_component_df(NextMethod(),
                           age_span = attr(x, "age_span"),
                           time_span = attr(x, "time_span"),
-                          dimensions = attr(x, "dimensions")
+                          dimensions = attr(x, "dimensions"),
+                          value_type = attr(x, "value_type")
                           ))
     }
 
@@ -177,7 +180,7 @@ print.demog_change_component_df <-
             "\n# ", attr_msgs,
             ".\n")
         if(is_by_sex(x))
-            cat_msg <- c(cat_msg, "# 'sex' has levels: ", paste(sexes(x), collapse = ", "),
+            cat_msg <- paste(cat_msg, "# 'sex' has levels: ", paste(sexes(x), collapse = ", "),
             ".\n",
             sep = "")
         cat(cat_msg)
@@ -202,21 +205,11 @@ summary.demog_change_component_df <-
     function(object, maxsum = 7,
              digits = max(3, getOption("digits") - 3), vsep, ...) {
 
-        if (missing(vsep))
-            vsep <- strrep("-", 0.75 * getOption("width"))
-
-        msg <- character(0)
-
         ## Time
         if (is_by_time(object)) {
             time <- list(range = c("time_start" = min(object$time_start),
                                    "time_end" = max(object$time_start)),
                          span = time_span(object))
-            msg <- paste0(msg, "time:\trange = [",
-                          paste(time$range, collapse = ", "),
-                          "]\tspan = ",
-                          paste0(time$span),
-                          "\n")
         } else {
             time <- NULL
         }
@@ -226,11 +219,6 @@ summary.demog_change_component_df <-
             age <- list(range = c("age_start" = min(object$age_start),
                                   "age_end" = max(object$age_start)),
                         span = age_span(object))
-            msg <- paste0(msg, " age:\trange = [",
-                          paste(age$range, collapse = ", "),
-                          "]\tspan = ",
-                          paste0(age$span),
-                          "\n")
         } else {
             age <- NULL
         }
@@ -238,9 +226,6 @@ summary.demog_change_component_df <-
         ## Sex
         if (is_by_sex(object)) {
             sex <- list(levels = levels(as.factor(object$sex)))
-            msg <- paste0(msg, " sex:\tlevels = ",
-                          paste(sex$levels, collapse = ", "),
-                          "\n")
         } else {
             sex <- NULL
         }
@@ -248,16 +233,110 @@ summary.demog_change_component_df <-
         ## Stats
         table <- NextMethod()
 
+        return(structure(list(dimensions = demog_change_component_dimensions(object),
+                              time = time, age = age, sex = sex,
+                              value_type = value_type(object), table = table),
+                         class = c("summary_demog_change_component_df", "list")))
+    }
+
+
+#' Print a summary of a \code{demog_change_component_df}
+#'
+#' A method for the S3 generic \code{\link{base::summary}} for
+#' objects of class \code{summary_demog_change_component_df}, as
+#' returned by \code{\link{summary.demog_change_component_df}.
+#'
+#' @param x An object of class \code{demog_change_component_df}.
+#' @param ... Currently not used.
+#' @return Called for its side-effect.
+#' @author Mark Wheldon
+#'
+#' @seealso \code{\link{summary.demog_change_component_df}}.
+#'
+#' @export
+print.summary_demog_change_component_df <-
+    function(x, vsep, ...) {
+
+        if (missing(vsep))
+            vsep <- strrep("-", 0.75 * getOption("width"))
+
+        msg <- character(0)
+
+        ## Dimensions
+        msg <- paste0(msg, "dimensions:\t",
+                      paste(x$dimensions,
+                            collapse = ", "),
+                      "\n")
+
+        ## Time
+        if (!is.null(x$time))
+            msg <- paste0(msg, "      time:\trange = [",
+                          paste(x$time$range, collapse = ", "),
+                          "]\tspan = ",
+                          paste0(x$time$span),
+                          "\n")
+
+        ## Age
+        if (!is.null(x$age))
+            msg <- paste0(msg, "       age:\trange = [",
+                          paste(x$age$range, collapse = ", "),
+                          "]\tspan = ",
+                          paste0(x$age$span),
+                          "\n")
+
+        ## Sex
+        if (!is.null(x$sex))
+            msg <- paste0(msg, "       sex:\tlevels = ",
+                          paste(x$sex$levels, collapse = ", "),
+                          "\n")
+
+        ## Values
+        msg <- paste0(msg, "value_type:\t",
+                      x$value_type,
+                      "\n")
+
         ## Print
         if (length(msg > 0))
             msg <- paste0(msg, vsep, "\n")
 
         cat(msg, "table:\n", sep = "")
-        print(table)
-
-        return(invisible(list(time = time, age = age, sex = sex, table = table)))
+        print(x$table)
     }
 
-
 ###-----------------------------------------------------------------------------
-### * Misc.
+### * Subset
+
+#' Subsetting \code{demog_change_component_df}s
+#'
+#' A method for \code{\link{base::subset}} for objects of class
+#' \code{demog_change_component_df}s.
+#'
+#' The arguments and defaults are the same as for the
+#' \code{data.frame} method. Notably, the actual column names must be
+#' used, (e.g., \code{time_start}, \emph{not} \code{time}). To subset
+#' using conceptual dimension names see, e.g.,
+#' \code{\link{subset_time}}.
+#'
+#' @param x An object of class \code{demog_change_component_df}.
+#' @param ... Passed to \code{\link{subset.data.frame}}. See the help
+#'     file there for required arguments and defaults.
+#' @return A \code{demog_change_component_df} if valid after
+#'     subsetting, otherwise a \code{data.frame}.
+#' @author Mark Wheldon
+#' @export
+subset.demog_change_component_df <- function(x, ...) {
+    dcc_att <- demog_change_component_attributes(x)
+    x <- NextMethod()
+    y <- try(suppressMessages(demog_change_component_df(x,
+                                       time_span = dcc_att$time_span,
+                                       age_span = dcc_att$age_span,
+                                       dimensions = NULL,
+                                       value_type = dcc_att$value_type)),
+             silent = TRUE)
+    if (inherits(y, "try-error")) {
+        warning("Subset result is not a valid 'demog_change_component_df'; returning a data frame.")
+        return(x)
+    } else {
+        return(y)
+    }
+}

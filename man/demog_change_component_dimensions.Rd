@@ -3,9 +3,12 @@
 %   R/S3_classes_demog_change_component_df_access_attr.R
 \name{demog_change_component_dimensions}
 \alias{demog_change_component_dimensions}
+\alias{demog_change_component_dimensions.demog_change_component_df}
 \title{Extract the \dQuote{dimensions} attribute}
 \usage{
 demog_change_component_dimensions(x)
+
+\method{demog_change_component_dimensions}{demog_change_component_df}(x)
 }
 \arguments{
 \item{x}{An object from which to extract attributes.}

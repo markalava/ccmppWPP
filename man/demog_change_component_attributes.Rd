@@ -3,9 +3,12 @@
 %   R/S3_classes_demog_change_component_df_access_attr.R
 \name{demog_change_component_attributes}
 \alias{demog_change_component_attributes}
+\alias{demog_change_component_attributes.demog_change_component_df}
 \title{Extract attributes specific to \code{demog_change_component_df}s}
 \usage{
 demog_change_component_attributes(x)
+
+\method{demog_change_component_attributes}{demog_change_component_df}(x)
 }
 \arguments{
 \item{x}{An object from which to extract attributes.}

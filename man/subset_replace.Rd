@@ -61,14 +61,12 @@ importantly, subsetting does not return an object of class
 The object resulting from a subset operation via \code{`[`} will no
 longer inherit from class \code{demog_change_component_df} and the
 attributes specific to that class will be lost. To create a
-\code{vital_rate_time_age_sex_df} object from a subset call
+\code{demog_change_component_df} object from a subset call
 \code{\link{demog_change_component_df}} explicitly (e.g.,
 \code{demog_change_component_df(x[x$time_start == 1960,])}).
 
 Replacement via \code{`[<-`} will attempt to return a
-\code{vital_rate_matrix}. The user is responsible for making sure
-the new object is a valid member of this class (see
-\code{\link{demog_change_component_df}}). If the result is not a valid
+\code{demog_change_component_df}. If the result is not a valid
 member an error will be signalled.
 }
 \seealso{

@@ -7,8 +7,7 @@ test_that("subsetting works as desired", {
                                      exact = exact))
     }
 
-    x <- S3_demog_change_component_time_age_sex_test_df
-    y <- demog_change_component_df(x, dimensions = c("time", "age", "sex"))
+    y <- dcc_df_time_age_sex
 
     ## NB Warning only issued if run from top level
     expect_not_s3_class(y[, "age_start"], "demog_change_component_df")
@@ -19,101 +18,86 @@ test_that("subsetting works as desired", {
 
 test_that("replacement with valid columns passes (time, age, sex)", {
 
-    x <- S3_demog_change_component_time_age_sex_test_df
-    y <- demog_change_component_df(x, dimensions = c("time", "age", "sex"))
-
-    z <- y
+    z <- dcc_df_time_age_sex
     z[, "age_start"] <- z$age_start
     expect_s3_class(z, "demog_change_component_df")
-    z <- y
+    z <- dcc_df_time_age_sex
     z$age_start <- z$age_start
     expect_s3_class(z, "demog_change_component_df")
-    z <- y
+    z <- dcc_df_time_age_sex
     z[["age_start"]] <- z$age_start
     expect_s3_class(z, "demog_change_component_df")
 
-    z <- y
+    z <- dcc_df_time_age_sex
     z[, "time_start"] <- z$time_start
     expect_s3_class(z, "demog_change_component_df")
-    z <- y
+    z <- dcc_df_time_age_sex
     z$time_start <- z$time_start
     expect_s3_class(z, "demog_change_component_df")
-    z <- y
+    z <- dcc_df_time_age_sex
     z[["time_start"]] <- z$time_start
     expect_s3_class(z, "demog_change_component_df")
 
-    z <- y
+    z <- dcc_df_time_age_sex
     z[, "sex"] <- z$sex
     expect_s3_class(z, "demog_change_component_df")
-    z <- y
+    z <- dcc_df_time_age_sex
     z$sex <- z$sex
     expect_s3_class(z, "demog_change_component_df")
-    z <- y
+    z <- dcc_df_time_age_sex
     z[["sex"]] <- z$sex
     expect_s3_class(z, "demog_change_component_df")
  })
 
 
 test_that("replacement with valid columns passes (time, age)", {
-
-    x <- S3_demog_change_component_time_age_test_df
-    y <- demog_change_component_df(x, dimensions = c("time", "age"))
-
-    z <- y
+    z <- dcc_df_time_age_sex
     z[, "age_start"] <- z$age_start
     expect_s3_class(z, "demog_change_component_df")
-    z <- y
+    z <- dcc_df_time_age_sex
     z$age_start <- z$age_start
     expect_s3_class(z, "demog_change_component_df")
-    z <- y
+    z <- dcc_df_time_age_sex
     z[["age_start"]] <- z$age_start
     expect_s3_class(z, "demog_change_component_df")
 
-    z <- y
+    z <- dcc_df_time_age_sex
     z[, "time_start"] <- z$time_start
     expect_s3_class(z, "demog_change_component_df")
-    z <- y
+    z <- dcc_df_time_age_sex
     z$time_start <- z$time_start
     expect_s3_class(z, "demog_change_component_df")
-    z <- y
+    z <- dcc_df_time_age_sex
     z[["time_start"]] <- z$time_start
     expect_s3_class(z, "demog_change_component_df")
  })
 
 
 test_that("replacement with valid columns passes (time, sex)", {
-
-    x <- S3_demog_change_component_time_sex_test_df
-    y <- demog_change_component_df(x, dimensions = c("time", "sex"))
-
-    z <- y
+    z <- dcc_df_time_age_sex
     z[, "time_start"] <- z$time_start
     expect_s3_class(z, "demog_change_component_df")
-    z <- y
+    z <- dcc_df_time_age_sex
     z$time_start <- z$time_start
     expect_s3_class(z, "demog_change_component_df")
-    z <- y
+    z <- dcc_df_time_age_sex
     z[["time_start"]] <- z$time_start
     expect_s3_class(z, "demog_change_component_df")
 
-    z <- y
+    z <- dcc_df_time_age_sex
     z[, "sex"] <- z$sex
     expect_s3_class(z, "demog_change_component_df")
-    z <- y
+    z <- dcc_df_time_age_sex
     z$sex <- z$sex
     expect_s3_class(z, "demog_change_component_df")
-    z <- y
+    z <- dcc_df_time_age_sex
     z[["sex"]] <- z$sex
     expect_s3_class(z, "demog_change_component_df")
  })
 
 
 test_that("bad sorting is detected (time, age, sex)", {
-
-    y <- demog_change_component_df(S3_demog_change_component_time_age_sex_test_df,
-                       dimensions = c("time", "age", "sex"))
-
-    z <- y
+    z <- dcc_df_time_age_sex
     expect_error((z[, "age_start"] <- rev(z$age_start)),
                  "must be sorted")
     expect_error((z$age_start <- rev(z$age_start)),
@@ -138,11 +122,7 @@ test_that("bad sorting is detected (time, age, sex)", {
 
 
 test_that("bad sorting is detected (time, age)", {
-
-    y <- demog_change_component_df(S3_demog_change_component_time_age_test_df,
-                       dimensions = c("time", "age"))
-
-    z <- y
+    z <- dcc_df_time_age_sex
     expect_error((z[, "age_start"] <- rev(z$age_start)),
                  "must be sorted")
     expect_error((z$age_start <- rev(z$age_start)),
@@ -160,11 +140,7 @@ test_that("bad sorting is detected (time, age)", {
 
 
 test_that("bad sorting is detected (time, sex)", {
-
-    y <- demog_change_component_df(S3_demog_change_component_time_sex_test_df,
-                       dimensions = c("time", "sex"))
-
-    z <- y
+    z <- dcc_df_time_age_sex
     expect_error((z[, "time_start"] <- rev(z$time_start)),
                  "must be sorted")
     expect_error((z$time_start <- rev(z$time_start)),
@@ -183,11 +159,7 @@ test_that("bad sorting is detected (time, sex)", {
 
 
 test_that("bad sorting is detected (time)", {
-
-    y <- demog_change_component_df(S3_demog_change_component_time_test_df,
-                       dimensions = c("time"))
-
-    z <- y
+    z <- dcc_df_time_age_sex
     expect_error((z[, "time_start"] <- rev(z$time_start)),
                  "must be sorted")
     expect_error((z$time_start <- rev(z$time_start)),
@@ -199,8 +171,7 @@ test_that("bad sorting is detected (time)", {
 
 test_that("superfluous columns are detected", {
 
-    y <- demog_change_component_df(S3_demog_change_component_time_age_sex_test_df,
-                       dimensions = c("time", "age", "sex"))
+    y <- dcc_df_time_age_sex
 
     expect_error((y$source <- "census"), "superfluous columns")
     expect_error((y[, "source"] <- "census"), "superfluous columns")

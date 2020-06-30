@@ -6,7 +6,7 @@
 #' These functions subset \code{demog_change_component_df}s by one of
 #' the three dimensions, age, time, or sex. Subsetting such that only
 #' one level of the subset dimension is retained will drop the
-#' dimension if \code{drop = TRUE} (default).
+#' dimension if \code{drop = TRUE}, otherwise it is retained (default).
 #'
 #' @param x An object to subset.
 #' @param time,age,sex Vectors indicating the levels of time, age, or
@@ -26,7 +26,7 @@ subset_time <- function(x, ...) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_time.demog_change_component_df <- function(x, time, drop = TRUE) {
+subset_time.demog_change_component_df <- function(x, time, drop = FALSE) {
     stopifnot(is_by_time(x))
     stopifnot(is.finite(as.numeric(time)))
 
@@ -67,7 +67,7 @@ subset_age <- function(x, ...) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_age.demog_change_component_df <- function(x, age, drop = TRUE) {
+subset_age.demog_change_component_df <- function(x, age, drop = FALSE) {
     stopifnot(is_by_age(x))
     stopifnot(is.finite(as.numeric(age)))
 
@@ -109,7 +109,7 @@ subset_sex <- function(x, ...) {
 #' @rdname subset_demog_change_component_df
 #' @export
 subset_sex.demog_change_component_df <-
-    function(x, sex = get_allowed_sexes(), drop = TRUE) {
+    function(x, sex = get_allowed_sexes(), drop = FALSE) {
         stopifnot(is_by_sex(x))
         sex <- match.arg(sex, several.ok = TRUE)
 
@@ -171,7 +171,7 @@ as_age_time_matrix <- function(x) {
 as_age_time_matrix.demog_change_component_df <- function(x) {
 
     if (is_by_sex(x))
-        stop("'x' has dimension \"sex\"; select a single sex using 'subset_sex' to create an age-time matrix.")
+        stop("'x' has dimension \"sex\"; select a single sex using 'subset_sex(..., drop = TRUE)' to create an age-time matrix.")
 
     dims <- demog_change_component_dimensions(x)
 

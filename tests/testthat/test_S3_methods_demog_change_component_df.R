@@ -177,3 +177,13 @@ test_that("superfluous columns are detected", {
     expect_error((y[, "source"] <- "census"), "superfluous columns")
     expect_error((y[["source"]] <- "census"), "superfluous columns")
     })
+
+
+test_that("method for 'subset' works as expected", {
+    expect_is(subset(dcc_df_time_age_sex, age_start == 0), class = "demog_change_component_df")
+    expect_is(subset(dcc_df_time_age_sex, age_start == 0 & time_start == 1950),
+              class = "demog_change_component_df")
+
+    expect_warning(expect_is(subset(dcc_df_time_age_sex, value < 0), class = "data.frame"),
+                   "Subset result is not a valid 'demog_change_component_df'")
+})

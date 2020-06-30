@@ -183,13 +183,10 @@ check_value_type <- function(value, type) {
         paste0("'value_type' is '", type, "' but ", suff)
     }
 
-    if (type %in% c("rate", "ratio", "real"))
+    if (type %in% c("rate", "ratio", "real", "count"))
         return(invisible(value))
 
-    if (identical(type, "count")) {
-        if (any(value < 0))
-            stop(stop_msg("negative values are present."))
-    } else if (identical(type, "proportion")) {
+    if (identical(type, "proportion")) {
         if (any(value < 0 | value > 1))
             stop(stop_msg("values less than 0 or greater than 1 are present."))
     } else if (identical(type, "percentage")) {

@@ -90,8 +90,7 @@ NULL
     validate_demog_change_component_df(new_demog_change_component_df(NextMethod(),
                           age_span = attr(x, "age_span"),
                           time_span = attr(x, "time_span"),
-                          dimensions = attr(x, "dimensions"),
-                          value_type = attr(x, "value_type")
+                          dimensions = attr(x, "dimensions")
                           ))
     }
 
@@ -187,6 +186,8 @@ print.demog_change_component_df <-
         print.data.frame(head(x, n = n), ..., digits = digits, quote = quote, right = right,
                          row.names = row.names, max = max)
         cat("# ... etc.\n")
+
+        return(invisible(x))
     }
 
 
@@ -301,6 +302,8 @@ print.summary_demog_change_component_df <-
 
         cat(msg, "table:\n", sep = "")
         print(x$table)
+
+        return(invisible(x))
     }
 
 ###-----------------------------------------------------------------------------

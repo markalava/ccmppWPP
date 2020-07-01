@@ -7,11 +7,18 @@
 ### TO DO:
 ###
 ### * Look through SH and PG's comments in the vignette.
-### * Add a 'value type' attribute that marks the 'value' column as 'rate',
-###   'count', 'proportion', etc. Modify the validator so that these are checked
-###   for validity (e.g., proportions are in [0, 1]).
-### * OTHER: Add functions to compute years, ages, and sexes present
-###   in the object. Don't think these need to be attributes.
+### * The restriction that 'time_span' equals 'age_span' only applies to ccmpp
+###   inputs. Need to decide how to handle this. A nested generic class, e.g.,
+###   c("ccmpp_input", "demog_change_component_df")? The subclasses 'fert_rate',
+###   'survival_ratio', etc., would not be real classes, but would be created
+###   using eponymous wrappers to 'demog_change_component_df'. That way we can
+###   have lots of different functions, e.g., 'fert_rate_ccmpp_input_df()',
+###   'fert_rate_ccmpp_output_df()', etc. etc., without getting tied up in
+###   complicated nesting/crossing of classes. All will just inherit be
+###   of the main class, but will be created such that the attributes are set
+###   appropriately. This will also make it a lot easier for others to create
+###   their own types of objects just be writing wrapper functions, rather
+###   than getting into the mess of the classes.
 ###
 ################################################################################
 

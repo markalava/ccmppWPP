@@ -10,6 +10,14 @@ get_req_attr_names <- function(dimensions) {
     return(out)
 }
 
+## Guess dimensions from data frame columns
+guess_demog_change_component_dimensions <- function(x) {
+    ## Attempt to guess dimensions
+    col_info <-
+        get_dim_col_info(dimensions = get_allowed_dimensions())
+    return(col_info$dimension[col_info$colname %in% colnames(x)])
+}
+
 ###-----------------------------------------------------------------------------
 ### * Time and Age Attributes
 

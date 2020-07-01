@@ -67,7 +67,8 @@ NULL
                           age_span = attr(x, "age_span"),
                           time_span = attr(x, "time_span"),
                           dimensions = attr(x, "dimensions"),
-                          value_type = attr(x, "value_type")
+                          value_type = attr(x, "value_type"),
+                          class = head(class(x), -2)
                           ))
     }
 
@@ -75,11 +76,13 @@ NULL
 #' @rdname subset_replace
 #' @export
 `$<-.demog_change_component_df` <- function(x, name, value) {
+    class <- head(class(x), -2)
     validate_demog_change_component_df(new_demog_change_component_df(NextMethod(),
                           age_span = attr(x, "age_span"),
                           time_span = attr(x, "time_span"),
                           dimensions = attr(x, "dimensions"),
-                          value_type = attr(x, "value_type")
+                          value_type = attr(x, "value_type"),
+                          class = head(class(x), -2)
                           ))
     }
 
@@ -87,11 +90,13 @@ NULL
 #' @rdname subset_replace
 #' @export
 `[[<-.demog_change_component_df` <- function(x, i, j, value) {
+    class <- head(class(x), -2)
     validate_demog_change_component_df(new_demog_change_component_df(NextMethod(),
                           age_span = attr(x, "age_span"),
                           time_span = attr(x, "time_span"),
                           dimensions = attr(x, "dimensions"),
-                          value_type = attr(x, "value_type")
+                          value_type = attr(x, "value_type"),
+                          class = head(class(x), -2)
                           ))
     }
 
@@ -347,15 +352,19 @@ print.summary_demog_change_component_df <-
 #' @export
 subset.demog_change_component_df <- function(x, ...) {
     dcc_att <- demog_change_component_attributes(x)
+    class_orig <- class(x)
     x <- NextMethod()
-    y <- try(suppressMessages(demog_change_component_df(x,
+    y <- try(suppressMessages(validate_demog_change_component_df(new_demog_change_component_df(x,
                                        time_span = dcc_att$time_span,
                                        age_span = dcc_att$age_span,
-                                       dimensions = NULL,
-                                       value_type = dcc_att$value_type)),
+                                       dimensions = guess_demog_change_component_dimensions(x),
+                                       value_type = dcc_att$value_type,
+                                       class = class_orig))),
              silent = TRUE)
     if (inherits(y, "try-error")) {
-        warning("Subset result is not a valid 'demog_change_component_df'; returning a data frame.")
+        warning("Subset result is not a valid '",
+                paste(class_orig[1], collapse = " "),
+                "'; returning a data frame.")
         return(x)
     } else {
         return(y)

@@ -176,11 +176,7 @@ demog_change_component_df <-
         ## -------* 'dimensions' attribute
 
         if (is.null(dimensions)) {
-            ## Attempt to guess dimensions
-            col_info <-
-                get_dim_col_info(dimensions = get_allowed_dimensions())
-            dimensions <-
-                col_info$dimension[col_info$colname %in% colnames(x)]
+            dimensions <- guess_demog_change_component_dimensions(x)
             message("Argument 'dimensions' is 'NULL'; setting 'dimensions' to '",
                     paste(dimensions, collapse = ", "),
                     "' based on column names of 'x'.")
@@ -384,6 +380,31 @@ validate_demog_change_component_df.demog_change_component_df <-
                     "'.")
         }
 
+        ## -------* Spans
+
+        attr_w_span_names <- get_attr_w_span_names()
+
+        for (att in
+             attr_w_span_names[attr_w_span_names %in% demog_change_component_dims_x]
+             ) {
+            ## Create names of the '_span' and '_start' variables for
+            ## use later.
+            span_name <- paste0(att, "_span")
+            start_name <- paste0(att, "_start")
+
+            ## Get the values of the attribute and column from x for
+            ## use later.
+            span_attr <- attr(x, span_name)
+            start_col <- x[[start_name]]
+
+            ## Do the tests now:
+            if (!is.numeric(span_attr))
+                stop("'", span_name, "' is not numeric.")
+
+            if (!is.numeric(start_col))
+                stop("'x$", start_name, "' is not numeric.")
+        }
+
         ## -------* Values
 
         if (!inherits(x, "data.frame"))
@@ -403,65 +424,11 @@ validate_demog_change_component_df.demog_change_component_df <-
 
         check_value_type(value = x$value, type = value_type)
 
-        ## -------* Must be Sorted
-
-        ## If not sorted, at least by age and sex within time, the
-        ## single-step ccmpp function will turn out incorrect
-        ## results. The class imposes full sorting.
-
-        order_cols <-
-            get_dim_col_info(dimensions = demog_change_component_dims_x)$colname
-        if (!identical(x[, order_cols],
-                       sort_demog_change_component_df(x)[, order_cols]))
-            stop("'x' must be sorted by time, rev(sex), age_start (see ?demog_change_component_df for class definition).")
-
         ## -------* Check squareness
 
         x_tbl <- tabulate_demog_change_component_df(x)
         if (!identical(as.double(sum(x_tbl != 1)), 0))
             stop("'x' does not have exactly one 'value' per 'age' * 'sex' * 'time' combination (see ?demog_change_component_df for class definition).")
-
-        ## -------* Spans
-
-        attr_w_span_names <- get_attr_w_span_names()
-
-        for (att in
-             attr_w_span_names[attr_w_span_names %in% demog_change_component_dims_x]
-             ) {
-            ## Create names of the '_span' and '_start' variables for
-            ## use later.
-            span_name <- paste0(att, "_span")
-            start_name <- paste0(att, "_start")
-
-            ## Get the values of the attribute and column from x for
-            ## use later.
-            span_attr <- attr(x, span_name)
-            start_col <- x[[start_name]]
-
-            ## Diffs of unique values
-            start_1st_diff <-
-                diff(sort(unique(start_col)), differences = 1)
-
-            ## Do the tests now:
-            if (!is.numeric(span_attr))
-                stop("'", span_name, "' is not numeric.")
-            if (!identical(length(span_attr), 1L))
-                stop("'", span_name, "' is not of length 1.")
-
-            if (!is.numeric(start_col))
-                stop("'x$", start_name, "' is not numeric.")
-            if (!identical(as.double(sum(start_1st_diff != span_attr)), 0))
-                stop("Spacings between each 'x$", start_name,
-                     "' do not equal 'attr(x, \"", span_name, "\")'.")
-        }
-
-        ## -------* Age
-
-        if (is_by_age(x)) {
-        min_age_start <- get_min_age_in_dims(x)
-        if (!all(min_age_start == 0))
-            stop("'age_start' does not start at '0' for each time * sex combination.")
-        }
 
         ## -------* Sex
 

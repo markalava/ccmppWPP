@@ -70,8 +70,8 @@ new_demog_change_component_df <-
 #'
 #' \describe{ \item{\code{demog_change_component_df}}{Creates objects of class
 #' \code{demog_change_component_df} from a given set of values.}
-#' \item{\code{as.demog_change_component_df}}{Attempts to turn its argument into a
-#' \code{demog_change_component_df}.}  \item{\code{is.demog_change_component_df}}{Tests if its
+#' \item{\code{as_demog_change_component_df}}{Attempts to turn its argument into a
+#' \code{demog_change_component_df}.}  \item{\code{is_demog_change_component_df}}{Tests if its
 #' argument is a \code{demog_change_component_df}. \emph{Note:} This only checks
 #' inheritance (via \code{\link{base::inherits}}), not validity. To
 #' validate an object use \code{\link{validate_demog_change_component_df}}.}
@@ -256,16 +256,51 @@ demog_change_component_df <-
 
 #' @rdname construct_demog_change_component_df
 #' @export
-as.demog_change_component_df <- function(x, ...) {
-    if (is.demog_change_component_df(x)) return(x)
-    x <- as.data.frame(x)
+as_demog_change_component_df <- function(x, ...) {
+    UseMethod("as_demog_change_component_df")
+}
+
+#' @export
+as_demog_change_component_df.default <- function(x, ...) {
+    if (is_demog_change_component_df(x)) return(x)
+    stop("Cannot coerce 'x' to 'demog_change_component_df'.")
+}
+
+#' @rdname construct_demog_change_component_df
+#' @export
+as_demog_change_component_df.data.frame <- function(x, ...) {
     demog_change_component_df(x)
+}
+
+#' @rdname construct_demog_change_component_df
+#' @export
+as_demog_change_component_df.matrix <- function(x, ...) {
+    dn <- dimnames(x)
+    dncol <- dn[[2]]
+    if (is.null(dn))
+        stop("'dimnames(x)' is 'NULL'; cannot coerce to 'demog_change_component_df'.")
+    if (!("value" %in% dncol))
+        stop("'x' must have a column called 'value'.")
+    req_cn <- get_all_req_col_names()
+    if (!sum(req_cn %in% dn[[2]]) >= 2)
+        stop("'x' must have time, age, or sex dimensions. Column names should be taken from '",
+             paste(req_cn, collapse = "', '"),
+             "'.")
+    keep_cols <- which(dncol %in% req_cn)
+    x <- x[, keep_cols]
+    as_demog_change_component_df(as.data.frame(x))
+}
+
+#' @rdname construct_demog_change_component_df
+#' @export
+as_demog_change_component_df.demog_change_component_df <- function(x, ...) {
+    return(x)
 }
 
 
 #' @rdname construct_demog_change_component_df
 #' @export
-is.demog_change_component_df <- function(x) {
+is_demog_change_component_df <- function(x) {
     inherits(x, "demog_change_component_df")
 }
 
@@ -294,7 +329,7 @@ validate_demog_change_component_df <-
 
         ## -------* Inherits
 
-        if (!is.demog_change_component_df(x))
+        if (!is_demog_change_component_df(x))
             stop("'x' does not inherit from class 'demog_change_component_df'.")
 
         ## -------* Attributes

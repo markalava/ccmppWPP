@@ -13,15 +13,15 @@
 \usage{
 subset_time(x, ...)
 
-\method{subset_time}{demog_change_component_df}(x, time, drop = TRUE)
+\method{subset_time}{demog_change_component_df}(x, time, drop = FALSE)
 
 subset_age(x, ...)
 
-\method{subset_age}{demog_change_component_df}(x, age, drop = TRUE)
+\method{subset_age}{demog_change_component_df}(x, age, drop = FALSE)
 
 subset_sex(x, ...)
 
-\method{subset_sex}{demog_change_component_df}(x, sex = get_allowed_sexes(), drop = TRUE)
+\method{subset_sex}{demog_change_component_df}(x, sex = get_allowed_sexes(), drop = FALSE)
 }
 \arguments{
 \item{x}{An object to subset.}
@@ -39,7 +39,7 @@ The object after subsetting.
 These functions subset \code{demog_change_component_df}s by one of
 the three dimensions, age, time, or sex. Subsetting such that only
 one level of the subset dimension is retained will drop the
-dimension if \code{drop = TRUE} (default).
+dimension if \code{drop = TRUE}, otherwise it is retained (default).
 }
 \author{
 Mark Wheldon

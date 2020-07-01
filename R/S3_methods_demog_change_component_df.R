@@ -49,7 +49,7 @@ NULL
     }
 
     x <- NextMethod()
-    if(is.demog_change_component_df(x)) return(as.data.frame(x))
+    if(is_demog_change_component_df(x)) return(as.data.frame(x))
                                 # 'NextMethod()' will preseve the
                                 # 'demog_change_component_df' class so the
                                 # 'demog_change_component_df' method for
@@ -90,7 +90,8 @@ NULL
     validate_demog_change_component_df(new_demog_change_component_df(NextMethod(),
                           age_span = attr(x, "age_span"),
                           time_span = attr(x, "time_span"),
-                          dimensions = attr(x, "dimensions")
+                          dimensions = attr(x, "dimensions"),
+                          value_type = attr(x, "value_type")
                           ))
     }
 

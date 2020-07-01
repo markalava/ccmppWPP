@@ -3,8 +3,11 @@
 \name{construct_demog_change_component_df}
 \alias{construct_demog_change_component_df}
 \alias{demog_change_component_df}
-\alias{as.demog_change_component_df}
-\alias{is.demog_change_component_df}
+\alias{as_demog_change_component_df}
+\alias{as_demog_change_component_df.data.frame}
+\alias{as_demog_change_component_df.matrix}
+\alias{as_demog_change_component_df.demog_change_component_df}
+\alias{is_demog_change_component_df}
 \title{Constructor for class \code{demog_change_component_df}}
 \usage{
 demog_change_component_df(
@@ -16,9 +19,15 @@ demog_change_component_df(
   ...
 )
 
-as.demog_change_component_df(x, ...)
+as_demog_change_component_df(x, ...)
 
-is.demog_change_component_df(x)
+\method{as_demog_change_component_df}{data.frame}(x, ...)
+
+\method{as_demog_change_component_df}{matrix}(x, ...)
+
+\method{as_demog_change_component_df}{demog_change_component_df}(x, ...)
+
+is_demog_change_component_df(x)
 }
 \arguments{
 \item{x}{A data frame with columns \dQuote{age_start},

@@ -149,6 +149,31 @@ as.list.demog_change_component_df <- function(x) {
 }
 
 ###-----------------------------------------------------------------------------
+### * Combine via c, rbind, etc.
+
+rbind.demog_change_component_df <-
+    function(..., deparse.level = 1, make.row.names = TRUE,
+             stringsAsFactors = default.stringsAsFactors(),
+             factor.exclude = TRUE) {
+        warning("NOT TESTED---UNDER DEVELOPMENT")
+        ldots <- list(...)
+        if (!length(ldots)) NextMethod()
+        l1 <- ldots[[1]]
+        if (length(ldots) > 1) {
+            l1_attr <- demog_change_component_attributes(l1)
+            for(i in seq(from = 2, to = length(ldots), by = 1))
+                if (!isTRUE(all.equal(l1_attr,
+                                      demog_change_component_attributes(ldots[[i]]))))
+                    stop("'Objects to 'rbind' do not all have the same 'demog_change_component_attributes'.")
+        }
+        validate_demog_change_component_df(new_demog_change_component_df(NextMethod(),
+                          age_span = attr(l1, "age_span"),
+                          time_span = attr(l1, "time_span"),
+                          dimensions = attr(l1, "dimensions"),
+                          value_type = attr(l1, "value_type")))
+}
+
+###-----------------------------------------------------------------------------
 ### * Print, Summary, and Friends
 
 #' Print Values of a \code{demog_change_component_df}

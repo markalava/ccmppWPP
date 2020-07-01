@@ -6,10 +6,10 @@
 \usage{
 new_demog_change_component_df(
   x,
-  dimensions,
-  age_span,
-  time_span,
-  value_type,
+  dimensions = character(),
+  age_span = double(),
+  time_span = double(),
+  value_type = character(),
   ...,
   class = character()
 )

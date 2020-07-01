@@ -51,9 +51,16 @@
 #' @return An object of class \code{demog_change_component_df}.
 #' @author Mark Wheldon
 new_demog_change_component_df <-
-    function(x, dimensions, age_span, time_span, value_type,
+    function(x, dimensions = character(),
+             age_span = double(),
+             time_span = double(),
+             value_type = character(),
              ..., class = character()) {
+        if (missing(x)) x <- data.frame()
         stopifnot(is.data.frame(x))
+        stopifnot(is.numeric(age_span))
+        stopifnot(is.numeric(time_span))
+        stopifnot(is.character(class))
         structure(x,
                   dimensions = dimensions,
                   age_span = age_span,
@@ -150,9 +157,10 @@ NULL
 #' @export
 demog_change_component_df <-
     function(x,
-             dimensions = NULL,
-             age_span = NULL, time_span = NULL,
-             value_type = NULL,
+             dimensions = character(),
+             age_span = double(),
+             time_span = double(),
+             value_type = character(),
              ...) {
 
         if (!is.data.frame(x))
@@ -160,7 +168,7 @@ demog_change_component_df <-
 
         ## -------* 'dimensions' attribute
 
-        if (is.null(dimensions)) {
+        if (!length(dimensions)) {
             ## Attempt to guess dimensions
             col_info <-
                 get_dim_col_info(dimensions = get_allowed_dimensions())
@@ -191,12 +199,12 @@ demog_change_component_df <-
         ## Check required columns are present in 'x'. If 'age_span'
         ## and 'time_span' are not specified as arguments, take them
         ## from 'x'.
-        if (is.null(time_span)) {
+        if (!length(time_span)) {
             req_cols_in <- c(req_cols_in, "time_span")
             req_cols_in_types <- c(req_cols_in_types, "numeric")
             message("Argument 'time_span' is 'NULL'; taking 'time_span' from 'x$time_span'.")
         }
-        if (is.null(age_span) && is_by_age) {
+        if (!length(age_span) && is_by_age) {
             req_cols_in <- c(req_cols_in, "age_span")
             req_cols_in_types <- c(req_cols_in_types, "numeric")
             message("Argument 'age_span' is 'NULL'; taking 'age_span' from 'x$age_span'.")
@@ -210,12 +218,12 @@ demog_change_component_df <-
 
         ## If arguments 'age_span' or 'time_span' are 'NULL' extract
         ## them from 'x' (already checked that they are there).
-        if (is.null(time_span)) time_span <- x$time_span[1]
-        if (is.null(age_span) && is_by_age) age_span <- x$age_span[1]
+        if (!length(time_span)) time_span <- x$time_span[1]
+        if (!length(age_span) && is_by_age) age_span <- x$age_span[1]
 
         ## -------* Values
 
-        if (is.null(value_type)) {
+        if (!length(value_type)) {
             value_type <- "real"
             message("Argument 'value_type' is 'NULL'; setting 'value_type' to 'real'.")
         }

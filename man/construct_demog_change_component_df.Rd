@@ -12,10 +12,10 @@
 \usage{
 demog_change_component_df(
   x,
-  dimensions = NULL,
-  age_span = NULL,
-  time_span = NULL,
-  value_type = NULL,
+  dimensions = character(),
+  age_span = double(),
+  time_span = double(),
+  value_type = character(),
   ...
 )
 
@@ -30,9 +30,11 @@ as_demog_change_component_df(x, ...)
 is_demog_change_component_df(x)
 }
 \arguments{
-\item{x}{A data frame with columns \dQuote{age_start},
-\dQuote{age_span}, \dQuote{sex}, \dQuote{time_start},
-\dQuote{time_span}, and \dQuote{value}.}
+\item{x}{* For \code{demog_change_component_df}: A data frame with columns \dQuote{age_start},
+  \dQuote{age_span}, \dQuote{sex}, \dQuote{time_start},
+  \dQuote{time_span}, and \dQuote{value}.
+* For \code{as_...}: An object to coerce.
+* For \code{is_...}: An object to test.}
 
 \item{dimensions}{Character vector listing the dimensions such as
 \dQuote{time}, \dQuote{age}, \dQuote{sex}.}

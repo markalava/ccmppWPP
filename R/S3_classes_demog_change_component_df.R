@@ -134,9 +134,12 @@ new_demog_change_component_df <-
 #'
 #' @family demog_change_component_df constructor functions
 #'
-#' @param x A data frame with columns \dQuote{age_start},
+#' @param x
+#'   * For \code{demog_change_component_df}: A data frame with columns \dQuote{age_start},
 #'     \dQuote{age_span}, \dQuote{sex}, \dQuote{time_start},
 #'     \dQuote{time_span}, and \dQuote{value}.
+#'   * For \code{as_...}: An object to coerce.
+#'   * For \code{is_...}: An object to test.
 #' @param age_span Scalar indicating the span of the age groups. If
 #'     \code{NULL} and a column \dQuote{age_span} is present in
 #'     \code{x} an attempt will be made to infer it from that column.

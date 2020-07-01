@@ -101,13 +101,17 @@ NULL
 ## Coercion removes the class and all attributes. Note that the
 ## default 'as.matrix' will remove them; a method is not required.
 
-#' Coerce a \code{demog_change_component_df} to \code{data.frame}
+#' Coerce a \code{demog_change_component_df}.
 #'
 #' The class-specific attributes will be lost.
 #'
 #' @param x An object of class \code{demog_change_component_df}.
-#' @return A \code{data.frame}.
+#' @return A coerced object.
 #' @author Mark Wheldon
+#' @name generic_coerce_demog_change_component_df
+NULL
+
+#' @rdname generic_coerce_demog_change_component_df
 #' @export
 as.numeric.demog_change_component_df <- function(x) {
     if (identical(parent.frame(), .GlobalEnv)) {
@@ -117,13 +121,7 @@ as.numeric.demog_change_component_df <- function(x) {
 }
 
 
-#' Coerce a \code{demog_change_component_df} to \code{data.frame}
-#'
-#' The class-specific attributes will be lost.
-#'
-#' @param x An object of class \code{demog_change_component_df}.
-#' @return A \code{data.frame}.
-#' @author Mark Wheldon
+#' @rdname generic_coerce_demog_change_component_df
 #' @export
 as.data.frame.demog_change_component_df <- function(x) {
     if (identical(parent.frame(), .GlobalEnv)) {
@@ -133,13 +131,7 @@ as.data.frame.demog_change_component_df <- function(x) {
 }
 
 
-#' Coerce a \code{demog_change_component_df} to \code{list}
-#'
-#' The class-specific attributes will be lost.
-#'
-#' @param x An object of class \code{demog_change_component_df}.
-#' @return A \code{list}.
-#' @author Mark Wheldon
+#' @rdname generic_coerce_demog_change_component_df
 #' @export
 as.list.demog_change_component_df <- function(x) {
     if (identical(parent.frame(), .GlobalEnv)) {

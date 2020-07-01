@@ -6,8 +6,9 @@
 ###
 ### TO DO:
 ###
-### * Look through SH and PG's comments in the vignette.
-### * The restriction that 'time_span' equals 'age_span' only applies to ccmpp
+### - Look through SH and PG's comments in the vignette.
+###
+### - The restriction that 'time_span' equals 'age_span' only applies to ccmpp
 ###   inputs. Need to decide how to handle this. A nested generic class, e.g.,
 ###   c("ccmpp_input", "demog_change_component_df")? The subclasses 'fert_rate',
 ###   'survival_ratio', etc., would not be real classes, but would be created
@@ -20,13 +21,17 @@
 ###   their own types of objects just be writing wrapper functions, rather
 ###   than getting into the mess of the classes.
 ###
+### - We need a better name:
+###   - dem_comp_change_df
+###   - dem_change_comp_df
+###   - dem_comp_df
+###   - pop_change_comp_df
+###   - pop_comp_change_df
+###
 ################################################################################
 
 ###-----------------------------------------------------------------------------
 ### * Base Type Class Definitions/Constructors
-
-###-----------------------------------------------------------------------------
-### ** Vital Rate Data Frame Age and Time and Sex
 
 #' Low-level constructor for class \code{demog_change_component_df}.
 #'
@@ -73,12 +78,12 @@ new_demog_change_component_df <-
 
 #' Constructor for class \code{demog_change_component_df}
 #'
-#' @description
-#'
-#' \describe{ \item{\code{demog_change_component_df}}{Creates objects of class
+#' \describe{
+#' \item{\code{demog_change_component_df}}{Creates objects of class
 #' \code{demog_change_component_df} from a given set of values.}
 #' \item{\code{as_demog_change_component_df}}{Attempts to turn its argument into a
-#' \code{demog_change_component_df}.}  \item{\code{is_demog_change_component_df}}{Tests if its
+#' \code{demog_change_component_df}.}
+#' \item{\code{is_demog_change_component_df}}{Tests if its
 #' argument is a \code{demog_change_component_df}. \emph{Note:} This only checks
 #' inheritance (via \code{\link{base::inherits}}), not validity. To
 #' validate an object use \code{\link{validate_demog_change_component_df}}.}
@@ -96,7 +101,6 @@ new_demog_change_component_df <-
 #' \code{c("demog_change_component_df", "data_frame")}.
 #'
 #' @details
-#'
 #' The class is based on a data frame with age-sex-specific vital rates for
 #' one or more time periods in a column named \dQuote{value}.
 #'
@@ -134,12 +138,12 @@ new_demog_change_component_df <-
 #'
 #' @family demog_change_component_df constructor functions
 #'
-#' @param x
-#'   * For \code{demog_change_component_df}: A data frame with columns \dQuote{age_start},
+#' @param x \itemize{
+#'     \item{For \code{demog_change_component_df}: A data frame with columns \dQuote{age_start},
 #'     \dQuote{age_span}, \dQuote{sex}, \dQuote{time_start},
-#'     \dQuote{time_span}, and \dQuote{value}.
-#'   * For \code{as_...}: An object to coerce.
-#'   * For \code{is_...}: An object to test.
+#'     \dQuote{time_span}, and \dQuote{value}.}
+#'     \item{For \code{as_...}: An object to coerce.}
+#'     \item{For \code{is_...}: An object to test.}}
 #' @param age_span Scalar indicating the span of the age groups. If
 #'     \code{NULL} and a column \dQuote{age_span} is present in
 #'     \code{x} an attempt will be made to infer it from that column.
@@ -160,10 +164,10 @@ NULL
 #' @export
 demog_change_component_df <-
     function(x,
-             dimensions = character(),
-             age_span = double(),
-             time_span = double(),
-             value_type = character(),
+             dimensions = attr(x, "dimensions"),
+             age_span = attr(x, "age_span"),
+             time_span = attr(x, "time_span"),
+             value_type = attr(x, "value_type"),
              ...) {
 
         if (!is.data.frame(x))
@@ -171,7 +175,7 @@ demog_change_component_df <-
 
         ## -------* 'dimensions' attribute
 
-        if (!length(dimensions)) {
+        if (is.null(dimensions)) {
             ## Attempt to guess dimensions
             col_info <-
                 get_dim_col_info(dimensions = get_allowed_dimensions())
@@ -202,12 +206,12 @@ demog_change_component_df <-
         ## Check required columns are present in 'x'. If 'age_span'
         ## and 'time_span' are not specified as arguments, take them
         ## from 'x'.
-        if (!length(time_span)) {
+        if (is.null(time_span)) {
             req_cols_in <- c(req_cols_in, "time_span")
             req_cols_in_types <- c(req_cols_in_types, "numeric")
             message("Argument 'time_span' is 'NULL'; taking 'time_span' from 'x$time_span'.")
         }
-        if (!length(age_span) && is_by_age) {
+        if (is.null(age_span) && is_by_age) {
             req_cols_in <- c(req_cols_in, "age_span")
             req_cols_in_types <- c(req_cols_in_types, "numeric")
             message("Argument 'age_span' is 'NULL'; taking 'age_span' from 'x$age_span'.")
@@ -221,12 +225,12 @@ demog_change_component_df <-
 
         ## If arguments 'age_span' or 'time_span' are 'NULL' extract
         ## them from 'x' (already checked that they are there).
-        if (!length(time_span)) time_span <- x$time_span[1]
-        if (!length(age_span) && is_by_age) age_span <- x$age_span[1]
+        if (is.null(time_span)) time_span <- x$time_span[1]
+        if (is.null(age_span) && is_by_age) age_span <- x$age_span[1]
 
         ## -------* Values
 
-        if (!length(value_type)) {
+        if (is.null(value_type)) {
             value_type <- "real"
             message("Argument 'value_type' is 'NULL'; setting 'value_type' to 'real'.")
         }
@@ -256,8 +260,8 @@ demog_change_component_df <-
         validate_demog_change_component_df(
             new_demog_change_component_df(x,
                               dimensions = dimensions,
-                              age_span = age_span,
-                              time_span = time_span,
+                              age_span = (if (is.null(age_span)) double() else age_span),
+                              time_span = (if (is.null(time_span)) double() else time_span),
                               value_type = value_type,
                               ...
                               )
@@ -318,9 +322,6 @@ is_demog_change_component_df <- function(x) {
 ###-----------------------------------------------------------------------------
 ### * Validation Functions
 
-###-----------------------------------------------------------------------------
-### ** Validate time_age_sex version
-
 #' Validate objects of class \code{demog_change_component_df}.
 #'
 #' @description
@@ -331,17 +332,21 @@ is_demog_change_component_df <- function(x) {
 #'
 #' @family demog_change_component_df class non-exported functions
 #'
-#' @param x An object of class \code{demog_change_component_df}.
+#' @param x An object to be validated.
 #' @return Either an error or the object \code{x}.
 #' @author Mark Wheldon
+#' @name validate_demog_change_component_df
+NULL
+
+#' @rdname validate_demog_change_component_df
 #' @export
-validate_demog_change_component_df <-
-    function(x) {
+validate_demog_change_component_df <- function(x, ...) {
+    UseMethod("validate_demog_change_component_df")
+    }
 
-        ## -------* Inherits
-
-        if (!is_demog_change_component_df(x))
-            stop("'x' does not inherit from class 'demog_change_component_df'.")
+#' @export
+validate_demog_change_component_df.demog_change_component_df <-
+    function(x, ...) {
 
         ## -------* Attributes
 

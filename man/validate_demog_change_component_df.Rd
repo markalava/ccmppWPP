@@ -4,10 +4,10 @@
 \alias{validate_demog_change_component_df}
 \title{Validate objects of class \code{demog_change_component_df}.}
 \usage{
-validate_demog_change_component_df(x)
+validate_demog_change_component_df(x, ...)
 }
 \arguments{
-\item{x}{An object of class \code{demog_change_component_df}.}
+\item{x}{An object to be validated.}
 }
 \value{
 Either an error or the object \code{x}.

@@ -188,9 +188,9 @@ print.demog_change_component_df <-
 
         attr_names <- names(demog_change_component_attributes(x))
         attr_msgs <- sapply(attr_names, function(z) {
-            paste0(z, " = '", paste(attr(x, z), collapse = ", "), "'")
+            if (length(attr(x, z))) paste0(z, " = '", paste(attr(x, z), collapse = ", "), "'")
         })
-        attr_msgs <- paste(attr_msgs, collapse = ", ")
+        attr_msgs <- paste(attr_msgs[!sapply(attr_msgs, "is.null")], collapse = ", ")
 
         cat_msg <- paste0("# A '", class(x)[1], "' with ", format(nrow(x), big.mark = ","),
             " rows.",

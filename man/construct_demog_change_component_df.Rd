@@ -12,10 +12,10 @@
 \usage{
 demog_change_component_df(
   x,
-  dimensions = character(),
-  age_span = double(),
-  time_span = double(),
-  value_type = character(),
+  dimensions = attr(x, "dimensions"),
+  age_span = attr(x, "age_span"),
+  time_span = attr(x, "time_span"),
+  value_type = attr(x, "value_type"),
   ...
 )
 
@@ -30,11 +30,12 @@ as_demog_change_component_df(x, ...)
 is_demog_change_component_df(x)
 }
 \arguments{
-\item{x}{* For \code{demog_change_component_df}: A data frame with columns \dQuote{age_start},
-  \dQuote{age_span}, \dQuote{sex}, \dQuote{time_start},
-  \dQuote{time_span}, and \dQuote{value}.
-* For \code{as_...}: An object to coerce.
-* For \code{is_...}: An object to test.}
+\item{x}{\itemize{
+\item{For \code{demog_change_component_df}: A data frame with columns \dQuote{age_start},
+\dQuote{age_span}, \dQuote{sex}, \dQuote{time_start},
+\dQuote{time_span}, and \dQuote{value}.}
+\item{For \code{as_...}: An object to coerce.}
+\item{For \code{is_...}: An object to test.}}}
 
 \item{dimensions}{Character vector listing the dimensions such as
 \dQuote{time}, \dQuote{age}, \dQuote{sex}.}
@@ -58,6 +59,19 @@ An object of class \code{demog_change_component_df}.
 
 }
 \details{
+\code{demog_change_component_df} is the
+parent class of a family of classes for holding age- time-specific
+demographic vital rates, such as fertility and mortality rates,
+population counts, and migration rates. It is not intended as a
+class for raw data; only one value per age and period is
+permitted. Rather, it is intended to be useful to ensure that
+objects passed to functions that expect demographic values as
+input are correctly formatted.
+
+Objects of this class have class attribute
+\code{c("demog_change_component_df", "data_frame")}.
+
+
 The class is based on a data frame with age-sex-specific vital rates for
 one or more time periods in a column named \dQuote{value}.
 

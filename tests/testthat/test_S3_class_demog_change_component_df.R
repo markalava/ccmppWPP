@@ -141,7 +141,7 @@ test_that("superfluous columns are caught", {
                              value_type = "real",
                        dimensions = c("time", "age", "sex"))
     expect_error(## Fail: Catches the extra column
-        validate_demog_change_component_df(y),
+        validate_ccmpp_object(y),
         "has superfluous columns. The following are not permitted: 'source'")
 })
 
@@ -158,6 +158,7 @@ test_that("'value_type' is checked properly", {
                                            value_type = "proportion"),
                      "values less than 0 or greater than 1 are present")
 })
+
 
 test_that("dimensions are correctly detected", {
     y <- demog_change_component_df(S3_demog_change_component_time_age_sex_test_df,

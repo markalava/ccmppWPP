@@ -38,7 +38,7 @@
 #' @description
 #' Creates an object of class \code{demog_change_component_df}. Minimal
 #' checks are done; for interactive use see
-#' \code{\link{validate_demog_change_component_df}}.
+#' \code{\link{demog_change_component_df}}.
 #'
 #' This function is not exported. The user-level constructor is
 #' \code{\link{demog_change_component_df}}.
@@ -86,7 +86,7 @@ new_demog_change_component_df <-
 #' \item{\code{is_demog_change_component_df}}{Tests if its
 #' argument is a \code{demog_change_component_df}. \emph{Note:} This only checks
 #' inheritance (via \code{\link{base::inherits}}), not validity. To
-#' validate an object use \code{\link{validate_demog_change_component_df}}.}
+#' validate an object use \code{\link{validate_ccmpp_object}}.}
 #'
 #' \code{demog_change_component_df} is the
 #' parent class of a family of classes for holding age- time-specific
@@ -109,7 +109,6 @@ new_demog_change_component_df <-
 #' or parameter.
 #'
 #' @section Class Definition:
-#'
 #' **TBC** (details of the class)
 #' 1. Must be sorted properly.
 #'
@@ -135,15 +134,11 @@ new_demog_change_component_df <-
 #' be justified. However it may be easier to encode as character and
 #' have methods convert to factor when advantageous.
 #'
-#'
 #' @family demog_change_component_df constructor functions
 #'
-#' @param x \itemize{
-#'     \item{For \code{demog_change_component_df}: A data frame with columns \dQuote{age_start},
-#'     \dQuote{age_span}, \dQuote{sex}, \dQuote{time_start},
-#'     \dQuote{time_span}, and \dQuote{value}.}
-#'     \item{For \code{as_...}: An object to coerce.}
-#'     \item{For \code{is_...}: An object to test.}}
+#' @param x For \code{demog_change_component_df}: A data frame with
+#'     columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
+#'     \dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.
 #' @param age_span Scalar indicating the span of the age groups. If
 #'     \code{NULL} and a column \dQuote{age_span} is present in
 #'     \code{x} an attempt will be made to infer it from that column.
@@ -156,11 +151,6 @@ new_demog_change_component_df <-
 #' @param ... Passed to the low-level constructor.
 #' @return An object of class \code{demog_change_component_df}.
 #' @author Mark Wheldon
-#'
-#' @name construct_demog_change_component_df
-NULL
-
-#' @rdname construct_demog_change_component_df
 #' @export
 demog_change_component_df <-
     function(x,
@@ -169,6 +159,11 @@ demog_change_component_df <-
              time_span = attr(x, "time_span"),
              value_type = attr(x, "value_type"),
              ...) {
+
+        if (is_demog_change_component_df(x)) {
+            x <- validate_ccmpp_object(x)
+            return(as_demog_change_component_df(x))
+        }
 
         if (!is.data.frame(x))
             stop("'x' is not a data.frame.")
@@ -253,7 +248,7 @@ demog_change_component_df <-
         ## -------* End
 
         ## Create/Validate
-        validate_demog_change_component_df(
+        validate_ccmpp_object(
             new_demog_change_component_df(x,
                               dimensions = dimensions,
                               age_span = (if (is.null(age_span)) double() else age_span),
@@ -265,7 +260,28 @@ demog_change_component_df <-
     }
 
 
-#' @rdname construct_demog_change_component_df
+#' Coerce to a \code{demog_change_component_df}
+#'
+#' These functions coerce an object to a
+#' \code{demog_change_component_df} if possible, or check if it is
+#' one.
+#'
+#' @section Note on Validation:
+#' The method for \code{demog_change_component_df} (i.e.,
+#' \code{as_demog_change_component_df.demog_change_component_df}) does
+#' \emph{not} check for validity. If \code{x} is somehow an invalid
+#' \code{demog_change_component_df} object, applying
+#' \code{as_demog_change_component_df} will simply return it (with
+#' \code{attr(x, "class")} potentially modifed), not signal an
+#' error. Use \code{demog_change_component_df} on the object to ensure
+#' validity is checked.
+#'
+#' @param x An object to coerce or check.
+#' @param ... Further arguments passed to specific methods.
+#' @return A coerced object in the case of the \code{as_...}
+#'     functions; a logical for the \code{is_...} functions.
+#' @author Mark Wheldon
+#' @name coerce_demog_change_component_df
 #' @export
 as_demog_change_component_df <- function(x, ...) {
     UseMethod("as_demog_change_component_df")
@@ -277,13 +293,13 @@ as_demog_change_component_df.default <- function(x, ...) {
     stop("Cannot coerce 'x' to 'demog_change_component_df'.")
 }
 
-#' @rdname construct_demog_change_component_df
+#' @rdname coerce_demog_change_component_df
 #' @export
 as_demog_change_component_df.data.frame <- function(x, ...) {
-    demog_change_component_df(x)
+    demog_change_component_df(as.data.frame(x))
 }
 
-#' @rdname construct_demog_change_component_df
+#' @rdname coerce_demog_change_component_df
 #' @export
 as_demog_change_component_df.matrix <- function(x, ...) {
     dn <- dimnames(x)
@@ -302,141 +318,19 @@ as_demog_change_component_df.matrix <- function(x, ...) {
     as_demog_change_component_df(as.data.frame(x))
 }
 
-#' @rdname construct_demog_change_component_df
 #' @export
 as_demog_change_component_df.demog_change_component_df <- function(x, ...) {
+    ## copied from  'as.data.frame'
+    cl <- oldClass(x)
+    i <- match("demog_change_component_df", cl)
+    if (i > 1L)
+        class(x) <- cl[-(1L:(i - 1L))]
     return(x)
 }
 
-
-#' @rdname construct_demog_change_component_df
+#' @rdname coerce_demog_change_component_df
 #' @export
 is_demog_change_component_df <- function(x) {
     inherits(x, "demog_change_component_df")
 }
 
-###-----------------------------------------------------------------------------
-### * Validation Functions
-
-#' Validate objects of class \code{demog_change_component_df}.
-#'
-#' @description
-#' Checks that an object with \code{class} attribute
-#' \code{demog_change_component_df} is a valid object of this type.
-#'
-#' @seealso demog_change_component_df
-#'
-#' @family demog_change_component_df class non-exported functions
-#'
-#' @param x An object to be validated.
-#' @return Either an error or the object \code{x}.
-#' @author Mark Wheldon
-#' @name validate_demog_change_component_df
-NULL
-
-#' @rdname validate_demog_change_component_df
-#' @export
-validate_demog_change_component_df <- function(x, ...) {
-    UseMethod("validate_demog_change_component_df")
-    }
-
-#' @export
-validate_demog_change_component_df.demog_change_component_df <-
-    function(x, ...) {
-
-        ## -------* Attributes
-
-        demog_change_component_dims_x <- demog_change_component_dimensions(x)
-        if (is.na(demog_change_component_dims_x) || !is.character(demog_change_component_dims_x) ||
-            length(demog_change_component_dims_x) < 1 ||
-            !all(demog_change_component_dims_x %in% get_allowed_dimensions()))
-            stop("'dimensions' attribute of 'x' is not valid. 'dimensions' must be in '",
-                 paste(get_allowed_dimensions(), collapse = ", "),
-                 "' and cannot be missing or duplicated. See ?demog_change_component_df for class definition.")
-
-        req_attr <- get_req_attr_names(demog_change_component_dims_x)
-        if (!all(req_attr %in% names(attributes(x))))
-            stop("'x' must have attributes '",
-                 paste(req_attr, collapse = "', '"),
-                 "'; some are missing.")
-
-        ## -------* Colnames
-
-        coln_x <- colnames(x)
-        req_cols <-
-            get_all_req_col_names(dimensions = demog_change_component_dims_x)
-
-        if (!all(req_cols %in% coln_x))
-            stop("'x' must have columns '",
-                 paste0(req_cols, collapse = "', '"),
-                 "'; some or all are missing.")
-
-        if (!all(coln_x %in% req_cols)) {
-                                # the converse has already been verified so this is a
-                                # test for set equality
-            superf_cols <- coln_x[!(coln_x %in% req_cols)]
-            stop("'x' has superfluous columns. The following are not permitted: '",
-                    paste0(superf_cols, collapse = "', '"),
-                    "'.")
-        }
-
-        ## -------* Spans
-
-        attr_w_span_names <- get_attr_w_span_names()
-
-        for (att in
-             attr_w_span_names[attr_w_span_names %in% demog_change_component_dims_x]
-             ) {
-            ## Create names of the '_span' and '_start' variables for
-            ## use later.
-            span_name <- paste0(att, "_span")
-            start_name <- paste0(att, "_start")
-
-            ## Get the values of the attribute and column from x for
-            ## use later.
-            span_attr <- attr(x, span_name)
-            start_col <- x[[start_name]]
-
-            ## Do the tests now:
-            if (!is.numeric(span_attr))
-                stop("'", span_name, "' is not numeric.")
-
-            if (!is.numeric(start_col))
-                stop("'x$", start_name, "' is not numeric.")
-        }
-
-        ## -------* Values
-
-        if (!inherits(x, "data.frame"))
-            stop("'x' does not inherit from 'data.frame'.")
-
-        value_type <- attr(x, "value_type")
-
-        if (!identical(length(value_type), 1L) || !is.character(value_type)) {
-            stop("'value_type' must be a single character string, or 'NULL'.")
-        }
-
-        allowed_value_types <- get_allowed_value_types()
-        if (!(value_type %in% allowed_value_types))
-            stop("'value_type' must be one of '",
-                 paste(allowed_value_types, collapse = "', '"),
-                 "'.")
-
-        check_value_type(value = x$value, type = value_type)
-
-        ## -------* Check squareness
-
-        x_tbl <- tabulate_demog_change_component_df(x)
-        if (!identical(as.double(sum(x_tbl != 1)), 0))
-            stop("'x' does not have exactly one 'value' per 'age' * 'sex' * 'time' combination (see ?demog_change_component_df for class definition).")
-
-        ## -------* Sex
-
-        allowed_sexes <- get_allowed_sexes()
-        if (!all(x$sex %in% c("female", "male", "both")))
-            stop("Not all 'x$sex' are in '",
-                 paste0(allowed_sexes, collapse = "', '"),
-            "'; values other than these are not supported.")
-
-    return(x)
-}

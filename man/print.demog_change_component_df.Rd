@@ -11,7 +11,7 @@
   digits = NULL,
   quote = FALSE,
   right = TRUE,
-  row.names = TRUE,
+  row.names = FALSE,
   max = NULL
 )
 }

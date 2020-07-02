@@ -31,7 +31,7 @@ An object of class \code{ccmpp_input_df}.
 \description{
 Creates an object of class \code{ccmpp_input_df}. Minimal
 checks are done; for interactive use see
-\code{\link{validate_ccmpp_input_df}}.
+\code{\link{ccmpp_input_df}}.
 
 This function is not exported. The user-level constructor is
 \code{\link{ccmpp_input_df}}.

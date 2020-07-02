@@ -45,10 +45,9 @@
     quoted).}
 }
 \value{
-Extraction could return a \code{data.frame},
+A \code{data.frame},
     one-dimensional vector, or scalar depending on the dimensions
-    of the extracted values. Replacement will
-    attempt to return a \code{demog_change_component_df}.
+    of the extracted values.
 }
 \description{
 These are methods for the subset operator and its companion
@@ -58,19 +57,24 @@ importantly, subsetting does not return an object of class
 \code{demog_change_component_df} (see \dQuote{Details}).
 }
 \details{
-The object resulting from a subset operation via \code{`[`} will no
-longer inherit from class \code{demog_change_component_df} and the
-attributes specific to that class will be lost. To create a
-\code{demog_change_component_df} object from a subset call
-\code{\link{demog_change_component_df}} explicitly (e.g.,
-\code{demog_change_component_df(x[x$time_start == 1960,])}).
+Arbitrary subsets or modifications of
+\code{demog_change_component_df}s (an objects of subclasses) may
+not be valid members of the class. Therefore, the object resulting
+from a subset operation via \code{`[`}, or a replacement via
+\code{`[<-`}, and similar, will no longer inherit from class
+\code{demog_change_component_df} (or subclasses) and the attributes
+specific to those classes will be lost.
 
-Replacement via \code{`[<-`} will attempt to return a
-\code{demog_change_component_df}. If the result is not a valid
-member an error will be signalled.
+To create a \code{demog_change_component_df} object from a subset
+call \code{\link{demog_change_component_df}} explicitly (e.g.,
+\code{demog_change_component_df(x[x$time_start == 1960,])}). A
+similar approach can be taken for subset-replacement. For an
+alternative approach to simple subsetting on the demographic change
+component dimensions see \code{\link{subset_time}} and friends.
 }
 \seealso{
-\code{\link{demog_change_component_df}}.
+\code{\link{demog_change_component_df}} for class
+    definitions, \code{link{subset_time}} and friends.
 }
 \author{
 Mark Wheldon

@@ -4,7 +4,7 @@
 #' @description
 #' Creates an object of class \code{ccmpp_input_df}. Minimal
 #' checks are done; for interactive use see
-#' \code{\link{validate_ccmpp_input_df}}.
+#' \code{\link{ccmpp_input_df}}.
 #'
 #' This function is not exported. The user-level constructor is
 #' \code{\link{ccmpp_input_df}}.
@@ -33,7 +33,7 @@ new_ccmpp_input_df <-
                                       dimensions = dimensions,
                                       value_type = value_type,
                                       ...,
-                                      class = "ccmpp_input_df")
+                                      class = c(class, "ccmpp_input_df"))
     }
 
 
@@ -41,7 +41,7 @@ new_ccmpp_input_df <-
 #'
 #' **TBC** More strict version of \code{\link{demog_change_component_df}}.
 #'
-#' @param ... Passed to the low-level constructor.
+#' @inheritParams demog_change_component_df
 #' @return An object of class \code{ccmpp_input_df}.
 #' @author Mark Wheldon
 #' #' @export
@@ -61,7 +61,7 @@ ccmpp_input_df <-
                                        ...)
 
         ## Create/Validate
-        validate_demog_change_component_df(
+        validate_ccmpp_object(
             new_ccmpp_input_df(x,
                                dimensions = attr(x, "dimensions"),
                                age_span = attr(x, "age_span"),
@@ -74,62 +74,63 @@ ccmpp_input_df <-
     }
 
 
+#' Coerce to a \code{ccmpp_input_df}
+#'
+#' These functions coerce an object to a
+#' \code{ccmpp_input_df} if possible, or check if it is
+#' one.
+#'
+#' @section Note on Validation:
+#' The method for \code{ccmpp_input_df} (i.e.,
+#' \code{as_ccmpp_input_df.ccmpp_input_df}) does
+#' \emph{not} check for validity. If \code{x} is somehow an invalid
+#' \code{ccmpp_input_df} object, applying
+#' \code{as_ccmpp_input_df} will simply return it (with
+#' \code{attr(x, "class")} potentially modifed), not signal an
+#' error. Use \code{ccmpp_input_df} on the object to ensure
+#' validity is checked.
+#'
+#' @param x An object to coerce or check.
+#' @param ... Further arguments passed to specific methods.
+#' @return A coerced object in the case of the \code{as_...}
+#'     functions; a logical for the \code{is_...} functions.
+#' @author Mark Wheldon
+#' @name coerce_ccmpp_input_df
 #' @export
-validate_demog_change_component_df.ccmpp_input_df <- function(x) {
+as_ccmpp_input_df <- function(x, ...) {
+    UseMethod("as_ccmpp_input_df")
+}
 
-    demog_change_component_dims_x <- demog_change_component_dimensions(x)
+#' @export
+as_ccmpp_input_df.default <- function(x, ...) {
+    if (is_ccmpp_input_df(x)) return(x)
+    stop("Cannot coerce 'x' to 'ccmpp_input_df'.")
+}
 
-    ## -------* Must be Sorted
+#' @rdname coerce_ccmpp_input_df
+#' @export
+as_ccmpp_input_df.data.frame <- function(x, ...) {
+    ccmpp_input_df(as.data.frame(x))
+}
 
-    ## If not sorted, at least by age and sex within time, the
-    ## single-step ccmpp function will turn out incorrect
-    ## results. The class imposes full sorting.
+#' @rdname coerce_ccmpp_input_df
+#' @export
+as_ccmpp_input_df.matrix <- function(x, ...) {
+    as_ccmpp_input_df(as.data.frame(NextMethod()))
+}
 
-    order_cols <-
-        get_dim_col_info(dimensions = demog_change_component_dims_x)$colname
-    if (!identical(x[, order_cols],
-                   sort_demog_change_component_df(x)[, order_cols]))
-        stop("'x' must be sorted by time, rev(sex), age_start (see ?ccmpp_input_df for class definition).")
+#' @export
+as_ccmpp_input_df.ccmpp_input_df <- function(x, ...) {
+    ## copied from  'as.data.frame'
+    cl <- oldClass(x)
+    i <- match("ccmpp_input_df", cl)
+    if (i > 1L)
+        class(x) <- cl[-(1L:(i - 1L))]
+    return(x)
+}
 
-    ## -------* Spans
-
-    attr_w_span_names <- get_attr_w_span_names()
-
-    for (att in
-         attr_w_span_names[attr_w_span_names %in% demog_change_component_dims_x]
-         ) {
-        ## Create names of the '_span' and '_start' variables for
-        ## use later.
-        span_name <- paste0(att, "_span")
-        start_name <- paste0(att, "_start")
-
-        ## Get the values of the attribute and column from x for
-        ## use later.
-        span_attr <- attr(x, span_name)
-        start_col <- x[[start_name]]
-
-        ## Diffs of unique values
-        start_1st_diff <-
-            diff(sort(unique(start_col)), differences = 1)
-
-        ## Do the tests now:
-        if (!identical(length(span_attr), 1L))
-            stop("'", span_name, "' is not of length 1.")
-
-        if (!identical(as.double(sum(start_1st_diff != span_attr)), 0))
-            stop("Spacings between each 'x$", start_name,
-                 "' do not equal 'attr(x, \"", span_name, "\")'.")
-    }
-
-    ## -------* Age
-
-    if (is_by_age(x)) {
-        min_age_start <- get_min_age_in_dims(x)
-        if (!all(min_age_start == 0))
-            stop("'age_start' does not start at '0' for each time * sex combination.")
-    }
-
-    ## -------* Base checks
-
-    x <- NextMethod()
+#' @rdname coerce_ccmpp_input_df
+#' @export
+is_ccmpp_input_df <- function(x) {
+    inherits(x, "ccmpp_input_df")
 }

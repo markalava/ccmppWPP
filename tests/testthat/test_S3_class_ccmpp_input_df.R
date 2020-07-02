@@ -28,12 +28,14 @@ test_that("objects are created properly", {
     expect_s3_class(z, "ccmpp_input_df")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(z), c("time", "age")))
+    expect_true(is_by_age(z))
 
     x <- S3_demog_change_component_time_age_test_df[, c("time_start", "age_start", "value")]
     z <- ccmpp_input_df(x, age_span = 1, time_span = 1)
     expect_s3_class(z, "ccmpp_input_df")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(z), c("time", "age")))
+    expect_true(is_by_age(z))
 
     ## Time, Sex
     x <- S3_demog_change_component_time_sex_test_df[, c("time_start", "sex", "value")]
@@ -42,12 +44,14 @@ test_that("objects are created properly", {
     expect_s3_class(z, "ccmpp_input_df")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(z), c("time", "sex")))
+    expect_true(is_by_sex(z))
 
     x <- S3_demog_change_component_time_sex_test_df[, c("time_start", "time_span", "sex", "value")]
     z <- ccmpp_input_df(x)
     expect_s3_class(z, "ccmpp_input_df")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(z), c("time", "sex")))
+    expect_true(is_by_sex(z))
 
     ## Time
     x <- S3_demog_change_component_time_test_df[, c("time_start", "value")]
@@ -56,12 +60,14 @@ test_that("objects are created properly", {
     expect_s3_class(z, "ccmpp_input_df")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(z), "time"))
+    expect_true(is_by_time(z))
 
     x <- S3_demog_change_component_time_test_df[, c("time_start", "time_span", "value")]
     z <- ccmpp_input_df(x)
     expect_s3_class(z, "ccmpp_input_df")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(z), "time"))
+    expect_true(is_by_time(z))
 })
 
 
@@ -141,7 +147,7 @@ test_that("superfluous columns are caught", {
                              value_type = "real",
                        dimensions = c("time", "age", "sex"))
     expect_error(## Fail: Catches the extra column
-        validate_demog_change_component_df(y),
+        validate_ccmpp_object(y),
         "has superfluous columns. The following are not permitted: 'source'")
 })
 
@@ -196,6 +202,6 @@ test_that("sorting is handled properly", {
     expect_identical(z$sex, x$sex)
 
     ## Should fail
-    validate_demog_change_component_df(z)
+    validate_ccmpp_object(z)
 
 })

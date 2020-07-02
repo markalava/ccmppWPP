@@ -24,3 +24,7 @@
 ##            select = -c(age_start, age_span, sex))
 ## save(S3_demog_change_component_time_test_df,
 ##      file = "inst/testdata/S3_demog_change_component_time_test_df.rda")
+
+## S3_fert_rate_time_age_df <- wpp_input_example$fert_rate_age_f
+## save(S3_fert_rate_time_age_df,
+##      file = "inst/testdata/S3_fert_rate_time_age_df.rda")

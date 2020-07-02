@@ -206,3 +206,13 @@ check_value_type <- function(value, type) {
 }
 
 
+###-----------------------------------------------------------------------------
+### * Manage 'class' attribute
+
+get_all_demog_change_component_df_class_names <- function() {
+    c("ccmpp_input_df", "demog_change_component_df")
+}
+
+strip_demog_change_component_df_classes_attribute <- function(class_att) {
+    class_att[!(class_att %in% get_all_demog_change_component_df_class_names())]
+}

@@ -15,6 +15,8 @@
 \alias{sexes.demog_change_component_df}
 \alias{value_type}
 \alias{value_type.demog_change_component_df}
+\alias{non_zero_fert_ages}
+\alias{non_zero_fert_ages.fert_rate_input_df}
 \title{Extract specific attributes}
 \usage{
 age_span(x)
@@ -40,6 +42,10 @@ sexes(x)
 value_type(x)
 
 \method{value_type}{demog_change_component_df}(x)
+
+non_zero_fert_ages(x)
+
+\method{non_zero_fert_ages}{fert_rate_input_df}(x)
 }
 \arguments{
 \item{x}{An object from which to extract attributes.}

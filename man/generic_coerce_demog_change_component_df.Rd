@@ -2,16 +2,10 @@
 % Please edit documentation in R/S3_methods_demog_change_component_df.R
 \name{generic_coerce_demog_change_component_df}
 \alias{generic_coerce_demog_change_component_df}
-\alias{as.numeric.demog_change_component_df}
 \alias{as.data.frame.demog_change_component_df}
-\alias{as.list.demog_change_component_df}
 \title{Coerce a \code{demog_change_component_df}.}
 \usage{
-\method{as.numeric}{demog_change_component_df}(x)
-
-\method{as.data.frame}{demog_change_component_df}(x)
-
-\method{as.list}{demog_change_component_df}(x)
+\method{as.data.frame}{demog_change_component_df}(x, ...)
 }
 \arguments{
 \item{x}{An object of class \code{demog_change_component_df}.}

@@ -15,25 +15,29 @@
 #' importantly, subsetting does not return an object of class
 #' \code{demog_change_component_df} (see \dQuote{Details}).
 #'
-#' The object resulting from a subset operation via \code{`[`} will no
-#' longer inherit from class \code{demog_change_component_df} and the
-#' attributes specific to that class will be lost. To create a
-#' \code{demog_change_component_df} object from a subset call
-#' \code{\link{demog_change_component_df}} explicitly (e.g.,
-#' \code{demog_change_component_df(x[x$time_start == 1960,])}).
+#' Arbitrary subsets or modifications of
+#' \code{demog_change_component_df}s (an objects of subclasses) may
+#' not be valid members of the class. Therefore, the object resulting
+#' from a subset operation via \code{`[`}, or a replacement via
+#' \code{`[<-`}, and similar, will no longer inherit from class
+#' \code{demog_change_component_df} (or subclasses) and the attributes
+#' specific to those classes will be lost.
 #'
-#' Replacement via \code{`[<-`} will attempt to return a
-#' \code{demog_change_component_df}. If the result is not a valid
-#' member an error will be signalled.
+#' To create a \code{demog_change_component_df} object from a subset
+#' call \code{\link{demog_change_component_df}} explicitly (e.g.,
+#' \code{demog_change_component_df(x[x$time_start == 1960,])}). A
+#' similar approach can be taken for subset-replacement. For an
+#' alternative approach to simple subsetting on the demographic change
+#' component dimensions see \code{\link{subset_time}} and friends.
 #'
-#' @seealso \code{\link{demog_change_component_df}}.
+#' @seealso \code{\link{demog_change_component_df}} for class
+#'     definitions, \code{link{subset_time}} and friends.
 #'
 #' @inheritParams base::`[.data.frame`
 #' @inheritParams base::`[<-.data.frame`
-#' @return Extraction could return a \code{data.frame},
+#' @return A \code{data.frame},
 #'     one-dimensional vector, or scalar depending on the dimensions
-#'     of the extracted values. Replacement will
-#'     attempt to return a \code{demog_change_component_df}.
+#'     of the extracted values.
 #' @author Mark Wheldon
 #'
 #' @name subset_replace
@@ -43,11 +47,11 @@ NULL
 #' @rdname subset_replace
 #' @export
 `[.demog_change_component_df` <- function(x, i, j, drop) {
-
     if (identical(parent.frame(), .GlobalEnv)) {
-        warning("Subsetting a 'demog_change_component_df' will not preserve the class or attributes.")
+        warning("Subsetting a '",
+                oldClass(x)[1],
+                "' will not preserve the class or attributes. See '?subset_time' and friends for an alternative approach.")
     }
-
     x <- NextMethod()
     if(is_demog_change_component_df(x)) return(as.data.frame(x))
                                 # 'NextMethod()' will preseve the
@@ -63,41 +67,60 @@ NULL
 #' @rdname subset_replace
 #' @export
 `[<-.demog_change_component_df` <- function(x, i, j, value) {
-    validate_demog_change_component_df(new_demog_change_component_df(NextMethod(),
-                          age_span = attr(x, "age_span"),
-                          time_span = attr(x, "time_span"),
-                          dimensions = attr(x, "dimensions"),
-                          value_type = attr(x, "value_type"),
-                          class = head(class(x), -2)
-                          ))
+    if (identical(parent.frame(), .GlobalEnv)) {
+        warning("Replacing elements in a '",
+                oldClass(x)[1],
+                "' will not preserve the class or attributes.")
+    }
+    x <- NextMethod()
+    if(is_demog_change_component_df(x)) return(as.data.frame(x))
+                                # 'NextMethod()' will preseve the
+                                # 'demog_change_component_df' class so the
+                                # 'demog_change_component_df' method for
+                                # 'as.data.frame' will be called. This
+                                # will then produce a simple data
+                                # frame with no extra attributes.
+    else return(x)
     }
 
 
 #' @rdname subset_replace
 #' @export
 `$<-.demog_change_component_df` <- function(x, name, value) {
-    class <- head(class(x), -2)
-    validate_demog_change_component_df(new_demog_change_component_df(NextMethod(),
-                          age_span = attr(x, "age_span"),
-                          time_span = attr(x, "time_span"),
-                          dimensions = attr(x, "dimensions"),
-                          value_type = attr(x, "value_type"),
-                          class = head(class(x), -2)
-                          ))
+    if (identical(parent.frame(), .GlobalEnv)) {
+        warning("Replacing elements in a '",
+                oldClass(x)[1],
+                "' will not preserve the class or attributes.")
+    }
+    x <- NextMethod()
+    if(is_demog_change_component_df(x)) return(as.data.frame(x))
+                                # 'NextMethod()' will preseve the
+                                # 'demog_change_component_df' class so the
+                                # 'demog_change_component_df' method for
+                                # 'as.data.frame' will be called. This
+                                # will then produce a simple data
+                                # frame with no extra attributes.
+    else return(x)
     }
 
 
 #' @rdname subset_replace
 #' @export
 `[[<-.demog_change_component_df` <- function(x, i, j, value) {
-    class <- head(class(x), -2)
-    validate_demog_change_component_df(new_demog_change_component_df(NextMethod(),
-                          age_span = attr(x, "age_span"),
-                          time_span = attr(x, "time_span"),
-                          dimensions = attr(x, "dimensions"),
-                          value_type = attr(x, "value_type"),
-                          class = head(class(x), -2)
-                          ))
+    if (identical(parent.frame(), .GlobalEnv)) {
+        warning("Replacing elements in a '",
+                oldClass(x)[1],
+                "' will not preserve the class or attributes.")
+    }
+    x <- NextMethod()
+    if(is_demog_change_component_df(x)) return(as.data.frame(x))
+                                # 'NextMethod()' will preseve the
+                                # 'demog_change_component_df' class so the
+                                # 'demog_change_component_df' method for
+                                # 'as.data.frame' will be called. This
+                                # will then produce a simple data
+                                # frame with no extra attributes.
+    else return(x)
     }
 
 ###-----------------------------------------------------------------------------
@@ -118,57 +141,47 @@ NULL
 
 #' @rdname generic_coerce_demog_change_component_df
 #' @export
-as.numeric.demog_change_component_df <- function(x) {
+as.data.frame.demog_change_component_df <- function(x, ...) {
+    oclass <- oldClass(x)
+    oclass_l <- length(oclass)
     if (identical(parent.frame(), .GlobalEnv)) {
-        warning("The result of the coercion will not inherit from class 'demog_change_component_df' and will not have any attributes specific to that class.")
+        warning("The result of the coercion will not inherit from class '",
+                oclass[1],
+                "' and will not have any attributes specific to that class.")
     }
-    return(as.numeric(c(x)))
-}
-
-
-#' @rdname generic_coerce_demog_change_component_df
-#' @export
-as.data.frame.demog_change_component_df <- function(x) {
-    if (identical(parent.frame(), .GlobalEnv)) {
-        warning("The result of the coercion will not inherit from class 'demog_change_component_df' and will not have any attributes specific to that class.")
+    if (is.data.frame(x) && oclass_l > 1) {
+        ## avoid coercion/copying if can just remove the class
+        oldClass(x) <- strip_demog_change_component_df_classes_attribute(oldClass(x))
+        return(x)
+    } else {
+        return(NextMethod(x))
     }
-    return(as.data.frame(c(x)))
-}
-
-
-#' @rdname generic_coerce_demog_change_component_df
-#' @export
-as.list.demog_change_component_df <- function(x) {
-    if (identical(parent.frame(), .GlobalEnv)) {
-        warning("The result of the coercion will not inherit from class 'demog_change_component_df' and will not have any attributes specific to that class.")
-    }
-    return(as.list(c(x)))
 }
 
 ###-----------------------------------------------------------------------------
 ### * Combine via c, rbind, etc.
 
-rbind.demog_change_component_df <-
-    function(..., deparse.level = 1, make.row.names = TRUE,
-             stringsAsFactors = default.stringsAsFactors(),
-             factor.exclude = TRUE) {
-        warning("NOT TESTED---UNDER DEVELOPMENT")
-        ldots <- list(...)
-        if (!length(ldots)) NextMethod()
-        l1 <- ldots[[1]]
-        if (length(ldots) > 1) {
-            l1_attr <- demog_change_component_attributes(l1)
-            for(i in seq(from = 2, to = length(ldots), by = 1))
-                if (!isTRUE(all.equal(l1_attr,
-                                      demog_change_component_attributes(ldots[[i]]))))
-                    stop("'Objects to 'rbind' do not all have the same 'demog_change_component_attributes'.")
-        }
-        validate_demog_change_component_df(new_demog_change_component_df(NextMethod(),
-                          age_span = attr(l1, "age_span"),
-                          time_span = attr(l1, "time_span"),
-                          dimensions = attr(l1, "dimensions"),
-                          value_type = attr(l1, "value_type")))
-}
+## rbind.demog_change_component_df <-
+##     function(..., deparse.level = 1, make.row.names = TRUE,
+##              stringsAsFactors = default.stringsAsFactors(),
+##              factor.exclude = TRUE) {
+##         warning("NOT TESTED---UNDER DEVELOPMENT")
+##         ldots <- list(...)
+##         if (!length(ldots)) NextMethod()
+##         l1 <- ldots[[1]]
+##         if (length(ldots) > 1) {
+##             l1_attr <- demog_change_component_attributes(l1)
+##             for(i in seq(from = 2, to = length(ldots), by = 1))
+##                 if (!isTRUE(all.equal(l1_attr,
+##                                       demog_change_component_attributes(ldots[[i]]))))
+##                     stop("'Objects to 'rbind' do not all have the same 'demog_change_component_attributes'.")
+##         }
+##         validate_ccmpp_object(new_demog_change_component_df(NextMethod(),
+##                           age_span = attr(l1, "age_span"),
+##                           time_span = attr(l1, "time_span"),
+##                           dimensions = attr(l1, "dimensions"),
+##                           value_type = attr(l1, "value_type")))
+## }
 
 ###-----------------------------------------------------------------------------
 ### * Print, Summary, and Friends
@@ -189,11 +202,21 @@ rbind.demog_change_component_df <-
 #' @export
 print.demog_change_component_df <-
     function(x, ..., n = 6L, digits = NULL,
-             quote = FALSE, right = TRUE, row.names = TRUE, max = NULL) {
+             quote = FALSE, right = TRUE, row.names = FALSE, max = NULL) {
 
         attr_names <- names(demog_change_component_attributes(x))
+        if (inherits(x, "fert_rate_input_df"))
+            attr_names <- attr_names[!(attr_names == "non_zero_fert_ages")]
         attr_msgs <- sapply(attr_names, function(z) {
-            if (length(attr(x, z))) paste0(z, " = '", paste(attr(x, z), collapse = ", "), "'")
+            att_z <- attr(x, z)
+            att_z_l <- length(att_z)
+            if (att_z_l) {
+                if (att_z_l > 3)
+                    pr_att_z <- paste0(paste(attr(x, z)[1:3], collapse = ", "),
+                                       "...")
+                else pr_att_z <- paste(attr(x, z), collapse = ", ")
+                paste0(z, " = '", pr_att_z, "'")
+            }
         })
         attr_msgs <- paste(attr_msgs[!sapply(attr_msgs, "is.null")], collapse = ", ")
 
@@ -201,13 +224,28 @@ print.demog_change_component_df <-
             " rows.",
             "\n# ", attr_msgs,
             ".\n")
+        if (inherits(x, "fert_rate_input_df"))
+            cat_msg <- paste0(cat_msg, paste0("# non_zero_fert_ages = '",
+                              toString(attr(x, "non_zero_fert_ages"), width = 20),
+                              "'.\n"))
         if(is_by_sex(x))
             cat_msg <- paste(cat_msg, "# 'sex' has levels: ", paste(sexes(x), collapse = ", "),
             ".\n",
             sep = "")
         cat(cat_msg)
-        print.data.frame(head(x, n = n), ..., digits = digits, quote = quote, right = right,
-                         row.names = row.names, max = max)
+
+        if (inherits(x, "fert_rate_input_df") && is_by_age(x) &&
+            !is.null(non_zero_fert_ages(x))) {
+            x[!(x$age_start %in% non_zero_fert_ages(x)), "value"] <- NA
+            print.table(as.matrix(format.data.frame(x[seq_len(n),],
+                                                    digits = digits, na.encode = FALSE)),
+                        digits = digits, quote = quote, na.print = ".",
+                        right = right,
+                        ...)
+        } else {
+            print.data.frame(head(x, n = n), ..., digits = digits, quote = quote, right = right,
+                             row.names = row.names, max = max)
+        }
         cat("# ... etc.\n")
 
         return(invisible(x))
@@ -224,6 +262,7 @@ print.demog_change_component_df <-
 #' @param object An object of class \code{demog_change_component_df}.
 #' @return A list with elements \code{time}, \code{age}, \code{sex}, and \code{table}.
 #' @author Mark Wheldon
+#' @name summary_demog_change_component_df
 #' @export
 summary.demog_change_component_df <-
     function(object, maxsum = 7,
@@ -263,6 +302,20 @@ summary.demog_change_component_df <-
                          class = c("summary_demog_change_component_df", "list")))
     }
 
+#' @rdname summary_demog_change_component_df
+#' @export
+summary.fert_rate_input_df <-
+    function(object, maxsum = 7,
+             digits = max(3, getOption("digits") - 3), vsep, ...) {
+        out <- NextMethod()
+        out$non_zero_fert_ages <- non_zero_fert_ages(object)
+
+        return(structure(c(out),
+                         class = c("summary_fert_rate_input_df",
+                                   "summary_demog_change_component_df", "list")))
+    }
+
+
 
 #' Print a summary of a \code{demog_change_component_df}
 #'
@@ -274,17 +327,22 @@ summary.demog_change_component_df <-
 #' @param ... Currently not used.
 #' @return Called for its side-effect.
 #' @author Mark Wheldon
+#' @name print_demog_change_component_df
 #'
 #' @seealso \code{\link{summary.demog_change_component_df}}.
 #'
 #' @export
 print.summary_demog_change_component_df <-
-    function(x, vsep, ...) {
+    function(x, vsep, ..., print_what = c("info", "table")) {
+
+        print_what <- match.arg(print_what, several.ok = TRUE)
 
         if (missing(vsep))
             vsep <- strrep("-", 0.75 * getOption("width"))
 
         msg <- character(0)
+
+        if ("info" %in% print_what) {
 
         ## Dimensions
         msg <- paste0(msg, "dimensions:\t",
@@ -323,50 +381,32 @@ print.summary_demog_change_component_df <-
         if (length(msg > 0))
             msg <- paste0(msg, vsep, "\n")
 
+        }
+
+        if ("table" %in% print_what) {
+
         cat(msg, "table:\n", sep = "")
-        print(x$table)
+            print(x$table)
+
+        } else {
+            cat(msg)
+        }
 
         return(invisible(x))
     }
 
-###-----------------------------------------------------------------------------
-### * Subset
 
-#' Subsetting \code{demog_change_component_df}s
-#'
-#' A method for \code{\link{base::subset}} for objects of class
-#' \code{demog_change_component_df}s.
-#'
-#' The arguments and defaults are the same as for the
-#' \code{data.frame} method. Notably, the actual column names must be
-#' used, (e.g., \code{time_start}, \emph{not} \code{time}). To subset
-#' using conceptual dimension names see, e.g.,
-#' \code{\link{subset_time}}.
-#'
-#' @param x An object of class \code{demog_change_component_df}.
-#' @param ... Passed to \code{\link{subset.data.frame}}. See the help
-#'     file there for required arguments and defaults.
-#' @return A \code{demog_change_component_df} if valid after
-#'     subsetting, otherwise a \code{data.frame}.
-#' @author Mark Wheldon
+#' @rdname demog_change_component_df
 #' @export
-subset.demog_change_component_df <- function(x, ...) {
-    dcc_att <- demog_change_component_attributes(x)
-    class_orig <- class(x)
-    x <- NextMethod()
-    y <- try(suppressMessages(validate_demog_change_component_df(new_demog_change_component_df(x,
-                                       time_span = dcc_att$time_span,
-                                       age_span = dcc_att$age_span,
-                                       dimensions = guess_demog_change_component_dimensions(x),
-                                       value_type = dcc_att$value_type,
-                                       class = class_orig))),
-             silent = TRUE)
-    if (inherits(y, "try-error")) {
-        warning("Subset result is not a valid '",
-                paste(class_orig[1], collapse = " "),
-                "'; returning a data frame.")
-        return(x)
-    } else {
-        return(y)
-    }
-}
+print.summary_fert_rate_input_df <-
+    function(x, vsep, ...) {
+        if (missing(vsep))
+            vsep <- strrep("-", 0.75 * getOption("width"))
+        NextMethod(print_what = "info")
+        cat(paste0("non_zero_fert_ages:\t",
+               toString(x$non_zero_fert_ages, 30),
+               "\n"),
+            vsep, "\n",
+            sep = "")
+        NextMethod(print_what = "table")
+        }

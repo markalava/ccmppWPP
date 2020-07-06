@@ -143,45 +143,58 @@ NULL
 #' @export
 as.data.frame.demog_change_component_df <- function(x, ...) {
     oclass <- oldClass(x)
-    oclass_l <- length(oclass)
     if (identical(parent.frame(), .GlobalEnv)) {
         warning("The result of the coercion will not inherit from class '",
                 oclass[1],
                 "' and will not have any attributes specific to that class.")
     }
-    if (is.data.frame(x) && oclass_l > 1) {
+    if (is.data.frame(x) && is_demog_change_component_df(x)) {
         ## avoid coercion/copying if can just remove the class
         oldClass(x) <- strip_demog_change_component_df_classes_attribute(oldClass(x))
         return(x)
     } else {
-        return(NextMethod(x))
+        x <- NextMethod()
+        if (is_demog_change_component_df(x))
+            oldClass(x) <- strip_demog_change_component_df_classes_attribute(oldClass(x))
+        return(x)
     }
 }
 
 ###-----------------------------------------------------------------------------
 ### * Combine via c, rbind, etc.
 
-## rbind.demog_change_component_df <-
-##     function(..., deparse.level = 1, make.row.names = TRUE,
-##              stringsAsFactors = default.stringsAsFactors(),
-##              factor.exclude = TRUE) {
-##         warning("NOT TESTED---UNDER DEVELOPMENT")
-##         ldots <- list(...)
-##         if (!length(ldots)) NextMethod()
-##         l1 <- ldots[[1]]
-##         if (length(ldots) > 1) {
-##             l1_attr <- demog_change_component_attributes(l1)
-##             for(i in seq(from = 2, to = length(ldots), by = 1))
-##                 if (!isTRUE(all.equal(l1_attr,
-##                                       demog_change_component_attributes(ldots[[i]]))))
-##                     stop("'Objects to 'rbind' do not all have the same 'demog_change_component_attributes'.")
-##         }
-##         validate_ccmpp_object(new_demog_change_component_df(NextMethod(),
-##                           age_span = attr(l1, "age_span"),
-##                           time_span = attr(l1, "time_span"),
-##                           dimensions = attr(l1, "dimensions"),
-##                           value_type = attr(l1, "value_type")))
-## }
+#' Combine \code{demog_change_component_df} objects
+#'
+#' This is an S3 method for \code{\link{base::rbind}} for objects that
+#' inherit from \code{demog_change_component_df}. The special classes
+#' are dropped. If called interactively a warning to this effect is
+#' issued.
+#'
+#' @inheritParams base::rbind.data.frame
+#' @return A data frame.
+#' @author Mark Wheldon
+#' @export
+rbind.demog_change_component_df <-
+    function(..., deparse.level = 1, make.row.names = TRUE,
+             stringsAsFactors = default.stringsAsFactors(),
+             factor.exclude = TRUE) {
+        ldots <- list(...)
+        if (!length(ldots)) NextMethod(generic = "rbind")
+
+        l1 <- ldots[[1]]
+        oclass <- oldClass(l1)
+        oclass_l <- length(oclass)
+        x <- NextMethod(generic = "rbind")
+        if (is_demog_change_component_df(x)) {
+            if (identical(parent.frame(), .GlobalEnv)) {
+                warning("The result of the rbind will not inherit from class '",
+                        oclass[1],
+                        "' and will not have any attributes specific to that class.")
+            }
+            oldClass(x) <- strip_demog_change_component_df_classes_attribute(oldClass(x))
+            return(x)
+        } else return(x)
+    }
 
 ###-----------------------------------------------------------------------------
 ### * Print, Summary, and Friends

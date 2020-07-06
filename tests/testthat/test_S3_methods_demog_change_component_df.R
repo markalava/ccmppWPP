@@ -92,3 +92,9 @@ test_that("replacement with valid columns drops class (time, sex)", {
     z[["sex"]] <- z$sex
     expect_not_s3_class(z, "demog_change_component_df")
 })
+
+
+test_that("'rbind()' drops class", {
+    z <- rbind(dcc_df_time_age_sex, dcc_df_time_age_sex)
+    expect_not_s3_class(z, "demog_change_component_df")
+    })

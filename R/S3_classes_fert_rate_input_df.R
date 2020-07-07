@@ -48,7 +48,7 @@ new_fert_rate_input_df <-
                            age_span = age_span,
                            time_span = time_span,
                            dimensions = dimensions,
-                           value_type = "rate",
+                           value_type = get_value_type("fert_rate_input_df"),
                            non_zero_fert_ages = non_zero_fert_ages,
                            ...,
                            class = c(class, "fert_rate_input_df"))
@@ -58,13 +58,20 @@ new_fert_rate_input_df <-
 #' Constructor for class \code{fert_rate_input_df}
 #'
 #' \code{fert_rate_input_df} is a subclass of
-#' \code{\link{ccmpp_input_df}}. It imposes two additional conditions:
+#' \code{\link{ccmpp_input_df}}. It imposes three additional conditions:
 #' \enumerate{
 #'   \item{\code{Value_type} attribute equals \dQuote{rate}.}
+#'   \item{There can be no 'sex' dimension; all fertility rate inputs
+#'   must be female fertility rates.}
 #'   \item{The additional attribute \code{non_zero_fert_ages}
 #'   represents the reproductive age range as a vector of
 #'   \code{age_start} values.}}
 #' An attempt will be made to guess \code{non_zero_fert_ages} if not supplied.
+#'
+#' @family ccmpp_input_objects
+#' @seealso \code{\link{validate_ccmpp_object}} for object validation,
+#'     \code{\link{ccmpp_input_df}} for the class from which this one
+#'     inherits.
 #'
 #' @section Non-zero fert ages:
 #' \code{non_zero_fert_ages} must be a subset of \code{ages(x)} and
@@ -88,7 +95,7 @@ fert_rate_input_df <-
                             dimensions = dimensions,
                             age_span = age_span,
                             time_span = time_span,
-                            value_type = "rate",
+                            value_type = get_value_type("fert_rate_input_df"),
                             ...)
 
         if (is_by_age(x)) {
@@ -117,3 +124,58 @@ fert_rate_input_df <-
                                )
         )
     }
+
+
+#' Coerce to a \code{fert_rate_input_df}
+#'
+#' These functions coerce an object to a
+#' \code{fert_rate_input_df} if possible, or check if it is
+#' one.
+#'
+#' @seealso \code{\link{coerce_demog_change_component_df}} for an important note on validation.
+#'
+#' @inheritParams coerce_demog_change_component_df
+#' @return A coerced object in the case of the \code{as_...}
+#'     functions; a logical for the \code{is_...} functions.
+#' @author Mark Wheldon
+#' @name coerce_fert_rate_input_df
+#' @export
+as_fert_rate_input_df <- function(x, ...) {
+    UseMethod("as_fert_rate_input_df")
+}
+
+#' @rdname coerce_fert_rate_input_df
+#' @export
+as_fert_rate_input_df.default <- function(x, ...) {
+    if (is_fert_rate_input_df(x)) return(x)
+    stop("Cannot coerce 'x' to 'fert_rate_input_df'.")
+}
+
+#' @rdname coerce_fert_rate_input_df
+#' @export
+as_fert_rate_input_df.data.frame <- function(x, ...) {
+    fert_rate_input_df(as.data.frame(x))
+}
+
+#' @rdname coerce_fert_rate_input_df
+#' @export
+as_fert_rate_input_df.matrix <- function(x, ...) {
+    as_fert_rate_input_df(as.data.frame(NextMethod()))
+}
+
+#' @rdname coerce_fert_rate_input_df
+#' @export
+as_fert_rate_input_df.fert_rate_input_df <- function(x, ...) {
+    ## copied from  'as.data.frame'
+    cl <- oldClass(x)
+    i <- match("fert_rate_input_df", cl)
+    if (i > 1L)
+        class(x) <- cl[-(1L:(i - 1L))]
+    return(x)
+}
+
+#' @rdname coerce_fert_rate_input_df
+#' @export
+is_fert_rate_input_df <- function(x) {
+    inherits(x, "fert_rate_input_df")
+}

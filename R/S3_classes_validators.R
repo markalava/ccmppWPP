@@ -8,9 +8,9 @@
 #' Checks that an object with \code{class} attribute
 #' \code{demog_change_component_df} is a valid object of this type.
 #'
-#' @seealso demog_change_component_df
-#'
-#' @family demog_change_component_df class non-exported functions
+#' @seealso \code{\link{demog_change_component_df}} and the other
+#'     creator functions (e.g., \code{\link{ccmpp_input_df}},
+#'     \code{link{fert_rate_input_df}}, etc.)
 #'
 #' @param x An object to be validated.
 #' @return Either an error or the object \code{x}.
@@ -194,12 +194,145 @@ validate_ccmpp_object.ccmpp_input_df <- function(x) {
 validate_ccmpp_object.fert_rate_input_df <- function(x, ...) {
 
     ## value_type
-    if (!identical(value_type(x), "rate"))
-        stop("'value_type' must be \"rate\".")
+    val_type <- get_value_type("fert_rate_input_df")
+    if (!identical(value_type(x), val_type))
+        stop("'value_type' must be \"", val_type, "\".")
 
     ## non_zero_fert_ages are valid
     if (is_by_age(x)) {
         nzf_ages <- validate_non_zero_fert_ages(x, non_zero_fert_ages(x))
+    }
+
+    ## no sex dimension
+    if (is_by_sex(x) || get_attr_col_name("sex") %in% colnames(x)) {
+        stop("Either 'is_by_sex(x)' is 'TRUE' or 'x' has a sex dimension column. Fertility rates for CCMPP must not have sex information.")
+    }
+
+    return(NextMethod())
+}
+
+
+#' @rdname validate_ccmpp_object
+#' @export
+validate_ccmpp_object.survival_ratio_input_df <- function(x, ...) {
+
+    ## value_type
+    val_type <- get_value_type("survival_ratio_input_df")
+    if (!identical(value_type(x), val_type))
+        stop("'value_type' must be \"", val_type, "\".")
+
+    ## ages start at zero
+    if (is_by_age(x)) {
+        min_age_start <- get_min_age_in_dims(x)
+        if (!all(min_age_start == 0))
+            stop("'age_start' does not start at '0' for each time * sex combination.")
+        }
+
+    return(NextMethod())
+}
+
+
+#' @rdname validate_ccmpp_object
+#' @export
+validate_ccmpp_object.pop_count_base_input_df <- function(x, ...) {
+
+    ## value_type
+    val_type <- get_value_type("pop_count_base_input_df")
+    if (!identical(value_type(x), val_type))
+        stop("'value_type' must be \"", val_type, "\".")
+
+    ## ages start at zero
+    if (is_by_age(x)) {
+        min_age_start <- get_min_age_in_dims(x)
+        if (!all(min_age_start == 0))
+            stop("'age_start' does not start at '0' for each time * sex combination.")
+        }
+
+    ## no time dimension
+    if (is_by_time(x)) {
+    if (!identical(length(unique(x$time_start)), 1L))
+        stop("'x$time_start' has more than one unique value; 'pop_count_base_input_df' objects can only refer to a single time period.")
+    }
+
+    return(NextMethod())
+}
+
+
+#' @rdname validate_ccmpp_object
+#' @export
+validate_ccmpp_object.srb_input_df <- function(x, ...) {
+
+    ## value_type
+    val_type <- get_value_type("srb_input_df")
+    if (!identical(value_type(x), val_type))
+        stop("'value_type' must be \"", val_type, "\".")
+
+    ## no age dimension
+    if (is_by_age(x) || get_attr_col_name("age") %in% colnames(x)) {
+        stop("Either 'is_by_age(x)' is 'TRUE' or 'x' has an age dimension column. SRB for CCMPP must not have age information.")
+    }
+
+    ## no sex dimension
+    if (is_by_sex(x) || get_attr_col_name("sex") %in% colnames(x)) {
+        stop("Either 'is_by_sex(x)' is 'TRUE' or 'x' has a sex dimension column. SRB for CCMPP must not have sex information.")
+    }
+
+    return(NextMethod())
+}
+
+
+#' @rdname validate_ccmpp_object
+#' @export
+validate_ccmpp_object.mig_net_rate_input_df <- function(x, ...) {
+
+    ## value_type
+    val_type <- get_value_type("mig_net_rate_input_df")
+    if (!identical(value_type(x), val_type))
+        stop("'value_type' must be \"", val_type, "\".")
+
+    ## ages start at zero
+    if (is_by_age(x)) {
+        min_age_start <- get_min_age_in_dims(x)
+        if (!all(min_age_start == 0))
+            stop("'age_start' does not start at '0' for each time * sex combination.")
+        }
+
+    return(NextMethod())
+}
+
+
+#' @rdname validate_ccmpp_object
+#' @export
+validate_ccmpp_object.mig_net_count_input_df <- function(x, ...) {
+
+    ## value_type
+    val_type <- get_value_type("mig_net_count_input_df")
+    if (!identical(value_type(x), val_type))
+        stop("'value_type' must be \"", val_type, "\".")
+
+    ## ages start at zero
+    if (is_by_age(x)) {
+        min_age_start <- get_min_age_in_dims(x)
+        if (!all(min_age_start == 0))
+            stop("'age_start' does not start at '0' for each time * sex combination.")
+        }
+
+    return(NextMethod())
+}
+
+
+#' @rdname validate_ccmpp_object
+#' @export
+validate_ccmpp_object.mig_net_count_tot_input_df <- function(x, ...) {
+
+    ## no age dimension
+    if (is_by_age(x) || get_attr_col_name("age") %in% colnames(x)) {
+        stop("Either 'is_by_age(x)' is 'TRUE' or 'x' has an age dimension column. 'mig_net_count_tot_input_df' for CCMPP must not have age information.")
+    }
+
+    ## no sex dimension
+    if (is_by_sex(x) || get_attr_col_name("sex") %in% colnames(x)) {
+        stop("Either 'is_by_sex(x)' is 'TRUE' or 'x' has a sex dimension column. 'mig_net_count_tot_input_df' for CCMPP must not have sex information.")
     }
 
     return(NextMethod())

@@ -15,7 +15,7 @@ guess_demog_change_component_dimensions <- function(x) {
     ## Attempt to guess dimensions
     col_info <-
         get_dim_col_info(dimensions = get_allowed_dimensions())
-    return(col_info$dimension[col_info$colname %in% colnames(x)])
+    dim_cols <- col_info$dimension[col_info$colname %in% colnames(x)]
 }
 
 ###-----------------------------------------------------------------------------
@@ -30,14 +30,14 @@ get_attr_w_span_names <- function() {
 get_allowed_dimensions <- function() {
     ## The name component is a label for internal indexing. The data
     ## component is the actual name of the dimension.
-    c("time" = "time", "age" = "age", "sex" = "sex")
+    c("time" = "time", "age" = "age", "sex" = "sex", "indicator" = "indicator")
     }
 
 ## Data base of column names, types, and corresp. dimension.
 get_dim_col_info <- function(dimensions) {
     x <- data.frame(dimension = c(get_allowed_dimensions()),
-               colname = c("time_start", "age_start", "sex"),
-               type = c("numeric", "numeric", "character"))
+               colname = c("time_start", "age_start", "sex", "indicator"),
+               type = c("numeric", "numeric", "character", "character"))
                                 # rownames will have the dimension
                                 # 'names' from
                                 # 'get_allowed_dimensions()'
@@ -179,38 +179,70 @@ get_allowed_sexes <- function() {
 
 ## Define allowed 'value_type'
 get_allowed_value_types <- function() {
-    c("count", "rate", "ratio", "proportion", "percentage", "real")
+    c("count", "rate", "ratio", "proportion", "percentage", "real", "categorical")
 }
 
 check_value_type <- function(value, type) {
-
-    if (!all(is.finite(value)))
-        stop("Not all 'value's are finite and non-missing.")
 
     stop_msg <- function(suff) {
         paste0("'value_type' is '", type, "' but ", suff)
     }
 
-    if (type %in% c("rate", "ratio", "real", "count"))
-        return(invisible(value))
-
-    if (identical(type, "proportion")) {
-        if (any(value < 0 | value > 1))
-            stop(stop_msg("values less than 0 or greater than 1 are present."))
-    } else if (identical(type, "percentage")) {
-        if (any(value < 0 | value > 100))
-            stop(stop_msg("values less than 0 or greater than 100 are present."))
+    ## Character types
+    if (identical(type, "categorical")) {
+        if (!is.character(value))
+            stop(stop_msg("values are not character."))
     } else {
-        return(invisible(value))
+        ## Numeric types
+        if (!all(is.finite(value)))
+            stop("Not all 'value's are finite and non-missing.")
+
+        if (type %in% c("rate", "ratio", "real", "count"))
+            return(invisible(value))
+
+        if (identical(type, "proportion")) {
+            if (any(value < 0 | value > 1))
+                stop(stop_msg("values less than 0 or greater than 1 are present."))
+        } else if (identical(type, "percentage")) {
+            if (any(value < 0 | value > 100))
+                stop(stop_msg("values less than 0 or greater than 100 are present."))
+        } else {
+            return(invisible(value))
+        }
     }
 }
+
+tabulate_value_type <- function(class) {
+    data.frame(rbind(c(class = "fert_rate_input_df",
+                       value_type = "rate"),
+                     c(class = "survival_ratio_input_df",
+                       value_type = "proportion"),
+                     c(class = "pop_count_base_input_df",
+                       value_type = "count"),
+                     c(class = "srb_input_df",
+                       value_type = "ratio"),
+                     c(class = "mig_net_rate_input_df",
+                       value_type = "rate"),
+                     c(class = "mig_net_count_input_df",
+                       value_type = "count")))
+}
+
+get_value_type <- function(class) {
+    stopifnot(class %in% get_all_demog_change_component_df_class_names())
+    tb <- tabulate_value_type()
+    stopifnot(class %in% tb$class)
+    tb[tb$class == class, "value_type"]
+    }
 
 
 ###-----------------------------------------------------------------------------
 ### * Manage 'class' attribute
 
 get_all_demog_change_component_df_class_names <- function() {
-    c("ccmpp_input_df", "demog_change_component_df")
+    c("mig_net_count_input_df", "mig_net_count_input_df",
+      "mig_net_rate_input_df", "srb_input_df", "pop_count_base_input_df",
+      "survival_ratio_input_df", "fert_rate_input_df",
+      "ccmpp_input_df", "demog_change_component_df")
 }
 
 strip_demog_change_component_df_classes_attribute <- function(class_att) {

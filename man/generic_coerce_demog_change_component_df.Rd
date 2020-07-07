@@ -5,7 +5,7 @@
 \alias{as.data.frame.demog_change_component_df}
 \title{Coerce a \code{demog_change_component_df}.}
 \usage{
-\method{as.data.frame}{demog_change_component_df}(x, ...)
+\method{as.data.frame}{demog_change_component_df}(x, restore_columns = TRUE, ...)
 }
 \arguments{
 \item{x}{An object of class \code{demog_change_component_df}.}

@@ -81,7 +81,7 @@ new_demog_change_component_df <-
 #' \describe{
 #' \item{\code{demog_change_component_df}}{Creates objects of class
 #' \code{demog_change_component_df} from a given set of values.}
-#' \item{\code{as_demog_change_component_df}}{Attempts to turn its argument into a
+#' \item{\code{coerce_demog_change_component_df}}{Attempts to turn its argument into a
 #' \code{demog_change_component_df}.}
 #' \item{\code{is_demog_change_component_df}}{Tests if its
 #' argument is a \code{demog_change_component_df}. \emph{Note:} This only checks
@@ -263,11 +263,11 @@ demog_change_component_df <-
 #' Coerce to a \code{demog_change_component_df}
 #'
 #' These functions coerce an object to a
-#' \code{demog_change_component_df} if possible, or check if it is
-#' one.
+#' \code{demog_change_component_df} (or subclasses, as appropriate) if
+#' possible, or check if it is one.
 #'
 #' @section Note on Validation:
-#' The method for \code{demog_change_component_df} (i.e.,
+#' The method for \code{demog_change_component_df} and subclasses (i.e.,
 #' \code{as_demog_change_component_df.demog_change_component_df}) does
 #' \emph{not} check for validity. If \code{x} is somehow an invalid
 #' \code{demog_change_component_df} object, applying

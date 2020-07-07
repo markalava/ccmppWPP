@@ -5,6 +5,12 @@
 \alias{validate_ccmpp_object.demog_change_component_df}
 \alias{validate_ccmpp_object.ccmpp_input_df}
 \alias{validate_ccmpp_object.fert_rate_input_df}
+\alias{validate_ccmpp_object.survival_ratio_input_df}
+\alias{validate_ccmpp_object.pop_count_base_input_df}
+\alias{validate_ccmpp_object.srb_input_df}
+\alias{validate_ccmpp_object.mig_net_rate_input_df}
+\alias{validate_ccmpp_object.mig_net_count_input_df}
+\alias{validate_ccmpp_object.mig_net_count_tot_input_df}
 \title{Validate objects of class \code{demog_change_component_df}.}
 \usage{
 validate_ccmpp_object(x, ...)
@@ -14,6 +20,18 @@ validate_ccmpp_object(x, ...)
 \method{validate_ccmpp_object}{ccmpp_input_df}(x)
 
 \method{validate_ccmpp_object}{fert_rate_input_df}(x, ...)
+
+\method{validate_ccmpp_object}{survival_ratio_input_df}(x, ...)
+
+\method{validate_ccmpp_object}{pop_count_base_input_df}(x, ...)
+
+\method{validate_ccmpp_object}{srb_input_df}(x, ...)
+
+\method{validate_ccmpp_object}{mig_net_rate_input_df}(x, ...)
+
+\method{validate_ccmpp_object}{mig_net_count_input_df}(x, ...)
+
+\method{validate_ccmpp_object}{mig_net_count_tot_input_df}(x, ...)
 }
 \arguments{
 \item{x}{An object to be validated.}
@@ -26,12 +44,10 @@ Checks that an object with \code{class} attribute
 \code{demog_change_component_df} is a valid object of this type.
 }
 \seealso{
-demog_change_component_df
-
-Other demog_change_component_df class non-exported functions: 
-\code{\link{new_demog_change_component_df}()}
+\code{\link{demog_change_component_df}} and the other
+    creator functions (e.g., \code{\link{ccmpp_input_df}},
+    \code{link{fert_rate_input_df}}, etc.)
 }
 \author{
 Mark Wheldon
 }
-\concept{demog_change_component_df class non-exported functions}

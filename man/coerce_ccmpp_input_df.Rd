@@ -3,16 +3,22 @@
 \name{coerce_ccmpp_input_df}
 \alias{coerce_ccmpp_input_df}
 \alias{as_ccmpp_input_df}
+\alias{as_ccmpp_input_df.default}
 \alias{as_ccmpp_input_df.data.frame}
 \alias{as_ccmpp_input_df.matrix}
+\alias{as_ccmpp_input_df.ccmpp_input_df}
 \alias{is_ccmpp_input_df}
 \title{Coerce to a \code{ccmpp_input_df}}
 \usage{
 as_ccmpp_input_df(x, ...)
 
+\method{as_ccmpp_input_df}{default}(x, ...)
+
 \method{as_ccmpp_input_df}{data.frame}(x, ...)
 
 \method{as_ccmpp_input_df}{matrix}(x, ...)
+
+\method{as_ccmpp_input_df}{ccmpp_input_df}(x, ...)
 
 is_ccmpp_input_df(x)
 }
@@ -30,18 +36,9 @@ These functions coerce an object to a
 \code{ccmpp_input_df} if possible, or check if it is
 one.
 }
-\section{Note on Validation}{
-
-The method for \code{ccmpp_input_df} (i.e.,
-\code{as_ccmpp_input_df.ccmpp_input_df}) does
-\emph{not} check for validity. If \code{x} is somehow an invalid
-\code{ccmpp_input_df} object, applying
-\code{as_ccmpp_input_df} will simply return it (with
-\code{attr(x, "class")} potentially modifed), not signal an
-error. Use \code{ccmpp_input_df} on the object to ensure
-validity is checked.
+\seealso{
+\code{\link{coerce_demog_change_component_df}} for an important note on validation.
 }
-
 \author{
 Mark Wheldon
 }

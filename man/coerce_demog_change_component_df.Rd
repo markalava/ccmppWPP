@@ -27,12 +27,12 @@ A coerced object in the case of the \code{as_...}
 }
 \description{
 These functions coerce an object to a
-\code{demog_change_component_df} if possible, or check if it is
-one.
+\code{demog_change_component_df} (or subclasses, as appropriate) if
+possible, or check if it is one.
 }
 \section{Note on Validation}{
 
-The method for \code{demog_change_component_df} (i.e.,
+The method for \code{demog_change_component_df} and subclasses (i.e.,
 \code{as_demog_change_component_df.demog_change_component_df}) does
 \emph{not} check for validity. If \code{x} is somehow an invalid
 \code{demog_change_component_df} object, applying

@@ -143,3 +143,29 @@ test_that("sorting is handled properly", {
     validate_ccmpp_object(z)
 
 })
+
+
+test_that("sex dimension detected", {
+    y <- fert_rate_input_df_time_age
+    z <- cbind(y, sex = "female")
+    z <- new_fert_rate_input_df(z, time_span = time_span(y),
+                                age_span = age_span(y),
+                                dimensions = c("time", "age", "sex"),
+                                non_zero_fert_ages = non_zero_fert_ages(y))
+    expect_error(validate_ccmpp_object(z),
+                 "has a sex dimension")
+
+    expect_error(fert_rate_input_df(z, time_span = time_span(y),
+                              dimensions = c("sex", "time")),
+                 "has a sex dimension")
+})
+
+
+test_that("sex column removed", {
+    y <- fert_rate_input_df_time_age
+    z <- cbind(y, sex = "female")
+    z <- fert_rate_input_df(z, time_span = time_span(y),
+                            age_span = age_span(y),
+                            dimensions = c("time", "age"))
+    expect_false("sex" %in% colnames(z))
+})

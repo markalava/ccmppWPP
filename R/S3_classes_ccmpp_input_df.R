@@ -41,10 +41,12 @@ new_ccmpp_input_df <-
 #'
 #' **TBC** More strict version of \code{\link{demog_change_component_df}}.
 #'
+#' @family ccmpp_input_objects
+#'
 #' @inheritParams demog_change_component_df
 #' @return An object of class \code{ccmpp_input_df}.
 #' @author Mark Wheldon
-#' #' @export
+#' @export
 ccmpp_input_df <-
     function(x,
              dimensions = attr(x, "dimensions"),
@@ -80,18 +82,9 @@ ccmpp_input_df <-
 #' \code{ccmpp_input_df} if possible, or check if it is
 #' one.
 #'
-#' @section Note on Validation:
-#' The method for \code{ccmpp_input_df} (i.e.,
-#' \code{as_ccmpp_input_df.ccmpp_input_df}) does
-#' \emph{not} check for validity. If \code{x} is somehow an invalid
-#' \code{ccmpp_input_df} object, applying
-#' \code{as_ccmpp_input_df} will simply return it (with
-#' \code{attr(x, "class")} potentially modifed), not signal an
-#' error. Use \code{ccmpp_input_df} on the object to ensure
-#' validity is checked.
+#' @seealso \code{\link{coerce_demog_change_component_df}} for an important note on validation.
 #'
-#' @param x An object to coerce or check.
-#' @param ... Further arguments passed to specific methods.
+#' @inheritParams coerce_demog_change_component_df
 #' @return A coerced object in the case of the \code{as_...}
 #'     functions; a logical for the \code{is_...} functions.
 #' @author Mark Wheldon
@@ -101,6 +94,7 @@ as_ccmpp_input_df <- function(x, ...) {
     UseMethod("as_ccmpp_input_df")
 }
 
+#' @rdname coerce_ccmpp_input_df
 #' @export
 as_ccmpp_input_df.default <- function(x, ...) {
     if (is_ccmpp_input_df(x)) return(x)
@@ -119,6 +113,7 @@ as_ccmpp_input_df.matrix <- function(x, ...) {
     as_ccmpp_input_df(as.data.frame(NextMethod()))
 }
 
+#' @rdname coerce_ccmpp_input_df
 #' @export
 as_ccmpp_input_df.ccmpp_input_df <- function(x, ...) {
     ## copied from  'as.data.frame'

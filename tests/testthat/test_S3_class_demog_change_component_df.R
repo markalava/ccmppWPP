@@ -94,7 +94,7 @@ test_that("missing columns are caught", {
     x <- S3_demog_change_component_time_age_sex_test_df
 
     must_have <-
-        "must have columns 'time_start', 'age_start', 'sex', 'value'"
+        "must have columns 'time_start', 'sex', 'age_start', 'value'"
 
     expect_error(demog_change_component_df(x[, c("sex",
                                                   "age_start", "value")],

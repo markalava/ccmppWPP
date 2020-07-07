@@ -1,3 +1,10 @@
+################################################################################
+###
+### Internal functions for constructing classes and methods
+###
+################################################################################
+
+
 ###-----------------------------------------------------------------------------
 ### * Attributes
 
@@ -37,14 +44,15 @@ get_attr_w_span_names <- function() {
 get_allowed_dimensions <- function() {
     ## The name component is a label for internal indexing. The data
     ## component is the actual name of the dimension.
-    c("time" = "time", "age" = "age", "sex" = "sex", "indicator" = "indicator")
+    ## !! ORDER MATTERS !! Determines the order of sorting!
+    c("indicator" = "indicator", "time" = "time", "sex" = "sex", "age" = "age")
     }
 
 ## Data base of column names, types, and corresp. dimension.
 get_dim_col_info <- function(dimensions) {
     x <- data.frame(dimension = c(get_allowed_dimensions()),
-               colname = c("time_start", "age_start", "sex", "indicator"),
-               type = c("numeric", "numeric", "character", "character"))
+               colname = c("indicator", "time_start", "sex", "age_start"),
+               type = c("character", "numeric", "character", "numeric"))
                                 # rownames will have the dimension
                                 # 'names' from
                                 # 'get_allowed_dimensions()'
@@ -92,32 +100,15 @@ sort_demog_change_component_df <- function(x) {
         x[[coln_info_x[rowname, "colname"]]]
     }
 
-    if (all(c("time", "sex", "age") %in% dims_names_x))
-        return(x[order(get_x_col("time"),
-                       rev(get_x_col("sex")),
-                       get_x_col("age")
-                       ), ])
-    else if (all(c("time", "sex") %in% dims_names_x))
-        return(x[order(get_x_col("time"),
-                       rev(get_x_col("sex"))
-                           ), ])
-    else if (all(c("time", "age") %in% dims_names_x))
-        return(x[order(get_x_col("time"),
-                       get_x_col("age")
-                       ), ])
-    else if (all(c("sex", "age") %in% dims_names_x))
-        return(x[order(rev(get_x_col("sex")),
-                       get_x_col("age")
-                       ), ])
-    else if ("time" %in% dims_names_x)
-        return(x[order(get_x_col("time")
-                       ), ])
-    else if ("age" %in% dims_names_x)
-        return(x[order(get_x_col("age")
-                       ), ])
-    else if ("sex" %in% dims_names_x)
-        return(x[order(get_x_col("sex")
-                       ), ])
+    sort_factors <-
+        unname(as.data.frame(lapply(dims_names_x, "get_x_col")))
+
+    sex_col <- which(dims_names_x == "sex")
+    if (length(sex_col) > 0) {
+        sort_factors[, sex_col] <- rev(sort_factors[, sex_col])
+    }
+
+    return(x[do.call("order", sort_factors), ])
 }
 
 ## Tabulate to check squareness
@@ -131,7 +122,7 @@ tabulate_demog_change_component_df <- function(x) {
         x[[coln_info_x[rowname, "colname"]]]
     }
 
-    tab_factors <- lapply(as.list(dims_names_x), "get_x_col")
+    tab_factors <- lapply(dims_names_x, "get_x_col")
     return(table(tab_factors))
 }
 
@@ -148,20 +139,17 @@ get_min_age_in_dims <- function(x) {
         x[[coln_info_x[rowname, "colname"]]]
     }
 
-    if (all(c("time", "sex", "age") %in% dims_names_x))
-        return(tapply(get_x_col("age"),
-                      INDEX = list(get_x_col("sex"),
-                                   get_x_col("time")),
+    dims_names_not_age <- dims_names_x[!dims_names_x == "age"]
+
+    if (length(dims_names_not_age) > 1) {
+
+        tab_factors <-
+            lapply(dims_names_not_age, "get_x_col")
+
+        return(tapply(get_x_col("age"), INDEX = tab_factors,
                       FUN = "min"))
-    else if (all(c("time", "age") %in% dims_names_x))
-        return(tapply(get_x_col("age"),
-                      INDEX = list(get_x_col("time")),
-                      FUN = "min"))
-    else if (all(c("sex", "age") %in% dims_names_x))
-        return(tapply(get_x_col("age"),
-                      INDEX = list(get_x_col("sex")),
-                      FUN = "min"))
-    else if ("age" %in% dims_names_x)
+
+    } else if ("age" %in% dims_names_x)
         return(min(get_x_col("age")))
 }
 

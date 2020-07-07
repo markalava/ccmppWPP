@@ -131,25 +131,8 @@ tabulate_demog_change_component_df <- function(x) {
         x[[coln_info_x[rowname, "colname"]]]
     }
 
-    if (all(c("time", "sex", "age") %in% dims_names_x))
-        return(table(get_x_col("time"),
-                     get_x_col("sex"),
-                     get_x_col("age")))
-    else if (all(c("time", "sex") %in% dims_names_x))
-        return(table(get_x_col("time"),
-                     get_x_col("sex")))
-    else if (all(c("time", "age") %in% dims_names_x))
-        return(table(get_x_col("time"),
-                     get_x_col("age")))
-    else if (all(c("sex", "age") %in% dims_names_x))
-        return(table(get_x_col("sex"),
-                     get_x_col("age")))
-    else if ("time" %in% dims_names_x)
-        return(table(get_x_col("time")))
-    else if ("age" %in% dims_names_x)
-        return(table(get_x_col("age")))
-    else if ("sex" %in% dims_names_x)
-        return(table(get_x_col("sex")))
+    tab_factors <- lapply(as.list(dims_names_x), "get_x_col")
+    return(table(tab_factors))
 }
 
 ## Get min age within each dimension

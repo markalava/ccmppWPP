@@ -235,3 +235,26 @@ is_by_sex.data.frame <- function(x) {
     isTRUE(sex_col_name %in% colnames(x) &&
            length(unique(x[[sex_col_name]]) > 1))
     }
+
+#' @author Mark Wheldon
+#' @rdname test_demog_change_component_dimensions
+#' @export
+is_by_indicator <- function(x) {
+    UseMethod("is_by_indicator")
+}
+
+#' @author Mark Wheldon
+#' @rdname test_demog_change_component_dimensions
+#' @export
+is_by_indicator.demog_change_component_df <- function(x) {
+    isTRUE(get_allowed_dimensions()["indicator"] %in% demog_change_component_dimensions(x))
+    }
+
+#' @author Mark Wheldon
+#' @rdname test_demog_change_component_dimensions
+#' @export
+is_by_indicator.data.frame <- function(x) {
+    indicator_col_name <- get_attr_col_name("indicator")
+    isTRUE(indicator_col_name %in% colnames(x) &&
+           length(unique(x[[indicator_col_name]]) > 1))
+    }

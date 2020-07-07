@@ -12,6 +12,9 @@
 \alias{is_by_sex}
 \alias{is_by_sex.demog_change_component_df}
 \alias{is_by_sex.data.frame}
+\alias{is_by_indicator}
+\alias{is_by_indicator.demog_change_component_df}
+\alias{is_by_indicator.data.frame}
 \title{Test for vital rate dimensions}
 \usage{
 is_by_time(x)
@@ -31,6 +34,12 @@ is_by_sex(x)
 \method{is_by_sex}{demog_change_component_df}(x)
 
 \method{is_by_sex}{data.frame}(x)
+
+is_by_indicator(x)
+
+\method{is_by_indicator}{demog_change_component_df}(x)
+
+\method{is_by_indicator}{data.frame}(x)
 }
 \arguments{
 \item{x}{An object to test.}
@@ -45,6 +54,12 @@ attributes. For data frames it merely checks the presence of the
 appropriate column.
 }
 \author{
+Mark Wheldon
+
+Mark Wheldon
+
+Mark Wheldon
+
 Mark Wheldon
 
 Mark Wheldon

@@ -228,15 +228,11 @@ demog_change_component_df <-
 
         ## -------* Other
 
-        ## Clean 'x' and make sure there are no factor columns
+        ## Clean 'x' and convert factors to character
         x <- x[, req_cols_out]
-        num_cols <- which(req_cols_out_types == "numeric")
         char_cols <- which(req_cols_out_types == "character")
-        for (j in num_cols) {
-            x[, j] <- as.numeric(x[, j])
-        }
         for (j in char_cols) {
-            x[, j] <- as.character(x[, j])
+            if (is.factor(x[, j])) x[, j] <- as.character(x[, j])
         }
 
         ## Sort by time, then sex, then age

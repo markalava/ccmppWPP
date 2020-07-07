@@ -1,4 +1,5 @@
-
+###-----------------------------------------------------------------------------
+### * Attributes
 
 ## Define required attributes
 get_req_attr_names <- function(dimensions) {
@@ -10,12 +11,18 @@ get_req_attr_names <- function(dimensions) {
     return(out)
 }
 
-## Guess dimensions from data frame columns
-guess_demog_change_component_dimensions <- function(x) {
-    ## Attempt to guess dimensions
-    col_info <-
-        get_dim_col_info(dimensions = get_allowed_dimensions())
-    dim_cols <- col_info$dimension[col_info$colname %in% colnames(x)]
+###-----------------------------------------------------------------------------
+### * Manage 'class' attribute
+
+get_all_demog_change_component_df_class_names <- function() {
+    c("mig_net_count_input_df", "mig_net_count_input_df",
+      "mig_net_rate_input_df", "srb_input_df", "pop_count_base_input_df",
+      "survival_ratio_input_df", "fert_rate_input_df",
+      "ccmpp_input_df", "demog_change_component_df")
+}
+
+strip_demog_change_component_df_classes_attribute <- function(class_att) {
+    class_att[!(class_att %in% get_all_demog_change_component_df_class_names())]
 }
 
 ###-----------------------------------------------------------------------------
@@ -65,6 +72,14 @@ get_attr_col_name <- function(label) {
 
 ###-----------------------------------------------------------------------------
 ### * Data frame checking
+
+## Guess dimensions from data frame columns
+guess_demog_change_component_dimensions <- function(x) {
+    ## Attempt to guess dimensions
+    col_info <-
+        get_dim_col_info(dimensions = get_allowed_dimensions())
+    dim_cols <- col_info$dimension[col_info$colname %in% colnames(x)]
+}
 
 ## Definine the proper sort order of the class
 sort_demog_change_component_df <- function(x) {
@@ -233,18 +248,3 @@ get_value_type <- function(class) {
     stopifnot(class %in% tb$class)
     tb[tb$class == class, "value_type"]
     }
-
-
-###-----------------------------------------------------------------------------
-### * Manage 'class' attribute
-
-get_all_demog_change_component_df_class_names <- function() {
-    c("mig_net_count_input_df", "mig_net_count_input_df",
-      "mig_net_rate_input_df", "srb_input_df", "pop_count_base_input_df",
-      "survival_ratio_input_df", "fert_rate_input_df",
-      "ccmpp_input_df", "demog_change_component_df")
-}
-
-strip_demog_change_component_df_classes_attribute <- function(class_att) {
-    class_att[!(class_att %in% get_all_demog_change_component_df_class_names())]
-}

@@ -29,6 +29,9 @@ validate_ccmpp_object <- function(x, ...) {
 validate_ccmpp_object.demog_change_component_df <-
     function(x, ...) {
 
+        if (!inherits(x, "data.frame"))
+            stop("'x' does not inherit from 'data.frame'.")
+
         ## -------* Attributes
 
         demog_change_component_dims_x <- demog_change_component_dimensions(x)
@@ -65,6 +68,21 @@ validate_ccmpp_object.demog_change_component_df <-
                     "'.")
         }
 
+        ## -------* Column types
+
+        req_cols_out_types <-
+            get_all_req_col_types(dimensions = demog_change_component_dims_x)
+        num_cols <- which(req_cols_out_types == "numeric")
+        char_cols <- which(req_cols_out_types == "character")
+        for (j in num_cols) {
+            if (!is.numeric(x[, j]))
+                stop("'", req_cols[j], "' must be numeric.")
+        }
+        for (j in char_cols) {
+            if (!is.character(x[, j]))
+                stop("'", req_cols[j], "' must be character.")
+        }
+
         ## -------* Spans
 
         attr_w_span_names <- get_attr_w_span_names()
@@ -92,9 +110,6 @@ validate_ccmpp_object.demog_change_component_df <-
 
         ## -------* Values
 
-        if (!inherits(x, "data.frame"))
-            stop("'x' does not inherit from 'data.frame'.")
-
         value_type <- attr(x, "value_type")
 
         if (!identical(length(value_type), 1L) || !is.character(value_type)) {
@@ -113,15 +128,20 @@ validate_ccmpp_object.demog_change_component_df <-
 
         x_tbl <- tabulate_demog_change_component_df(x)
         if (!identical(as.double(sum(x_tbl != 1)), 0))
-            stop("'x' does not have exactly one 'value' per 'age' * 'sex' * 'time' combination (see ?demog_change_component_df for class definition).")
+            stop("'x' does not have exactly one 'value' per 'age' * 'sex' * 'time' * 'indicator' combination (see ?demog_change_component_df for class definition).")
 
         ## -------* Sex
 
         allowed_sexes <- get_allowed_sexes()
-        if (!all(x$sex %in% c("female", "male", "both")))
+        if (!is.null(x$sex) && !all(x$sex %in% c("female", "male", "both")))
             stop("Not all 'x$sex' are in '",
                  paste0(allowed_sexes, collapse = "', '"),
-            "'; values other than these are not supported.")
+                 "'; values other than these are not supported.")
+
+        ## -------* Indicator
+
+        if (!is.null(x$indicator) && !is.character(x$indicator) && !is.factor(x$indicator))
+            stop("'indicator' must be 'character' or 'factor'.")
 
     return(x)
 }

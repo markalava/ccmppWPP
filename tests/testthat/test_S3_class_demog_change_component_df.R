@@ -146,6 +146,40 @@ test_that("superfluous columns are caught", {
 })
 
 
+test_that("'indicator' column OK", {
+
+    x <- S3_demog_change_component_time_age_sex_test_df
+    z <- data.frame(x, indicator = "mig_type")
+
+    expect_true(## No fail: Automatically removes column bc 'indicator' not in dimensions.
+        !("indicator" %in%
+          colnames(demog_change_component_df(z, age_span = 1, time_span = 1,
+                       dimensions = c("time", "age", "sex")))))
+
+    expect_true(## No fail: Keeps column
+        "indicator" %in%
+          colnames(demog_change_component_df(z, age_span = 1, time_span = 1,
+                       dimensions = c("time", "age", "sex", "indicator"))))
+
+    expect_true(## No fail: Keeps column
+        "indicator" %in%
+          colnames(demog_change_component_df(z, age_span = 1, time_span = 1)))
+
+    y <- new_demog_change_component_df(z[,
+                             c(ccmppWPP::get_all_req_col_names(
+                                             dimensions =
+                                                 c("age", "time", "sex", "indicator")))],
+                             age_span = 1, time_span = 1,
+                             value_type = "real",
+                       dimensions = c("time", "age", "sex", "indicator"))
+    expect_s3_class(validate_ccmpp_object(y), "demog_change_component_df")
+
+    z <- transform(z, indicator = 84)
+    expect_error(demog_change_component_df(z),
+                 "'indicator' must be character")
+})
+
+
 test_that("'value_type' is checked properly", {
 
     x <- S3_demog_change_component_time_age_sex_test_df

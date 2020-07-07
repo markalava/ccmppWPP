@@ -16,3 +16,28 @@ test_that("Non-zero age detected", {
     expect_error(validate_ccmpp_object(z),
                  "'age_start' does not start at '0'")
 })
+
+
+test_that("indicator dimension detected", {
+    y <- mig_net_count_input_df_time_age_sex
+    z <- cbind(y, indicator = "ltX")
+    z <- new_mig_net_count_input_df(z, time_span = time_span(y),
+                                age_span = age_span(y),
+                                dimensions = c("time", "age", "sex", "indicator"))
+    expect_error(validate_ccmpp_object(z),
+                 "has a indicator dimension")
+
+    expect_error(fert_rate_input_df(z, time_span = time_span(y),
+                              dimensions = c("indicator", "time")),
+                 "has a indicator dimension")
+})
+
+
+test_that("indicator column removed", {
+    y <- mig_net_count_input_df_time_age_sex
+    z <- cbind(y, indicator = "ltX")
+    z <- mig_net_count_input_df(z, time_span = time_span(y),
+                            age_span = age_span(y),
+                            dimensions = c("time", "age", "sex"))
+    expect_false("indicator" %in% colnames(z))
+})

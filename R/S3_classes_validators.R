@@ -228,6 +228,11 @@ validate_ccmpp_object.fert_rate_input_df <- function(x, ...) {
         stop("Either 'is_by_sex(x)' is 'TRUE' or 'x' has a sex dimension column. Fertility rates for CCMPP must not have sex information.")
     }
 
+    ## no indicator dimension
+    if (is_by_indicator(x) || get_attr_col_name("indicator") %in% colnames(x)) {
+        stop("Either 'is_by_indicator(x)' is 'TRUE' or 'x' has a indicator dimension column. This type of CCMPP input must not have indicator information.")
+    }
+
     return(NextMethod())
 }
 
@@ -247,6 +252,11 @@ validate_ccmpp_object.survival_ratio_input_df <- function(x, ...) {
         if (!all(min_age_start == 0))
             stop("'age_start' does not start at '0' for each time * sex combination.")
         }
+
+    ## no indicator dimension
+    if (is_by_indicator(x) || get_attr_col_name("indicator") %in% colnames(x)) {
+        stop("Either 'is_by_indicator(x)' is 'TRUE' or 'x' has a indicator dimension column. This type of CCMPP input must not have indicator information.")
+    }
 
     return(NextMethod())
 }
@@ -274,6 +284,11 @@ validate_ccmpp_object.pop_count_base_input_df <- function(x, ...) {
         stop("'x$time_start' has more than one unique value; 'pop_count_base_input_df' objects can only refer to a single time period.")
     }
 
+    ## no indicator dimension
+    if (is_by_indicator(x) || get_attr_col_name("indicator") %in% colnames(x)) {
+        stop("Either 'is_by_indicator(x)' is 'TRUE' or 'x' has a indicator dimension column. This type of CCMPP input must not have indicator information.")
+    }
+
     return(NextMethod())
 }
 
@@ -297,6 +312,11 @@ validate_ccmpp_object.srb_input_df <- function(x, ...) {
         stop("Either 'is_by_sex(x)' is 'TRUE' or 'x' has a sex dimension column. SRB for CCMPP must not have sex information.")
     }
 
+    ## no indicator dimension
+    if (is_by_indicator(x) || get_attr_col_name("indicator") %in% colnames(x)) {
+        stop("Either 'is_by_indicator(x)' is 'TRUE' or 'x' has a indicator dimension column. This type of CCMPP input must not have indicator information.")
+    }
+
     return(NextMethod())
 }
 
@@ -316,6 +336,11 @@ validate_ccmpp_object.mig_net_rate_input_df <- function(x, ...) {
         if (!all(min_age_start == 0))
             stop("'age_start' does not start at '0' for each time * sex combination.")
         }
+
+    ## no indicator dimension
+    if (is_by_indicator(x) || get_attr_col_name("indicator") %in% colnames(x)) {
+        stop("Either 'is_by_indicator(x)' is 'TRUE' or 'x' has a indicator dimension column. This type of CCMPP input must not have indicator information.")
+    }
 
     return(NextMethod())
 }
@@ -337,6 +362,11 @@ validate_ccmpp_object.mig_net_count_input_df <- function(x, ...) {
             stop("'age_start' does not start at '0' for each time * sex combination.")
         }
 
+    ## no indicator dimension
+    if (is_by_indicator(x) || get_attr_col_name("indicator") %in% colnames(x)) {
+        stop("Either 'is_by_indicator(x)' is 'TRUE' or 'x' has a indicator dimension column. This type of CCMPP input must not have indicator information.")
+    }
+
     return(NextMethod())
 }
 
@@ -353,6 +383,11 @@ validate_ccmpp_object.mig_net_count_tot_input_df <- function(x, ...) {
     ## no sex dimension
     if (is_by_sex(x) || get_attr_col_name("sex") %in% colnames(x)) {
         stop("Either 'is_by_sex(x)' is 'TRUE' or 'x' has a sex dimension column. 'mig_net_count_tot_input_df' for CCMPP must not have sex information.")
+    }
+
+    ## no indicator dimension
+    if (is_by_indicator(x) || get_attr_col_name("indicator") %in% colnames(x)) {
+        stop("Either 'is_by_indicator(x)' is 'TRUE' or 'x' has a indicator dimension column. This type of CCMPP input must not have indicator information.")
     }
 
     return(NextMethod())

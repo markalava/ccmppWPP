@@ -49,3 +49,26 @@ test_that("sex column removed", {
                             dimensions = c("time"))
     expect_false("sex" %in% colnames(z))
 })
+
+
+test_that("indicator dimension detected", {
+    y <- mig_net_count_tot_input_df_time
+    z <- cbind(y, indicator = "ltX")
+    z <- new_mig_net_count_tot_input_df(z, time_span = time_span(y),
+                                dimensions = c("time", "indicator"))
+    expect_error(validate_ccmpp_object(z),
+                 "has a indicator dimension")
+
+    expect_error(fert_rate_input_df(z, time_span = time_span(y),
+                              dimensions = c("indicator", "time")),
+                 "has a indicator dimension")
+})
+
+
+test_that("indicator column removed", {
+    y <- mig_net_count_tot_input_df_time
+    z <- cbind(y, indicator = "ltX")
+    z <- mig_net_count_tot_input_df(z, time_span = time_span(y),
+                            dimensions = c("time"))
+    expect_false("indicator" %in% colnames(z))
+})

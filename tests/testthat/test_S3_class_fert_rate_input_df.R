@@ -169,3 +169,30 @@ test_that("sex column removed", {
                             dimensions = c("time", "age"))
     expect_false("sex" %in% colnames(z))
 })
+
+
+
+test_that("indicator dimension detected", {
+    y <- fert_rate_input_df_time_age
+    z <- cbind(y, indicator = "ltX")
+    z <- new_fert_rate_input_df(z, time_span = time_span(y),
+                                age_span = age_span(y),
+                                dimensions = c("time", "age", "indicator"),
+                                non_zero_fert_ages = non_zero_fert_ages(y))
+    expect_error(validate_ccmpp_object(z),
+                 "has a indicator dimension")
+
+    expect_error(fert_rate_input_df(z, time_span = time_span(y),
+                              dimensions = c("indicator", "time")),
+                 "has a indicator dimension")
+})
+
+
+test_that("indicator column removed", {
+    y <- fert_rate_input_df_time_age
+    z <- cbind(y, indicator = "ltX")
+    z <- fert_rate_input_df(z, time_span = time_span(y),
+                            age_span = age_span(y),
+                            dimensions = c("time", "age"))
+    expect_false("indicator" %in% colnames(z))
+})

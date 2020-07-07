@@ -42,6 +42,7 @@ An object of class \code{ccmpp_input_df}.
 \seealso{
 Other ccmpp_input_objects: 
 \code{\link{fert_rate_input_df}()},
+\code{\link{life_table_input_df}()},
 \code{\link{mig_net_count_input_df}()},
 \code{\link{mig_net_count_tot_input_df}()},
 \code{\link{mig_net_rate_input_df}()},

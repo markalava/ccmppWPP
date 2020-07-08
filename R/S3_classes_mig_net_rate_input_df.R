@@ -30,7 +30,7 @@ new_mig_net_rate_input_df <-
                            age_span = age_span,
                            time_span = time_span,
                            dimensions = dimensions,
-                           value_type = get_value_type("mig_net_rate_input_df"),
+                           value_type = get_value_types_for_classes("mig_net_rate_input_df"),
                            ...,
                            class = c(class, "mig_net_rate_input_df"))
     }
@@ -64,7 +64,7 @@ mig_net_rate_input_df <-
                             dimensions = dimensions,
                             age_span = age_span,
                             time_span = time_span,
-                            value_type = get_value_type("mig_net_rate_input_df"),
+                            value_type = get_value_types_for_classes("mig_net_rate_input_df"),
                             ...)
 
         ## Create/Validate

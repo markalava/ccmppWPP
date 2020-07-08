@@ -17,23 +17,6 @@ test_that("objects are created properly", {
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(z), c("time", "age")))
     expect_true(is_by_age(z))
-
-    ## Time
-    x <- fert_rate_input_df_time_age[fert_rate_input_df_time_age$age_start == 0,
-                                     c("time_start", "value")]
-    z <- fert_rate_input_df(x, time_span = 1, dimensions = "time")
-    expect_s3_class(z, "fert_rate_input_df")
-    expect_s3_class(z, "data.frame")
-    expect_true(setequal(demog_change_component_dimensions(z), "time"))
-    expect_true(is_by_time(z))
-
-    x <- data.frame(x, time_span = 1)
-    z <- fert_rate_input_df(x, dimensions = c("time"))
-    expect_s3_class(z, "fert_rate_input_df")
-    expect_s3_class(z, "data.frame")
-    expect_true(setequal(demog_change_component_dimensions(z), "time"))
-    expect_true(is_by_time(z))
-    expect_false(is_by_age(z))
 })
 
 
@@ -92,7 +75,7 @@ test_that("superfluous columns are caught", {
                        dimensions = c("time", "age")))))
 
     y <- new_fert_rate_input_df(z[,
-                             c(ccmppWPP::get_all_req_col_names(
+                             c(ccmppWPP::get_all_req_col_names_for_dimensions(
                                              dimensions =
                                                  c("age", "time")),
                                "source")],

@@ -48,7 +48,7 @@ new_fert_rate_input_df <-
                            age_span = age_span,
                            time_span = time_span,
                            dimensions = dimensions,
-                           value_type = get_value_type("fert_rate_input_df"),
+                           value_type = get_value_types_for_classes("fert_rate_input_df"),
                            non_zero_fert_ages = non_zero_fert_ages,
                            ...,
                            class = c(class, "fert_rate_input_df"))
@@ -95,7 +95,7 @@ fert_rate_input_df <-
                             dimensions = dimensions,
                             age_span = age_span,
                             time_span = time_span,
-                            value_type = get_value_type("fert_rate_input_df"),
+                            value_type = get_value_types_for_classes("fert_rate_input_df"),
                             ...)
 
         if (is_by_age(x)) {

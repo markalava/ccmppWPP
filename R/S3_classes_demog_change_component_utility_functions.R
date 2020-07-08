@@ -39,7 +39,7 @@ subset_time.demog_change_component_df <- function(x, time, drop = FALSE) {
     else age_span_x <- NULL
     value_type_x <- value_type(x)
 
-    time_col_name <- get_attr_col_name("time")
+    time_col_name <- get_df_col_namees_for_dimensions("time")
     time_x <- x[[time_col_name]] %in% time
     if (identical(sum(time_x), 0L))
         stop("'x' does not have any entries with 'time' %in% '", time, "'.")
@@ -50,7 +50,7 @@ subset_time.demog_change_component_df <- function(x, time, drop = FALSE) {
 
     x <- x[time_x, ]
     if (identical(length(time), 1L) && drop)
-        x <- x[, -which(colnames(x) == get_attr_col_name("time"))]
+        x <- x[, -which(colnames(x) == get_df_col_namees_for_dimensions("time"))]
 
     return(suppressMessages(demog_change_component_df(x,
                                                       time_span = time_span_x,
@@ -80,7 +80,7 @@ subset_age.demog_change_component_df <- function(x, age, drop = FALSE) {
     else age_span_x <- NULL
     value_type_x <- value_type(x)
 
-    age_col_name <- get_attr_col_name("age")
+    age_col_name <- get_df_col_namees_for_dimensions("age")
     age_x <- x[[age_col_name]] %in% age
     if (identical(sum(age_x), 0L))
         stop("'x' does not have any entries with 'age' %in% '", age, "'.")
@@ -91,7 +91,7 @@ subset_age.demog_change_component_df <- function(x, age, drop = FALSE) {
 
     x <- x[age_x, ]
     if (identical(length(age), 1L) && drop)
-        x <- x[, -which(colnames(x) == get_attr_col_name("age"))]
+        x <- x[, -which(colnames(x) == get_df_col_namees_for_dimensions("age"))]
 
     return(suppressMessages(demog_change_component_df(x,
                                                       time_span = time_span_x,
@@ -109,7 +109,7 @@ subset_sex <- function(x, ...) {
 #' @rdname subset_demog_change_component_df
 #' @export
 subset_sex.demog_change_component_df <-
-    function(x, sex = get_allowed_sexes(), drop = FALSE) {
+    function(x, sex = get_all_allowed_sexes(), drop = FALSE) {
         stopifnot(is_by_sex(x))
         sex <- match.arg(sex, several.ok = TRUE)
 
@@ -122,7 +122,7 @@ subset_sex.demog_change_component_df <-
         else age_span_x <- NULL
         value_type_x <- value_type(x)
 
-        sex_col_name <- get_attr_col_name("sex")
+        sex_col_name <- get_df_col_namees_for_dimensions("sex")
         sex_x <- x[[sex_col_name]] %in% sex
         if (identical(sum(sex_x), 0L))
             stop("'x' does not have any entries with 'sex' %in% '", sex, "'.")
@@ -133,7 +133,7 @@ subset_sex.demog_change_component_df <-
 
         x <- x[sex_x, ]
         if (identical(length(sex), 1L) && drop)
-            x <- x[, -which(colnames(x) == get_attr_col_name("sex"))]
+            x <- x[, -which(colnames(x) == get_df_col_namees_for_dimensions("sex"))]
 
         return(suppressMessages(demog_change_component_df(x,
                                                           time_span = time_span_x,

@@ -9,7 +9,7 @@
 ### * Attributes
 
 ## Define required attributes
-get_req_attr_names <- function(dimensions) {
+get_req_attr_names_for_dimensions <- function(dimensions) {
     out <- c(names(attributes(data.frame())), "dimensions", "value_type")
     if ("time" %in% dimensions)
         out <- c(out, "time_span")
@@ -22,7 +22,8 @@ get_req_attr_names <- function(dimensions) {
 ### * Manage 'class' attribute
 
 get_all_demog_change_component_df_class_names <- function() {
-    c("mig_net_count_input_df", "mig_net_count_input_df",
+    c("life_table_input_df",
+      "mig_net_count_input_df", "mig_net_count_input_df",
       "mig_net_rate_input_df", "srb_input_df", "pop_count_base_input_df",
       "survival_ratio_input_df", "fert_rate_input_df",
       "ccmpp_input_df", "demog_change_component_df")
@@ -36,63 +37,109 @@ strip_demog_change_component_df_classes_attribute <- function(class_att) {
 ### * Time and Age Attributes
 
 ## Attributes with corresponding '_span'
-get_attr_w_span_names <- function() {
+get_all_attr_w_span_names <- function() {
     c("time", "age")
     }
 
 ## Define allowed dimensions
-get_allowed_dimensions <- function() {
+get_all_allowed_dimensions <- function() {
     ## The name component is a label for internal indexing. The data
     ## component is the actual name of the dimension.
+    ## !! NAME AND ELEMENT MUST BE THE SAME !!
     ## !! ORDER MATTERS !! Determines the order of sorting!
     c("indicator" = "indicator", "time" = "time", "sex" = "sex", "age" = "age")
-    }
+}
+
+## Select some dimensions but keep order correct
+get_some_dimensions_in_order <- function(dimensions) {
+    all_dims <- get_all_allowed_dimensions()
+    all_dims[all_dims %in% dimensions]
+}
 
 ## Data base of column names, types, and corresp. dimension.
-get_dim_col_info <- function(dimensions) {
-    x <- data.frame(dimension = c(get_allowed_dimensions()),
+get_df_col_info_for_dimensions <- function(dimensions = get_all_allowed_dimensions()) {
+    x <- data.frame(dimension = c(get_all_allowed_dimensions()),
                colname = c("indicator", "time_start", "sex", "age_start"),
                type = c("character", "numeric", "character", "numeric"))
                                 # rownames will have the dimension
                                 # 'names' from
-                                # 'get_allowed_dimensions()'
+                                # 'get_all_allowed_dimensions()'
     return(x[x$dimension %in% dimensions, ])
 }
 
 ## All required columns
-get_all_req_col_names <- function(dimensions) {
-    c(get_dim_col_info(dimensions)$colname, "value")
+get_all_req_col_names_for_dimensions <- function(dimensions) {
+    c(get_df_col_info_for_dimensions(dimensions)$colname, "value")
 }
 
 ## All column types
-get_all_req_col_types <- function(dimensions) {
-    c(get_dim_col_info(dimensions)$type, "numeric")
+get_all_req_col_types_for_dimensions <- function(dimensions) {
+    c(get_df_col_info_for_dimensions(dimensions)$type, "numeric")
 }
 
 ## Get the column name in a data frame corresponding to the given
-## attribute label (as in 'get_dim_col_info()')
-get_attr_col_name <- function(label) {
-    all_d <- get_allowed_dimensions()
-    stopifnot(label %in% all_d)
-    dim_col_info <- get_dim_col_info(dimensions = all_d)
-    dim_col_info[label, "colname"]
+## attribute label (as in 'get_df_col_info_for_dimensions()')
+get_df_col_namees_for_dimensions <- function(dimensions) {
+    all_d <- get_all_allowed_dimensions()
+    dim_col_info <- get_df_col_info_for_dimensions(dimensions = all_d)
+    dim_col_info[dim_col_info$dimension %in% dimensions, "colname"]
 }
+
+###-----------------------------------------------------------------------------
+### * Sexes
+
+get_all_allowed_sexes <- function() {
+    c("female", "male", "both")
+    }
+
+###-----------------------------------------------------------------------------
+### * 'value_type' Attribute
+
+## Define allowed 'value_type'
+get_all_allowed_value_types <- function() {
+    c("count", "rate", "ratio", "proportion", "percentage", "real", "categorical")
+}
+
+get_value_type_info_for_classes <- function(class = get_all_demog_change_component_df_class_names()) {
+    db <- data.frame(rbind(c(class = "fert_rate_input_df",
+                       value_type = "rate"),
+                     c(class = "survival_ratio_input_df",
+                       value_type = "proportion"),
+                     c(class = "pop_count_base_input_df",
+                       value_type = "count"),
+                     c(class = "srb_input_df",
+                       value_type = "ratio"),
+                     c(class = "mig_net_rate_input_df",
+                       value_type = "rate"),
+                     c(class = "mig_net_count_input_df",
+                       value_type = "count"),
+                     c(class = "life_table_input_df",
+                       value_type = "real")
+                     ), stringsAsFactors = FALSE)
+    return(db[db$class %in% class,])
+}
+
+get_value_types_for_classes <- function(classes) {
+    tb <- get_value_type_info_for_classes()
+    tb[tb$class %in% classes, "value_type"]
+    }
+
 
 ###-----------------------------------------------------------------------------
 ### * Data frame checking
 
 ## Guess dimensions from data frame columns
-guess_demog_change_component_dimensions <- function(x) {
+guess_dimensions_from_df_cols <- function(x) {
     ## Attempt to guess dimensions
     col_info <-
-        get_dim_col_info(dimensions = get_allowed_dimensions())
+        get_df_col_info_for_dimensions(dimensions = get_all_allowed_dimensions())
     dim_cols <- col_info$dimension[col_info$colname %in% colnames(x)]
 }
 
 ## Definine the proper sort order of the class
 sort_demog_change_component_df <- function(x) {
     coln_x <- colnames(x)
-    coln_info_x <- get_dim_col_info(dimensions = get_allowed_dimensions())
+    coln_info_x <- get_df_col_info_for_dimensions(dimensions = get_all_allowed_dimensions())
     coln_info_x <- coln_info_x[coln_info_x$colname %in% coln_x, ]
     dims_names_x <- rownames(coln_info_x)
 
@@ -114,7 +161,7 @@ sort_demog_change_component_df <- function(x) {
 ## Tabulate to check squareness
 tabulate_demog_change_component_df <- function(x) {
     coln_x <- colnames(x)
-    coln_info_x <- get_dim_col_info(dimensions = get_allowed_dimensions())
+    coln_info_x <- get_df_col_info_for_dimensions(dimensions = get_all_allowed_dimensions())
     coln_info_x <- coln_info_x[coln_info_x$colname %in% coln_x, ]
     dims_names_x <- rownames(coln_info_x)
 
@@ -127,11 +174,11 @@ tabulate_demog_change_component_df <- function(x) {
 }
 
 ## Get min age within each dimension
-get_min_age_in_dims <- function(x) {
+get_min_age_in_dims_in_df <- function(x) {
     stopifnot(is_by_age(x))
 
     coln_x <- colnames(x)
-    coln_info_x <- get_dim_col_info(dimensions = get_allowed_dimensions())
+    coln_info_x <- get_df_col_info_for_dimensions(dimensions = get_all_allowed_dimensions())
     coln_info_x <- coln_info_x[coln_info_x$colname %in% coln_x, ]
     dims_names_x <- rownames(coln_info_x)
 
@@ -153,22 +200,13 @@ get_min_age_in_dims <- function(x) {
         return(min(get_x_col("age")))
 }
 
-###-----------------------------------------------------------------------------
-### * sexes
+check_value_type_of_value_in_df <- function(value, type) {
 
-get_allowed_sexes <- function() {
-    c("female", "male", "both")
-    }
-
-###-----------------------------------------------------------------------------
-### * 'value_type' Attribute
-
-## Define allowed 'value_type'
-get_allowed_value_types <- function() {
-    c("count", "rate", "ratio", "proportion", "percentage", "real", "categorical")
-}
-
-check_value_type <- function(value, type) {
+    allowed_types <- get_all_allowed_value_types()
+    if (!type %in% allowed_types)
+        stop("'", type, "' is not a valid value type. Valid types are: '",
+             paste(allowed_types, collapse = "', '"),
+             "'.")
 
     stop_msg <- function(suff) {
         paste0("'value_type' is '", type, "' but ", suff)
@@ -197,25 +235,3 @@ check_value_type <- function(value, type) {
         }
     }
 }
-
-tabulate_value_type <- function(class) {
-    data.frame(rbind(c(class = "fert_rate_input_df",
-                       value_type = "rate"),
-                     c(class = "survival_ratio_input_df",
-                       value_type = "proportion"),
-                     c(class = "pop_count_base_input_df",
-                       value_type = "count"),
-                     c(class = "srb_input_df",
-                       value_type = "ratio"),
-                     c(class = "mig_net_rate_input_df",
-                       value_type = "rate"),
-                     c(class = "mig_net_count_input_df",
-                       value_type = "count")))
-}
-
-get_value_type <- function(class) {
-    stopifnot(class %in% get_all_demog_change_component_df_class_names())
-    tb <- tabulate_value_type()
-    stopifnot(class %in% tb$class)
-    tb[tb$class == class, "value_type"]
-    }

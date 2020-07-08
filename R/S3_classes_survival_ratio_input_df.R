@@ -31,7 +31,7 @@ new_survival_ratio_input_df <-
                            age_span = age_span,
                            time_span = time_span,
                            dimensions = dimensions,
-                           value_type = get_value_type("survival_ratio_input_df"),
+                           value_type = get_value_types_for_classes("survival_ratio_input_df"),
                            ...,
                            class = c(class, "survival_ratio_input_df"))
     }
@@ -65,7 +65,7 @@ survival_ratio_input_df <-
                             dimensions = dimensions,
                             age_span = age_span,
                             time_span = time_span,
-                            value_type = get_value_type("survival_ratio_input_df"),
+                            value_type = get_value_types_for_classes("survival_ratio_input_df"),
                             ...)
 
         ## Create/Validate

@@ -171,13 +171,13 @@ demog_change_component_df <-
         ## -------* 'dimensions' attribute
 
         if (is.null(dimensions)) {
-            dimensions <- guess_demog_change_component_dimensions(x)
+            dimensions <- guess_dimensions_from_df_cols(x)
             message("Argument 'dimensions' is 'NULL'; setting 'dimensions' to '",
                     paste(dimensions, collapse = ", "),
                     "' based on column names of 'x'.")
         } else {
             ## Check 'dimensions'
-            allowed_dimensions <- get_allowed_dimensions()
+            allowed_dimensions <- get_all_allowed_dimensions()
             if (!all(dimensions %in% allowed_dimensions))
                 stop("'dimensions' can only include '",
                      paste(allowed_dimensions, collapse = "', '"),
@@ -189,8 +189,8 @@ demog_change_component_df <-
         ## -------* Columns
 
         ## List required columns for output and input
-        req_cols_out <- get_all_req_col_names(dimensions)
-        req_cols_out_types <- get_all_req_col_types(dimensions)
+        req_cols_out <- get_all_req_col_names_for_dimensions(dimensions)
+        req_cols_out_types <- get_all_req_col_types_for_dimensions(dimensions)
         req_cols_in <- req_cols_out
         req_cols_in_types <- req_cols_out_types
 
@@ -304,7 +304,7 @@ as_demog_change_component_df.matrix <- function(x, ...) {
         stop("'dimnames(x)' is 'NULL'; cannot coerce to 'demog_change_component_df'.")
     if (!("value" %in% dncol))
         stop("'x' must have a column called 'value'.")
-    req_cn <- get_all_req_col_names()
+    req_cn <- get_all_req_col_names_for_dimensions()
     if (!sum(req_cn %in% dn[[2]]) >= 2)
         stop("'x' must have time, age, or sex dimensions. Column names should be taken from '",
              paste(req_cn, collapse = "', '"),

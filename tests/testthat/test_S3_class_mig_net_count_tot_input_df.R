@@ -59,7 +59,7 @@ test_that("indicator dimension detected", {
     expect_error(validate_ccmpp_object(z),
                  "has a indicator dimension")
 
-    expect_error(fert_rate_input_df(z, time_span = time_span(y),
+    expect_error(mig_net_count_tot_input_df(z, time_span = time_span(y),
                               dimensions = c("indicator", "time")),
                  "has a indicator dimension")
 })

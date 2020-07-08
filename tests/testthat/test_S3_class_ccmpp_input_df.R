@@ -139,7 +139,7 @@ test_that("superfluous columns are caught", {
                        dimensions = c("time", "age", "sex")))))
 
     y <- new_ccmpp_input_df(z[,
-                             c(ccmppWPP::get_all_req_col_names(
+                             c(ccmppWPP::get_all_req_col_names_for_dimensions(
                                              dimensions =
                                                  c("age", "time", "sex")),
                                "source")],

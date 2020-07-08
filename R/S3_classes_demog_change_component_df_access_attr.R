@@ -180,14 +180,14 @@ is_by_time <- function(x) {
 #' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_time.demog_change_component_df <- function(x) {
-    isTRUE(get_allowed_dimensions()["time"] %in% demog_change_component_dimensions(x))
+    isTRUE(get_all_allowed_dimensions()["time"] %in% demog_change_component_dimensions(x))
     }
 
 #' @author Mark Wheldon
 #' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_time.data.frame <- function(x) {
-    time_col_name <- get_attr_col_name("time")
+    time_col_name <- get_df_col_namees_for_dimensions("time")
     isTRUE(time_col_name %in% colnames(x))
     }
 
@@ -202,14 +202,14 @@ is_by_age <- function(x) {
 #' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_age.demog_change_component_df <- function(x) {
-    isTRUE(get_allowed_dimensions()["age"] %in% demog_change_component_dimensions(x))
+    isTRUE(get_all_allowed_dimensions()["age"] %in% demog_change_component_dimensions(x))
 }
 
 #' @author Mark Wheldon
 #' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_age.data.frame <- function(x) {
-    age_col_name <- get_attr_col_name("age")
+    age_col_name <- get_df_col_namees_for_dimensions("age")
     isTRUE(age_col_name %in% colnames(x))
     }
 
@@ -224,14 +224,14 @@ is_by_sex <- function(x) {
 #' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_sex.demog_change_component_df <- function(x) {
-    isTRUE(get_allowed_dimensions()["sex"] %in% demog_change_component_dimensions(x))
+    isTRUE(get_all_allowed_dimensions()["sex"] %in% demog_change_component_dimensions(x))
     }
 
 #' @author Mark Wheldon
 #' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_sex.data.frame <- function(x) {
-    sex_col_name <- get_attr_col_name("sex")
+    sex_col_name <- get_df_col_namees_for_dimensions("sex")
     isTRUE(sex_col_name %in% colnames(x) &&
            length(unique(x[[sex_col_name]]) > 1))
     }
@@ -247,14 +247,14 @@ is_by_indicator <- function(x) {
 #' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_indicator.demog_change_component_df <- function(x) {
-    isTRUE(get_allowed_dimensions()["indicator"] %in% demog_change_component_dimensions(x))
+    isTRUE(get_all_allowed_dimensions()["indicator"] %in% demog_change_component_dimensions(x))
     }
 
 #' @author Mark Wheldon
 #' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_indicator.data.frame <- function(x) {
-    indicator_col_name <- get_attr_col_name("indicator")
+    indicator_col_name <- get_df_col_namees_for_dimensions("indicator")
     isTRUE(indicator_col_name %in% colnames(x) &&
            length(unique(x[[indicator_col_name]]) > 1))
     }

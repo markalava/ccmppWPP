@@ -152,7 +152,7 @@ as.data.frame.demog_change_component_df <- function(x, restore_columns = TRUE, .
         ## reinstate age_span and time_span
         cn <- colnames(x)
         demog_change_component_dims_x <- demog_change_component_dimensions(x)
-        attr_w_span_names <- get_attr_w_span_names()
+        attr_w_span_names <- get_all_attr_w_span_names()
 
     for (att in
          attr_w_span_names[attr_w_span_names %in% demog_change_component_dims_x]
@@ -432,4 +432,4 @@ print.summary_fert_rate_input_df <-
             vsep, "\n",
             sep = "")
         NextMethod(print_what = "table")
-        }
+    }

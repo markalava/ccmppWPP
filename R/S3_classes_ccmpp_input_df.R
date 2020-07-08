@@ -1,3 +1,16 @@
+###-----------------------------------------------------------------------------
+### * Helpers
+
+## get_ccmpp_input_required_dimensions <- function(class) {
+##     rbind(c(class = "fert_rate_input_df",
+##             dimensions = get_some_dimensions_in_order(c("time", "age")),
+##             c(class = "survival_ratio_input_df",
+##             dimensions = get_some_dimensions_in_order(c("time", "sex", "age")))
+
+#!!!!!! HERE HERE HERE HERE !!!!!
+
+###-----------------------------------------------------------------------------
+### * Class constructors
 
 #' Low-level constructor for class \code{ccmpp_input_df}.
 #'

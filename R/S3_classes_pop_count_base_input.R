@@ -31,7 +31,7 @@ new_pop_count_base_input_df <-
                            age_span = age_span,
                            time_span = time_span,
                            dimensions = dimensions,
-                           value_type = get_value_type("pop_count_base_input_df"),
+                           value_type = get_value_types_for_classes("pop_count_base_input_df"),
                            ...,
                            class = c(class, "pop_count_base_input_df"))
     }
@@ -63,11 +63,13 @@ pop_count_base_input_df <-
              time_span = attr(x, "time_span"),
              ...) {
 
+
+
         x <- ccmpp_input_df(x,
                             dimensions = dimensions,
                             age_span = age_span,
                             time_span = time_span,
-                            value_type = get_value_type("pop_count_base_input_df"),
+                            value_type = get_value_types_for_classes("pop_count_base_input_df"),
                             ...)
 
         ## Create/Validate

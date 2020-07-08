@@ -28,7 +28,7 @@ new_srb_input_df <-
                            age_span = double(),
                            time_span = time_span,
                            dimensions = dimensions,
-                           value_type = get_value_type("srb_input_df"),
+                           value_type = get_value_types_for_classes("srb_input_df"),
                            ...,
                            class = c(class, "srb_input_df"))
     }
@@ -65,7 +65,7 @@ srb_input_df <-
                             dimensions = dimensions,
                             time_span = time_span,
                             age_span = NULL,
-                            value_type = get_value_type("srb_input_df"),
+                            value_type = get_value_types_for_classes("srb_input_df"),
                             ...)
 
         ## Create/Validate

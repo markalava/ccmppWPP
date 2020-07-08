@@ -37,12 +37,12 @@ validate_ccmpp_object.demog_change_component_df <-
         demog_change_component_dims_x <- demog_change_component_dimensions(x)
         if (is.na(demog_change_component_dims_x) || !is.character(demog_change_component_dims_x) ||
             length(demog_change_component_dims_x) < 1 ||
-            !all(demog_change_component_dims_x %in% get_allowed_dimensions()))
+            !all(demog_change_component_dims_x %in% get_all_allowed_dimensions()))
             stop("'dimensions' attribute of 'x' is not valid. 'dimensions' must be in '",
-                 paste(get_allowed_dimensions(), collapse = ", "),
+                 paste(get_all_allowed_dimensions(), collapse = ", "),
                  "' and cannot be missing or duplicated. See ?demog_change_component_df for class definition.")
 
-        req_attr <- get_req_attr_names(demog_change_component_dims_x)
+        req_attr <- get_req_attr_names_for_dimensions(demog_change_component_dims_x)
         if (!all(req_attr %in% names(attributes(x))))
             stop("'x' must have attributes '",
                  paste(req_attr, collapse = "', '"),
@@ -52,7 +52,7 @@ validate_ccmpp_object.demog_change_component_df <-
 
         coln_x <- colnames(x)
         req_cols <-
-            get_all_req_col_names(dimensions = demog_change_component_dims_x)
+            get_all_req_col_names_for_dimensions(dimensions = demog_change_component_dims_x)
 
         if (!all(req_cols %in% coln_x))
             stop("'x' must have columns '",
@@ -71,7 +71,7 @@ validate_ccmpp_object.demog_change_component_df <-
         ## -------* Column types
 
         req_cols_out_types <-
-            get_all_req_col_types(dimensions = demog_change_component_dims_x)
+            get_all_req_col_types_for_dimensions(dimensions = demog_change_component_dims_x)
         num_cols <- which(req_cols_out_types == "numeric")
         char_cols <- which(req_cols_out_types == "character")
         for (j in num_cols) {
@@ -85,7 +85,7 @@ validate_ccmpp_object.demog_change_component_df <-
 
         ## -------* Spans
 
-        attr_w_span_names <- get_attr_w_span_names()
+        attr_w_span_names <- get_all_attr_w_span_names()
 
         for (att in
              attr_w_span_names[attr_w_span_names %in% demog_change_component_dims_x]
@@ -116,13 +116,13 @@ validate_ccmpp_object.demog_change_component_df <-
             stop("'value_type' must be a single character string, or 'NULL'.")
         }
 
-        allowed_value_types <- get_allowed_value_types()
+        allowed_value_types <- get_all_allowed_value_types()
         if (!(value_type %in% allowed_value_types))
             stop("'value_type' must be one of '",
                  paste(allowed_value_types, collapse = "', '"),
                  "'.")
 
-        check_value_type(value = x$value, type = value_type)
+        check_value_type_of_value_in_df(value = x$value, type = value_type)
 
         ## -------* Check squareness
 
@@ -132,7 +132,7 @@ validate_ccmpp_object.demog_change_component_df <-
 
         ## -------* Sex
 
-        allowed_sexes <- get_allowed_sexes()
+        allowed_sexes <- get_all_allowed_sexes()
         if (!is.null(x$sex) && !all(x$sex %in% c("female", "male", "both")))
             stop("Not all 'x$sex' are in '",
                  paste0(allowed_sexes, collapse = "', '"),
@@ -160,14 +160,14 @@ validate_ccmpp_object.ccmpp_input_df <- function(x) {
     ## results. The class imposes full sorting.
 
     order_cols <-
-        get_dim_col_info(dimensions = demog_change_component_dims_x)$colname
+        get_df_col_info_for_dimensions(dimensions = demog_change_component_dims_x)$colname
     if (!identical(x[, order_cols],
                    sort_demog_change_component_df(x)[, order_cols]))
         stop("'x' must be sorted by time, rev(sex), age_start (see ?ccmpp_input_df for class definition).")
 
     ## -------* Spans
 
-    attr_w_span_names <- get_attr_w_span_names()
+    attr_w_span_names <- get_all_attr_w_span_names()
 
     for (att in
          attr_w_span_names[attr_w_span_names %in% demog_change_component_dims_x]
@@ -198,7 +198,7 @@ validate_ccmpp_object.ccmpp_input_df <- function(x) {
     ## -------* Age
 
     if (is_by_age(x)) {
-        min_age_start <- get_min_age_in_dims(x)
+        min_age_start <- get_min_age_in_dims_in_df(x)
         if (!all(min_age_start == 0))
             stop("'age_start' does not start at '0' for each time * sex combination.")
     }
@@ -214,7 +214,7 @@ validate_ccmpp_object.ccmpp_input_df <- function(x) {
 validate_ccmpp_object.fert_rate_input_df <- function(x, ...) {
 
     ## value_type
-    val_type <- get_value_type("fert_rate_input_df")
+    val_type <- get_value_types_for_classes("fert_rate_input_df")
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
 
@@ -223,13 +223,17 @@ validate_ccmpp_object.fert_rate_input_df <- function(x, ...) {
         nzf_ages <- validate_non_zero_fert_ages(x, non_zero_fert_ages(x))
     }
 
+    ## must have age dimension
+    if (!is_by_age(x))
+        stop("Must have 'age' dimension.")
+
     ## no sex dimension
-    if (is_by_sex(x) || get_attr_col_name("sex") %in% colnames(x)) {
+    if (is_by_sex(x) || get_df_col_namees_for_dimensions("sex") %in% colnames(x)) {
         stop("Either 'is_by_sex(x)' is 'TRUE' or 'x' has a sex dimension column. Fertility rates for CCMPP must not have sex information.")
     }
 
     ## no indicator dimension
-    if (is_by_indicator(x) || get_attr_col_name("indicator") %in% colnames(x)) {
+    if (is_by_indicator(x) || get_df_col_namees_for_dimensions("indicator") %in% colnames(x)) {
         stop("Either 'is_by_indicator(x)' is 'TRUE' or 'x' has a indicator dimension column. This type of CCMPP input must not have indicator information.")
     }
 
@@ -242,19 +246,31 @@ validate_ccmpp_object.fert_rate_input_df <- function(x, ...) {
 validate_ccmpp_object.survival_ratio_input_df <- function(x, ...) {
 
     ## value_type
-    val_type <- get_value_type("survival_ratio_input_df")
+    val_type <- get_value_types_for_classes("survival_ratio_input_df")
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
 
+    ## must have age dimension
+    if (!is_by_age(x))
+        stop("Must have 'age' dimension.")
+
+    ## must have time dimension
+    if (!is_by_time(x))
+        stop("Must have 'time' dimension.")
+
+    ## must have sex dimension
+    if (!is_by_sex(x))
+        stop("Must have 'sex' dimension.")
+
     ## ages start at zero
     if (is_by_age(x)) {
-        min_age_start <- get_min_age_in_dims(x)
+        min_age_start <- get_min_age_in_dims_in_df(x)
         if (!all(min_age_start == 0))
             stop("'age_start' does not start at '0' for each time * sex combination.")
         }
 
     ## no indicator dimension
-    if (is_by_indicator(x) || get_attr_col_name("indicator") %in% colnames(x)) {
+    if (is_by_indicator(x) || get_df_col_namees_for_dimensions("indicator") %in% colnames(x)) {
         stop("Either 'is_by_indicator(x)' is 'TRUE' or 'x' has a indicator dimension column. This type of CCMPP input must not have indicator information.")
     }
 
@@ -267,13 +283,21 @@ validate_ccmpp_object.survival_ratio_input_df <- function(x, ...) {
 validate_ccmpp_object.pop_count_base_input_df <- function(x, ...) {
 
     ## value_type
-    val_type <- get_value_type("pop_count_base_input_df")
+    val_type <- get_value_types_for_classes("pop_count_base_input_df")
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
 
+    ## must have age dimension
+    if (!is_by_age(x))
+        stop("Must have 'age' dimension.")
+
+    ## must have sex dimension
+    if (!is_by_sex(x))
+        stop("Must have 'sex' dimension.")
+
     ## ages start at zero
     if (is_by_age(x)) {
-        min_age_start <- get_min_age_in_dims(x)
+        min_age_start <- get_min_age_in_dims_in_df(x)
         if (!all(min_age_start == 0))
             stop("'age_start' does not start at '0' for each time * sex combination.")
         }
@@ -285,7 +309,7 @@ validate_ccmpp_object.pop_count_base_input_df <- function(x, ...) {
     }
 
     ## no indicator dimension
-    if (is_by_indicator(x) || get_attr_col_name("indicator") %in% colnames(x)) {
+    if (is_by_indicator(x) || get_df_col_namees_for_dimensions("indicator") %in% colnames(x)) {
         stop("Either 'is_by_indicator(x)' is 'TRUE' or 'x' has a indicator dimension column. This type of CCMPP input must not have indicator information.")
     }
 
@@ -298,22 +322,26 @@ validate_ccmpp_object.pop_count_base_input_df <- function(x, ...) {
 validate_ccmpp_object.srb_input_df <- function(x, ...) {
 
     ## value_type
-    val_type <- get_value_type("srb_input_df")
+    val_type <- get_value_types_for_classes("srb_input_df")
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
 
+    ## must have time dimension
+    if (!is_by_time(x))
+        stop("Must have 'time' dimension.")
+
     ## no age dimension
-    if (is_by_age(x) || get_attr_col_name("age") %in% colnames(x)) {
+    if (is_by_age(x) || get_df_col_namees_for_dimensions("age") %in% colnames(x)) {
         stop("Either 'is_by_age(x)' is 'TRUE' or 'x' has an age dimension column. SRB for CCMPP must not have age information.")
     }
 
     ## no sex dimension
-    if (is_by_sex(x) || get_attr_col_name("sex") %in% colnames(x)) {
+    if (is_by_sex(x) || get_df_col_namees_for_dimensions("sex") %in% colnames(x)) {
         stop("Either 'is_by_sex(x)' is 'TRUE' or 'x' has a sex dimension column. SRB for CCMPP must not have sex information.")
     }
 
     ## no indicator dimension
-    if (is_by_indicator(x) || get_attr_col_name("indicator") %in% colnames(x)) {
+    if (is_by_indicator(x) || get_df_col_namees_for_dimensions("indicator") %in% colnames(x)) {
         stop("Either 'is_by_indicator(x)' is 'TRUE' or 'x' has a indicator dimension column. This type of CCMPP input must not have indicator information.")
     }
 
@@ -325,20 +353,32 @@ validate_ccmpp_object.srb_input_df <- function(x, ...) {
 #' @export
 validate_ccmpp_object.mig_net_rate_input_df <- function(x, ...) {
 
+    ## must have age dimension
+    if (!is_by_age(x))
+        stop("Must have 'age' dimension.")
+
+    ## must have time dimension
+    if (!is_by_time(x))
+        stop("Must have 'time' dimension.")
+
+    ## must have sex dimension
+    if (!is_by_sex(x))
+        stop("Must have 'sex' dimension.")
+
     ## value_type
-    val_type <- get_value_type("mig_net_rate_input_df")
+    val_type <- get_value_types_for_classes("mig_net_rate_input_df")
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
 
     ## ages start at zero
     if (is_by_age(x)) {
-        min_age_start <- get_min_age_in_dims(x)
+        min_age_start <- get_min_age_in_dims_in_df(x)
         if (!all(min_age_start == 0))
             stop("'age_start' does not start at '0' for each time * sex combination.")
         }
 
     ## no indicator dimension
-    if (is_by_indicator(x) || get_attr_col_name("indicator") %in% colnames(x)) {
+    if (is_by_indicator(x) || get_df_col_namees_for_dimensions("indicator") %in% colnames(x)) {
         stop("Either 'is_by_indicator(x)' is 'TRUE' or 'x' has a indicator dimension column. This type of CCMPP input must not have indicator information.")
     }
 
@@ -350,20 +390,32 @@ validate_ccmpp_object.mig_net_rate_input_df <- function(x, ...) {
 #' @export
 validate_ccmpp_object.mig_net_count_input_df <- function(x, ...) {
 
+    ## must have age dimension
+    if (!is_by_age(x))
+        stop("Must have 'age' dimension.")
+
+    ## must have time dimension
+    if (!is_by_time(x))
+        stop("Must have 'time' dimension.")
+
+    ## must have sex dimension
+    if (!is_by_sex(x))
+        stop("Must have 'sex' dimension.")
+
     ## value_type
-    val_type <- get_value_type("mig_net_count_input_df")
+    val_type <- get_value_types_for_classes("mig_net_count_input_df")
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
 
     ## ages start at zero
     if (is_by_age(x)) {
-        min_age_start <- get_min_age_in_dims(x)
+        min_age_start <- get_min_age_in_dims_in_df(x)
         if (!all(min_age_start == 0))
             stop("'age_start' does not start at '0' for each time * sex combination.")
         }
 
     ## no indicator dimension
-    if (is_by_indicator(x) || get_attr_col_name("indicator") %in% colnames(x)) {
+    if (is_by_indicator(x) || get_df_col_namees_for_dimensions("indicator") %in% colnames(x)) {
         stop("Either 'is_by_indicator(x)' is 'TRUE' or 'x' has a indicator dimension column. This type of CCMPP input must not have indicator information.")
     }
 
@@ -375,18 +427,22 @@ validate_ccmpp_object.mig_net_count_input_df <- function(x, ...) {
 #' @export
 validate_ccmpp_object.mig_net_count_tot_input_df <- function(x, ...) {
 
+    ## must have time dimension
+    if (!is_by_time(x))
+        stop("Must have 'time' dimension.")
+
     ## no age dimension
-    if (is_by_age(x) || get_attr_col_name("age") %in% colnames(x)) {
+    if (is_by_age(x) || get_df_col_namees_for_dimensions("age") %in% colnames(x)) {
         stop("Either 'is_by_age(x)' is 'TRUE' or 'x' has an age dimension column. 'mig_net_count_tot_input_df' for CCMPP must not have age information.")
     }
 
     ## no sex dimension
-    if (is_by_sex(x) || get_attr_col_name("sex") %in% colnames(x)) {
+    if (is_by_sex(x) || get_df_col_namees_for_dimensions("sex") %in% colnames(x)) {
         stop("Either 'is_by_sex(x)' is 'TRUE' or 'x' has a sex dimension column. 'mig_net_count_tot_input_df' for CCMPP must not have sex information.")
     }
 
     ## no indicator dimension
-    if (is_by_indicator(x) || get_attr_col_name("indicator") %in% colnames(x)) {
+    if (is_by_indicator(x) || get_df_col_namees_for_dimensions("indicator") %in% colnames(x)) {
         stop("Either 'is_by_indicator(x)' is 'TRUE' or 'x' has a indicator dimension column. This type of CCMPP input must not have indicator information.")
     }
 

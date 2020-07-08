@@ -134,6 +134,20 @@ sexes.demog_change_component_df <- function(x) {
 
 #' @rdname extract_demog_change_component_attributes
 #' @export
+indicators <- function(x) {
+    UseMethod("indicators")
+}
+
+#' @rdname extract_demog_change_component_attributes
+#' @export
+indicators.demog_change_component_df <- function(x) {
+    if (!is_by_indicator(x))
+        stop("'indicator' is not a dimension of 'x'.")
+    levels(factor(x$indicator))
+}
+
+#' @rdname extract_demog_change_component_attributes
+#' @export
 value_type <- function(x) {
     UseMethod("value_type")
 }

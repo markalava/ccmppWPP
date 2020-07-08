@@ -13,6 +13,8 @@
 \alias{times.demog_change_component_df}
 \alias{sexes}
 \alias{sexes.demog_change_component_df}
+\alias{indicators}
+\alias{indicators.demog_change_component_df}
 \alias{value_type}
 \alias{value_type.demog_change_component_df}
 \alias{non_zero_fert_ages}
@@ -38,6 +40,10 @@ times(x)
 sexes(x)
 
 \method{sexes}{demog_change_component_df}(x)
+
+indicators(x)
+
+\method{indicators}{demog_change_component_df}(x)
 
 value_type(x)
 

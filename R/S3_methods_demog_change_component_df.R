@@ -256,6 +256,12 @@ print.demog_change_component_df <-
             cat_msg <- paste(cat_msg, "# 'sex' has levels: ", toString(sexes(x)),
             ".\n",
             sep = "")
+
+        if(is_by_indicator(x))
+            cat_msg <- paste(cat_msg, "# 'indicator' has levels: ", toString(indicators(x), width = 10),
+            ".\n",
+            sep = "")
+
         cat(cat_msg)
 
         if (inherits(x, "fert_rate_input_df") && is_by_age(x) &&
@@ -316,28 +322,21 @@ summary.demog_change_component_df <-
             sex <- NULL
         }
 
+        ## Indicator
+        if (is_by_indicator(object)) {
+            indicator <- list(levels = levels(as.factor(object$indicator)))
+        } else {
+            indicator <- NULL
+        }
+
         ## Stats
         table <- NextMethod()
 
         return(structure(list(dimensions = demog_change_component_dimensions(object),
-                              time = time, age = age, sex = sex,
+                              time = time, age = age, sex = sex, indicator = indicator,
                               value_type = value_type(object), table = table),
                          class = c("summary_demog_change_component_df", "list")))
     }
-
-#' @rdname summary_demog_change_component_df
-#' @export
-summary.fert_rate_input_df <-
-    function(object, maxsum = 7,
-             digits = max(3, getOption("digits") - 3), vsep, ...) {
-        out <- NextMethod()
-        out$non_zero_fert_ages <- non_zero_fert_ages(object)
-
-        return(structure(c(out),
-                         class = c("summary_fert_rate_input_df",
-                                   "summary_demog_change_component_df", "list")))
-    }
-
 
 
 #' Print a summary of a \code{demog_change_component_df}
@@ -395,6 +394,12 @@ print.summary_demog_change_component_df <-
                           paste(x$sex$levels, collapse = ", "),
                           "\n")
 
+        ## Indicator
+        if (!is.null(x$indicator))
+            msg <- paste0(msg, "       indicator:\tlevels = ",
+                          paste(x$indicator$levels, collapse = ", "),
+                          "\n")
+
         ## Values
         msg <- paste0(msg, "value_type:\t",
                       x$value_type,
@@ -416,20 +421,4 @@ print.summary_demog_change_component_df <-
         }
 
         return(invisible(x))
-    }
-
-
-#' @rdname demog_change_component_df
-#' @export
-print.summary_fert_rate_input_df <-
-    function(x, vsep, ...) {
-        if (missing(vsep))
-            vsep <- strrep("-", 0.75 * getOption("width"))
-        NextMethod(print_what = "info")
-        cat(paste0("non_zero_fert_ages:\t",
-               toString(x$non_zero_fert_ages, 30),
-               "\n"),
-            vsep, "\n",
-            sep = "")
-        NextMethod(print_what = "table")
     }

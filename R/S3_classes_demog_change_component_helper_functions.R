@@ -78,7 +78,7 @@ get_all_req_col_types_for_dimensions <- function(dimensions) {
 }
 
 ## Get the column name in a data frame corresponding to the given
-## attribute label (as in 'get_df_col_info_for_dimensions()')
+## dimensions (as in 'get_df_col_info_for_dimensions()')
 get_df_col_namees_for_dimensions <- function(dimensions) {
     all_d <- get_all_allowed_dimensions()
     dim_col_info <- get_df_col_info_for_dimensions(dimensions = all_d)

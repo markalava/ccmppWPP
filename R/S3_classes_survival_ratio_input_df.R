@@ -13,16 +13,12 @@
 #'
 #' @family survival_ratio_input_df class non-exported functions
 #'
-#' @param age_span Scalar indicating the span of the age groups.
-#' @param time_span Scalar indicating the span of the time periods.
-#' @param dimensions Character vector listing the dimensions such as
-#'     \dQuote{time}, \dQuote{age}, \dQuote{sex}.
-#' @param value_type Scalar indicating the type of the \dQuote{value}
-#'     column (e.g., \dQuote{count}, \dQuote{rate}, etc.).
+#' @inheritParams new_demog_change_component_df
+#'
 #' @return An object of class \code{survival_ratio_input_df}.
 #' @author Mark Wheldon
 new_survival_ratio_input_df <-
-    function(x, dimensions = character(),
+    function(x,
              age_span = double(),
              time_span = double(),
              non_zero_fert_ages = double(),
@@ -30,7 +26,7 @@ new_survival_ratio_input_df <-
         new_ccmpp_input_df(x = x,
                            age_span = age_span,
                            time_span = time_span,
-                           dimensions = dimensions,
+                           dimensions = get_req_dimensions_for_ccmpp_input_classes("survival_ratio_input_df"),
                            value_type = get_value_types_for_classes("survival_ratio_input_df"),
                            ...,
                            class = c(class, "survival_ratio_input_df"))
@@ -56,26 +52,20 @@ new_survival_ratio_input_df <-
 #' @export
 survival_ratio_input_df <-
     function(x,
-             dimensions = attr(x, "dimensions"),
              age_span = attr(x, "age_span"),
-             time_span = attr(x, "time_span"),
-             ...) {
+             time_span = attr(x, "time_span")) {
 
         x <- ccmpp_input_df(x,
-                            dimensions = dimensions,
+                           dimensions = get_req_dimensions_for_ccmpp_input_classes("survival_ratio_input_df"),
                             age_span = age_span,
                             time_span = time_span,
-                            value_type = get_value_types_for_classes("survival_ratio_input_df"),
-                            ...)
+                            value_type = get_value_types_for_classes("survival_ratio_input_df"))
 
         ## Create/Validate
         validate_ccmpp_object(
             new_survival_ratio_input_df(x,
-                               dimensions = attr(x, "dimensions"),
                                age_span = attr(x, "age_span"),
-                               time_span = attr(x, "time_span"),
-                               ...
-                               )
+                               time_span = attr(x, "time_span"))
         )
     }
 

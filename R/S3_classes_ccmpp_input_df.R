@@ -1,13 +1,34 @@
 ###-----------------------------------------------------------------------------
 ### * Helpers
 
-## get_ccmpp_input_required_dimensions <- function(class) {
-##     rbind(c(class = "fert_rate_input_df",
-##             dimensions = get_some_dimensions_in_order(c("time", "age")),
-##             c(class = "survival_ratio_input_df",
-##             dimensions = get_some_dimensions_in_order(c("time", "sex", "age")))
+get_dimensions_info_for_ccmpp_input_classes <-
+    function(classes = get_all_demog_change_component_df_class_names()) {
+        db <- list(pop_count_base_input_df =
+                       ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
+                   fert_rate_input_df =
+                       ensure_these_dimensions_correctly_ordered(c("time", "age")),
+                   survival_ratio_input_df =
+                       ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
+                   srb_input_df =
+                       ensure_these_dimensions_correctly_ordered(c("time")),
+                   mig_net_count_input_df =
+                       ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
+                   mig_net_rate_input_df =
+                       ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
+                   mig_net_count_tot_input_df =
+                       ensure_these_dimensions_correctly_ordered(c("time")),
+                   life_table_input_df =
+                       ensure_these_dimensions_correctly_ordered(
+                           c("indicator", "time", "sex", "age")
+                       ))
+        if (identical(length(classes), 1L))
+            return(db[[classes]])
+        else return(db[names(db) %in% classes])
+}
 
-#!!!!!! HERE HERE HERE HERE !!!!!
+get_req_dimensions_for_ccmpp_input_classes <- function(classes) {
+    get_dimensions_info_for_ccmpp_input_classes(classes)
+}
 
 ###-----------------------------------------------------------------------------
 ### * Class constructors
@@ -26,12 +47,7 @@
 #'
 #' @family ccmpp_input_df class non-exported functions
 #'
-#' @param age_span Scalar indicating the span of the age groups.
-#' @param time_span Scalar indicating the span of the time periods.
-#' @param dimensions Character vector listing the dimensions such as
-#'     \dQuote{time}, \dQuote{age}, \dQuote{sex}.
-#' @param value_type Scalar indicating the type of the \dQuote{value}
-#'     column (e.g., \dQuote{count}, \dQuote{rate}, etc.).
+#' @inheritParams new_demog_change_component_df
 #' @return An object of class \code{ccmpp_input_df}.
 #' @author Mark Wheldon
 new_ccmpp_input_df <-

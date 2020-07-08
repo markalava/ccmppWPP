@@ -159,7 +159,7 @@ as.data.frame.demog_change_component_df <- function(x, restore_columns = TRUE, .
          ) {
         span_name <- paste0(att, "_span")
         if (!(span_name %in% cn)) x[[span_name]] <- attr(x, span_name)
-        }
+    }
         ## avoid coercion/copying if can just remove the class
         oldClass(x) <- strip_demog_change_component_df_classes_attribute(oldClass(x))
         return(x)
@@ -253,7 +253,7 @@ print.demog_change_component_df <-
                               toString(attr(x, "non_zero_fert_ages"), width = 20),
                               "'.\n"))
         if(is_by_sex(x))
-            cat_msg <- paste(cat_msg, "# 'sex' has levels: ", paste(sexes(x), collapse = ", "),
+            cat_msg <- paste(cat_msg, "# 'sex' has levels: ", toString(sexes(x)),
             ".\n",
             sep = "")
         cat(cat_msg)

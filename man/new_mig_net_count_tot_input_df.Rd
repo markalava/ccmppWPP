@@ -6,20 +6,13 @@
 \usage{
 new_mig_net_count_tot_input_df(
   x,
-  dimensions = character(),
   time_span = double(),
   ...,
   class = character()
 )
 }
 \arguments{
-\item{dimensions}{Character vector listing the dimensions such as
-\dQuote{time}, \dQuote{age}, \dQuote{sex}.}
-
 \item{time_span}{Scalar indicating the span of the time periods.}
-
-\item{value_type}{Scalar indicating the type of the \dQuote{value}
-column (e.g., \dQuote{count}, \dQuote{rate}, etc.).}
 }
 \value{
 An object of class \code{mig_net_count_tot_input_df}.

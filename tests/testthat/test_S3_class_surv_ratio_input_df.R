@@ -11,8 +11,7 @@ test_that("Non-zero age detected", {
     z <- subset(y, age_start > 0)
     z <- new_survival_ratio_input_df(z,
                                      age_span = age_span(y),
-                                     time_span = time_span(y),
-                                     dimensions = demog_change_component_dimensions(y))
+                                     time_span = time_span(y))
     expect_error(validate_ccmpp_object(z),
                  "'age_start' does not start at '0'")
 })

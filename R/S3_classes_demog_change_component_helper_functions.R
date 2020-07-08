@@ -51,7 +51,7 @@ get_all_allowed_dimensions <- function() {
 }
 
 ## Select some dimensions but keep order correct
-get_some_dimensions_in_order <- function(dimensions) {
+ensure_these_dimensions_correctly_ordered <- function(dimensions) {
     all_dims <- get_all_allowed_dimensions()
     all_dims[all_dims %in% dimensions]
 }

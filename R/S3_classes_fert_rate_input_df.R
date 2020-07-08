@@ -30,16 +30,11 @@ guess_non_zero_fert_ages <- function(x, digits = 9) {
 #'
 #' @family fert_rate_input_df class non-exported functions
 #'
-#' @param age_span Scalar indicating the span of the age groups.
-#' @param time_span Scalar indicating the span of the time periods.
-#' @param dimensions Character vector listing the dimensions such as
-#'     \dQuote{time}, \dQuote{age}, \dQuote{sex}.
-#' @param value_type Scalar indicating the type of the \dQuote{value}
-#'     column (e.g., \dQuote{count}, \dQuote{rate}, etc.).
+#' @inheritParams demog_change_component_df
 #' @return An object of class \code{fert_rate_input_df}.
 #' @author Mark Wheldon
 new_fert_rate_input_df <-
-    function(x, dimensions = character(),
+    function(x,
              age_span = double(),
              time_span = double(),
              non_zero_fert_ages = double(),
@@ -47,7 +42,7 @@ new_fert_rate_input_df <-
         new_ccmpp_input_df(x = x,
                            age_span = age_span,
                            time_span = time_span,
-                           dimensions = dimensions,
+                           dimensions = get_req_dimensions_for_ccmpp_input_classes("fert_rate_input_df"),
                            value_type = get_value_types_for_classes("fert_rate_input_df"),
                            non_zero_fert_ages = non_zero_fert_ages,
                            ...,
@@ -85,43 +80,35 @@ new_fert_rate_input_df <-
 #' @export
 fert_rate_input_df <-
     function(x,
-             dimensions = attr(x, "dimensions"),
              age_span = attr(x, "age_span"),
              time_span = attr(x, "time_span"),
-             non_zero_fert_ages = attr(x, "non_zero_fert_ages"),
-             ...) {
+             non_zero_fert_ages = attr(x, "non_zero_fert_ages")) {
 
         x <- ccmpp_input_df(x,
-                            dimensions = dimensions,
+                            dimensions = get_req_dimensions_for_ccmpp_input_classes("fert_rate_input_df"),
                             age_span = age_span,
                             time_span = time_span,
-                            value_type = get_value_types_for_classes("fert_rate_input_df"),
-                            ...)
+                            value_type = get_value_types_for_classes("fert_rate_input_df"))
 
-        if (is_by_age(x)) {
-            if (is.null(non_zero_fert_ages)) {
-                non_zero_fert_ages <- guess_non_zero_fert_ages(x)
+        if (is.null(non_zero_fert_ages)) {
+            non_zero_fert_ages <- guess_non_zero_fert_ages(x)
+        }
+        if (is.logical(non_zero_fert_ages)) {
+            if (!non_zero_fert_ages)  {
+                message("'non_zero_fert_ages' not supplied and guessing failed; setting to 'sort(unique(x$age_start))'.")
+                non_zero_fert_ages <- sort(unique(x$age_start))
             }
-            if (is.logical(non_zero_fert_ages)) {
-                if (!non_zero_fert_ages)  {
-                    message("'non_zero_fert_ages' not supplied and guessing failed; setting to 'sort(unique(x$age_start))'.")
-                    non_zero_fert_ages <- sort(unique(x$age_start))
-                }
-            } else {
-                message("'non_zero_fert_ages' set to '",
-                        toString(non_zero_fert_ages, width = 20))
-            }
+        } else {
+            message("'non_zero_fert_ages' set to '",
+                    toString(non_zero_fert_ages, width = 20))
         }
 
         ## Create/Validate
         validate_ccmpp_object(
             new_fert_rate_input_df(x,
-                               dimensions = attr(x, "dimensions"),
                                age_span = attr(x, "age_span"),
                                time_span = attr(x, "time_span"),
-                               non_zero_fert_ages = non_zero_fert_ages,
-                               ...
-                               )
+                               non_zero_fert_ages = non_zero_fert_ages)
         )
     }
 

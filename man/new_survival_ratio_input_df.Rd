@@ -6,7 +6,6 @@
 \usage{
 new_survival_ratio_input_df(
   x,
-  dimensions = character(),
   age_span = double(),
   time_span = double(),
   non_zero_fert_ages = double(),
@@ -15,15 +14,9 @@ new_survival_ratio_input_df(
 )
 }
 \arguments{
-\item{dimensions}{Character vector listing the dimensions such as
-\dQuote{time}, \dQuote{age}, \dQuote{sex}.}
-
 \item{age_span}{Scalar indicating the span of the age groups.}
 
 \item{time_span}{Scalar indicating the span of the time periods.}
-
-\item{value_type}{Scalar indicating the type of the \dQuote{value}
-column (e.g., \dQuote{count}, \dQuote{rate}, etc.).}
 }
 \value{
 An object of class \code{survival_ratio_input_df}.

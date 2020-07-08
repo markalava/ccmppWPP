@@ -11,8 +11,7 @@ test_that("Non-zero age detected", {
     z <- subset(y, age_start > 0)
     z <- new_pop_count_base_input_df(z,
                                      age_span = age_span(y),
-                                     time_span = time_span(y),
-                                     dimensions = demog_change_component_dimensions(y))
+                                     time_span = time_span(y))
     expect_error(validate_ccmpp_object(z),
                  "'age_start' does not start at '0'")
 })
@@ -23,8 +22,7 @@ test_that("More than one time period detected", {
     w <- transform(y, time_start = times(y) + 1)
     z <- new_pop_count_base_input_df(sort_demog_change_component_df(rbind(y, w)),
                                      time_span = time_span(y),
-                                     age_span = age_span(y),
-                                     dimensions = demog_change_component_dimensions(y))
+                                     age_span = age_span(y))
     expect_error(validate_ccmpp_object(z),
                  "has more than one unique value")
     })

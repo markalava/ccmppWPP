@@ -6,20 +6,15 @@
 \usage{
 fert_rate_input_df(
   x,
-  dimensions = attr(x, "dimensions"),
   age_span = attr(x, "age_span"),
   time_span = attr(x, "time_span"),
-  non_zero_fert_ages = attr(x, "non_zero_fert_ages"),
-  ...
+  non_zero_fert_ages = attr(x, "non_zero_fert_ages")
 )
 }
 \arguments{
 \item{x}{For \code{demog_change_component_df}: A data frame with
 columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
 \dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.}
-
-\item{dimensions}{Character vector listing the dimensions such as
-\dQuote{time}, \dQuote{age}, \dQuote{sex}.}
 
 \item{age_span}{Scalar indicating the span of the age groups. If
 \code{NULL} and a column \dQuote{age_span} is present in
@@ -30,8 +25,6 @@ similar behaviour to \code{age_span}.}
 
 \item{non_zero_fert_ages}{Numeric vector of unique ages indicating
 the reproductive age range.}
-
-\item{...}{Passed to the low-level constructor.}
 }
 \value{
 An object of class \code{fert_rate_input_df}.

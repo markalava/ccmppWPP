@@ -6,10 +6,8 @@
 \usage{
 pop_count_base_input_df(
   x,
-  dimensions = attr(x, "dimensions"),
   age_span = attr(x, "age_span"),
-  time_span = attr(x, "time_span"),
-  ...
+  time_span = attr(x, "time_span")
 )
 }
 \arguments{
@@ -17,17 +15,12 @@ pop_count_base_input_df(
 columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
 \dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.}
 
-\item{dimensions}{Character vector listing the dimensions such as
-\dQuote{time}, \dQuote{age}, \dQuote{sex}.}
-
 \item{age_span}{Scalar indicating the span of the age groups. If
 \code{NULL} and a column \dQuote{age_span} is present in
 \code{x} an attempt will be made to infer it from that column.}
 
 \item{time_span}{Scalar indicating the span of the time periods;
 similar behaviour to \code{age_span}.}
-
-\item{...}{Passed to the low-level constructor.}
 }
 \value{
 An object of class \code{pop_count_base_input_df}.

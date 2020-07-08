@@ -18,21 +18,17 @@ ccmpp_input_df_time_age_sex <-
                    dimensions = c("time", "age", "sex"))
 
 fert_rate_input_df_time_age <-
-    fert_rate_input_df(S3_fert_rate_time_age_df,
-                       dimensions = c("time", "age"))
+    fert_rate_input_df(S3_fert_rate_time_age_df)
 
 survival_ratio_input_df_time_age_sex <- ccmpp_input_df_time_age_sex
 survival_ratio_input_df_time_age_sex$value <-
     abs(survival_ratio_input_df_time_age_sex$value /
         max(survival_ratio_input_df_time_age_sex$value))
 survival_ratio_input_df_time_age_sex <-
-    survival_ratio_input_df(survival_ratio_input_df_time_age_sex,
-                            dimensions = c("time", "age", "sex"))
+    survival_ratio_input_df(survival_ratio_input_df_time_age_sex)
 
 pop_count_base_input_df_time_age_sex <-
-    pop_count_base_input_df(wpp_input_example$pop_count_age_sex_base,
-                            dimensions = c("time", "age", "sex")
-                            )
+    pop_count_base_input_df(wpp_input_example$pop_count_age_sex_base)
 
 srb_input_df_time <- srb_input_df(wpp_input_example$srb)
 

@@ -4,25 +4,15 @@
 \alias{srb_input_df}
 \title{Constructor for class \code{srb_input_df}}
 \usage{
-srb_input_df(
-  x,
-  dimensions = attr(x, "dimensions"),
-  time_span = attr(x, "time_span"),
-  ...
-)
+srb_input_df(x, time_span = attr(x, "time_span"))
 }
 \arguments{
 \item{x}{For \code{demog_change_component_df}: A data frame with
 columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
 \dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.}
 
-\item{dimensions}{Character vector listing the dimensions such as
-\dQuote{time}, \dQuote{age}, \dQuote{sex}.}
-
 \item{time_span}{Scalar indicating the span of the time periods;
 similar behaviour to \code{age_span}.}
-
-\item{...}{Passed to the low-level constructor.}
 }
 \value{
 An object of class \code{srb_input_df}.

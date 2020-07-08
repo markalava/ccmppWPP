@@ -13,21 +13,17 @@
 #'
 #' @family mig_net_count_tot_input_df class non-exported functions
 #'
-#' @param time_span Scalar indicating the span of the time periods.
-#' @param dimensions Character vector listing the dimensions such as
-#'     \dQuote{time}, \dQuote{age}, \dQuote{sex}.
-#' @param value_type Scalar indicating the type of the \dQuote{value}
-#'     column (e.g., \dQuote{count}, \dQuote{rate}, etc.).
+#' @inheritParams new_demog_change_component_df
 #' @return An object of class \code{mig_net_count_tot_input_df}.
 #' @author Mark Wheldon
 new_mig_net_count_tot_input_df <-
-    function(x, dimensions = character(),
+    function(x,
              time_span = double(),
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
                            age_span = double(),
                            time_span = time_span,
-                           dimensions = dimensions,
+                           dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_net_count_tot_input_df"),
                            value_type = get_value_types_for_classes("mig_net_count_tot_input_df"),
                            ...,
                            class = c(class, "mig_net_count_tot_input_df"))
@@ -53,27 +49,17 @@ new_mig_net_count_tot_input_df <-
 #' @export
 mig_net_count_tot_input_df <-
     function(x,
-             dimensions = attr(x, "dimensions"),
-             time_span = attr(x, "time_span"),
-             ...) {
-
-        if ("age" %in% dimensions)
-            stop("'dimensions' contains \"age\". 'mig_net_count_tot_input_df' for CCMPP input cannot have an age dimension.")
+             time_span = attr(x, "time_span")) {
 
         x <- ccmpp_input_df(x,
-                            dimensions = dimensions,
+                            dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_net_count_tot_input_df"),
                             age_span = double(),
                             time_span = time_span,
-                            value_type = get_value_types_for_classes("mig_net_count_tot_input_df"),
-                            ...)
-
+                            value_type = get_value_types_for_classes("mig_net_count_tot_input_df"))
         ## Create/Validate
         validate_ccmpp_object(
             new_mig_net_count_tot_input_df(x,
-                               dimensions = attr(x, "dimensions"),
-                               time_span = attr(x, "time_span"),
-                               ...
-                               )
+                               time_span = attr(x, "time_span"))
         )
     }
 

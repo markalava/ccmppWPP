@@ -34,10 +34,7 @@ An object of class \code{life_table_input_df}.
 }
 \description{
 \code{life_table_input_df} is a subclass of
-\code{\link{ccmpp_input_df}}. It imposes two additional conditions:
-\enumerate{
-  \item{\code{Value_type} attribute equals \dQuote{rate}.}
-  \item{Within year and sex, age must start at 0.}}
+\code{\link{ccmpp_input_df}}. It has an indicator column that
 }
 \seealso{
 \code{\link{validate_ccmpp_object}} for object validation,

@@ -149,7 +149,7 @@ validate_ccmpp_object.demog_change_component_df <-
 
 #' @rdname validate_ccmpp_object
 #' @export
-validate_ccmpp_object.ccmpp_input_df <- function(x) {
+validate_ccmpp_object.ccmpp_input_df <- function(x, ...) {
 
     demog_change_component_dims_x <- demog_change_component_dimensions(x)
 
@@ -262,13 +262,6 @@ validate_ccmpp_object.survival_ratio_input_df <- function(x, ...) {
     if (!is_by_sex(x))
         stop("Must have 'sex' dimension.")
 
-    ## ages start at zero
-    if (is_by_age(x)) {
-        min_age_start <- get_min_age_in_dims_in_df(x)
-        if (!all(min_age_start == 0))
-            stop("'age_start' does not start at '0' for each time * sex combination.")
-        }
-
     ## no indicator dimension
     if (is_by_indicator(x) || get_df_col_namees_for_dimensions("indicator") %in% colnames(x)) {
         stop("Either 'is_by_indicator(x)' is 'TRUE' or 'x' has a indicator dimension column. This type of CCMPP input must not have indicator information.")
@@ -294,13 +287,6 @@ validate_ccmpp_object.pop_count_base_input_df <- function(x, ...) {
     ## must have sex dimension
     if (!is_by_sex(x))
         stop("Must have 'sex' dimension.")
-
-    ## ages start at zero
-    if (is_by_age(x)) {
-        min_age_start <- get_min_age_in_dims_in_df(x)
-        if (!all(min_age_start == 0))
-            stop("'age_start' does not start at '0' for each time * sex combination.")
-        }
 
     ## no time dimension
     if (is_by_time(x)) {
@@ -370,13 +356,6 @@ validate_ccmpp_object.mig_net_rate_input_df <- function(x, ...) {
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
 
-    ## ages start at zero
-    if (is_by_age(x)) {
-        min_age_start <- get_min_age_in_dims_in_df(x)
-        if (!all(min_age_start == 0))
-            stop("'age_start' does not start at '0' for each time * sex combination.")
-        }
-
     ## no indicator dimension
     if (is_by_indicator(x) || get_df_col_namees_for_dimensions("indicator") %in% colnames(x)) {
         stop("Either 'is_by_indicator(x)' is 'TRUE' or 'x' has a indicator dimension column. This type of CCMPP input must not have indicator information.")
@@ -406,13 +385,6 @@ validate_ccmpp_object.mig_net_count_input_df <- function(x, ...) {
     val_type <- get_value_types_for_classes("mig_net_count_input_df")
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
-
-    ## ages start at zero
-    if (is_by_age(x)) {
-        min_age_start <- get_min_age_in_dims_in_df(x)
-        if (!all(min_age_start == 0))
-            stop("'age_start' does not start at '0' for each time * sex combination.")
-        }
 
     ## no indicator dimension
     if (is_by_indicator(x) || get_df_col_namees_for_dimensions("indicator") %in% colnames(x)) {

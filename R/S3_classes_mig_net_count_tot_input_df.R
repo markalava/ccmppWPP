@@ -24,10 +24,11 @@ new_mig_net_count_tot_input_df <-
     function(x, dimensions = character(),
              time_span = double(),
              ..., class = character()) {
-        new_mig_net_count_input_df(x = x,
+        new_ccmpp_input_df(x = x,
                            age_span = double(),
                            time_span = time_span,
                            dimensions = dimensions,
+                           value_type = get_value_types_for_classes("mig_net_count_tot_input_df"),
                            ...,
                            class = c(class, "mig_net_count_tot_input_df"))
     }
@@ -59,10 +60,11 @@ mig_net_count_tot_input_df <-
         if ("age" %in% dimensions)
             stop("'dimensions' contains \"age\". 'mig_net_count_tot_input_df' for CCMPP input cannot have an age dimension.")
 
-        x <- mig_net_count_input_df(x,
+        x <- ccmpp_input_df(x,
                             dimensions = dimensions,
                             age_span = double(),
                             time_span = time_span,
+                            value_type = get_value_types_for_classes("mig_net_count_tot_input_df"),
                             ...)
 
         ## Create/Validate

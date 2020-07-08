@@ -23,7 +23,7 @@ get_req_attr_names_for_dimensions <- function(dimensions) {
 
 get_all_demog_change_component_df_class_names <- function() {
     c("life_table_input_df",
-      "mig_net_count_input_df", "mig_net_count_input_df",
+      "mig_net_count_tot_input_df", "mig_net_count_input_df",
       "mig_net_rate_input_df", "srb_input_df", "pop_count_base_input_df",
       "survival_ratio_input_df", "fert_rate_input_df",
       "ccmpp_input_df", "demog_change_component_df")
@@ -112,6 +112,8 @@ get_value_type_info_for_classes <- function(class = get_all_demog_change_compone
                      c(class = "mig_net_rate_input_df",
                        value_type = "rate"),
                      c(class = "mig_net_count_input_df",
+                       value_type = "count"),
+                     c(class = "mig_net_count_tot_input_df",
                        value_type = "count"),
                      c(class = "life_table_input_df",
                        value_type = "real")

@@ -17,7 +17,7 @@ validate_ccmpp_object(x, ...)
 
 \method{validate_ccmpp_object}{demog_change_component_df}(x, ...)
 
-\method{validate_ccmpp_object}{ccmpp_input_df}(x)
+\method{validate_ccmpp_object}{ccmpp_input_df}(x, ...)
 
 \method{validate_ccmpp_object}{fert_rate_input_df}(x, ...)
 

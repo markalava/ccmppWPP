@@ -37,7 +37,8 @@ These functions coerce an object to a
 one.
 }
 \seealso{
-\code{\link{coerce_demog_change_component_df}} for an important note on validation.
+\code{\link{coerce_demog_change_component_df}} for an
+    important note on validation.
 }
 \author{
 Mark Wheldon

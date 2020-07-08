@@ -21,7 +21,7 @@ subset_age(x, ...)
 
 subset_sex(x, ...)
 
-\method{subset_sex}{demog_change_component_df}(x, sex = get_allowed_sexes(), drop = FALSE)
+\method{subset_sex}{demog_change_component_df}(x, sex = get_all_allowed_sexes(), drop = FALSE)
 }
 \arguments{
 \item{x}{An object to subset.}

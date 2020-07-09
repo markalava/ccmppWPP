@@ -11,8 +11,6 @@
 #'
 #' @seealso mig_net_rate_input_df
 #'
-#' @family mig_net_rate_input_df class non-exported functions
-#'
 #' @inheritParams new_demog_change_component_df
 #' @return An object of class \code{mig_net_rate_input_df}.
 #' @author Mark Wheldon
@@ -55,8 +53,6 @@ mig_net_rate_input_df <-
 
         x <- ccmpp_input_df(x,
                             dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_net_count_input_df"),
-                            age_span = age_span,
-                            time_span = time_span,
                             value_type = get_value_types_for_classes("mig_net_rate_input_df"))
 
         ## Create/Validate

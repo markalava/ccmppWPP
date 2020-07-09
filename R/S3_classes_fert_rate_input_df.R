@@ -28,8 +28,6 @@ guess_non_zero_fert_ages <- function(x, digits = 9) {
 #'
 #' @seealso fert_rate_input_df
 #'
-#' @family fert_rate_input_df class non-exported functions
-#'
 #' @inheritParams demog_change_component_df
 #' @return An object of class \code{fert_rate_input_df}.
 #' @author Mark Wheldon
@@ -80,14 +78,10 @@ new_fert_rate_input_df <-
 #' @export
 fert_rate_input_df <-
     function(x,
-             age_span = attr(x, "age_span"),
-             time_span = attr(x, "time_span"),
              non_zero_fert_ages = attr(x, "non_zero_fert_ages")) {
 
         x <- ccmpp_input_df(x,
                             dimensions = get_req_dimensions_for_ccmpp_input_classes("fert_rate_input_df"),
-                            age_span = age_span,
-                            time_span = time_span,
                             value_type = get_value_types_for_classes("fert_rate_input_df"))
 
         if (is.null(non_zero_fert_ages)) {

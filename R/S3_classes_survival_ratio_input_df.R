@@ -11,8 +11,6 @@
 #'
 #' @seealso survival_ratio_input_df
 #'
-#' @family survival_ratio_input_df class non-exported functions
-#'
 #' @inheritParams new_demog_change_component_df
 #'
 #' @return An object of class \code{survival_ratio_input_df}.
@@ -57,8 +55,6 @@ survival_ratio_input_df <-
 
         x <- ccmpp_input_df(x,
                            dimensions = get_req_dimensions_for_ccmpp_input_classes("survival_ratio_input_df"),
-                            age_span = age_span,
-                            time_span = time_span,
                             value_type = get_value_types_for_classes("survival_ratio_input_df"))
 
         ## Create/Validate

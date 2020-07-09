@@ -4,23 +4,12 @@
 \alias{mig_net_count_input_df}
 \title{Constructor for class \code{mig_net_count_input_df}}
 \usage{
-mig_net_count_input_df(
-  x,
-  age_span = attr(x, "age_span"),
-  time_span = attr(x, "time_span")
-)
+mig_net_count_input_df(x)
 }
 \arguments{
 \item{x}{For \code{demog_change_component_df}: A data frame with
 columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
 \dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.}
-
-\item{age_span}{Scalar indicating the span of the age groups. If
-\code{NULL} and a column \dQuote{age_span} is present in
-\code{x} an attempt will be made to infer it from that column.}
-
-\item{time_span}{Scalar indicating the span of the time periods;
-similar behaviour to \code{age_span}.}
 }
 \value{
 An object of class \code{mig_net_count_input_df}.

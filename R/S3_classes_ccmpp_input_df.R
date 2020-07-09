@@ -30,6 +30,36 @@ get_req_dimensions_for_ccmpp_input_classes <- function(classes) {
     get_dimensions_info_for_ccmpp_input_classes(classes)
 }
 
+check_dimensions_for_ccmpp_input_class <- function(class, dimensions) {
+    req_dims <- get_req_dimensions_for_ccmpp_input_classes(class)
+    if (!setequal(dimensions, req_dims))
+        stop("'", class, "' objects must have dimensions 'c(\"",
+             paste(req_dims, collapse = "\", \""), "\")'. This object has dimensions 'c(\"",
+             paste(dimensions, collapse = "\", \""), "\")'.")
+    else
+        return(invisible(dimensions))
+}
+
+check_dimensions_for_ccmpp_input_df <- function(x) {
+    class_x <- oldClass(x)[1]
+    dims_x <-
+        check_dimensions_for_ccmpp_input_class(class = class_x,
+                                           dimensions =
+                                               demog_change_component_dimensions(x))
+    req_dims <- get_req_dimensions_for_ccmpp_input_classes(class_x)
+    dims_from_cols <- guess_dimensions_from_df_cols(x)
+    if (!setequal(dims_x, dims_from_cols)) {
+        offending_col_names <-
+            get_df_col_namees_for_dimensions(dims_from_cols)
+        stop("'", class_x, "' objects must have dimensions 'c(\"",
+             paste(req_dims, collapse = "\", \""), "\")'. This object has columns 'c(\"",
+             paste(offending_col_names, collapse = "\", \""), "\")' that correspond to dimensions 'c(\"",
+             paste(dims_from_cols, collapse = "\", \""), "\")'.")
+    }
+    else
+        return(invisible(x))
+}
+
 ###-----------------------------------------------------------------------------
 ### * Class constructors
 
@@ -44,8 +74,6 @@ get_req_dimensions_for_ccmpp_input_classes <- function(classes) {
 #' \code{\link{ccmpp_input_df}}.
 #'
 #' @seealso ccmpp_input_df
-#'
-#' @family ccmpp_input_df class non-exported functions
 #'
 #' @inheritParams new_demog_change_component_df
 #' @return An object of class \code{ccmpp_input_df}.
@@ -79,15 +107,11 @@ new_ccmpp_input_df <-
 ccmpp_input_df <-
     function(x,
              dimensions = attr(x, "dimensions"),
-             age_span = attr(x, "age_span"),
-             time_span = attr(x, "time_span"),
              value_type = attr(x, "value_type"),
              ...) {
 
         x <- demog_change_component_df(x,
                                        dimensions = dimensions,
-                                       age_span = age_span,
-                                       time_span = time_span,
                                        value_type = value_type,
                                        ...)
 

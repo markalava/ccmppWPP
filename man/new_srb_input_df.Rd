@@ -26,4 +26,3 @@ srb_input_df
 \author{
 Mark Wheldon
 }
-\concept{srb_input_df class non-exported functions}

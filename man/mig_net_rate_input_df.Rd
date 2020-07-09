@@ -14,13 +14,6 @@ mig_net_rate_input_df(
 \item{x}{For \code{demog_change_component_df}: A data frame with
 columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
 \dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.}
-
-\item{age_span}{Scalar indicating the span of the age groups. If
-\code{NULL} and a column \dQuote{age_span} is present in
-\code{x} an attempt will be made to infer it from that column.}
-
-\item{time_span}{Scalar indicating the span of the time periods;
-similar behaviour to \code{age_span}.}
 }
 \value{
 An object of class \code{mig_net_rate_input_df}.

@@ -35,4 +35,3 @@ survival_ratio_input_df
 \author{
 Mark Wheldon
 }
-\concept{survival_ratio_input_df class non-exported functions}

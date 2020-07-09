@@ -45,8 +45,6 @@
 #'
 #' @seealso demog_change_component_df
 #'
-#' @family demog_change_component_df class non-exported functions
-#'
 #' @param age_span Scalar indicating the span of the age groups.
 #' @param time_span Scalar indicating the span of the time periods.
 #' @param dimensions Character vector listing the dimensions such as
@@ -74,6 +72,22 @@ new_demog_change_component_df <-
                   ...,
                   class = c(class, "demog_change_component_df", "data.frame"))
     }
+
+
+#' Prepare a data frame for conversion to a \code{demog_change_component_df}
+#'
+#' Converts and cleans \code{x} into a form suitable for
+#' \code{\link{demog_change_component_df}.
+#'
+#' @inheritParams demog_change_component_df
+#' @return A data frame
+#' @author Mark Wheldon
+prepare_df_for_demog_change_component_df <- function(x,
+        dimensions = attr(x, "dimensions"),
+        age_span = attr(x, "age_span"),
+        time_span = attr(x, "time_span"),
+        value_type = attr(x, "value_type")) {
+}
 
 
 #' Constructor for class \code{demog_change_component_df}
@@ -139,11 +153,6 @@ new_demog_change_component_df <-
 #' @param x For \code{demog_change_component_df}: A data frame with
 #'     columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
 #'     \dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.
-#' @param age_span Scalar indicating the span of the age groups. If
-#'     \code{NULL} and a column \dQuote{age_span} is present in
-#'     \code{x} an attempt will be made to infer it from that column.
-#' @param time_span Scalar indicating the span of the time periods;
-#'     similar behaviour to \code{age_span}.
 #' @param dimensions Character vector listing the dimensions such as
 #'     \dQuote{time}, \dQuote{age}, \dQuote{sex}.
 #' @param value_type Scalar indicating the type of the \dQuote{value}
@@ -155,18 +164,16 @@ new_demog_change_component_df <-
 demog_change_component_df <-
     function(x,
              dimensions = attr(x, "dimensions"),
-             age_span = attr(x, "age_span"),
-             time_span = attr(x, "time_span"),
              value_type = attr(x, "value_type"),
              ...) {
 
-        if (is_demog_change_component_df(x)) {
-            x <- validate_ccmpp_object(x)
-            return(as_demog_change_component_df(x))
-        }
-
         if (!is.data.frame(x))
             stop("'x' is not a data.frame.")
+
+        if (is_demog_change_component_df(x))
+            x <- as.data.frame(x)
+
+        coln_x <- colnames(x)
 
         ## -------* 'dimensions' attribute
 
@@ -184,53 +191,64 @@ demog_change_component_df <-
                      "'.")
         }
 
-        is_by_age <- is_by_age(x) # 'data.frame' method used here.
+        ## -------* Check columns are present
 
-        ## -------* Columns
+        req_cols <- get_all_req_col_names_excl_spans_for_dimensions(dimensions)
 
-        ## List required columns for output and input
-        req_cols_out <- get_all_req_col_names_for_dimensions(dimensions)
-        req_cols_out_types <- get_all_req_col_types_for_dimensions(dimensions)
-        req_cols_in <- req_cols_out
-        req_cols_in_types <- req_cols_out_types
-
-        ## Check required columns are present in 'x'. If 'age_span'
-        ## and 'time_span' are not specified as arguments, take them
-        ## from 'x'.
-        if (is.null(time_span)) {
-            req_cols_in <- c(req_cols_in, "time_span")
-            req_cols_in_types <- c(req_cols_in_types, "numeric")
-            message("Argument 'time_span' is 'NULL'; taking 'time_span' from 'x$time_span'.")
-        }
-        if (is.null(age_span) && is_by_age) {
-            req_cols_in <- c(req_cols_in, "age_span")
-            req_cols_in_types <- c(req_cols_in_types, "numeric")
-            message("Argument 'age_span' is 'NULL'; taking 'age_span' from 'x$age_span'.")
-        }
-        if (!all(req_cols_in %in% names(x)))
+        if (!all(req_cols %in% coln_x))
             stop("'x' must have columns '",
-                 paste(req_cols_in, collapse = "', '"),
-                 "'.")
+                 paste0(req_cols, collapse = "', '"),
+                 "'; some or all are missing.")
 
-        ## -------* Detect attributes from columns
+        ## -------* Set-up _span columns
 
-        ## If arguments 'age_span' or 'time_span' are 'NULL' extract
-        ## them from 'x' (already checked that they are there).
-        if (is.null(time_span)) time_span <- x$time_span[1]
-        if (is.null(age_span) && is_by_age) age_span <- x$age_span[1]
+        if ("time" %in% dimensions && !"time_span" %in% coln_x) {
+            diff_x <- diff(unique(x$time_start))[1]
+            if (!(is.numeric(diff_x) & is.finite(diff_x))) {
+                stop("'time_span' is not a column in 'x' and cannot determine it from 'x$time_span'.")
+            } else {
+                message("'time_span' is not a column in 'x'; setting 'x$time_span' to '",
+                        diff_x,
+                        "'.")
+                x$time_span <- diff_x
+                time_span <- diff_x
+            }
+        } else time_span <- unique(x$time_span)
+
+        if ("age" %in% dimensions && !"age_span" %in% coln_x) {
+            diff_x <- diff(unique(x$age_start))[1]
+            if (!(is.numeric(diff_x) & is.finite(diff_x))) {
+                stop("'age_span' is not a column in 'x' and cannot determine it from 'x$age_span'.")
+            } else {
+                message("'age_span' is not a column in 'x'; setting 'x$age_span' to '",
+                        diff_x,
+                        "'.")
+                x$age_span <- diff_x
+                age_span <- diff_x
+            }
+        } else age_span <- unique(x$age_span)
+### !!!!!!!!!! TEMPORARY !!!!!!!!!!!!
+        ## Replace '1000' in x$age_span
+        if ("age" %in% dimensions && !is.null(x$age_span) && !is.null(age_span)) {
+            x$age_span[x$age_span == 1000] <- age_span[1]
+            age_span <- age_span[!age_span == 1000]
+        }
+### !!!!!!!!!! TEMPORARY !!!!!!!!!!!!
 
         ## -------* Values
 
         if (is.null(value_type)) {
-            value_type <- "real"
             message("Argument 'value_type' is 'NULL'; setting 'value_type' to 'real'.")
+            value_type <- "real"
         }
 
         ## -------* Other
 
         ## Clean 'x' and convert factors to character
-        x <- x[, req_cols_out]
-        char_cols <- which(req_cols_out_types == "character")
+        req_cols <- get_all_req_col_names_for_dimensions(dimensions)
+        req_cols_types <- get_all_req_col_types_for_dimensions(dimensions)
+        x <- x[, req_cols]
+        char_cols <- which(req_cols_types == "character")
         for (j in char_cols) {
             if (is.factor(x[, j])) x[, j] <- as.character(x[, j])
         }

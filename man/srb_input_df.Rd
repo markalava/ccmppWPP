@@ -10,9 +10,6 @@ srb_input_df(x, time_span = attr(x, "time_span"))
 \item{x}{For \code{demog_change_component_df}: A data frame with
 columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
 \dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.}
-
-\item{time_span}{Scalar indicating the span of the time periods;
-similar behaviour to \code{age_span}.}
 }
 \value{
 An object of class \code{srb_input_df}.

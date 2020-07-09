@@ -53,7 +53,7 @@ NULL
                 "' will not preserve the class or attributes. See '?subset_time' and friends for an alternative approach.")
     }
     x <- NextMethod()
-    if(is_demog_change_component_df(x)) return(as.data.frame(x, restore_columns = FALSE))
+    if(is_demog_change_component_df(x)) return(as.data.frame(x))
                                 # 'NextMethod()' will preseve the
                                 # 'demog_change_component_df' class so the
                                 # 'demog_change_component_df' method for
@@ -73,7 +73,7 @@ NULL
                 "' will not preserve the class or attributes.")
     }
     x <- NextMethod()
-    if(is_demog_change_component_df(x)) return(as.data.frame(x, restore_columns = FALSE))
+    if(is_demog_change_component_df(x)) return(as.data.frame(x))
                                 # 'NextMethod()' will preseve the
                                 # 'demog_change_component_df' class so the
                                 # 'demog_change_component_df' method for
@@ -93,7 +93,7 @@ NULL
                 "' will not preserve the class or attributes.")
     }
     x <- NextMethod()
-    if(is_demog_change_component_df(x)) return(as.data.frame(x, restore_columns = FALSE))
+    if(is_demog_change_component_df(x)) return(as.data.frame(x))
                                 # 'NextMethod()' will preseve the
                                 # 'demog_change_component_df' class so the
                                 # 'demog_change_component_df' method for
@@ -113,7 +113,7 @@ NULL
                 "' will not preserve the class or attributes.")
     }
     x <- NextMethod()
-    if(is_demog_change_component_df(x)) return(as.data.frame(x, restore_columns = FALSE))
+    if(is_demog_change_component_df(x)) return(as.data.frame(x))
                                 # 'NextMethod()' will preseve the
                                 # 'demog_change_component_df' class so the
                                 # 'demog_change_component_df' method for
@@ -141,34 +141,16 @@ NULL
 
 #' @rdname generic_coerce_demog_change_component_df
 #' @export
-as.data.frame.demog_change_component_df <- function(x, restore_columns = TRUE, ...) {
-    oclass <- oldClass(x)
+as.data.frame.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         warning("The result of the coercion will not inherit from class '",
-                oclass[1],
+                oldClass(x)[1],
                 "' and will not have any attributes specific to that class.")
     }
-    if (is.data.frame(x) && is_demog_change_component_df(x) && restore_columns) {
-        ## reinstate age_span and time_span
-        cn <- colnames(x)
-        demog_change_component_dims_x <- demog_change_component_dimensions(x)
-        attr_w_span_names <- get_all_attr_w_span_names()
-
-    for (att in
-         attr_w_span_names[attr_w_span_names %in% demog_change_component_dims_x]
-         ) {
-        span_name <- paste0(att, "_span")
-        if (!(span_name %in% cn)) x[[span_name]] <- attr(x, span_name)
-    }
-        ## avoid coercion/copying if can just remove the class
-        oldClass(x) <- strip_demog_change_component_df_classes_attribute(oldClass(x))
-        return(x)
-    } else {
         x <- NextMethod()
         if (is_demog_change_component_df(x))
             oldClass(x) <- strip_demog_change_component_df_classes_attribute(oldClass(x))
         return(x)
-    }
 }
 
 ###-----------------------------------------------------------------------------
@@ -229,6 +211,7 @@ print.demog_change_component_df <-
              quote = FALSE, right = TRUE, row.names = FALSE, max = NULL) {
 
         attr_names <- names(demog_change_component_attributes(x))
+        attr_names <- attr_names[!(attr_names == "dimensions")]
         if (inherits(x, "fert_rate_input_df"))
             attr_names <- attr_names[!(attr_names == "non_zero_fert_ages")]
         attr_msgs <- sapply(attr_names, function(z) {
@@ -246,6 +229,7 @@ print.demog_change_component_df <-
 
         cat_msg <- paste0("# A '", class(x)[1], "' with ", format(nrow(x), big.mark = ","),
             " rows.",
+            "\n# dimensions = '", paste(demog_change_component_dimensions(x), collapse = ", "), "'.",
             "\n# ", attr_msgs,
             ".\n")
         if (inherits(x, "fert_rate_input_df"))
@@ -374,18 +358,20 @@ print.summary_demog_change_component_df <-
 
         ## Time
         if (!is.null(x$time))
-            msg <- paste0(msg, "      time:\trange = [",
+            msg <- paste0(msg, "      time:\tspan = ",
+                          toString(x$time$span, 7),
+                          "\trange = [",
                           paste(x$time$range, collapse = ", "),
-                          "]\tspan = ",
-                          paste0(x$time$span),
+                          "]",
                           "\n")
 
         ## Age
         if (!is.null(x$age))
-            msg <- paste0(msg, "       age:\trange = [",
+            msg <- paste0(msg, "       age:\tspan = ",
+                          toString(x$age$span, 7),
+                          "\trange = [",
                           paste(x$age$range, collapse = ", "),
-                          "]\tspan = ",
-                          paste0(x$age$span),
+                          "]",
                           "\n")
 
         ## Sex

@@ -7,34 +7,31 @@ test_that("valid member created", {
 
 
 test_that("Non-zero age detected", {
-    y <- mig_net_count_input_df_time_age_sex
-    z <- subset(y, age_start > 0)
-    z <- new_mig_net_count_input_df(z,
-                                     age_span = age_span(y),
-                                     time_span = time_span(y))
+    x <- mig_net_count_input_df_time_age_sex
+    y <- subset(x, age_start > 0)
+    z <- new_mig_net_count_input_df(y, age_span = 1, time_span = 1)
     expect_error(validate_ccmpp_object(z),
+                 "'age_start' does not start at '0'")
+    expect_error(mig_net_count_input_df(y),
                  "'age_start' does not start at '0'")
 })
 
 
 test_that("indicator dimension detected", {
-    y <- mig_net_count_input_df_time_age_sex
-    z <- cbind(y, indicator = "ltX")
-    z <- new_mig_net_count_input_df(z, time_span = time_span(y),
-                                age_span = age_span(y))
+    x <- mig_net_count_input_df_time_age_sex
+    y <- cbind(x, indicator = "ltX")
+    z <- new_mig_net_count_input_df(y, age_span = 1, time_span = 1)
     attr(z, "dimensions") <- c(attr(z, "dimensions"), "indicator")
     expect_error(validate_ccmpp_object(z),
-                 "has a indicator dimension")
+                 "must have dimension")
 
-    expect_error(mig_net_count_input_df(z, time_span = time_span(y)),
-                 "has a indicator dimension")
+    expect_false("indicator" %in% colnames(mig_net_count_input_df(y)))
 })
 
 
 test_that("indicator column removed", {
     y <- mig_net_count_input_df_time_age_sex
     z <- cbind(y, indicator = "ltX")
-    z <- mig_net_count_input_df(z, time_span = time_span(y),
-                            age_span = age_span(y))
+    z <- mig_net_count_input_df(z)
     expect_false("indicator" %in% colnames(z))
 })

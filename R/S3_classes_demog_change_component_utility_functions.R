@@ -39,22 +39,18 @@ subset_time.demog_change_component_df <- function(x, time, drop = FALSE) {
     else age_span_x <- NULL
     value_type_x <- value_type(x)
 
-    time_col_name <- get_df_col_namees_for_dimensions("time")
+    time_col_name <- get_df_col_names_excl_spans_for_dimensions("time")
     time_x <- x[[time_col_name]] %in% time
     if (identical(sum(time_x), 0L))
         stop("'x' does not have any entries with 'time' %in% '", time, "'.")
-    if (all(x$time %in% time)) {
-        messtime("'x' already subsetted by 'time'.")
-        return(x)
-    }
 
     x <- x[time_x, ]
-    if (identical(length(time), 1L) && drop)
+    if (identical(length(time), 1L) && drop) {
         x <- x[, -which(colnames(x) == get_df_col_namees_for_dimensions("time"))]
+        attr(x, "dimensions") <- attr(x, "dimensions")[attr(x, "dimensions") != "time"]
+        }
 
     return(suppressMessages(demog_change_component_df(x,
-                                                      time_span = time_span_x,
-                                                      age_span = age_span_x,
                                                       dimensions = NULL,
                                                       value_type = value_type_x)))
 }
@@ -80,22 +76,18 @@ subset_age.demog_change_component_df <- function(x, age, drop = FALSE) {
     else age_span_x <- NULL
     value_type_x <- value_type(x)
 
-    age_col_name <- get_df_col_namees_for_dimensions("age")
+    age_col_name <- get_df_col_names_excl_spans_for_dimensions("age")
     age_x <- x[[age_col_name]] %in% age
     if (identical(sum(age_x), 0L))
         stop("'x' does not have any entries with 'age' %in% '", age, "'.")
-    if (all(x$age %in% age)) {
-        message("'x' already subsetted by 'age'.")
-        return(x)
-    }
 
     x <- x[age_x, ]
-    if (identical(length(age), 1L) && drop)
+    if (identical(length(age), 1L) && drop) {
         x <- x[, -which(colnames(x) == get_df_col_namees_for_dimensions("age"))]
+        attr(x, "dimensions") <- attr(x, "dimensions")[attr(x, "dimensions") != "age"]
+        }
 
     return(suppressMessages(demog_change_component_df(x,
-                                                      time_span = time_span_x,
-                                                      age_span = age_span_x,
                                                       dimensions = NULL,
                                                       value_type = value_type_x)))
 }
@@ -122,22 +114,56 @@ subset_sex.demog_change_component_df <-
         else age_span_x <- NULL
         value_type_x <- value_type(x)
 
-        sex_col_name <- get_df_col_namees_for_dimensions("sex")
+        sex_col_name <- get_df_col_names_excl_spans_for_dimensions("sex")
         sex_x <- x[[sex_col_name]] %in% sex
         if (identical(sum(sex_x), 0L))
             stop("'x' does not have any entries with 'sex' %in% '", sex, "'.")
-        if (identical(levels(as.factor(sex_x)), sex)) {
-            message("'x' already subsetted by 'sex'.")
-            return(x)
-        }
 
         x <- x[sex_x, ]
-        if (identical(length(sex), 1L) && drop)
+        if (identical(length(sex), 1L) && drop) {
             x <- x[, -which(colnames(x) == get_df_col_namees_for_dimensions("sex"))]
+            attr(x, "dimensions") <- attr(x, "dimensions")[attr(x, "dimensions") != "sex"]
+            }
 
         return(suppressMessages(demog_change_component_df(x,
-                                                          time_span = time_span_x,
-                                                          age_span = age_span_x,
+                                                          dimensions = NULL,
+                                                          value_type = value_type_x)))
+    }
+
+#' @rdname subset_demog_change_component_df
+#' @export
+subset_indicator <- function(x, ...) {
+    UseMethod("subset_indicator")
+}
+
+#' @rdname subset_demog_change_component_df
+#' @export
+subset_indicator.demog_change_component_df <-
+    function(x, indicator = get_all_allowed_indicatores(), drop = FALSE) {
+        stopifnot(is_by_indicator(x))
+        indicator <- match.arg(indicator, several.ok = TRUE)
+
+        ## save attributes now
+        if (is_by_time(x))
+            time_span_x <- time_span(x)
+        else time_span_x <- NULL
+        if (is_by_age(x))
+            age_span_x <- age_span(x)
+        else age_span_x <- NULL
+        value_type_x <- value_type(x)
+
+        indicator_col_name <- get_df_col_names_excl_spans_for_dimensions("indicator")
+        indicator_x <- x[[indicator_col_name]] %in% indicator
+        if (identical(sum(indicator_x), 0L))
+            stop("'x' does not have any entries with 'indicator' %in% '", indicator, "'.")
+
+        x <- x[indicator_x, ]
+        if (identical(length(indicator), 1L) && drop) {
+            x <- x[, -which(colnames(x) == get_df_col_namees_for_dimensions("indicator"))]
+            attr(x, "dimensions") <- attr(x, "dimensions")[attr(x, "dimensions") != "indicator"]
+            }
+
+        return(suppressMessages(demog_change_component_df(x,
                                                           dimensions = NULL,
                                                           value_type = value_type_x)))
     }

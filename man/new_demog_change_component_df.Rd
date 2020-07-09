@@ -42,4 +42,3 @@ demog_change_component_df
 \author{
 Mark Wheldon
 }
-\concept{demog_change_component_df class non-exported functions}

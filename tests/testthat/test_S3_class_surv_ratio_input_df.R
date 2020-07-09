@@ -15,3 +15,12 @@ test_that("Non-zero age detected", {
     expect_error(validate_ccmpp_object(z),
                  "'age_start' does not start at '0'")
 })
+
+
+test_that("Required dimensions enforced", {
+    x <- survival_ratio_input_df_time_age_sex
+    expect_error(survival_ratio_input_df(subset(as.data.frame(x),
+                                        select =
+                                            -c(time_span, time_start))),
+                 "must have columns")
+})

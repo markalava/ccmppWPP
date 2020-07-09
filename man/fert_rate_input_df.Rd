@@ -4,24 +4,12 @@
 \alias{fert_rate_input_df}
 \title{Constructor for class \code{fert_rate_input_df}}
 \usage{
-fert_rate_input_df(
-  x,
-  age_span = attr(x, "age_span"),
-  time_span = attr(x, "time_span"),
-  non_zero_fert_ages = attr(x, "non_zero_fert_ages")
-)
+fert_rate_input_df(x, non_zero_fert_ages = attr(x, "non_zero_fert_ages"))
 }
 \arguments{
 \item{x}{For \code{demog_change_component_df}: A data frame with
 columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
 \dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.}
-
-\item{age_span}{Scalar indicating the span of the age groups. If
-\code{NULL} and a column \dQuote{age_span} is present in
-\code{x} an attempt will be made to infer it from that column.}
-
-\item{time_span}{Scalar indicating the span of the time periods;
-similar behaviour to \code{age_span}.}
 
 \item{non_zero_fert_ages}{Numeric vector of unique ages indicating
 the reproductive age range.}

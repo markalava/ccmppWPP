@@ -21,8 +21,6 @@ get_life_table_allowed_indicator_values <- function() {
 #'
 #' @seealso life_table_input_df
 #'
-#' @family life_table_input_df class non-exported functions
-#'
 #' @inheritParams demog_change_component_df
 #'
 #' @return An object of class \code{life_table_input_df}.
@@ -57,14 +55,10 @@ new_life_table_input_df <-
 #' @author Mark Wheldon
 #' @export
 life_table_input_df <-
-    function(x,
-             age_span = attr(x, "age_span"),
-             time_span = attr(x, "time_span")) {
+    function(x) {
 
         x <- ccmpp_input_df(x,
                             dimensions = get_req_dimensions_for_ccmpp_input_classes("life_table_input_df"),
-                            age_span = age_span,
-                            time_span = time_span,
                             value_type = get_value_types_for_classes("life_table_input_df"))
 
         ## Create/Validate

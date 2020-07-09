@@ -7,22 +7,20 @@ test_that("valid member created", {
 
 
 test_that("age dimension detected", {
-    y <- srb_input_df_time
-    z <- cbind(y, age_start = 0, age_span = 1)
-    z <- new_srb_input_df(z, time_span = time_span(y))
+    x <- srb_input_df_time
+    y <- cbind(x, age_start = 0, age_span = 1)
+    z <- new_srb_input_df(y, time_span = 1)
     attr(z, "dimensions") <- c(attr(z, "dimensions"), "age")
+    attr(z, "age_span") <- 1
     expect_error(validate_ccmpp_object(z),
-                 "has an age dimension")
-
-    expect_error(srb_input_df(z, time_span = time_span(y)),
-                 "has an age dimension")
+                 "must have dimension")
 })
 
 
 test_that("age columns removed", {
     y <- srb_input_df_time
     z <- cbind(y, age_start = 0, age_span = 1)
-    z <- srb_input_df(z, time_span = time_span(y))
+    z <- srb_input_df(z)
     expect_false("age_start" %in% colnames(z))
     expect_false("age_span" %in% colnames(z))
 })

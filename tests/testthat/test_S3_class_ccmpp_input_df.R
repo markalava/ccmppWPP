@@ -2,72 +2,76 @@ context("Test construction and validation of S3 class 'ccmpp_input_df'")
 
 test_that("objects are created properly", {
 
-    ## Time, Age, Sex
+### Time, Age, Sex
+    ## Specify dimensions
     y <- ccmpp_input_df(S3_demog_change_component_time_age_sex_test_df,
                        dimensions = c("time", "age", "sex"))
-    expect_s3_class(y, "ccmpp_input_df")
+    expect_s3_class(y, "demog_change_component_df")
     expect_s3_class(y, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(y), c("time", "age", "sex")))
 
+    ## Guess dimensions
     y <- ccmpp_input_df(S3_demog_change_component_time_age_sex_test_df)
-    expect_s3_class(y, "ccmpp_input_df")
+    expect_s3_class(y, "demog_change_component_df")
     expect_s3_class(y, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(y), c("time", "age", "sex")))
 
-    x <- S3_demog_change_component_time_age_sex_test_df[, c("time_start", "sex", "age_start", "value")]
-    z <- ccmpp_input_df(x, age_span = 1, time_span = 1,
-                       dimensions = c("time", "age", "sex"))
-    expect_s3_class(z, "ccmpp_input_df")
-    expect_s3_class(z, "data.frame")
+    ## Guess spans
+    y <- ccmpp_input_df(
+        subset(S3_demog_change_component_time_age_sex_test_df,
+               select = -c(time_span, age_span)))
+    expect_s3_class(y, "demog_change_component_df")
+    expect_s3_class(y, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(y), c("time", "age", "sex")))
 
-    ## Time, Age
-    x <- S3_demog_change_component_time_age_test_df[, c("time_start", "age_start", "value")]
-    z <- ccmpp_input_df(x, age_span = 1, time_span = 1,
+### Time, Age
+    ## Specify dimensions
+    x <- S3_demog_change_component_time_age_test_df[, c("time_start", "age_start",
+                                                        "time_span", "age_span",
+                                                        "value")]
+    z <- ccmpp_input_df(x,
                        dimensions = c("time", "age"))
-    expect_s3_class(z, "ccmpp_input_df")
+    expect_s3_class(z, "demog_change_component_df")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(z), c("time", "age")))
-    expect_true(is_by_age(z))
 
+    ## Guess dimensions and spans
     x <- S3_demog_change_component_time_age_test_df[, c("time_start", "age_start", "value")]
-    z <- ccmpp_input_df(x, age_span = 1, time_span = 1)
-    expect_s3_class(z, "ccmpp_input_df")
+    z <- ccmpp_input_df(x)
+    expect_s3_class(z, "demog_change_component_df")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(z), c("time", "age")))
-    expect_true(is_by_age(z))
 
-    ## Time, Sex
-    x <- S3_demog_change_component_time_sex_test_df[, c("time_start", "sex", "value")]
-    z <- ccmpp_input_df(x, time_span = 1,
-                       dimensions = c("time", "sex"))
-    expect_s3_class(z, "ccmpp_input_df")
+### Time, Sex
+    ## specify dimensions
+    x <- S3_demog_change_component_time_sex_test_df[, c("time_start",
+                                                        "time_span", "sex", "value")]
+    z <- ccmpp_input_df(x, dimensions = c("time", "sex"))
+    expect_s3_class(z, "demog_change_component_df")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(z), c("time", "sex")))
-    expect_true(is_by_sex(z))
 
-    x <- S3_demog_change_component_time_sex_test_df[, c("time_start", "time_span", "sex", "value")]
+    ## Guess dimensions and spans
+    x <- S3_demog_change_component_time_sex_test_df[,
+                             c("time_start", "time_span", "sex", "value")]
     z <- ccmpp_input_df(x)
-    expect_s3_class(z, "ccmpp_input_df")
+    expect_s3_class(z, "demog_change_component_df")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(z), c("time", "sex")))
-    expect_true(is_by_sex(z))
 
-    ## Time
-    x <- S3_demog_change_component_time_test_df[, c("time_start", "value")]
-    z <- ccmpp_input_df(x, time_span = 1,
-                       dimensions = "time")
-    expect_s3_class(z, "ccmpp_input_df")
+### Time
+    ## Specify dimensions
+    x <- S3_demog_change_component_time_test_df[, c("time_start", "time_span", "value")]
+    z <- ccmpp_input_df(x, dimensions = "time")
+    expect_s3_class(z, "demog_change_component_df")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(z), "time"))
-    expect_true(is_by_time(z))
 
     x <- S3_demog_change_component_time_test_df[, c("time_start", "time_span", "value")]
     z <- ccmpp_input_df(x)
-    expect_s3_class(z, "ccmpp_input_df")
+    expect_s3_class(z, "demog_change_component_df")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(z), "time"))
-    expect_true(is_by_time(z))
 })
 
 
@@ -76,20 +80,14 @@ test_that("invalid data objects are caught", {
     x <- S3_demog_change_component_time_age_sex_test_df
 
     expect_error(ccmpp_input_df(as.list(x),
-                      age_span = attr(y, "age_span"),
-                      time_span = attr(y, "time_span"),
                        dimensions = c("time", "age", "sex")),
                  "not a data.frame")
 
     expect_error(ccmpp_input_df(as.matrix(x),
-                      age_span = attr(y, "age_span"),
-                      time_span = attr(y, "time_span"),
                        dimensions = c("time", "age", "sex")),
                  "not a data.frame")
 
     expect_error(ccmpp_input_df(data.matrix(x),
-                      age_span = attr(y, "age_span"),
-                      time_span = attr(y, "time_span"),
                        dimensions = c("time", "age", "sex")),
                  "not a data.frame")
 })
@@ -104,25 +102,21 @@ test_that("missing columns are caught", {
 
     expect_error(ccmpp_input_df(x[, c("sex",
                                                   "age_start", "value")],
-                                            age_span = 1, time_span = 1,
                        dimensions = c("time", "age", "sex")),
                  must_have)
 
     expect_error(ccmpp_input_df(x[, c("time_start",
                                                   "age_start", "value")],
-                                            age_span = 1, time_span = 1,
                        dimensions = c("time", "age", "sex")),
                  must_have)
 
     expect_error(ccmpp_input_df(x[, c("time_start", "sex",
                                                   "value")],
-                                            age_span = 1, time_span = 1,
                        dimensions = c("time", "age", "sex")),
                  must_have)
 
     expect_error(ccmpp_input_df(x[, c("time_start", "sex",
                                                   "age_start")],
-                                            age_span = 1, time_span = 1,
                        dimensions = c("time", "age", "sex")),
                  must_have)
 })
@@ -135,7 +129,7 @@ test_that("superfluous columns are caught", {
 
     expect_true(## No fail: Automatically removes column
         !("source" %in%
-          colnames(ccmpp_input_df(z, age_span = 1, time_span = 1,
+          colnames(ccmpp_input_df(z,
                        dimensions = c("time", "age", "sex")))))
 
     y <- new_ccmpp_input_df(z[,
@@ -143,7 +137,6 @@ test_that("superfluous columns are caught", {
                                              dimensions =
                                                  c("age", "time", "sex")),
                                "source")],
-                             age_span = 1, time_span = 1,
                              value_type = "real",
                        dimensions = c("time", "age", "sex"))
     expect_error(## Fail: Catches the extra column
@@ -152,15 +145,50 @@ test_that("superfluous columns are caught", {
 })
 
 
+test_that("'indicator' column OK", {
+
+    x <- S3_demog_change_component_time_age_sex_test_df
+    z <- data.frame(x, indicator = "mig_type")
+
+    expect_true(## No fail: Automatically removes column bc 'indicator' not in dimensions.
+        !("indicator" %in%
+          colnames(ccmpp_input_df(z,
+                       dimensions = c("time", "age", "sex")))))
+
+    expect_true(## No fail: Keeps column
+        "indicator" %in%
+          colnames(ccmpp_input_df(z,
+                       dimensions = c("time", "age", "sex", "indicator"))))
+
+    expect_true(## No fail: Keeps column
+        "indicator" %in%
+          colnames(ccmpp_input_df(z)))
+
+    y <- new_ccmpp_input_df(z[,
+                             c(ccmppWPP::get_all_req_col_names_for_dimensions(
+                                             dimensions =
+                                                 c("age", "time", "sex", "indicator")))],
+                            value_type = "real",
+                            age_span = 1,
+                            time_span = 1,
+                       dimensions = c("time", "age", "sex", "indicator"))
+    expect_s3_class(validate_ccmpp_object(y), "demog_change_component_df")
+
+    z <- transform(z, indicator = 84)
+    expect_error(ccmpp_input_df(z),
+                 "'indicator' must be character")
+})
+
+
 test_that("'value_type' is checked properly", {
 
     x <- S3_demog_change_component_time_age_sex_test_df
 
-    expect_error(ccmpp_input_df(x, age_span = 1, time_span = 1,
+    expect_error(ccmpp_input_df(x,
                                            value_type = "census"),
                  "'value_type' must be one of")
 
-        expect_error(ccmpp_input_df(x, age_span = 1, time_span = 1,
+        expect_error(ccmpp_input_df(x,
                                            value_type = "proportion"),
                      "values less than 0 or greater than 1 are present")
 })
@@ -175,6 +203,14 @@ test_that("dimensions are correctly detected", {
 })
 
 
+test_that("non-squareness is caught", {
+    x <- S3_demog_change_component_time_age_sex_test_df
+    y <- rbind(x, x[1,])
+    expect_error(ccmpp_input_df(y),
+                 "does not have exactly one 'value'")
+})
+
+
 test_that("sorting is handled properly", {
 
     x <- S3_demog_change_component_time_age_sex_test_df
@@ -183,25 +219,19 @@ test_that("sorting is handled properly", {
 
     z <- x
     z[, "age_start"] <- rev(z$age_start)
-    z <- ccmpp_input_df(z, age_span = 1, time_span = 1,
-                       dimensions = c("time", "age", "sex"))
+    z <- ccmpp_input_df(z, dimensions = c("time", "age", "sex"))
     expect_s3_class(z, "ccmpp_input_df")
     expect_identical(z$age_start, x$age_start)
 
     z <- x
     z[, "time_start"] <- rev(z$time_start)
-    z <- ccmpp_input_df(z, age_span = 1, time_span = 1,
-                       dimensions = c("time", "age", "sex"))
+    z <- ccmpp_input_df(z, dimensions = c("time", "age", "sex"))
     expect_s3_class(z, "ccmpp_input_df")
     expect_identical(z$time_start, x$time_start)
 
     z <- x[order(x$time_start, x$age_start),] #sex = male,female,male,female,...
-    z <- ccmpp_input_df(z, age_span = 1, time_span = 1,
-                       dimensions = c("time", "age", "sex"))
+    z <- ccmpp_input_df(z, dimensions = c("time", "age", "sex"))
     expect_s3_class(z, "ccmpp_input_df")
     expect_identical(z$sex, x$sex)
-
-    ## Should fail
-    validate_ccmpp_object(z)
 
 })

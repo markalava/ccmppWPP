@@ -42,4 +42,3 @@ ccmpp_input_df
 \author{
 Mark Wheldon
 }
-\concept{ccmpp_input_df class non-exported functions}

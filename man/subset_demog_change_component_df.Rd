@@ -9,6 +9,8 @@
 \alias{subset_age.demog_change_component_df}
 \alias{subset_sex}
 \alias{subset_sex.demog_change_component_df}
+\alias{subset_indicator}
+\alias{subset_indicator.demog_change_component_df}
 \title{Subset by time, age, or sex}
 \usage{
 subset_time(x, ...)
@@ -22,6 +24,10 @@ subset_age(x, ...)
 subset_sex(x, ...)
 
 \method{subset_sex}{demog_change_component_df}(x, sex = get_all_allowed_sexes(), drop = FALSE)
+
+subset_indicator(x, ...)
+
+\method{subset_indicator}{demog_change_component_df}(x, indicator = get_all_allowed_indicatores(), drop = FALSE)
 }
 \arguments{
 \item{x}{An object to subset.}

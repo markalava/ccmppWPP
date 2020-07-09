@@ -34,4 +34,3 @@ mig_net_rate_input_df
 \author{
 Mark Wheldon
 }
-\concept{mig_net_rate_input_df class non-exported functions}

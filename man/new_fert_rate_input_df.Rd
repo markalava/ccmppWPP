@@ -18,13 +18,6 @@ new_fert_rate_input_df(
 columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
 \dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.}
 
-\item{age_span}{Scalar indicating the span of the age groups. If
-\code{NULL} and a column \dQuote{age_span} is present in
-\code{x} an attempt will be made to infer it from that column.}
-
-\item{time_span}{Scalar indicating the span of the time periods;
-similar behaviour to \code{age_span}.}
-
 \item{...}{Passed to the low-level constructor.}
 }
 \value{
@@ -44,4 +37,3 @@ fert_rate_input_df
 \author{
 Mark Wheldon
 }
-\concept{fert_rate_input_df class non-exported functions}

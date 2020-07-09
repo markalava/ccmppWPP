@@ -13,8 +13,6 @@
 #'
 #' @family pop_count_base_input_df class non-exported functions
 #'
-#' @inheritParams new_demog_change_component_df
-#'
 #' @param age_span Scalar indicating the span of the age groups.
 #' @param time_span Scalar indicating the span of the time periods.
 #' @param dimensions Character vector listing the dimensions such as
@@ -66,8 +64,6 @@ pop_count_base_input_df <-
 
         x <- ccmpp_input_df(x,
                             dimensions =  get_req_dimensions_for_ccmpp_input_classes("mig_net_rate_input_df"),
-                            age_span = age_span,
-                            time_span = time_span,
                             value_type = get_value_types_for_classes("pop_count_base_input_df"))
 
         ## Create/Validate

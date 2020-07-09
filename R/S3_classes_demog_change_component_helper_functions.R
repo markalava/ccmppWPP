@@ -4,23 +4,10 @@
 ###
 ################################################################################
 
-
 ###-----------------------------------------------------------------------------
-### * Attributes
+### * Master Lists
 
-## Define required attributes
-get_req_attr_names_for_dimensions <- function(dimensions) {
-    out <- c(names(attributes(data.frame())), "dimensions", "value_type")
-    if ("time" %in% dimensions)
-        out <- c(out, "time_span")
-    if ("age" %in% dimensions)
-        out <- c(out, "age_span")
-    return(out)
-}
-
-###-----------------------------------------------------------------------------
-### * Manage 'class' attribute
-
+## Names of all classes
 get_all_demog_change_component_df_class_names <- function() {
     c("life_table_input_df",
       "mig_net_count_tot_input_df", "mig_net_count_input_df",
@@ -29,16 +16,14 @@ get_all_demog_change_component_df_class_names <- function() {
       "ccmpp_input_df", "demog_change_component_df")
 }
 
-strip_demog_change_component_df_classes_attribute <- function(class_att) {
-    class_att[!(class_att %in% get_all_demog_change_component_df_class_names())]
-}
+get_all_allowed_attributes <- function() {
+    c("dimensions", "value_type", "age_span", "time_span",
+      "non_zero_fert_ages")
+    }
 
-###-----------------------------------------------------------------------------
-### * Time and Age Attributes
-
-## Attributes with corresponding '_span'
+## Attributes with corresponding '_span' !!! should be 'dimensions'
 get_all_attr_w_span_names <- function() {
-    c("time", "age")
+    c("time" = "time", "age" = "age")
     }
 
 ## Define allowed dimensions
@@ -50,26 +35,74 @@ get_all_allowed_dimensions <- function() {
     c("indicator" = "indicator", "time" = "time", "sex" = "sex", "age" = "age")
 }
 
+master_df_dimensions_colnames_coltypes <- function() {
+    data.frame(dimension = c(get_all_allowed_dimensions()),
+               colname = c("indicator", "time_start", "sex", "age_start"),
+               type = c("character", "numeric", "character", "numeric"))
+                                # rownames will have the dimension
+                                # 'names' from
+                                # 'get_all_allowed_dimensions()'
+}
+
+master_df_dimensions_w_span_colnames_coltypes <- function() {
+    attr_nm <- get_all_attr_w_span_names()
+    data.frame(dimension = attr_nm,
+               colname = paste0(attr_nm, "_span"),
+               type = c("numeric"))
+}
+
+###-----------------------------------------------------------------------------
+### * Attributes
+
+## Define required attributes
+get_req_attr_names_for_dimensions <- function(dimensions) {
+    out <- c(names(attributes(data.frame())), "dimensions", "value_type")
+    for (attr in get_all_attr_w_span_names()) {
+    if (attr %in% dimensions)
+        out <- c(out, paste0(attr, "_span"))
+    }
+    return(out)
+}
+
+## Manage 'class' attribute
+strip_demog_change_component_df_classes_attribute <- function(class_att) {
+    class_att[!(class_att %in% get_all_demog_change_component_df_class_names())]
+}
+
+###-----------------------------------------------------------------------------
+### * Dimensions
+
 ## Select some dimensions but keep order correct
 ensure_these_dimensions_correctly_ordered <- function(dimensions) {
     all_dims <- get_all_allowed_dimensions()
     all_dims[all_dims %in% dimensions]
 }
 
-## Data base of column names, types, and corresp. dimension.
-get_df_col_info_for_dimensions <- function(dimensions = get_all_allowed_dimensions()) {
-    x <- data.frame(dimension = c(get_all_allowed_dimensions()),
-               colname = c("indicator", "time_start", "sex", "age_start"),
-               type = c("character", "numeric", "character", "numeric"))
-                                # rownames will have the dimension
-                                # 'names' from
-                                # 'get_all_allowed_dimensions()'
-    return(x[x$dimension %in% dimensions, ])
-}
+## Get column names, types, and corresp. dimension. INCLUDES '_span' columns.
+get_df_col_info_for_dimensions <-
+    function(dimensions = get_all_allowed_dimensions()) {
+        x <- rbind(master_df_dimensions_colnames_coltypes(),
+                   master_df_dimensions_w_span_colnames_coltypes())
+        return(x[x$dimension %in% dimensions, ])
+    }
+
+## Get column names, types, and corresp. dimension for tabulation,
+## ordering, etc. EXCLUDES '_span' columns.
+### !!! RENAME to something with 'excl_spans' in name
+get_df_cols_to_tabulate_for_dimensions <-
+    function(dimensions = get_all_allowed_dimensions()) {
+        x <- master_df_dimensions_colnames_coltypes()
+        return(x[x$dimension %in% dimensions, ])
+    }
 
 ## All required columns
 get_all_req_col_names_for_dimensions <- function(dimensions) {
     c(get_df_col_info_for_dimensions(dimensions)$colname, "value")
+}
+
+## All required columns
+get_all_req_col_names_excl_spans_for_dimensions <- function(dimensions) {
+    c(get_df_cols_to_tabulate_for_dimensions(dimensions)$colname, "value")
 }
 
 ## All column types
@@ -79,9 +112,15 @@ get_all_req_col_types_for_dimensions <- function(dimensions) {
 
 ## Get the column name in a data frame corresponding to the given
 ## dimensions (as in 'get_df_col_info_for_dimensions()')
-get_df_col_namees_for_dimensions <- function(dimensions) {
-    all_d <- get_all_allowed_dimensions()
-    dim_col_info <- get_df_col_info_for_dimensions(dimensions = all_d)
+get_df_col_namees_for_dimensions <- function(dimensions = get_all_allowed_dimensions()) {
+    dim_col_info <- get_df_col_info_for_dimensions(dimensions = dimensions)
+    dim_col_info[dim_col_info$dimension %in% dimensions, "colname"]
+}
+
+## Get the column name in a data frame corresponding to the given
+## dimensions EXCLUDING SPANs
+get_df_col_names_excl_spans_for_dimensions <- function(dimensions = get_all_allowed_dimensions()) {
+    dim_col_info <- get_df_cols_to_tabulate_for_dimensions(dimensions = dimensions)
     dim_col_info[dim_col_info$dimension %in% dimensions, "colname"]
 }
 
@@ -134,14 +173,15 @@ get_value_types_for_classes <- function(classes) {
 guess_dimensions_from_df_cols <- function(x) {
     ## Attempt to guess dimensions
     col_info <-
-        get_df_col_info_for_dimensions(dimensions = get_all_allowed_dimensions())
-    dim_cols <- col_info$dimension[col_info$colname %in% colnames(x)]
+        get_df_cols_to_tabulate_for_dimensions(dimensions = get_all_allowed_dimensions())
+    dimensions <- col_info$dimension[col_info$colname %in% colnames(x)]
+    return(dimensions)
 }
 
 ## Definine the proper sort order of the class
 sort_demog_change_component_df <- function(x) {
     coln_x <- colnames(x)
-    coln_info_x <- get_df_col_info_for_dimensions(dimensions = get_all_allowed_dimensions())
+    coln_info_x <- get_df_cols_to_tabulate_for_dimensions(dimensions = get_all_allowed_dimensions())
     coln_info_x <- coln_info_x[coln_info_x$colname %in% coln_x, ]
     dims_names_x <- rownames(coln_info_x)
 
@@ -163,7 +203,7 @@ sort_demog_change_component_df <- function(x) {
 ## Tabulate to check squareness
 tabulate_demog_change_component_df <- function(x) {
     coln_x <- colnames(x)
-    coln_info_x <- get_df_col_info_for_dimensions(dimensions = get_all_allowed_dimensions())
+    coln_info_x <- get_df_cols_to_tabulate_for_dimensions(dimensions = get_all_allowed_dimensions())
     coln_info_x <- coln_info_x[coln_info_x$colname %in% coln_x, ]
     dims_names_x <- rownames(coln_info_x)
 
@@ -180,7 +220,7 @@ get_min_age_in_dims_in_df <- function(x) {
     stopifnot(is_by_age(x))
 
     coln_x <- colnames(x)
-    coln_info_x <- get_df_col_info_for_dimensions(dimensions = get_all_allowed_dimensions())
+    coln_info_x <- get_df_cols_to_tabulate_for_dimensions(dimensions = get_all_allowed_dimensions())
     coln_info_x <- coln_info_x[coln_info_x$colname %in% coln_x, ]
     dims_names_x <- rownames(coln_info_x)
 
@@ -203,12 +243,6 @@ get_min_age_in_dims_in_df <- function(x) {
 }
 
 check_value_type_of_value_in_df <- function(value, type) {
-
-    allowed_types <- get_all_allowed_value_types()
-    if (!type %in% allowed_types)
-        stop("'", type, "' is not a valid value type. Valid types are: '",
-             paste(allowed_types, collapse = "', '"),
-             "'.")
 
     stop_msg <- function(suff) {
         paste0("'value_type' is '", type, "' but ", suff)

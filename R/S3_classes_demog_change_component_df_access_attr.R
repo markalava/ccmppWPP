@@ -201,7 +201,7 @@ is_by_time.demog_change_component_df <- function(x) {
 #' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_time.data.frame <- function(x) {
-    time_col_name <- get_df_col_names_for_dimensions("time")
+    time_col_name <- get_df_col_names_for_dimensions(dimensions = "time", spans = FALSE)
     isTRUE(time_col_name %in% colnames(x))
     }
 
@@ -223,7 +223,7 @@ is_by_age.demog_change_component_df <- function(x) {
 #' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_age.data.frame <- function(x) {
-    age_col_name <- get_df_col_names_for_dimensions("age")
+    age_col_name <- get_df_col_names_for_dimensions(dimensions = "age", spans = FALSE)
     isTRUE(age_col_name %in% colnames(x))
     }
 
@@ -245,7 +245,7 @@ is_by_sex.demog_change_component_df <- function(x) {
 #' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_sex.data.frame <- function(x) {
-    sex_col_name <- get_df_col_names_for_dimensions("sex")
+    sex_col_name <- get_df_col_names_for_dimensions(dimensions = "sex", spans = FALSE)
     isTRUE(sex_col_name %in% colnames(x) &&
            length(unique(x[[sex_col_name]]) > 1))
     }
@@ -268,7 +268,7 @@ is_by_indicator.demog_change_component_df <- function(x) {
 #' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_indicator.data.frame <- function(x) {
-    indicator_col_name <- get_df_col_names_for_dimensions("indicator")
+    indicator_col_name <- get_df_col_names_for_dimensions(dimensions = "indicator", spans = FALSE)
     isTRUE(indicator_col_name %in% colnames(x) &&
            length(unique(x[[indicator_col_name]]) > 1))
     }

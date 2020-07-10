@@ -8,7 +8,7 @@ as.data.frame.fert_rate_input_df <- function(x, restore_columns = FALSE, ...) {
         nzfa <- non_zero_fert_ages(x)
         x <- NextMethod()
         x[["non_zero_fert_age"]] <-
-            x[[get_df_col_names_excl_spans_for_dimensions("age")]] %in% nzfa
+            x[[get_df_col_names_for_dimensions(dimensions = "age", spans = FALSE)]] %in% nzfa
         return(x)
     } else return(NextMethod())
 }

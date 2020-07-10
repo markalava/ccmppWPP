@@ -166,7 +166,7 @@ validate_ccmpp_object.ccmpp_input_df <- function(x, ...) {
     demog_change_component_dims_x <- demog_change_component_dimensions(x)
 
     order_cols <-
-        get_df_cols_to_tabulate_for_dimensions(dimensions = demog_change_component_dims_x)$colname
+        subset_master_df_of_dimensions_colnames_coltypes(dimensions = demog_change_component_dims_x)$colname
     if (!identical(x[, order_cols],
                    sort_demog_change_component_df(x)[, order_cols]))
         stop("'x' must be sorted by time, rev(sex), age_start (see ?ccmpp_input_df for class definition).")

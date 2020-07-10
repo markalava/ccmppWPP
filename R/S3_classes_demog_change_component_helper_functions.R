@@ -35,16 +35,35 @@ get_all_dimensions_w_spans <- function() {
     c("time", "age")
 }
 
-master_df_dimensions_colnames_coltypes <- function() {
-    data.frame(dimension = c(get_all_allowed_dimensions()),
-               colname = c("indicator", "time_start", "sex", "age_start"),
-               type = c("character", "numeric", "character", "numeric"))
+get_master_df_of_dimensions_colnames_coltypes <- function() {
+    dims <- get_all_allowed_dimensions()
+    dims_w_spans <- get_all_dimensions_w_spans()
+    data.frame(dimension = c(dims,
+                             dims_w_spans),
+               colname = c("indicator", "time_start", "sex", "age_start",
+                           paste0(dims_w_spans, "_span")),
+               type = c("character", "numeric", "character", "numeric",
+                        "numeric", "numeric"),
+               span = c(rep(FALSE, length(dims)),
+                        rep(TRUE, length(dims_w_spans)))
+                        )
                                 # rownames will have the dimension
                                 # 'names' from
                                 # 'get_all_allowed_dimensions()'
 }
 
-master_df_dimensions_w_span_colnames_coltypes <- function() {
+subset_master_df_of_dimensions_colnames_coltypes <-
+    function(dimensions, colnames, types, spans) {
+        master_df <- get_master_df_of_dimensions_colnames_coltypes()
+        idx <- rep(TRUE, nrow(master_df))
+        if (!missing(dimensions)) idx <- idx & master_df[["dimension"]] %in% dimensions
+        if (!missing(colnames)) idx <- idx & master_df[["colname"]] %in% colnames
+        if (!missing(types)) idx <- idx & master_df[["type"]] %in% types
+        if (!missing(spans)) idx <- idx & master_df[["span"]] %in% spans
+        return(master_df[idx,])
+    }
+
+get_master_df_dimensions_w_span_colnames_coltypes <- function() {
     dim_names <- get_all_dimensions_w_spans()
     data.frame(dimension = get_all_dimensions_w_spans(),
                colname = paste0(dim_names, "_span"),
@@ -78,50 +97,26 @@ ensure_these_dimensions_correctly_ordered <- function(dimensions) {
     all_dims[all_dims %in% dimensions]
 }
 
-## Get column names, types, and corresp. dimension. INCLUDES '_span' columns.
-get_df_col_info_for_dimensions <-
-    function(dimensions = get_all_allowed_dimensions()) {
-        x <- rbind(master_df_dimensions_colnames_coltypes(),
-                   master_df_dimensions_w_span_colnames_coltypes())
-        return(x[x$dimension %in% dimensions, ])
-    }
-
-## Get column names, types, and corresp. dimension for tabulation,
-## ordering, etc. EXCLUDES '_span' columns.
-### !!! RENAME to something with 'excl_spans' in name
-get_df_cols_to_tabulate_for_dimensions <-
-    function(dimensions = get_all_allowed_dimensions()) {
-        x <- master_df_dimensions_colnames_coltypes()
-        return(x[x$dimension %in% dimensions, ])
-    }
-
 ## All required columns
 get_all_req_col_names_for_dimensions <- function(dimensions) {
-    c(get_df_col_info_for_dimensions(dimensions)$colname, "value")
+    c(subset_master_df_of_dimensions_colnames_coltypes(dimensions = dimensions)$colname, "value")
 }
 
 ## All required columns
 get_all_req_col_names_excl_spans_for_dimensions <- function(dimensions) {
-    c(get_df_cols_to_tabulate_for_dimensions(dimensions)$colname, "value")
+    c(subset_master_df_of_dimensions_colnames_coltypes(dimensions = dimensions,
+                                                       spans = FALSE)$colname, "value")
 }
 
 ## All column types
 get_all_req_col_types_for_dimensions <- function(dimensions) {
-    c(get_df_col_info_for_dimensions(dimensions)$type, "numeric")
+    c(subset_master_df_of_dimensions_colnames_coltypes(dimensions = dimensions)$type, "numeric")
 }
 
 ## Get the column name in a data frame corresponding to the given
 ## dimensions (as in 'get_df_col_info_for_dimensions()')
-get_df_col_names_for_dimensions <- function(dimensions = get_all_allowed_dimensions()) {
-    dim_col_info <- get_df_col_info_for_dimensions(dimensions = dimensions)
-    dim_col_info[dim_col_info$dimension %in% dimensions, "colname"]
-}
-
-## Get the column name in a data frame corresponding to the given
-## dimensions EXCLUDING SPANs
-get_df_col_names_excl_spans_for_dimensions <- function(dimensions = get_all_allowed_dimensions()) {
-    dim_col_info <- get_df_cols_to_tabulate_for_dimensions(dimensions = dimensions)
-    dim_col_info[dim_col_info$dimension %in% dimensions, "colname"]
+get_df_col_names_for_dimensions <- function(...) {
+    subset_master_df_of_dimensions_colnames_coltypes(...)$colname
 }
 
 ###-----------------------------------------------------------------------------
@@ -173,7 +168,7 @@ get_value_types_for_classes <- function(classes) {
 guess_dimensions_from_df_cols <- function(x) {
     ## Attempt to guess dimensions
     col_info <-
-        get_df_cols_to_tabulate_for_dimensions(dimensions = get_all_allowed_dimensions())
+        subset_master_df_of_dimensions_colnames_coltypes(spans = FALSE)
     dimensions <- col_info$dimension[col_info$colname %in% colnames(x)]
     return(dimensions)
 }
@@ -181,7 +176,7 @@ guess_dimensions_from_df_cols <- function(x) {
 ## Definine the proper sort order of the class
 sort_demog_change_component_df <- function(x) {
     coln_x <- colnames(x)
-    coln_info_x <- get_df_cols_to_tabulate_for_dimensions(dimensions = get_all_allowed_dimensions())
+    coln_info_x <- subset_master_df_of_dimensions_colnames_coltypes(spans = FALSE)
     coln_info_x <- coln_info_x[coln_info_x$colname %in% coln_x, ]
     dims_names_x <- coln_info_x$dimension
 
@@ -205,7 +200,7 @@ sort_demog_change_component_df <- function(x) {
 ## Tabulate to check squareness
 tabulate_demog_change_component_df <- function(x) {
     coln_x <- colnames(x)
-    coln_info_x <- get_df_cols_to_tabulate_for_dimensions(dimensions = get_all_allowed_dimensions())
+    coln_info_x <- subset_master_df_of_dimensions_colnames_coltypes(spans = FALSE)
     coln_info_x <- coln_info_x[coln_info_x$colname %in% coln_x, ]
     dims_names_x <- coln_info_x$dimension
 
@@ -224,7 +219,7 @@ get_min_age_in_dims_in_df <- function(x) {
     stopifnot(is_by_age(x))
 
     coln_x <- colnames(x)
-    coln_info_x <- get_df_cols_to_tabulate_for_dimensions(dimensions = get_all_allowed_dimensions())
+    coln_info_x <- subset_master_df_of_dimensions_colnames_coltypes(spans = FALSE)
     coln_info_x <- coln_info_x[coln_info_x$colname %in% coln_x, ]
     dims_names_x <- coln_info_x$dimension
 

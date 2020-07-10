@@ -39,14 +39,14 @@ subset_time.demog_change_component_df <- function(x, time, drop = FALSE) {
     else age_span_x <- NULL
     value_type_x <- value_type(x)
 
-    time_col_name <- get_df_col_names_excl_spans_for_dimensions("time")
+    time_col_name <- get_df_col_names_for_dimensions(dimensions = "time", spans = FALSE)
     time_x <- x[[time_col_name]] %in% time
     if (identical(sum(time_x), 0L))
         stop("'x' does not have any entries with 'time' %in% '", time, "'.")
 
     x <- x[time_x, ]
     if (identical(length(time), 1L) && drop) {
-        x <- x[, -which(colnames(x) == get_df_col_names_for_dimensions("time"))]
+        x <- x[, -which(colnames(x) == get_df_col_names_for_dimensions(dimensions = "time", spans = FALSE))]
         attr(x, "dimensions") <- attr(x, "dimensions")[attr(x, "dimensions") != "time"]
         }
 
@@ -76,14 +76,14 @@ subset_age.demog_change_component_df <- function(x, age, drop = FALSE) {
     else age_span_x <- NULL
     value_type_x <- value_type(x)
 
-    age_col_name <- get_df_col_names_excl_spans_for_dimensions("age")
+    age_col_name <- get_df_col_names_for_dimensions(dimensions = "age", spans = FALSE)
     age_x <- x[[age_col_name]] %in% age
     if (identical(sum(age_x), 0L))
         stop("'x' does not have any entries with 'age' %in% '", age, "'.")
 
     x <- x[age_x, ]
     if (identical(length(age), 1L) && drop) {
-        x <- x[, -which(colnames(x) == get_df_col_names_for_dimensions("age"))]
+        x <- x[, -which(colnames(x) == get_df_col_names_for_dimensions(dimensions = "age", spans = FALSE))]
         attr(x, "dimensions") <- attr(x, "dimensions")[attr(x, "dimensions") != "age"]
         }
 
@@ -114,14 +114,14 @@ subset_sex.demog_change_component_df <-
         else age_span_x <- NULL
         value_type_x <- value_type(x)
 
-        sex_col_name <- get_df_col_names_excl_spans_for_dimensions("sex")
+        sex_col_name <- get_df_col_names_for_dimensions(dimensions = "sex", spans = FALSE)
         sex_x <- x[[sex_col_name]] %in% sex
         if (identical(sum(sex_x), 0L))
             stop("'x' does not have any entries with 'sex' %in% '", sex, "'.")
 
         x <- x[sex_x, ]
         if (identical(length(sex), 1L) && drop) {
-            x <- x[, -which(colnames(x) == get_df_col_names_for_dimensions("sex"))]
+            x <- x[, -which(colnames(x) == get_df_col_names_for_dimensions(dimensions = "sex", spans = FALSE))]
             attr(x, "dimensions") <- attr(x, "dimensions")[attr(x, "dimensions") != "sex"]
             }
 
@@ -152,14 +152,14 @@ subset_indicator.demog_change_component_df <-
         else age_span_x <- NULL
         value_type_x <- value_type(x)
 
-        indicator_col_name <- get_df_col_names_excl_spans_for_dimensions("indicator")
+        indicator_col_name <- get_df_col_names_for_dimensions(dimensions = "indicator", spans = FALSE)
         indicator_x <- x[[indicator_col_name]] %in% indicator
         if (identical(sum(indicator_x), 0L))
             stop("'x' does not have any entries with 'indicator' %in% '", indicator, "'.")
 
         x <- x[indicator_x, ]
         if (identical(length(indicator), 1L) && drop) {
-            x <- x[, -which(colnames(x) == get_df_col_names_for_dimensions("indicator"))]
+            x <- x[, -which(colnames(x) == get_df_col_names_for_dimensions(dimensions = "indicator", spans = FALSE))]
             attr(x, "dimensions") <- attr(x, "dimensions")[attr(x, "dimensions") != "indicator"]
             }
 

@@ -50,7 +50,7 @@ check_dimensions_for_ccmpp_input_df <- function(x) {
     dims_from_cols <- guess_dimensions_from_df_cols(x)
     if (!setequal(dims_x, dims_from_cols)) {
         offending_col_names <-
-            get_df_col_names_for_dimensions(dims_from_cols)
+            get_df_col_names_for_dimensions(dimensions = dims_from_cols, spans = FALSE)
         stop("'", class_x, "' objects must have dimensions 'c(\"",
              paste(req_dims, collapse = "\", \""), "\")'. This object has columns 'c(\"",
              paste(offending_col_names, collapse = "\", \""), "\")' that correspond to dimensions 'c(\"",

@@ -7,12 +7,12 @@
 \method{print}{demog_change_component_df}(
   x,
   ...,
-  n = 6L,
+  n = min(6L, nrow(x)),
   digits = NULL,
   quote = FALSE,
   right = TRUE,
   row.names = FALSE,
-  max = NULL
+  print_what = c("info", "table")
 )
 }
 \arguments{
@@ -36,14 +36,19 @@ that function for valid values and associated behaviours.}
 \item{row.names}{logical (or character vector), indicating whether (or
     what) row names should be printed.}
 
-\item{max}{numeric or \code{NULL}, specifying the maximal number of
-    entries to be printed.  By default, when \code{NULL},
-    \code{\link[base]{getOption}("max.print")} used.}
+\item{print_what}{What should be printed?}
 }
 \description{
-This is a method for the generic \code{\link{base::print}} function. Only
-the first \code{n} rows are printed for convenience (by default). If all rows are desired use
-\code{as.data.frame(x)} or see the definition of argument \code{n}.
+This is a method for the generic \code{\link{base::print}}
+function. Only the first \code{n} rows are printed for convenience
+(by default). If all rows are desired use \code{as.data.frame(x)}
+or see the definition of argument \code{n}.
+}
+\details{
+Printed output consists
+of some text, \code{"info"}, and the first \code{n} lines of the
+data, \code{"table"}. What gets printed is controlled by argument
+\code{print_what}.
 }
 \author{
 Mark Wheldon

@@ -108,27 +108,27 @@ validate_ccmpp_object.demog_change_component_df <-
                 stop("'", req_cols[j], "' must be character.")
         }
 
-        attr_w_span_names <- get_all_dimensions_w_spans()
-        attr_w_span_names <-
-            attr_w_span_names[attr_w_span_names %in% demog_change_component_dims_x]
-        for (att in attr_w_span_names) {
-            ## Create names of the '_span' and '_start' variables for
-            ## use later.
-            span_name <- paste0(att, "_span")
-            start_name <- paste0(att, "_start")
+        ## attr_w_span_names <- get_all_dimensions_w_spans()
+        ## attr_w_span_names <-
+        ##     attr_w_span_names[attr_w_span_names %in% demog_change_component_dims_x]
+        ## for (att in attr_w_span_names) {
+        ##     ## Create names of the '_span' and '_start' variables for
+        ##     ## use later.
+        ##     span_name <- paste0(att, "_span")
+        ##     start_name <- paste0(att, "_start")
 
-            ## Get the values of the attribute and column from x for
-            ## use later.
-            span_attr <- attr(x, span_name)
-            start_col <- x[[start_name]]
+        ##     ## Get the values of the attribute and column from x for
+        ##     ## use later.
+        ##     span_attr <- attr(x, span_name)
+        ##     start_col <- x[[start_name]]
 
-            ## Do the tests now:
-            if (!is.numeric(span_attr))
-                stop("'", span_name, "' is not numeric.")
+        ##     ## Do the tests now:
+        ##     if (!is.numeric(span_attr))
+        ##         stop("'", span_name, "' is not numeric.")
 
-            if (!is.numeric(start_col))
-                stop("'x$", start_name, "' is not numeric.")
-        }
+        ##     if (!is.numeric(start_col))
+        ##         stop("'x$", start_name, "' is not numeric.")
+        ## }
 
         if (is_by_sex(x)) {
             allowed_sexes <- get_all_allowed_sexes()
@@ -157,6 +157,16 @@ validate_ccmpp_object.ccmpp_input_df <- function(x, ...) {
     ## Run the inherited checks
 
     x <- NextMethod()
+
+    ## ATTRIBUTES:
+    ## 1. Extra attributes required
+
+    req_attr <-
+        get_req_attr_names_for_ccmpp_input_dfs_for_dimensions(demog_change_component_dimensions(x))
+    if (!all(req_attr %in% names(attributes(x))))
+        stop("'x' must have attributes '",
+             paste(req_attr, collapse = "', '"),
+             "'; some are missing.")
 
     ## MUST BE SORTED:
     ## If not sorted, at least by age and sex within time, the

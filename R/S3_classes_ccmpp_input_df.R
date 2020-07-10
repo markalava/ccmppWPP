@@ -1,6 +1,15 @@
 ###-----------------------------------------------------------------------------
 ### * Helpers
 
+get_req_attr_names_for_ccmpp_input_dfs_for_dimensions <- function(dimensions) {
+    out <- get_req_attr_names_for_dimensions(dimensions)
+    for (dim_w_span in get_all_dimensions_w_spans()) {
+        if (dim_w_span %in% dimensions)
+            out <- c(out, paste0(dim_w_span, "_span"))
+    }
+    return(out)
+}
+
 get_dimensions_info_for_ccmpp_input_classes <-
     function(classes = get_all_demog_change_component_df_class_names()) {
         db <- list(pop_count_base_input_df =
@@ -94,6 +103,25 @@ new_ccmpp_input_df <-
     }
 
 
+prepare_df_for_ccmpp_input_df <- function(x,
+             dimensions = attr(x, "dimensions"),
+             value_type = attr(x, "value_type")) {
+
+    li <- prepare_df_for_demog_change_component_df(
+                x,
+                dimensions = dimensions,
+        value_type = value_type)
+
+    age_span <- unique(li$df$age_span)
+    time_span <- unique(li$df$time_span)
+
+    li$age_span <- (if (is.null(age_span)) double() else age_span)
+    li$time_span <- (if (is.null(time_span)) double() else time_span)
+
+    return(li)
+    }
+
+
 #' Constructor for class \code{ccmpp_input_df}
 #'
 #' **TBC** More strict version of \code{\link{demog_change_component_df}}.
@@ -110,21 +138,20 @@ ccmpp_input_df <-
              value_type = attr(x, "value_type"),
              ...) {
 
-        x <- demog_change_component_df(x,
-                                       dimensions = dimensions,
-                                       value_type = value_type,
-                                       ...)
+        li <-
+            prepare_df_for_ccmpp_input_df(
+                x,
+                dimensions = dimensions,
+                value_type = value_type)
 
         ## Create/Validate
         validate_ccmpp_object(
-            new_ccmpp_input_df(x,
-                               dimensions = attr(x, "dimensions"),
-                               age_span = attr(x, "age_span"),
-                               time_span = attr(x, "time_span"),
-                               value_type = attr(x, "value_type"),
-                               ...,
-                               class = "ccmpp_input_df"
-                               )
+            new_ccmpp_input_df(li$df,
+                               dimensions = li$dimensions,
+                               age_span = li$age_span,
+                               time_span = li$time_span,
+                               value_type = li$value_type,
+                               ...)
         )
     }
 

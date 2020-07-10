@@ -7,8 +7,6 @@
 new_demog_change_component_df(
   x,
   dimensions = character(),
-  age_span = double(),
-  time_span = double(),
   value_type = character(),
   ...,
   class = character()
@@ -18,12 +16,12 @@ new_demog_change_component_df(
 \item{dimensions}{Character vector listing the dimensions such as
 \dQuote{time}, \dQuote{age}, \dQuote{sex}.}
 
+\item{value_type}{Scalar indicating the type of the \dQuote{value}
+column (e.g., \dQuote{count}, \dQuote{rate}, etc.).}
+
 \item{age_span}{Scalar indicating the span of the age groups.}
 
 \item{time_span}{Scalar indicating the span of the time periods.}
-
-\item{value_type}{Scalar indicating the type of the \dQuote{value}
-column (e.g., \dQuote{count}, \dQuote{rate}, etc.).}
 }
 \value{
 An object of class \code{demog_change_component_df}.

@@ -194,9 +194,15 @@ rbind.demog_change_component_df <-
 
 #' Print Values of a \code{demog_change_component_df}
 #'
-#' This is a method for the generic \code{\link{base::print}} function. Only
-#' the first \code{n} rows are printed for convenience (by default). If all rows are desired use
-#' \code{as.data.frame(x)} or see the definition of argument \code{n}.
+#' This is a method for the generic \code{\link{base::print}}
+#' function. Only the first \code{n} rows are printed for convenience
+#' (by default). If all rows are desired use \code{as.data.frame(x)}
+#' or see the definition of argument \code{n}.
+#'
+#' Printed output consists
+#' of some text, \code{"info"}, and the first \code{n} lines of the
+#' data, \code{"table"}. What gets printed is controlled by argument
+#' \code{print_what}.
 #'
 #' @inheritParams base::print.data.frame
 #'
@@ -204,11 +210,17 @@ rbind.demog_change_component_df <-
 #' @param n Integer controlling how many rows of \code{x} are
 #'     printed. Passed to \code{link{head}}; see the documentation of
 #'     that function for valid values and associated behaviours.
+#' @param print_what What should be printed?
 #' @author Mark Wheldon
 #' @export
 print.demog_change_component_df <-
-    function(x, ..., n = 6L, digits = NULL,
-             quote = FALSE, right = TRUE, row.names = FALSE, max = NULL) {
+    function(x, ..., n = min(6L, nrow(x)), digits = NULL,
+             quote = FALSE, right = TRUE, row.names = FALSE,
+             print_what = c("info", "table")) {
+
+        print_what <- match.arg(print_what, several.ok = TRUE)
+
+        if ("info" %in% print_what) {
 
         attr_names <- names(demog_change_component_attributes(x))
         attr_names <- attr_names[!(attr_names == "dimensions")]
@@ -242,25 +254,23 @@ print.demog_change_component_df <-
             sep = "")
 
         if(is_by_indicator(x))
-            cat_msg <- paste(cat_msg, "# 'indicator' has levels: ", toString(indicators(x), width = 10),
+            cat_msg <- paste(cat_msg, "# 'indicator' has levels: ", toString(indicators(x), width = 40),
             ".\n",
             sep = "")
 
-        cat(cat_msg)
+            cat(cat_msg)
 
-        if (inherits(x, "fert_rate_input_df") && is_by_age(x) &&
-            !is.null(non_zero_fert_ages(x))) {
-            x[!(x$age_start %in% non_zero_fert_ages(x)), "value"] <- NA
-            print.table(as.matrix(x[seq_len(n),]),
+        }
+
+        if ("table" %in% print_what) {
+            x <- as.matrix(x[seq_len(n),])
+            if (!row.names) dimnames(x)[[1]] <- rep("", nrow(x))
+            print.table(x,
                         digits = digits, quote = quote, na.print = ".",
                         right = right,
                         ...)
-        } else {
-            print.data.frame(head(x, n = n), ..., digits = digits, quote = quote, right = right,
-                             row.names = row.names, max = max)
+            cat("# ... etc.\n")
         }
-        cat("# ... etc.\n")
-
         return(invisible(x))
     }
 
@@ -351,14 +361,14 @@ print.summary_demog_change_component_df <-
         if ("info" %in% print_what) {
 
         ## Dimensions
-        msg <- paste0(msg, "dimensions:\t",
+        msg <- paste0(msg, "dimensions:  ",
                       paste(x$dimensions,
                             collapse = ", "),
                       "\n")
 
         ## Time
         if (!is.null(x$time))
-            msg <- paste0(msg, "      time:\tspan = ",
+            msg <- paste0(msg, "      time:  span = ",
                           toString(x$time$span, 7),
                           "\trange = [",
                           paste(x$time$range, collapse = ", "),
@@ -367,7 +377,7 @@ print.summary_demog_change_component_df <-
 
         ## Age
         if (!is.null(x$age))
-            msg <- paste0(msg, "       age:\tspan = ",
+            msg <- paste0(msg, "       age:  span = ",
                           toString(x$age$span, 7),
                           "\trange = [",
                           paste(x$age$range, collapse = ", "),
@@ -376,18 +386,18 @@ print.summary_demog_change_component_df <-
 
         ## Sex
         if (!is.null(x$sex))
-            msg <- paste0(msg, "       sex:\tlevels = ",
+            msg <- paste0(msg, "       sex:  levels = ",
                           paste(x$sex$levels, collapse = ", "),
                           "\n")
 
         ## Indicator
         if (!is.null(x$indicator))
-            msg <- paste0(msg, "       indicator:\tlevels = ",
-                          paste(x$indicator$levels, collapse = ", "),
+            msg <- paste0(msg, " indicator:  levels = ",
+                          toString(x$indicator$levels, 50),
                           "\n")
 
         ## Values
-        msg <- paste0(msg, "value_type:\t",
+        msg <- paste0(msg, "value_type:  ",
                       x$value_type,
                       "\n")
 

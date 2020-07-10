@@ -16,6 +16,76 @@ as.data.frame.fert_rate_input_df <- function(x, restore_columns = FALSE, ...) {
 ###-----------------------------------------------------------------------------
 ### * Print, Summary, etc.
 
+
+#' Print Values of a \code{fert_rate_input_df}
+#'
+#' This is a method for the generic \code{\link{base::print}} function. Only
+#' \code{n} rows are printed for convenience. If all rows are desired use
+#' \code{as.data.frame(x)} or see the definition of argument \code{n}.
+#'
+#' As well as inheriting the behaviour of
+#' \code{\link{print.ccmpp_input_df}}, entries in the \code{value}
+#' column corresponding to values of \code{age_start} \emph{not} in
+#' \code{non_zero_fert_ages(x)} are rendered as
+#' \dQuote{\verb{[zero]}}. At least some rows with non-zero fertility
+#' rate ages will be shown if possible.
+#'
+#' @inheritParams base::print.data.frame
+#' @inheritParams print.demog_change_component_df
+#'
+#' @seealso print.demog_change_component_df print.ccmpp_input_df fert_rate_input_df
+#'
+#' @author Mark Wheldon
+#' @export
+print.fert_rate_input_df <-
+    function(x, ..., n = min(6L, nrow(x)), digits = NULL,
+             quote = FALSE, right = TRUE, row.names = FALSE, max = NULL,
+             print_what = c("info", "table")) {
+
+        print_what = c("info", "table")
+
+        if ("info" %in% print_what) {
+            NextMethod(generic = "print", print_what = "info")
+        }
+
+        if ("table" %in% print_what) {
+            nzfa <- non_zero_fert_ages(x)
+            if (is_by_age(x))
+                x[, "age_span"] <- NA
+            if (is_by_time(x))
+                x[, "time_span"] <- NA
+
+            if (is_by_age(x) && !is.null(nzfa)) {
+                nzf_rows <- x$age_start %in% nzfa
+                x[!nzf_rows, "value"] <- "[zero]"
+                if (sum(nzf_rows) < nrow(x) && n < nrow(x) && sum((!nzf_rows[n])) > 0 && n > 5) {
+                    n1 <- floor(n/2)
+                    n2 <- n - n1
+                    a <- match(TRUE, nzf_rows)
+                    b <- a + n2 - 1
+                    rows_to_print <- unique(c(1:(n1 + 1), a:b))
+                    if (length(rows_to_print) < n) {
+                        rows_to_print <- seq_len(n)
+                    } else {
+                        x[n1 + 1, ] <- NA
+                        rownames(x)[n1 + 1] <- ""
+                    }
+                } else {
+                    rows_to_print <- seq_len(n)
+                }
+                x <- x[rows_to_print, ]
+                x <- as.matrix(x)
+                if (!row.names) dimnames(x)[[1]] <- rep("", nrow(x))
+                print.table(x,
+                            digits = digits, quote = quote, na.print = ".",
+                            right = right,
+                            ...)
+                cat("# ... etc.\n")
+            }
+        }
+        return(invisible(x))
+    }
+
 #' @rdname summary_demog_change_component_df
 #' @export
 summary.fert_rate_input_df <-

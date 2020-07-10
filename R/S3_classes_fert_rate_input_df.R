@@ -1,16 +1,18 @@
 
 ## Not for export
-validate_non_zero_fert_ages <- function(x, ages) {
+validate_non_zero_fert_ages <- function(x, ages, age_span = NULL) {
+    if (is.null(age_span)) age_span <- attr(x, "age_span")
+    if (is.null(age_span)) stop("Need 'age_span' to verify 'non_zero_fert_rate_ages' but 'age_span = NULL' or 'attr(x, \"age_span\") is 'NULL'.")
     ages <- sort(unique(ages))
     diffs <- diff(ages, differences = 1)
-    if (all(diffs == age_span(x))) return(ages)
+    if (all(diffs == age_span)) return(ages)
     else return(stop("'non_zero_fert_ages' are not valid. See '?fert_rate_input_df' for requirements."))
 }
 
 ## Not for export; returns 'FALSE' if fails, rather than an error.
-guess_non_zero_fert_ages <- function(x, digits = 9) {
+guess_non_zero_fert_ages <- function(x, digits = 9, age_span = attr(x, "age_span")) {
     ages <- x$age_start[!(round(x$value, digits = digits) == 0)]
-    ages <- try(validate_non_zero_fert_ages(x, ages), silent = TRUE)
+    ages <- try(validate_non_zero_fert_ages(x, ages, age_span = age_span), silent = TRUE)
     if (inherits(ages, "try-error")) return(FALSE)
     else return(ages)
 }
@@ -80,17 +82,17 @@ fert_rate_input_df <-
     function(x,
              non_zero_fert_ages = attr(x, "non_zero_fert_ages")) {
 
-        x <- ccmpp_input_df(x,
+        li <- prepare_df_for_ccmpp_input_df(x,
                             dimensions = get_req_dimensions_for_ccmpp_input_classes("fert_rate_input_df"),
                             value_type = get_value_types_for_classes("fert_rate_input_df"))
 
         if (is.null(non_zero_fert_ages)) {
-            non_zero_fert_ages <- guess_non_zero_fert_ages(x)
+            non_zero_fert_ages <- guess_non_zero_fert_ages(li$df, age_span = li$age_span)
         }
         if (is.logical(non_zero_fert_ages)) {
             if (!non_zero_fert_ages)  {
                 message("'non_zero_fert_ages' not supplied and guessing failed; setting to 'sort(unique(x$age_start))'.")
-                non_zero_fert_ages <- sort(unique(x$age_start))
+                non_zero_fert_ages <- sort(unique(li$df$age_start))
             }
         } else {
             message("'non_zero_fert_ages' set to '",
@@ -99,9 +101,9 @@ fert_rate_input_df <-
 
         ## Create/Validate
         validate_ccmpp_object(
-            new_fert_rate_input_df(x,
-                               age_span = attr(x, "age_span"),
-                               time_span = attr(x, "time_span"),
+            new_fert_rate_input_df(li$df,
+                               age_span = li$age_span,
+                               time_span = li$time_span,
                                non_zero_fert_ages = non_zero_fert_ages)
         )
     }

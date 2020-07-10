@@ -49,14 +49,14 @@ srb_input_df <-
     function(x,
              time_span = attr(x, "time_span")) {
 
-        x <- ccmpp_input_df(x,
+        li <- prepare_df_for_ccmpp_input_df(x,
                             dimensions = get_req_dimensions_for_ccmpp_input_classes("srb_input_df"),
                             value_type = get_value_types_for_classes("srb_input_df"))
 
         ## Create/Validate
         validate_ccmpp_object(
-            new_srb_input_df(x,
-                             time_span = attr(x, "time_span"))
+            new_srb_input_df(li$df,
+                             time_span = li$time_span)
         )
     }
 

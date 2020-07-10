@@ -7,8 +7,6 @@
 prepare_df_for_demog_change_component_df(
   x,
   dimensions = attr(x, "dimensions"),
-  age_span = attr(x, "age_span"),
-  time_span = attr(x, "time_span"),
   value_type = attr(x, "value_type")
 )
 }

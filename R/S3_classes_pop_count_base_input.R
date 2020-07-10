@@ -62,15 +62,15 @@ pop_count_base_input_df <-
 
 
 
-        x <- ccmpp_input_df(x,
+        li <- prepare_df_for_ccmpp_input_df(x,
                             dimensions =  get_req_dimensions_for_ccmpp_input_classes("mig_net_rate_input_df"),
                             value_type = get_value_types_for_classes("pop_count_base_input_df"))
 
         ## Create/Validate
         validate_ccmpp_object(
-            new_pop_count_base_input_df(x,
-                               age_span = attr(x, "age_span"),
-                               time_span = attr(x, "time_span"))
+            new_pop_count_base_input_df(li$df,
+                               age_span = li$age_span,
+                               time_span = li$time_span)
         )
     }
 

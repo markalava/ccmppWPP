@@ -9,12 +9,16 @@ test_that("objects are created properly", {
     expect_s3_class(y, "demog_change_component_df")
     expect_s3_class(y, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(y), c("time", "age", "sex")))
+    expect_true(identical(names(demog_change_component_attributes(y)),
+                          c("dimensions", "value_type")))
 
     ## Guess dimensions
     y <- demog_change_component_df(S3_demog_change_component_time_age_sex_test_df)
     expect_s3_class(y, "demog_change_component_df")
     expect_s3_class(y, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(y), c("time", "age", "sex")))
+    expect_true(identical(names(demog_change_component_attributes(y)),
+                          c("dimensions", "value_type")))
 
     ## Guess spans
     y <- demog_change_component_df(
@@ -23,6 +27,8 @@ test_that("objects are created properly", {
     expect_s3_class(y, "demog_change_component_df")
     expect_s3_class(y, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(y), c("time", "age", "sex")))
+    expect_true(identical(names(demog_change_component_attributes(y)),
+                          c("dimensions", "value_type")))
 
 ### Time, Age
     ## Specify dimensions
@@ -34,6 +40,8 @@ test_that("objects are created properly", {
     expect_s3_class(z, "demog_change_component_df")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(z), c("time", "age")))
+    expect_true(identical(names(demog_change_component_attributes(z)),
+                          c("dimensions", "value_type")))
 
     ## Guess dimensions and spans
     x <- S3_demog_change_component_time_age_test_df[, c("time_start", "age_start", "value")]
@@ -41,6 +49,8 @@ test_that("objects are created properly", {
     expect_s3_class(z, "demog_change_component_df")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(z), c("time", "age")))
+    expect_true(identical(names(demog_change_component_attributes(z)),
+                          c("dimensions", "value_type")))
 
 ### Time, Sex
     ## specify dimensions
@@ -50,6 +60,8 @@ test_that("objects are created properly", {
     expect_s3_class(z, "demog_change_component_df")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(z), c("time", "sex")))
+    expect_true(identical(names(demog_change_component_attributes(z)),
+                          c("dimensions", "value_type")))
 
     ## Guess dimensions and spans
     x <- S3_demog_change_component_time_sex_test_df[,
@@ -58,6 +70,8 @@ test_that("objects are created properly", {
     expect_s3_class(z, "demog_change_component_df")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(z), c("time", "sex")))
+    expect_true(identical(names(demog_change_component_attributes(z)),
+                          c("dimensions", "value_type")))
 
 ### Time
     ## Specify dimensions
@@ -66,12 +80,16 @@ test_that("objects are created properly", {
     expect_s3_class(z, "demog_change_component_df")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(z), "time"))
+    expect_true(identical(names(demog_change_component_attributes(z)),
+                          c("dimensions", "value_type")))
 
     x <- S3_demog_change_component_time_test_df[, c("time_start", "time_span", "value")]
     z <- demog_change_component_df(x)
     expect_s3_class(z, "demog_change_component_df")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(z), "time"))
+    expect_true(identical(names(demog_change_component_attributes(z)),
+                          c("dimensions", "value_type")))
 })
 
 

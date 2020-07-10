@@ -75,12 +75,7 @@ get_master_df_dimensions_w_span_colnames_coltypes <- function() {
 
 ## Define required attributes
 get_req_attr_names_for_dimensions <- function(dimensions) {
-    out <- c(names(attributes(data.frame())), "dimensions", "value_type")
-    for (dim_w_span in get_all_dimensions_w_spans()) {
-    if (dim_w_span %in% dimensions)
-        out <- c(out, paste0(dim_w_span, "_span"))
-    }
-    return(out)
+    c(names(attributes(data.frame())), "dimensions", "value_type")
 }
 
 ## Manage 'class' attribute

@@ -4,11 +4,7 @@
 \alias{mig_net_rate_input_df}
 \title{Constructor for class \code{mig_net_rate_input_df}}
 \usage{
-mig_net_rate_input_df(
-  x,
-  age_span = attr(x, "age_span"),
-  time_span = attr(x, "time_span")
-)
+mig_net_rate_input_df(x)
 }
 \arguments{
 \item{x}{For \code{demog_change_component_df}: A data frame with

@@ -55,19 +55,15 @@
 #' @author Mark Wheldon
 new_demog_change_component_df <-
     function(x, dimensions = character(),
-             age_span = double(),
-             time_span = double(),
              value_type = character(),
              ..., class = character()) {
         if (missing(x)) x <- data.frame()
         stopifnot(is.data.frame(x))
-        stopifnot(is.numeric(age_span))
-        stopifnot(is.numeric(time_span))
         stopifnot(is.character(class))
         structure(x,
                   dimensions = dimensions,
-                  age_span = age_span,
-                  time_span = time_span,
+                  ## age_span = age_span,
+                  ## time_span = time_span,
                   value_type = value_type,
                   ...,
                   class = c(class, "demog_change_component_df", "data.frame"))
@@ -84,9 +80,101 @@ new_demog_change_component_df <-
 #' @author Mark Wheldon
 prepare_df_for_demog_change_component_df <- function(x,
         dimensions = attr(x, "dimensions"),
-        age_span = attr(x, "age_span"),
-        time_span = attr(x, "time_span"),
         value_type = attr(x, "value_type")) {
+
+        if (!is.data.frame(x))
+            stop("'x' is not a data.frame.")
+
+        if (is_demog_change_component_df(x))
+            x <- as.data.frame(x)
+
+        coln_x <- colnames(x)
+
+        ## -------* 'dimensions' attribute
+
+        if (is.null(dimensions)) {
+            dimensions <- guess_dimensions_from_df_cols(x)
+            message("Argument 'dimensions' is 'NULL'; setting 'dimensions' to '",
+                    paste(dimensions, collapse = ", "),
+                    "' based on column names of 'x'.")
+        } else {
+            ## Check 'dimensions'
+            allowed_dimensions <- get_all_allowed_dimensions()
+            if (!all(dimensions %in% allowed_dimensions))
+                stop("'dimensions' can only include '",
+                     paste(allowed_dimensions, collapse = "', '"),
+                     "'.")
+        }
+
+        ## -------* Check columns are present
+
+        req_cols <- get_all_req_col_names_excl_spans_for_dimensions(dimensions)
+
+        if (!all(req_cols %in% coln_x))
+            stop("'x' must have columns '",
+                 paste0(req_cols, collapse = "', '"),
+                 "'; some or all are missing.")
+
+        ## -------* Set-up _span columns
+
+        if ("time" %in% dimensions && !"time_span" %in% coln_x) {
+            diff_x <- diff(unique(x$time_start))[1]
+            if (!(is.numeric(diff_x) & is.finite(diff_x))) {
+                stop("'time_span' is not a column in 'x' and cannot determine it from 'x$time_span'.")
+            } else {
+                message("'time_span' is not a column in 'x'; setting 'x$time_span' to '",
+                        diff_x,
+                        "'.")
+                x$time_span <- diff_x
+                ##time_span <- diff_x
+            }
+        } ##else time_span <- unique(x$time_span)
+
+        if ("age" %in% dimensions && !"age_span" %in% coln_x) {
+            diff_x <- diff(unique(x$age_start))[1]
+            if (!(is.numeric(diff_x) & is.finite(diff_x))) {
+                stop("'age_span' is not a column in 'x' and cannot determine it from 'x$age_span'.")
+            } else {
+                message("'age_span' is not a column in 'x'; setting 'x$age_span' to '",
+                        diff_x,
+                        "'.")
+                x$age_span <- diff_x
+                ##age_span <- diff_x
+            }
+        } ##else age_span <- unique(x$age_span)
+### !!!!!!!!!! TEMPORARY !!!!!!!!!!!!
+        ## Replace '1000' in x$age_span
+        if ("age" %in% dimensions && !is.null(x$age_span) && !is.null(age_span)) {
+            x$age_span[x$age_span == 1000] <- unique(x$age_span)[1]
+            ##age_span <- age_span[!age_span == 1000]
+        }
+### !!!!!!!!!! TEMPORARY !!!!!!!!!!!!
+
+        ## -------* Values
+
+        if (is.null(value_type)) {
+            message("Argument 'value_type' is 'NULL'; setting 'value_type' to 'real'.")
+            value_type <- "real"
+        }
+
+        ## -------* Other
+
+        ## Clean 'x' and convert factors to character
+        req_cols <- get_all_req_col_names_for_dimensions(dimensions)
+        req_cols_types <- get_all_req_col_types_for_dimensions(dimensions)
+        x <- x[, req_cols]
+        char_cols <- which(req_cols_types == "character")
+        for (j in char_cols) {
+            if (is.factor(x[, j])) x[, j] <- as.character(x[, j])
+        }
+
+        ## Sort by time, then sex, then age
+        x <- sort_demog_change_component_df(x)
+
+        ## row.names might have been muddled by sorting so reset
+    row.names(x) <- NULL
+
+    return(list(df = x, dimensions = dimensions, value_type = value_type))
 }
 
 
@@ -167,107 +255,19 @@ demog_change_component_df <-
              value_type = attr(x, "value_type"),
              ...) {
 
-        if (!is.data.frame(x))
-            stop("'x' is not a data.frame.")
-
-        if (is_demog_change_component_df(x))
-            x <- as.data.frame(x)
-
-        coln_x <- colnames(x)
-
-        ## -------* 'dimensions' attribute
-
-        if (is.null(dimensions)) {
-            dimensions <- guess_dimensions_from_df_cols(x)
-            message("Argument 'dimensions' is 'NULL'; setting 'dimensions' to '",
-                    paste(dimensions, collapse = ", "),
-                    "' based on column names of 'x'.")
-        } else {
-            ## Check 'dimensions'
-            allowed_dimensions <- get_all_allowed_dimensions()
-            if (!all(dimensions %in% allowed_dimensions))
-                stop("'dimensions' can only include '",
-                     paste(allowed_dimensions, collapse = "', '"),
-                     "'.")
-        }
-
-        ## -------* Check columns are present
-
-        req_cols <- get_all_req_col_names_excl_spans_for_dimensions(dimensions)
-
-        if (!all(req_cols %in% coln_x))
-            stop("'x' must have columns '",
-                 paste0(req_cols, collapse = "', '"),
-                 "'; some or all are missing.")
-
-        ## -------* Set-up _span columns
-
-        if ("time" %in% dimensions && !"time_span" %in% coln_x) {
-            diff_x <- diff(unique(x$time_start))[1]
-            if (!(is.numeric(diff_x) & is.finite(diff_x))) {
-                stop("'time_span' is not a column in 'x' and cannot determine it from 'x$time_span'.")
-            } else {
-                message("'time_span' is not a column in 'x'; setting 'x$time_span' to '",
-                        diff_x,
-                        "'.")
-                x$time_span <- diff_x
-                time_span <- diff_x
-            }
-        } else time_span <- unique(x$time_span)
-
-        if ("age" %in% dimensions && !"age_span" %in% coln_x) {
-            diff_x <- diff(unique(x$age_start))[1]
-            if (!(is.numeric(diff_x) & is.finite(diff_x))) {
-                stop("'age_span' is not a column in 'x' and cannot determine it from 'x$age_span'.")
-            } else {
-                message("'age_span' is not a column in 'x'; setting 'x$age_span' to '",
-                        diff_x,
-                        "'.")
-                x$age_span <- diff_x
-                age_span <- diff_x
-            }
-        } else age_span <- unique(x$age_span)
-### !!!!!!!!!! TEMPORARY !!!!!!!!!!!!
-        ## Replace '1000' in x$age_span
-        if ("age" %in% dimensions && !is.null(x$age_span) && !is.null(age_span)) {
-            x$age_span[x$age_span == 1000] <- age_span[1]
-            age_span <- age_span[!age_span == 1000]
-        }
-### !!!!!!!!!! TEMPORARY !!!!!!!!!!!!
-
-        ## -------* Values
-
-        if (is.null(value_type)) {
-            message("Argument 'value_type' is 'NULL'; setting 'value_type' to 'real'.")
-            value_type <- "real"
-        }
-
-        ## -------* Other
-
-        ## Clean 'x' and convert factors to character
-        req_cols <- get_all_req_col_names_for_dimensions(dimensions)
-        req_cols_types <- get_all_req_col_types_for_dimensions(dimensions)
-        x <- x[, req_cols]
-        char_cols <- which(req_cols_types == "character")
-        for (j in char_cols) {
-            if (is.factor(x[, j])) x[, j] <- as.character(x[, j])
-        }
-
-        ## Sort by time, then sex, then age
-        x <- sort_demog_change_component_df(x)
-
-        ## row.names might have been muddled by sorting so reset
-        row.names(x) <- NULL
-
-        ## -------* End
+        li <-
+            prepare_df_for_demog_change_component_df(
+                x,
+                dimensions = dimensions,
+                value_type = value_type)
 
         ## Create/Validate
         validate_ccmpp_object(
-            new_demog_change_component_df(x,
-                              dimensions = dimensions,
-                              age_span = (if (is.null(age_span)) double() else age_span),
-                              time_span = (if (is.null(time_span)) double() else time_span),
-                              value_type = value_type,
+            new_demog_change_component_df(li$df,
+                              dimensions = li$dimensions,
+                              ## age_span = (if (is.null(age_span)) double() else age_span),
+                              ## time_span = (if (is.null(time_span)) double() else time_span),
+                              value_type = li$value_type,
                               ...
                               )
         )

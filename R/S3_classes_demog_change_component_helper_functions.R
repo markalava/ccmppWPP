@@ -21,18 +21,18 @@ get_all_allowed_attributes <- function() {
       "non_zero_fert_ages")
     }
 
-## Attributes with corresponding '_span' !!! should be 'dimensions'
-get_all_attr_w_span_names <- function() {
-    c("time" = "time", "age" = "age")
-    }
-
 ## Define allowed dimensions
 get_all_allowed_dimensions <- function() {
     ## The name component is a label for internal indexing. The data
     ## component is the actual name of the dimension.
     ## !! NAME AND ELEMENT MUST BE THE SAME !!
     ## !! ORDER MATTERS !! Determines the order of sorting!
-    c("indicator" = "indicator", "time" = "time", "sex" = "sex", "age" = "age")
+    c("indicator", "time", "sex", "age")
+}
+
+## Attributes with corresponding '_span' !!! should be 'dimensions'
+get_all_dimensions_w_spans <- function() {
+    c("time", "age")
 }
 
 master_df_dimensions_colnames_coltypes <- function() {
@@ -45,9 +45,9 @@ master_df_dimensions_colnames_coltypes <- function() {
 }
 
 master_df_dimensions_w_span_colnames_coltypes <- function() {
-    attr_nm <- get_all_attr_w_span_names()
-    data.frame(dimension = attr_nm,
-               colname = paste0(attr_nm, "_span"),
+    dim_names <- get_all_dimensions_w_spans()
+    data.frame(dimension = get_all_dimensions_w_spans(),
+               colname = paste0(dim_names, "_span"),
                type = c("numeric"))
 }
 
@@ -57,9 +57,9 @@ master_df_dimensions_w_span_colnames_coltypes <- function() {
 ## Define required attributes
 get_req_attr_names_for_dimensions <- function(dimensions) {
     out <- c(names(attributes(data.frame())), "dimensions", "value_type")
-    for (attr in get_all_attr_w_span_names()) {
-    if (attr %in% dimensions)
-        out <- c(out, paste0(attr, "_span"))
+    for (dim_w_span in get_all_dimensions_w_spans()) {
+    if (dim_w_span %in% dimensions)
+        out <- c(out, paste0(dim_w_span, "_span"))
     }
     return(out)
 }
@@ -112,7 +112,7 @@ get_all_req_col_types_for_dimensions <- function(dimensions) {
 
 ## Get the column name in a data frame corresponding to the given
 ## dimensions (as in 'get_df_col_info_for_dimensions()')
-get_df_col_namees_for_dimensions <- function(dimensions = get_all_allowed_dimensions()) {
+get_df_col_names_for_dimensions <- function(dimensions = get_all_allowed_dimensions()) {
     dim_col_info <- get_df_col_info_for_dimensions(dimensions = dimensions)
     dim_col_info[dim_col_info$dimension %in% dimensions, "colname"]
 }
@@ -183,11 +183,13 @@ sort_demog_change_component_df <- function(x) {
     coln_x <- colnames(x)
     coln_info_x <- get_df_cols_to_tabulate_for_dimensions(dimensions = get_all_allowed_dimensions())
     coln_info_x <- coln_info_x[coln_info_x$colname %in% coln_x, ]
-    dims_names_x <- rownames(coln_info_x)
+    dims_names_x <- coln_info_x$dimension
 
-    get_x_col <- function(rowname) {
-        x[[coln_info_x[rowname, "colname"]]]
+    get_x_col <- function(dimension) {
+        x[[coln_info_x[coln_info_x$dimension == dimension, "colname"]]]
     }
+
+    dims_names_not_age <- dims_names_x[!dims_names_x == "age"]
 
     sort_factors <-
         unname(as.data.frame(lapply(dims_names_x, "get_x_col")))
@@ -205,11 +207,13 @@ tabulate_demog_change_component_df <- function(x) {
     coln_x <- colnames(x)
     coln_info_x <- get_df_cols_to_tabulate_for_dimensions(dimensions = get_all_allowed_dimensions())
     coln_info_x <- coln_info_x[coln_info_x$colname %in% coln_x, ]
-    dims_names_x <- rownames(coln_info_x)
+    dims_names_x <- coln_info_x$dimension
 
-    get_x_col <- function(rowname) {
-        x[[coln_info_x[rowname, "colname"]]]
+    get_x_col <- function(dimension) {
+        x[[coln_info_x[coln_info_x$dimension == dimension, "colname"]]]
     }
+
+    dims_names_not_age <- dims_names_x[!dims_names_x == "age"]
 
     tab_factors <- lapply(dims_names_x, "get_x_col")
     return(table(tab_factors))
@@ -222,10 +226,10 @@ get_min_age_in_dims_in_df <- function(x) {
     coln_x <- colnames(x)
     coln_info_x <- get_df_cols_to_tabulate_for_dimensions(dimensions = get_all_allowed_dimensions())
     coln_info_x <- coln_info_x[coln_info_x$colname %in% coln_x, ]
-    dims_names_x <- rownames(coln_info_x)
+    dims_names_x <- coln_info_x$dimension
 
-    get_x_col <- function(rowname) {
-        x[[coln_info_x[rowname, "colname"]]]
+    get_x_col <- function(dimension) {
+        x[[coln_info_x[coln_info_x$dimension == dimension, "colname"]]]
     }
 
     dims_names_not_age <- dims_names_x[!dims_names_x == "age"]

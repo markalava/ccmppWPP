@@ -108,7 +108,7 @@ validate_ccmpp_object.demog_change_component_df <-
                 stop("'", req_cols[j], "' must be character.")
         }
 
-        attr_w_span_names <- get_all_attr_w_span_names()
+        attr_w_span_names <- get_all_dimensions_w_spans()
         attr_w_span_names <-
             attr_w_span_names[attr_w_span_names %in% demog_change_component_dims_x]
         for (att in attr_w_span_names) {
@@ -176,7 +176,7 @@ validate_ccmpp_object.ccmpp_input_df <- function(x, ...) {
     ## 2. Spans must all be equal
     ## 2. Span columns must contain
 
-    attr_w_span_names <- get_all_attr_w_span_names()
+    attr_w_span_names <- get_all_dimensions_w_spans()
     attr_w_span_names <-
         attr_w_span_names[attr_w_span_names %in% demog_change_component_dims_x]
 

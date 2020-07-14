@@ -162,3 +162,21 @@ as_fert_rate_input_df.fert_rate_input_df <- function(x, ...) {
 is_fert_rate_input_df <- function(x) {
     inherits(x, "fert_rate_input_df")
 }
+
+
+
+#' @rdname subset_demog_change_component_df
+#' @export
+subset_time.fert_rate_input_df <- function(x, time, drop = FALSE) {
+
+    x <- NextMethod()
+    return(fert_rate_input_df(x))
+}
+
+#' @rdname subset_demog_change_component_df
+#' @export
+subset_age.fert_rate_input_df <- function(x, age, drop = FALSE) {
+
+    x <- NextMethod()
+    return(fert_rate_input_df(x))
+}

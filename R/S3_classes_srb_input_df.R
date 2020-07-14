@@ -114,3 +114,13 @@ as_srb_input_df.srb_input_df <- function(x, ...) {
 is_srb_input_df <- function(x) {
     inherits(x, "srb_input_df")
 }
+
+
+
+#' @rdname subset_demog_change_component_df
+#' @export
+subset_time.srb_input_df <- function(x, time, drop = FALSE) {
+
+    x <- NextMethod()
+    return(srb_input_df(x))
+}

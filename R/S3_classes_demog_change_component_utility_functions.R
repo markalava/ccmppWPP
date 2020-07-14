@@ -3,17 +3,31 @@
 
 #' Subset by time, age, or sex
 #'
-#' These functions subset \code{demog_change_component_df}s by one of
-#' the three dimensions, age, time, or sex. Subsetting such that only
-#' one level of the subset dimension is retained will drop the
-#' dimension if \code{drop = TRUE}, otherwise it is retained (default).
+#' These functions subset objects inheriting from
+#' \code{demog_change_component_df} by one of the four dimensions,
+#' indicator, age, time, or sex, and retain the class if valid (see
+#' \dQuote{Details}). Subsetting such that only one level of the
+#' subset dimension is retained will drop the dimension if \code{drop
+#' = TRUE}, otherwise it is retained (default).
+#'
+#' If the object returned after subsetting is a valid member of the
+#' original class it will be returned (valid according to
+#' \code{\link{validate_ccmpp_object}}). If it is not valid an error
+#' will be signalled and nothing is returned.
+#'
+#' @section Note:
+#' These functions are not particularly efficient. For repeated
+#' subsetting within, e.g., a for loop, it is better to use standard
+#' subsetting operations on the data frame component and re-cast the
+#' result as a classed object at the end if desired.
 #'
 #' @param x An object to subset.
-#' @param time,age,sex Vectors indicating the levels of time, age, or
-#'     sex to retain.
+#' @param indicator,time,age,sex Vectors indicating the levels of
+#'     time, age, or sex to retain.
 #' @param drop Logical; should demographic change component dimensions
 #'     with only one level be dropped?
-#' @return The object after subsetting.
+#' @return The object after subsetting if a valid member of the class;
+#'     otherwise an error.
 #' @author Mark Wheldon
 #' @name subset_demog_change_component_df
 NULL

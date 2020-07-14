@@ -22,6 +22,17 @@ NULL
 #' @rdname validate_ccmpp_object
 validate_ccmpp_object <- function(x, ...) {
     UseMethod("validate_ccmpp_object")
+}
+
+#' @export
+#' @rdname validate_ccmpp_object
+validate_ccmpp_object.default <- function(x, ...) {
+    stop("'x' is not an object with a valid CCMPP object class. 'class(x) = ",
+         class(x),
+         "'. Valid classes are '",
+         paste(get_all_demog_change_component_df_class_names(),
+               collapse = "', '"),
+         "'.")
     }
 
 #' @rdname validate_ccmpp_object

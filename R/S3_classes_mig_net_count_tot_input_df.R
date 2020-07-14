@@ -113,3 +113,14 @@ as_mig_net_count_tot_input_df.mig_net_count_tot_input_df <- function(x, ...) {
 is_mig_net_count_tot_input_df <- function(x) {
     inherits(x, "mig_net_count_tot_input_df")
 }
+
+
+
+
+#' @rdname subset_demog_change_component_df
+#' @export
+subset_time.mig_net_count_tot_input_df <- function(x, time, drop = FALSE) {
+
+    x <- NextMethod()
+    return(mig_net_count_tot_input_df(x))
+}

@@ -34,9 +34,9 @@ print.ccmpp_input_df <-
 
         if ("table" %in% print_what) {
             if (is_by_age(x))
-                x[, "age_span"] <- NA
+                x[-1, "age_span"] <- NA
             if (is_by_time(x))
-                x[, "time_span"] <- NA
+                x[-1, "time_span"] <- NA
             x <- as.matrix(x[seq_len(n),])
             if (!row.names) dimnames(x)[[1]] <- rep("", nrow(x))
         print.table(x,
@@ -47,3 +47,15 @@ print.ccmpp_input_df <-
         }
         return(invisible(x))
     }
+
+###-----------------------------------------------------------------------------
+### * Subset
+
+#' @rdname subset_demog_change_component_df
+#' @export
+subset_time.ccmpp_input_df <- function(x, time, drop = FALSE) {
+
+    x <- NextMethod()
+    return(ccmpp_input_df(x, dimensions = demog_change_component_dimensions(x),
+                          value_type = value_type(x)))
+}

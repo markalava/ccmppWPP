@@ -119,3 +119,29 @@ as_survival_ratio_input_df.survival_ratio_input_df <- function(x, ...) {
 is_survival_ratio_input_df <- function(x) {
     inherits(x, "survival_ratio_input_df")
 }
+
+
+
+#' @rdname subset_demog_change_component_df
+#' @export
+subset_time.survival_ratio_input_df <- function(x, time, drop = FALSE) {
+
+    x <- NextMethod()
+    return(survival_ratio_input_df(x))
+}
+
+#' @rdname subset_demog_change_component_df
+#' @export
+subset_age.survival_ratio_input_df <- function(x, age, drop = FALSE) {
+
+    x <- NextMethod()
+    return(survival_ratio_input_df(x))
+}
+
+#' @rdname subset_demog_change_component_df
+#' @export
+subset_sex.survival_ratio_input_df <- function(x, sex, drop = FALSE) {
+
+    x <- NextMethod()
+    return(survival_ratio_input_df(x))
+}

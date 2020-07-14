@@ -124,3 +124,36 @@ as_life_table_input_df.life_table_input_df <- function(x, ...) {
 is_life_table_input_df <- function(x) {
     inherits(x, "life_table_input_df")
 }
+
+
+#' @rdname subset_demog_change_component_df
+#' @export
+subset_indicator.life_table_input_df <- function(x, indicator, drop = FALSE) {
+
+    x <- NextMethod()
+    return(life_table_input_df(x))
+}
+
+#' @rdname subset_demog_change_component_df
+#' @export
+subset_time.life_table_input_df <- function(x, time, drop = FALSE) {
+
+    x <- NextMethod()
+    return(life_table_input_df(x))
+}
+
+#' @rdname subset_demog_change_component_df
+#' @export
+subset_age.life_table_input_df <- function(x, age, drop = FALSE) {
+
+    x <- NextMethod()
+    return(life_table_input_df(x))
+}
+
+#' @rdname subset_demog_change_component_df
+#' @export
+subset_sex.life_table_input_df <- function(x, sex, drop = FALSE) {
+
+    x <- NextMethod()
+    return(life_table_input_df(x))
+}

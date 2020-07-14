@@ -2,6 +2,7 @@
 % Please edit documentation in R/S3_classes_validators.R
 \name{validate_ccmpp_object}
 \alias{validate_ccmpp_object}
+\alias{validate_ccmpp_object.default}
 \alias{validate_ccmpp_object.demog_change_component_df}
 \alias{validate_ccmpp_object.ccmpp_input_df}
 \alias{validate_ccmpp_object.fert_rate_input_df}
@@ -14,6 +15,8 @@
 \title{Validate objects of class \code{demog_change_component_df}.}
 \usage{
 validate_ccmpp_object(x, ...)
+
+\method{validate_ccmpp_object}{default}(x, ...)
 
 \method{validate_ccmpp_object}{demog_change_component_df}(x, ...)
 

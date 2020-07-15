@@ -26,6 +26,8 @@ get_dimensions_info_for_ccmpp_input_classes <-
                        ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
                    mig_net_count_tot_input_df =
                        ensure_these_dimensions_correctly_ordered(c("time")),
+                   mig_parameter_input_df =
+                       ensure_these_dimensions_correctly_ordered(c("indicator", "time")),
                    life_table_input_df =
                        ensure_these_dimensions_correctly_ordered(
                            c("indicator", "time", "sex", "age")
@@ -67,6 +69,37 @@ check_dimensions_for_ccmpp_input_df <- function(x) {
     }
     else
         return(invisible(x))
+}
+
+###-----------------------------------------------------------------------------
+### * Utilities
+
+#' @rdname extract_demog_change_component_attributes
+#' @export
+age_span <- function(x) {
+    UseMethod("age_span")
+}
+
+#' @rdname extract_demog_change_component_attributes
+#' @export
+age_span.demog_change_component_df <- function(x) {
+    if (!is_by_age(x))
+        stop("'age' is not a dimension of 'x'.")
+    attr(x, "age_span")
+}
+
+#' @rdname extract_demog_change_component_attributes
+#' @export
+time_span <- function(x) {
+    UseMethod("time_span")
+}
+
+#' @rdname extract_demog_change_component_attributes
+#' @export
+time_span.ccmpp_input_df <- function(x) {
+    if (!is_by_time(x))
+        stop("'time' is not a dimension of 'x'.")
+    attr(x, "time_span")
 }
 
 ###-----------------------------------------------------------------------------
@@ -155,6 +188,8 @@ ccmpp_input_df <-
         )
     }
 
+###-----------------------------------------------------------------------------
+### * Coercion
 
 #' Coerce to a \code{ccmpp_input_df}
 #'
@@ -210,6 +245,8 @@ is_ccmpp_input_df <- function(x) {
     inherits(x, "ccmpp_input_df")
 }
 
+###-----------------------------------------------------------------------------
+### * Subset
 
 #' @rdname subset_demog_change_component_df
 #' @export

@@ -51,9 +51,9 @@ print.fert_rate_input_df <-
         if ("table" %in% print_what) {
             nzfa <- non_zero_fert_ages(x)
             if (is_by_age(x))
-                x[, "age_span"] <- NA
+                x[-1, "age_span"] <- NA
             if (is_by_time(x))
-                x[, "time_span"] <- NA
+                x[-1, "time_span"] <- NA
 
             if (is_by_age(x) && !is.null(nzfa)) {
                 nzf_rows <- x$age_start %in% nzfa
@@ -107,7 +107,7 @@ print.summary_fert_rate_input_df <-
             vsep <- strrep("-", 0.75 * getOption("width"))
         NextMethod(print_what = "info")
         cat(paste0("non_zero_fert_ages:\t",
-               toString(x$non_zero_fert_ages, 30),
+               print_non_zero_fert_ages(x$non_zero_fert_ages, 30),
                "\n"),
             vsep, "\n",
             sep = "")

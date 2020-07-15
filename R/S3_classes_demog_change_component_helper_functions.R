@@ -9,7 +9,7 @@
 
 ## Names of all classes
 get_all_demog_change_component_df_class_names <- function() {
-    c("life_table_input_df",
+    c("life_table_input_df", "mig_parameter_input_df",
       "mig_net_count_tot_input_df", "mig_net_count_input_df",
       "mig_net_rate_input_df", "srb_input_df", "pop_count_base_input_df",
       "survival_ratio_input_df", "fert_rate_input_df",
@@ -105,7 +105,7 @@ get_all_req_col_names_excl_spans_for_dimensions <- function(dimensions) {
 
 ## All column types
 get_all_req_col_types_for_dimensions <- function(dimensions) {
-    c(subset_master_df_of_dimensions_colnames_coltypes(dimensions = dimensions)$type, "numeric")
+    c(subset_master_df_of_dimensions_colnames_coltypes(dimensions = dimensions)$type, "any")
 }
 
 ## Get the column name in a data frame corresponding to the given
@@ -144,6 +144,8 @@ get_value_type_info_for_classes <- function(class = get_all_demog_change_compone
                        value_type = "count"),
                      c(class = "mig_net_count_tot_input_df",
                        value_type = "count"),
+                     c(class = "mig_parameter_input_df",
+                       value_type = "categorical"),
                      c(class = "life_table_input_df",
                        value_type = "real")
                      ), stringsAsFactors = FALSE)

@@ -55,28 +55,4 @@ appropriate column.
 }
 \author{
 Mark Wheldon
-
-Mark Wheldon
-
-Mark Wheldon
-
-Mark Wheldon
-
-Mark Wheldon
-
-Mark Wheldon
-
-Mark Wheldon
-
-Mark Wheldon
-
-Mark Wheldon
-
-Mark Wheldon
-
-Mark Wheldon
-
-Mark Wheldon
-
-Mark Wheldon
 }

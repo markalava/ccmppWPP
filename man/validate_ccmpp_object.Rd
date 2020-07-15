@@ -12,6 +12,9 @@
 \alias{validate_ccmpp_object.mig_net_rate_input_df}
 \alias{validate_ccmpp_object.mig_net_count_input_df}
 \alias{validate_ccmpp_object.mig_net_count_tot_input_df}
+\alias{validate_ccmpp_object.mig_parameter_input_df}
+\alias{validate_ccmpp_object.life_table_input_df}
+\alias{validate_ccmpp_object.ccmpp_input_list}
 \title{Validate objects of class \code{demog_change_component_df}.}
 \usage{
 validate_ccmpp_object(x, ...)
@@ -35,6 +38,12 @@ validate_ccmpp_object(x, ...)
 \method{validate_ccmpp_object}{mig_net_count_input_df}(x, ...)
 
 \method{validate_ccmpp_object}{mig_net_count_tot_input_df}(x, ...)
+
+\method{validate_ccmpp_object}{mig_parameter_input_df}(x, ...)
+
+\method{validate_ccmpp_object}{life_table_input_df}(x, ...)
+
+\method{validate_ccmpp_object}{ccmpp_input_list}(x, ...)
 }
 \arguments{
 \item{x}{An object to be validated.}

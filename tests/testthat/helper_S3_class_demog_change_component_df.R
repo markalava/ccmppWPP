@@ -21,7 +21,7 @@ ccmpp_input_df_time_age_sex <-
 fert_rate_input_df_time_age <-
     fert_rate_input_df(S3_fert_rate_time_age_df)
 
-life_table_input_df_time_age_sex <-
+life_table_input_df_indicator_time_age_sex <-
     life_table_input_df(wpp_input_example$life_table_age_sex)
 
 mig_net_count_input_df_time_age_sex <-
@@ -33,6 +33,9 @@ mig_net_count_tot_input_df_time <-
 mig_net_rate_input_df_time_age_sex <-
     mig_net_rate_input_df(wpp_input_example$mig_net_rate_age_sex)
 
+mig_parameter_input_df_indicator_time <-
+    mig_parameter_input_df(wpp_input_example$mig_parameter)
+
 pop_count_base_input_df_time_age_sex <-
     pop_count_base_input_df(wpp_input_example$pop_count_age_sex_base)
 
@@ -43,3 +46,13 @@ survival_ratio_input_df_time_age_sex <-
            indicator == "lt_Sx", select = -indicator)
 survival_ratio_input_df_time_age_sex <-
     survival_ratio_input_df(survival_ratio_input_df_time_age_sex)
+
+ccmpp_input_list_example <-
+    ccmpp_input_list(pop_count_base_input_df = pop_count_base_input_df_time_age_sex,
+                     life_table_input_df = life_table_input_df_indicator_time_age_sex,
+                     fert_rate_input_df = fert_rate_input_df_time_age,
+                     srb_input_df = srb_input_df_time,
+                     mig_net_count_input_df = mig_net_count_input_df_time_age_sex,
+                     mig_net_rate_input_df = mig_net_rate_input_df_time_age_sex,
+                     mig_net_count_tot_input_df = mig_net_count_tot_input_df_time,
+                     mig_parameter_input_df = mig_parameter_input_df_indicator_time)

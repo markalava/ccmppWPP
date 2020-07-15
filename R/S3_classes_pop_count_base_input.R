@@ -63,7 +63,7 @@ pop_count_base_input_df <-
 
 
         li <- prepare_df_for_ccmpp_input_df(x,
-                            dimensions =  get_req_dimensions_for_ccmpp_input_classes("mig_net_rate_input_df"),
+                            dimensions =  get_req_dimensions_for_ccmpp_input_classes("pop_count_base_input_df"),
                             value_type = get_value_types_for_classes("pop_count_base_input_df"))
 
         ## Create/Validate

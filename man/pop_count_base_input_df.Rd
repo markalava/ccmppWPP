@@ -34,11 +34,13 @@ An object of class \code{pop_count_base_input_df}.
 
 Other ccmpp_input_objects: 
 \code{\link{ccmpp_input_df}()},
+\code{\link{ccmpp_input_list}()},
 \code{\link{fert_rate_input_df}()},
 \code{\link{life_table_input_df}()},
 \code{\link{mig_net_count_input_df}()},
 \code{\link{mig_net_count_tot_input_df}()},
 \code{\link{mig_net_rate_input_df}()},
+\code{\link{mig_parameter_input_df}()},
 \code{\link{srb_input_df}()},
 \code{\link{survival_ratio_input_df}()}
 }

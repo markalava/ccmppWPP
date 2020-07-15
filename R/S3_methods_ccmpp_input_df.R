@@ -33,13 +33,13 @@ print.ccmpp_input_df <-
         }
 
         if ("table" %in% print_what) {
+            y <- as.matrix(format.data.frame(x[seq_len(n),]))
             if (is_by_age(x))
-                x[-1, "age_span"] <- NA
+                y[-1, "age_span"] <- NA
             if (is_by_time(x))
-                x[-1, "time_span"] <- NA
-            x <- as.matrix(x[seq_len(n),])
-            if (!row.names) dimnames(x)[[1]] <- rep("", nrow(x))
-        print.table(x,
+                y[-1, "time_span"] <- NA
+            if (!row.names) dimnames(y)[[1]] <- rep("", nrow(y))
+        print.table(y,
                     digits = digits, quote = quote, na.print = ".",
                     right = right,
                     ...)

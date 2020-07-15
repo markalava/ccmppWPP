@@ -222,41 +222,46 @@ print.demog_change_component_df <-
 
         if ("info" %in% print_what) {
 
-        attr_names <- names(demog_change_component_attributes(x))
-        attr_names <- attr_names[!(attr_names == "dimensions")]
-        if (inherits(x, "fert_rate_input_df"))
-            attr_names <- attr_names[!(attr_names == "non_zero_fert_ages")]
-        attr_msgs <- sapply(attr_names, function(z) {
-            att_z <- attr(x, z)
-            att_z_l <- length(att_z)
-            if (att_z_l) {
-                if (att_z_l > 3)
-                    pr_att_z <- paste0(paste(attr(x, z)[1:3], collapse = ", "),
-                                       "...")
-                else pr_att_z <- paste(attr(x, z), collapse = ", ")
-                paste0(z, " = '", pr_att_z, "'")
-            }
-        })
-        attr_msgs <- paste(attr_msgs[!sapply(attr_msgs, "is.null")], collapse = ", ")
+            attr_names <- names(demog_change_component_attributes(x))
+            attr_names <- attr_names[!(attr_names == "dimensions")]
+            if (inherits(x, "fert_rate_input_df"))
+                attr_names <- attr_names[!(attr_names == "non_zero_fert_ages")]
+            attr_msgs <- sapply(attr_names, function(z) {
+                att_z <- attr(x, z)
+                att_z_l <- length(att_z)
+                if (att_z_l) {
+                    if (att_z_l > 3)
+                        pr_att_z <- paste0(paste(attr(x, z)[1:3], collapse = ", "),
+                                           "...")
+                    else pr_att_z <- paste(attr(x, z), collapse = ", ")
+                    paste0(z, " = '", pr_att_z, "'")
+                }
+            })
+            attr_msgs <- paste(attr_msgs[!sapply(attr_msgs, "is.null")], collapse = ", ")
 
-        cat_msg <- paste0("# A '", class(x)[1], "' with ", format(nrow(x), big.mark = ","),
-            " rows.",
-            "\n# dimensions = '", paste(demog_change_component_dimensions(x), collapse = ", "), "'.",
-            "\n# ", attr_msgs,
-            ".\n")
-        if (inherits(x, "fert_rate_input_df"))
-            cat_msg <- paste0(cat_msg, paste0("# non_zero_fert_ages = '",
-                              toString(attr(x, "non_zero_fert_ages"), width = 20),
-                              "'.\n"))
-        if(is_by_sex(x))
-            cat_msg <- paste(cat_msg, "# 'sex' has levels: ", toString(sexes(x)),
-            ".\n",
-            sep = "")
+            cat_msg <- paste0("# A '", class(x)[1], "' with ", format(nrow(x), big.mark = ","),
+                              " rows.",
+                              "\n# dimensions = '", paste(demog_change_component_dimensions(x), collapse = ", "), "'.",
+                              "\n# ", attr_msgs,
+                              ".\n")
+            if (inherits(x, "fert_rate_input_df"))
+                cat_msg <- paste0(cat_msg, paste0("# non_zero_fert_ages = '",
+                                                  print_non_zero_fert_ages(attr(x, "non_zero_fert_ages"), width = 20),
+                                                  "'.\n"))
+            if (is_by_sex(x))
+                cat_msg <- paste(cat_msg, "# 'sex' has levels: ", toString(sexes(x)),
+                                 ".\n",
+                                 sep = "")
 
-        if(is_by_indicator(x))
-            cat_msg <- paste(cat_msg, "# 'indicator' has levels: ", toString(indicators(x), width = 40),
-            ".\n",
-            sep = "")
+            if (is_by_indicator(x))
+                cat_msg <- paste(cat_msg, "# 'indicator' has levels: ", toString(indicators(x), width = 40),
+                                 ".\n",
+                                 sep = "")
+
+            if (identical(value_type(x), "categorical"))
+                cat_msg <- paste(cat_msg, "# 'value' has levels: ", toString(values(x), width = 40),
+                                 ".\n",
+                                 sep = "")
 
             cat(cat_msg)
 
@@ -323,12 +328,19 @@ summary.demog_change_component_df <-
             indicator <- NULL
         }
 
+        ## Values
+        if (identical("categorical", value_type(object))) {
+            values <- list(levels = levels(as.factor(object$value)))
+        } else {
+            values <- NULL
+        }
+
         ## Stats
         table <- NextMethod()
 
         return(structure(list(dimensions = demog_change_component_dimensions(object),
                               time = time, age = age, sex = sex, indicator = indicator,
-                              value_type = value_type(object), table = table),
+                              value_type = value_type(object), values = values, table = table),
                          class = c("summary_demog_change_component_df", "list")))
     }
 
@@ -360,56 +372,63 @@ print.summary_demog_change_component_df <-
 
         if ("info" %in% print_what) {
 
-        ## Dimensions
-        msg <- paste0(msg, "dimensions:  ",
-                      paste(x$dimensions,
-                            collapse = ", "),
-                      "\n")
-
-        ## Time
-        if (!is.null(x$time))
-            msg <- paste0(msg, "      time:  span = ",
-                          toString(x$time$span, 7),
-                          "\trange = [",
-                          paste(x$time$range, collapse = ", "),
-                          "]",
+            ## Dimensions
+            msg <- paste0(msg, "dimensions:  ",
+                          paste(x$dimensions,
+                                collapse = ", "),
                           "\n")
 
-        ## Age
-        if (!is.null(x$age))
-            msg <- paste0(msg, "       age:  span = ",
-                          toString(x$age$span, 7),
-                          "\trange = [",
-                          paste(x$age$range, collapse = ", "),
-                          "]",
-                          "\n")
+            ## Time
+            if (!is.null(x$time))
+                msg <- paste0(msg, "      time:  span = ",
+                              toString(x$time$span, 7),
+                              "\trange = [",
+                              paste(x$time$range, collapse = ", "),
+                              "]",
+                              "\n")
 
-        ## Sex
-        if (!is.null(x$sex))
-            msg <- paste0(msg, "       sex:  levels = ",
-                          paste(x$sex$levels, collapse = ", "),
-                          "\n")
+            ## Age
+            if (!is.null(x$age))
+                msg <- paste0(msg, "       age:  span = ",
+                              toString(x$age$span, 7),
+                              "\trange = [",
+                              paste(x$age$range, collapse = ", "),
+                              "]",
+                              "\n")
 
-        ## Indicator
-        if (!is.null(x$indicator))
-            msg <- paste0(msg, " indicator:  levels = ",
-                          toString(x$indicator$levels, 50),
-                          "\n")
+            ## Sex
+            if (!is.null(x$sex))
+                msg <- paste0(msg, "       sex:  levels = ",
+                              paste(x$sex$levels, collapse = ", "),
+                              "\n")
 
-        ## Values
-        msg <- paste0(msg, "value_type:  ",
-                      x$value_type,
-                      "\n")
+            ## Indicator
+            if (!is.null(x$indicator))
+                msg <- paste0(msg, " indicator:  levels = ",
+                              toString(x$indicator$levels, 50),
+                              "\n")
 
-        ## Print
-        if (length(msg > 0))
-            msg <- paste0(msg, vsep, "\n")
+            ## Values
+            if (!is.null(x$values)) {
+                msg <- paste0(msg, "value_type:  ",
+                              x$value_type,
+                              "\tlevels = ", toString(x$values$levels, 20),
+                              "\n")
+            } else {
+                msg <- paste0(msg, "value_type:  ",
+                              x$value_type,
+                              "\n")
+            }
+
+            ## Print
+            if (length(msg > 0))
+                msg <- paste0(msg, vsep, "\n")
 
         }
 
         if ("table" %in% print_what) {
 
-        cat(msg, "table:\n", sep = "")
+            cat(msg, "table:\n", sep = "")
             print(x$table)
 
         } else {

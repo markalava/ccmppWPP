@@ -1,7 +1,7 @@
 ###-----------------------------------------------------------------------------
 ### * Helpers
 
-get_life_table_allowed_indicator_values <- function() {
+get_allowed_indicator_categories_life_table <- function() {
     c("lt_nMx", "lt_nAx", "lt_nqx", "lt_lx", "lt_ndx", "lt_nLx",
       "lt_Sx", "lt_Tx", "lt_ex")
     }

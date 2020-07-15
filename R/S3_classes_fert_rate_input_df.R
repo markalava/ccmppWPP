@@ -1,3 +1,5 @@
+###-----------------------------------------------------------------------------
+### * Helpers
 
 ## Not for export
 validate_non_zero_fert_ages <- function(x, ages, age_span = NULL) {
@@ -17,6 +19,23 @@ guess_non_zero_fert_ages <- function(x, digits = 9, age_span = attr(x, "age_span
     else return(ages)
 }
 
+print_non_zero_fert_ages <- function(nzfa, width = 20) {
+    nzfa_paste <- paste(nzfa, collapse = ", ")
+    if (nchar(nzfa_paste) <= width)
+        return(nzfa_paste)
+
+    nzfa_hlf_len <- floor(length(nzfa) * 0.5)
+    avail_width <- width - 5 #for ' ... ' in middle
+    avail_width_hlf_len <- floor(avail_width * 0.5)
+
+    return(paste0(substr(nzfa_paste, 1, avail_width_hlf_len),
+          " ... ",
+          substr(nzfa_paste, nchar(nzfa_paste) - avail_width_hlf_len + 1,
+                 nchar(nzfa_paste))))
+}
+
+###-----------------------------------------------------------------------------
+### * Constructors, etc.
 
 #' Low-level constructor for class \code{fert_rate_input_df}.
 #'

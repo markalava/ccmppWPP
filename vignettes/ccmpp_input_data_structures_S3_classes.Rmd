@@ -399,78 +399,7 @@ is_ccmpp_input_df(demog_change_example_df) #inheritance does not go backwards
 is_ccmpp_input_df(ccmpp_input_example_df) 
 ```
 
-
-# Methods
-
-## Existing *R* Generic Functions
-
-The following *methods* are provided for *R*'s existing generic functions.
-
-
-### Subsetting
-
-If an object inheriting from the `demog_change_component_df` class is subsetted using any of "`[`" , "`$`", "`[[`" the result looses the class. A warning will be issued if used interactively:
-
-```{r subsetting-vrdf-1-col}
-## Extract one column:
-z <- demog_change_example_df[, "age_start"]
-class(z)
-```
-
-```{r subsetting-vrdf-data-frame}
-## Extract a sub-data frame
-z <- demog_change_example_df[demog_change_example_df$time_start == 1950, ]
-class(z)
-```
-
-The warning is only issued if "`[`" (or "`$`", or "`[[`") are called at the top level. E.g.,
-
-```{r subsetting-vrdf-via-subset}
-## Same effect as `[` above but no warning
-z <- subset(demog_change_example_df, time_start == 1950)
-class(z)
-```
-
-To create a valid subset, re-make the object as a member of the class (`suppressWarnings()` is optional):
-
-```{r subset-vrdf-remake}
-z <-
-    demog_change_component_df(
-        suppressWarnings(
-            demog_change_example_df[demog_change_example_df$time_start == 1950, ]),
-        age_span = attr(demog_change_example_df, "age_span"),
-        time_span = attr(demog_change_example_df, "time_span"))
-class(z)
-```
-
-Alternatively, one of the special subset functions could be used (see Section \@ref(new-subset-functions)).
-
-
-### Subset-Replacing
-
-If a column in an object inheriting from `demog_change_component_df` is replaced using any of "`[<-`" , "`$<-`", "`[[<-`" the class will, again, be dropped.
-
-```{r replacement-vrdf}
-z <- demog_change_example_df
-z[, "age_start"] <- z$age_start
-class(z)
-```
-
-
-### Combining
-
-Combining objects inheriting from `demog_change_component_df` via `base::rbind` will also cause the class to be dropped. As above, pass the result back to the relevant constructor function to create a new classed object after the bind.
-
-
-### Coversion to Data Frames
-
-A method has been written for `base::as.data.frame` that also ensures the class is dropped. 
-
-```{r}
-z <- as.data.frame(demog_change_example_df)
-class(z)
-```
-
+## Object Visualization
 
 ### `print`
 
@@ -514,9 +443,119 @@ summary(demog_change_example_df)
 ```
 
 
-## New Generic Functions
+# Using and Manipulating Objects
 
-### Subsetting {#new-subset-functions}
+## Object Queries
+
+Utility functions are provided for querying various attributes and characteristics of objects inheriting from `demog_change_component_df`.
+
+
+### Dimensions Present
+
+To get the names of the dimensions of an object use `demog_change_component_dimensions`^[This name is probably too long.] 
+
+```{r}
+demog_change_component_dimensions(demog_change_example_df)
+```
+
+Each dimension also has an associated "`is_by_[dim]`" function to test whether "`[dim]`" is present:
+
+```{r}
+is_by_age(demog_change_example_df)
+is_by_indicator(demog_change_example_df)
+```
+
+
+### Dimension Values
+
+To get the values of specific dimensions functions named for the dimensions are provided, e.g., `ages`, `times`. These return the unique values of the requested dimension.
+
+```{r}
+ages(demog_change_example_df)
+
+## NOT RUN:
+## indicators(demog_change_example_df)
+## Error in indicators.demog_change_component_df(demog_change_example_df) : 
+##   'indicator' is not a dimension of 'x'.
+```
+
+
+### Other Attributes
+
+Functions `value_type`, `age_span`, `time_span`, `non_zero_fert_ages` are also available to access those attributes for classes that have them. 
+
+
+## Methods for Standard Generic Functions
+
+The following *methods* are provided for *R*'s existing generic functions.
+
+
+### Subsetting ###
+
+If an object inheriting from the `demog_change_component_df` class is subsetted using any of "`[`" , "`$`", "`[[`" the result looses the class. A warning will be issued if used interactively:
+
+```{r subsetting-vrdf-1-col}
+## Extract one column:
+z <- demog_change_example_df[, "age_start"]
+class(z)
+```
+
+```{r subsetting-vrdf-data-frame}
+## Extract a sub-data frame
+z <- demog_change_example_df[demog_change_example_df$time_start == 1950, ]
+class(z)
+```
+
+The warning is only issued if "`[`" (or "`$`", or "`[[`") are called at the top level. E.g.,
+
+```{r subsetting-vrdf-via-subset}
+## Same effect as `[` above but no warning
+z <- subset(demog_change_example_df, time_start == 1950)
+class(z)
+```
+
+To create a valid subset, re-make the object as a member of the class (`suppressWarnings()` is optional):
+
+```{r subset-vrdf-remake}
+z <-
+    demog_change_component_df(
+        suppressWarnings(
+            demog_change_example_df[demog_change_example_df$time_start == 1950, ]),
+        age_span = attr(demog_change_example_df, "age_span"),
+        time_span = attr(demog_change_example_df, "time_span"))
+class(z)
+```
+
+Alternatively, one of the special subset functions could be used (see Section \@ref(new-subset-functions)).
+
+
+### Subset-Replacing ###
+
+If a column in an object inheriting from `demog_change_component_df` is replaced using any of "`[<-`" , "`$<-`", "`[[<-`" the class will, again, be dropped.
+
+```{r replacement-vrdf}
+z <- demog_change_example_df
+z[, "age_start"] <- z$age_start
+class(z)
+```
+
+
+### Combining ###
+
+Combining objects inheriting from `demog_change_component_df` via `base::rbind` will also cause the class to be dropped. As above, pass the result back to the relevant constructor function to create a new classed object after the bind.
+
+
+### Coercion to Data Frames ###
+
+A method has been written for `base::as.data.frame` that also ensures the class is dropped. 
+
+```{r}
+z <- as.data.frame(demog_change_example_df)
+class(z)
+```
+
+
+### New Utility Functions for Subsetting {#new-subset-functions}
 
 New functions are provided to subset objects inheriting from `demog_change_component_df` by one or more of their dimensions, and return an object that still inherits from the class. They are named systematically as follows `subset_[dimension]`, where "`[dimension]`" is one of the valid dimensions. The first argument is the object to subset, the second is a vector giving the values of the dimension to be retained in the subset. For example, to subset on time use `subset_time`:
 
@@ -541,9 +580,10 @@ summary(x)
 A subset that is not a valid class object will not be created and an error will be signalled:
 
 ```{r}
-x <- subset_age(ccmpp_input_example_df, age = 5)
-class(x)
-summary(x)
+## NOT RUN:
+## x <- subset_age(ccmpp_input_example_df, age = 5)
+## Error in validate_ccmpp_object.ccmpp_input_df(new_ccmpp_input_df(li$df,  : 
+##   'age_start' does not start at '0' for each time * sex combination.
 ```
 
 

@@ -51,29 +51,42 @@ demog_change_component_dimensions.demog_change_component_df <- function(x) {
 }
 
 
-#' Extract specific attributes
+#' Extract specific components
 #'
-#' These functions extract specific attributes of
-#' \code{demog_change_component_df}s. Methods for other classes are not defined.
+#' These functions extract specific components (attributes, factor
+#' levels, values, etc.) from objects inheriting from
+#' \code{demog_change_component_df}s. In general they return the
+#' \emph{\dQuote{levels}} of the component, not the whole column from the data
+#' frame; see \dQuote{Details} for an important exception.
+#'
+#' All functions will attempt to return the unique values, or
+#' \dQuote{levels}, of the component being extracted. If the whole
+#' column is required use the usual subsetting functions such as
+#' \code{\link{base::[}}.
+#'
+#' An important exception is that \code{values} will return the whole
+#' column if \code{\link{value_type}} does not return
+#' \code{"categorical"}.
 #'
 #' @param x An object from which to extract attributes.
-#' @return The extracted attribute.
+#' @return The \dQuote{levels} of the extracted component
+#'     (except possibly for \code{values}; see \dQuote{Details}).
 #' @author Mark Wheldon
 #' @name extract_demog_change_component_attributes
 NULL
 
 #' @rdname extract_demog_change_component_attributes
 #' @export
-age_span <- function(x) {
-    UseMethod("age_span")
+values <- function(x) {
+    UseMethod("values")
 }
 
 #' @rdname extract_demog_change_component_attributes
 #' @export
-age_span.demog_change_component_df <- function(x) {
-    if (!is_by_age(x))
-        stop("'age' is not a dimension of 'x'.")
-    attr(x, "age_span")
+values.demog_change_component_df <- function(x) {
+    if (identical(value_type(x), "categorical"))
+        levels(factor(x$value))
+    else x$value
 }
 
 #' @rdname extract_demog_change_component_attributes
@@ -88,20 +101,6 @@ ages.demog_change_component_df <- function(x) {
     if (!is_by_age(x))
         stop("'age' is not a dimension of 'x'.")
     unique(x$age_start)
-}
-
-#' @rdname extract_demog_change_component_attributes
-#' @export
-time_span <- function(x) {
-    UseMethod("time_span")
-}
-
-#' @rdname extract_demog_change_component_attributes
-#' @export
-time_span.demog_change_component_df <- function(x) {
-    if (!is_by_time(x))
-        stop("'time' is not a dimension of 'x'.")
-    attr(x, "time_span")
 }
 
 #' @rdname extract_demog_change_component_attributes
@@ -183,21 +182,18 @@ non_zero_fert_ages.fert_rate_input_df <- function(x) {
 #' @name test_demog_change_component_dimensions
 NULL
 
-#' @author Mark Wheldon
 #' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_time <- function(x) {
     UseMethod("is_by_time")
 }
 
-#' @author Mark Wheldon
 #' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_time.demog_change_component_df <- function(x) {
     isTRUE("time" %in% demog_change_component_dimensions(x))
     }
 
-#' @author Mark Wheldon
 #' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_time.data.frame <- function(x) {
@@ -205,21 +201,18 @@ is_by_time.data.frame <- function(x) {
     isTRUE(time_col_name %in% colnames(x))
     }
 
-#' @author Mark Wheldon
 #' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_age <- function(x) {
     UseMethod("is_by_age")
 }
 
-#' @author Mark Wheldon
 #' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_age.demog_change_component_df <- function(x) {
     isTRUE("age" %in% demog_change_component_dimensions(x))
 }
 
-#' @author Mark Wheldon
 #' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_age.data.frame <- function(x) {
@@ -227,21 +220,18 @@ is_by_age.data.frame <- function(x) {
     isTRUE(age_col_name %in% colnames(x))
     }
 
-#' @author Mark Wheldon
 #' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_sex <- function(x) {
     UseMethod("is_by_sex")
 }
 
-#' @author Mark Wheldon
 #' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_sex.demog_change_component_df <- function(x) {
     isTRUE("sex" %in% demog_change_component_dimensions(x))
     }
 
-#' @author Mark Wheldon
 #' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_sex.data.frame <- function(x) {
@@ -250,21 +240,18 @@ is_by_sex.data.frame <- function(x) {
            length(unique(x[[sex_col_name]]) > 1))
     }
 
-#' @author Mark Wheldon
 #' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_indicator <- function(x) {
     UseMethod("is_by_indicator")
 }
 
-#' @author Mark Wheldon
 #' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_indicator.demog_change_component_df <- function(x) {
     isTRUE("indicator" %in% demog_change_component_dimensions(x))
     }
 
-#' @author Mark Wheldon
 #' @rdname test_demog_change_component_dimensions
 #' @export
 is_by_indicator.data.frame <- function(x) {

@@ -289,6 +289,10 @@ validate_ccmpp_object.survival_ratio_input_df <- function(x, ...) {
     ## Check dimensions
     check_dimensions_for_ccmpp_input_df(x)
 
+    ## Must have 'male' and 'female'
+    if (!all(c("male", "female") %in% sexes(x)))
+        stop("'x' must have data on both 'male' and 'female'.")
+
     return(x)
 }
 
@@ -313,6 +317,10 @@ validate_ccmpp_object.pop_count_base_input_df <- function(x, ...) {
     if (!identical(length(unique(x$time_start)), 1L))
         stop("'x$time_start' has more than one unique value; 'pop_count_base_input_df' objects can only refer to a single time period.")
     }
+
+    ## Must have 'male' and 'female'
+    if (!all(c("male", "female") %in% sexes(x)))
+        stop("'x' must have data on both 'male' and 'female'.")
 
     return(x)
 }
@@ -352,6 +360,10 @@ validate_ccmpp_object.mig_net_rate_input_df <- function(x, ...) {
      ## Check dimensions
     check_dimensions_for_ccmpp_input_df(x)
 
+    ## Must have 'male' and 'female'
+    if (!all(c("male", "female") %in% sexes(x)))
+        stop("'x' must have data on both 'male' and 'female'.")
+
     return(x)
 }
 
@@ -371,6 +383,10 @@ validate_ccmpp_object.mig_net_count_input_df <- function(x, ...) {
      ## Check dimensions
     check_dimensions_for_ccmpp_input_df(x)
 
+    ## Must have 'male' and 'female'
+    if (!all(c("male", "female") %in% sexes(x)))
+        stop("'x' must have data on both 'male' and 'female'.")
+
     return(x)
 }
 
@@ -389,6 +405,127 @@ validate_ccmpp_object.mig_net_count_tot_input_df <- function(x, ...) {
 
      ## Check dimensions
     check_dimensions_for_ccmpp_input_df(x)
+
+    ## Check 'sex'
+    if (is_by_sex(x)) {
+        if (!identical("both", sexes(x)))
+            stop("'x' must have data only on 'both' sexes.")
+    }
+
+    return(x)
+}
+
+
+#' @rdname validate_ccmpp_object
+#' @export
+validate_ccmpp_object.mig_parameter_input_df <- function(x, ...) {
+
+    ## Base checks
+    x <- NextMethod()
+
+    ## value_type
+    val_type <- get_value_types_for_classes("mig_parameter_input_df")
+    if (!identical(value_type(x), val_type))
+        stop("'value_type' must be \"", val_type, "\".")
+
+     ## Check dimensions
+    check_dimensions_for_ccmpp_input_df(x)
+
+    ## Allowed indicator and value categories
+    if (!all(indicators(x) %in% get_allowed_indicator_categories_mig_parameter()))
+        stop("The only values allowed in the 'indicator' column are: '",
+             paste(get_allowed_indicator_categories_mig_parameter(),
+                   collapse = ", "),
+             "'. 'x' has '",
+             toString(unique(x$indicator), 240),
+             "'.")
+    if (!all(values(x) %in% get_allowed_value_categories_mig_parameter()))
+        stop("The only values allowed in the 'value' column are: '",
+             paste(get_allowed_value_categories_mig_parameter(),
+                   collapse = ", "),
+             "'. 'x' has '",
+             toString(unique(x$value), 240),
+             "'.")
+
+    return(x)
+}
+
+
+#' @rdname validate_ccmpp_object
+#' @export
+validate_ccmpp_object.life_table_input_df <- function(x, ...) {
+
+    ## Base checks
+    x <- NextMethod()
+
+    ## value_type
+    val_type <- get_value_types_for_classes("life_table_input_df")
+    if (!identical(value_type(x), val_type))
+        stop("'value_type' must be \"", val_type, "\".")
+
+     ## Check dimensions
+    check_dimensions_for_ccmpp_input_df(x)
+
+    ## Allowed indicator and value categories
+    if (!all(indicators(x) %in% get_allowed_indicator_categories_life_table()))
+        stop("The only values allowed in the 'indicator' column are: '",
+             paste(get_allowed_indicator_categories_mig_parameter(),
+                   collapse = ", "),
+             "'. 'x' has '",
+             toString(unique(x$indicator), 240),
+             "'.")
+
+    ## Must have 'male' and 'female'
+    if (!all(c("male", "female") %in% sexes(x)))
+        stop("'x' must have data on both 'male' and 'female'.")
+
+    return(x)
+}
+
+
+#' @rdname validate_ccmpp_object
+#' @export
+validate_ccmpp_object.ccmpp_input_list <- function(x, ...) {
+
+    req_el_names <- get_all_required_ccmpp_input_list_element_names()
+
+    if (!identical(sort(names(x)),
+                   sort(req_el_names)))
+        stop("'x' must have these elements (no more): ",
+             paste(req_el_names,
+                   collapse = ", "))
+
+    ## Check elements
+    age_spans_dfs <- c()
+    time_spans_dfs <- c()
+    for (df_nm in req_el_names) {
+        ## Validate objects
+        test <- tryCatch(validate_ccmpp_object(x[[df_nm]]))
+        if (identical(class(test), "try-error"))
+            stop(df_nm, ":\n", strsplit(c(test), " : ")[[1]][2])
+
+        if (is_by_age(x[[df_nm]]))
+            age_spans_dfs <-
+                c(age_spans_dfs, setNames(age_span(x[[df_nm]]), df_nm))
+        if (is_by_time(x[[df_nm]]))
+            time_spans_dfs <-
+                c(time_spans_dfs, setNames(time_span(x[[df_nm]]), df_nm))
+    }
+
+    ## Check age and time spans are identical and scalar
+    if (!identical(length(unique(age_spans_dfs)), 1L)) {
+        print(age_spans_df)
+        stop("All 'age_span's must be equal among elements of 'x'. Actual 'age_span's are printed above.")
+    }
+    if (!identical(length(unique(time_spans_dfs)), 1L)) {
+        print(time_spans_df)
+        stop("All 'time_span's must be equal among elements of 'x'. Actual 'time_span's are printed above.")
+    }
+    if (!identical(time_spans_dfs[1], age_spans_dfs[1])) {
+        print(time_spans_df)
+        print(age_spans_df)
+        stop("'time_span' must equal 'age_span'. Actual 'time_span' and 'age_span' are printed above.")
+    }
 
     return(x)
 }

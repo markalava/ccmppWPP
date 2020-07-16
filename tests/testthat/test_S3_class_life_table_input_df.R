@@ -31,4 +31,4 @@ test_that("Value categories enforced", {
     x[x$indicator == "lt_ex", "indicator"] <- "foo"
     expect_error(life_table_input_df(x),
                  "only values allowed in the 'indicator' column")
-}
+})

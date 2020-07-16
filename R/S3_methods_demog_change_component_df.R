@@ -147,9 +147,12 @@ as.data.frame.demog_change_component_df <- function(x, ...) {
                 oldClass(x)[1],
                 "' and will not have any attributes specific to that class.")
     }
-        x <- NextMethod()
-        if (is_demog_change_component_df(x))
-            oldClass(x) <- strip_demog_change_component_df_classes_attribute(oldClass(x))
+    x <- NextMethod()
+    if (is_demog_change_component_df(x))
+        oldClass(x) <- strip_demog_change_component_df_classes_attribute(oldClass(x))
+    for (a in get_all_allowed_attributes()) {
+        attr(x, a) <- NULL
+    }
         return(x)
 }
 
@@ -300,7 +303,7 @@ summary.demog_change_component_df <-
         if (is_by_time(object)) {
             time <- list(range = c("time_start" = min(object$time_start),
                                    "time_end" = max(object$time_start)),
-                         span = time_span(object))
+                         span = if ("time_span" %in% names(attributes(object))) { time_span(object) } else NULL)
         } else {
             time <- NULL
         }
@@ -309,7 +312,7 @@ summary.demog_change_component_df <-
         if (is_by_age(object)) {
             age <- list(range = c("age_start" = min(object$age_start),
                                   "age_end" = max(object$age_start)),
-                        span = age_span(object))
+                        span = if ("age_span" %in% names(attributes(object))) { age_span(object) } else NULL)
         } else {
             age <- NULL
         }
@@ -380,21 +383,25 @@ print.summary_demog_change_component_df <-
 
             ## Time
             if (!is.null(x$time))
-                msg <- paste0(msg, "      time:  span = ",
-                              toString(x$time$span, 7),
-                              "\trange = [",
+                msg <- paste0(msg, "      time:  range = [",
                               paste(x$time$range, collapse = ", "),
-                              "]",
-                              "\n")
+                              "]")
+            if (!is.null(x$time$span))
+                msg <- paste0(msg,
+                              "\tspan = ",
+                              toString(x$time$span, 7))
+            msg <- paste0(msg, "\n")
 
             ## Age
             if (!is.null(x$age))
-                msg <- paste0(msg, "       age:  span = ",
-                              toString(x$age$span, 7),
-                              "\trange = [",
+                msg <- paste0(msg, "       age:  range = [",
                               paste(x$age$range, collapse = ", "),
-                              "]",
-                              "\n")
+                              "]")
+            if (!is.null(x$age$span))
+                msg <- paste0(msg,
+                              "\tspan = ",
+                              toString(x$age$span, 7))
+            msg <- paste0(msg, "\n")
 
             ## Sex
             if (!is.null(x$sex))

@@ -17,7 +17,7 @@
 #' @author Mark Wheldon
 #' @export
 print.ccmpp_input_list <-
-    function(x, ..., vsep, n = min(6L, nrow(x)), digits = NULL,
+    function(x, ..., vsep, n = 6L, digits = NULL,
              quote = FALSE, right = TRUE, row.names = FALSE,
              print_what = c("info", "table")) {
 
@@ -26,7 +26,7 @@ print.ccmpp_input_list <-
 
         for (df_nm in names(x)) {
             cat("\n$", df_nm, "\n", vsep, "\n", sep = "")
-            print(x[[df_nm]], ..., n = n, digits = digits,
+            print(x[[df_nm]], ..., n = min(n, nrow(x[[df_nm]])), digits = digits,
                   quote = quote, right = right, row.names = row.names,
                   print_what = print_what)
         }
@@ -94,4 +94,41 @@ summary.ccmpp_input_list <-
         cat(msg, "table:\n", sep = "")
 
         NextMethod()
-        }
+    }
+
+###-----------------------------------------------------------------------------
+### * Coercion
+
+## Coercion removes the class and all attributes.
+
+#' Coerce a \code{ccmpp_input_list} to a plain list.
+#'
+#' The result will have \code{\link{class}} \code{list} and
+#' class-specific attributes, such as \dQuote{age_span}, will be
+#' dropped. Neither the classes nor the class-specific attributes of
+#' the component data frames, all of which  inherit from
+#' \code{\link{ccmpp_inut_df}}, will be dropped (see
+#' \code{\link{as.data.frame.ccmpp_input_df}} if you want to do that).
+#'
+#' @seealso \code{\link{as.data.frame.ccmpp_input_df}} to drop classes
+#'     and attributes of component data frames,
+#'     \code{\link{ccmpp_input_list}} to create objects of class \code{ccmpp_input_list}
+#'
+#' @param x An object of class \code{ccmpp_input_list}.
+#' @return A list with special attributes dropped.
+#' @author Mark Wheldon
+#' @export
+as.list.ccmpp_input_list <- function(x, ...) {
+    if (identical(parent.frame(), .GlobalEnv)) {
+        warning("The result of the coercion will not inherit from class '",
+                oldClass(x)[1],
+                "' and will not have any attributes specific to that class.")
+    }
+    x <- NextMethod()
+    if (is_ccmpp_input_list(x))
+        oldClass(x) <- strip_ccmpp_input_list_classes_attribute(oldClass(x))
+    for (a in get_all_allowed_attributes()) {
+        attr(x, a) <- NULL
+    }
+        return(x)
+}

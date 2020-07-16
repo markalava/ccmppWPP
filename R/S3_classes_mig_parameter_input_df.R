@@ -79,6 +79,7 @@ mig_parameter_input_df <-
 #' \code{mig_parameter_input_df} if possible, or check if it is
 #' one.
 #'
+#' @family ccmpp_input_objects
 #' @seealso \code{\link{coerce_demog_change_component_df}} for an important note on validation.
 #'
 #' @inheritParams coerce_demog_change_component_df
@@ -132,7 +133,7 @@ is_mig_parameter_input_df <- function(x) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_time.mig_parameter_input_df <- function(x, time, drop = FALSE) {
+subset_time.mig_parameter_input_df <- function(x, times, drop = FALSE) {
 
     x <- NextMethod()
     return(mig_parameter_input_df(x))

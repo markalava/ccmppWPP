@@ -76,6 +76,7 @@ life_table_input_df <-
 #' \code{life_table_input_df} if possible, or check if it is
 #' one.
 #'
+#' @family ccmpp_input_objects
 #' @seealso \code{\link{coerce_demog_change_component_df}} for an
 #'     important note on validation.
 #'
@@ -128,7 +129,7 @@ is_life_table_input_df <- function(x) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_indicator.life_table_input_df <- function(x, indicator, drop = FALSE) {
+subset_indicator.life_table_input_df <- function(x, indicators, drop = FALSE) {
 
     x <- NextMethod()
     return(life_table_input_df(x))
@@ -136,7 +137,7 @@ subset_indicator.life_table_input_df <- function(x, indicator, drop = FALSE) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_time.life_table_input_df <- function(x, time, drop = FALSE) {
+subset_time.life_table_input_df <- function(x, times, drop = FALSE) {
 
     x <- NextMethod()
     return(life_table_input_df(x))
@@ -144,7 +145,7 @@ subset_time.life_table_input_df <- function(x, time, drop = FALSE) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_age.life_table_input_df <- function(x, age, drop = FALSE) {
+subset_age.life_table_input_df <- function(x, ages, drop = FALSE) {
 
     x <- NextMethod()
     return(life_table_input_df(x))
@@ -152,7 +153,7 @@ subset_age.life_table_input_df <- function(x, age, drop = FALSE) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_sex.life_table_input_df <- function(x, sex, drop = FALSE) {
+subset_sex.life_table_input_df <- function(x, sexes, drop = FALSE) {
 
     x <- NextMethod()
     return(life_table_input_df(x))

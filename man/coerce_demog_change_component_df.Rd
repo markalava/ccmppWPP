@@ -3,16 +3,22 @@
 \name{coerce_demog_change_component_df}
 \alias{coerce_demog_change_component_df}
 \alias{as_demog_change_component_df}
+\alias{as_demog_change_component_df.default}
 \alias{as_demog_change_component_df.data.frame}
 \alias{as_demog_change_component_df.matrix}
+\alias{as_demog_change_component_df.demog_change_component_df}
 \alias{is_demog_change_component_df}
 \title{Coerce to a \code{demog_change_component_df}}
 \usage{
 as_demog_change_component_df(x, ...)
 
+\method{as_demog_change_component_df}{default}(x, ...)
+
 \method{as_demog_change_component_df}{data.frame}(x, ...)
 
 \method{as_demog_change_component_df}{matrix}(x, ...)
+
+\method{as_demog_change_component_df}{demog_change_component_df}(x, ...)
 
 is_demog_change_component_df(x)
 }
@@ -42,6 +48,32 @@ error. Use \code{demog_change_component_df} on the object to ensure
 validity is checked.
 }
 
+\seealso{
+Other ccmpp_input_objects: 
+\code{\link{ccmpp_input_df}()},
+\code{\link{ccmpp_input_list}()},
+\code{\link{coerce_ccmpp_input_df}},
+\code{\link{coerce_ccmpp_input_list}},
+\code{\link{coerce_fert_rate_input_df}},
+\code{\link{coerce_life_table_input_df}},
+\code{\link{coerce_mig_net_count_input_df}},
+\code{\link{coerce_mig_net_count_tot_input_df}},
+\code{\link{coerce_mig_net_rate_input_df}},
+\code{\link{coerce_mig_parameter_input_df}},
+\code{\link{coerce_pop_count_base_input_df}},
+\code{\link{coerce_srb_input_df}},
+\code{\link{coerce_survival_ratio_input_df}},
+\code{\link{fert_rate_input_df}()},
+\code{\link{life_table_input_df}()},
+\code{\link{mig_net_count_input_df}()},
+\code{\link{mig_net_count_tot_input_df}()},
+\code{\link{mig_net_rate_input_df}()},
+\code{\link{mig_parameter_input_df}()},
+\code{\link{pop_count_base_input_df}()},
+\code{\link{srb_input_df}()},
+\code{\link{survival_ratio_input_df}()}
+}
 \author{
 Mark Wheldon
 }
+\concept{ccmpp_input_objects}

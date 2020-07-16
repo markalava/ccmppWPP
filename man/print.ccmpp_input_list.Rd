@@ -8,7 +8,7 @@
   x,
   ...,
   vsep,
-  n = min(6L, nrow(x)),
+  n = 6L,
   digits = NULL,
   quote = FALSE,
   right = TRUE,

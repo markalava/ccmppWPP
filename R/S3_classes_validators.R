@@ -496,32 +496,35 @@ validate_ccmpp_object.ccmpp_input_list <- function(x, ...) {
                    collapse = ", "))
 
     ## Check elements
-    age_spans_dfs <- c()
-    time_spans_dfs <- c()
+    age_span_attrs <- c()
+    time_span_attrs <- c()
+
     for (df_nm in req_el_names) {
+
         ## Validate objects
         test <- tryCatch(validate_ccmpp_object(x[[df_nm]]))
         if (identical(class(test), "try-error"))
             stop(df_nm, ":\n", strsplit(c(test), " : ")[[1]][2])
 
+        ## Store 'spans'
         if (is_by_age(x[[df_nm]]))
-            age_spans_dfs <-
-                c(age_spans_dfs, setNames(age_span(x[[df_nm]]), df_nm))
+            age_span_attrs <-
+                c(age_span_attrs, setNames(age_span(x[[df_nm]]), df_nm))
         if (is_by_time(x[[df_nm]]))
-            time_spans_dfs <-
-                c(time_spans_dfs, setNames(time_span(x[[df_nm]]), df_nm))
+            time_span_attrs <-
+                c(time_span_attrs, setNames(time_span(x[[df_nm]]), df_nm))
     }
 
     ## Check age and time spans are identical and scalar
-    if (!identical(length(unique(age_spans_dfs)), 1L)) {
+    if (!identical(length(unique(age_span_attrs)), 1L)) {
         print(age_spans_df)
         stop("All 'age_span's must be equal among elements of 'x'. Actual 'age_span's are printed above.")
     }
-    if (!identical(length(unique(time_spans_dfs)), 1L)) {
+    if (!identical(length(unique(time_span_attrs)), 1L)) {
         print(time_spans_df)
         stop("All 'time_span's must be equal among elements of 'x'. Actual 'time_span's are printed above.")
     }
-    if (!identical(time_spans_dfs[1], age_spans_dfs[1])) {
+    if (!identical(time_span_attrs[1], age_span_attrs[1])) {
         print(time_spans_df)
         print(age_spans_df)
         stop("'time_span' must equal 'age_span'. Actual 'time_span' and 'age_span' are printed above.")

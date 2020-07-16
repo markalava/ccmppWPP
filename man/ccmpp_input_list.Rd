@@ -15,15 +15,49 @@ ccmpp_input_list(
   mig_parameter_input_df
 )
 }
+\arguments{
+\item{pop_count_base_input_df}{An object of class \code{\link{pop_count_base_input_df}}}
+
+\item{life_table_input_df}{An object of class \code{\link{life_table_input_df}}}
+
+\item{fert_rate_input_df}{An object of class \code{\link{fert_rate_input_df}}}
+
+\item{srb_input_df}{An object of class \code{\link{srb_input_df}}}
+
+\item{mig_net_count_input_df}{An object of class \code{\link{mig_net_count_input_df}}}
+
+\item{mig_net_rate_input_df}{An object of class \code{\link{mig_net_rate_input_df}}}
+
+\item{mig_net_count_tot_input_df}{An object of class \code{\link{mig_net_count_tot_input_df}}}
+
+\item{mig_parameter_input_df}{An object of class \code{\link{mig_parameter_input_df}}}
+}
 \value{
 An object of class \code{ccmpp_input_list}.
 }
 \description{
-**TBC**
+This function creates objects of class \code{ccmpp_input_list}. It
+takes as arguments a set of objects inheriting from
+\code{\link{ccmpp_input_df}}.
 }
 \seealso{
+\code{\link{as_ccmpp_input_list.list}} for creating
+    \code{ccmpp_input_list}s lists.
+
 Other ccmpp_input_objects: 
 \code{\link{ccmpp_input_df}()},
+\code{\link{coerce_ccmpp_input_df}},
+\code{\link{coerce_ccmpp_input_list}},
+\code{\link{coerce_demog_change_component_df}},
+\code{\link{coerce_fert_rate_input_df}},
+\code{\link{coerce_life_table_input_df}},
+\code{\link{coerce_mig_net_count_input_df}},
+\code{\link{coerce_mig_net_count_tot_input_df}},
+\code{\link{coerce_mig_net_rate_input_df}},
+\code{\link{coerce_mig_parameter_input_df}},
+\code{\link{coerce_pop_count_base_input_df}},
+\code{\link{coerce_srb_input_df}},
+\code{\link{coerce_survival_ratio_input_df}},
 \code{\link{fert_rate_input_df}()},
 \code{\link{life_table_input_df}()},
 \code{\link{mig_net_count_input_df}()},

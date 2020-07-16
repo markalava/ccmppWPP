@@ -3,54 +3,54 @@
 \name{ccmpp_list_access_elements}
 \alias{ccmpp_list_access_elements}
 \alias{pop_count_base_component}
-\alias{pop_count_base_component.ccmpp_input_list}
+\alias{pop_count_base_component.list}
 \alias{life_table_component}
-\alias{life_table_component.ccmpp_input_list}
+\alias{life_table_component.list}
 \alias{fert_rate_component}
-\alias{fert_rate_component.ccmpp_input_list}
+\alias{fert_rate_component.list}
 \alias{srb_component}
-\alias{srb_component.ccmpp_input_list}
+\alias{srb_component.list}
 \alias{mig_net_count_component}
-\alias{mig_net_count_component.ccmpp_input_list}
+\alias{mig_net_count_component.list}
 \alias{mig_net_rate_component}
-\alias{mig_net_rate_component.ccmpp_input_list}
+\alias{mig_net_rate_component.list}
 \alias{mig_net_count_tot_component}
-\alias{mig_net_count_tot_component.ccmpp_input_list}
+\alias{mig_net_count_tot_component.list}
 \alias{mig_parameter_component}
-\alias{mig_parameter_component.ccmpp_input_list}
-\title{Access the data frame elements of a \code{ccmpp_input_list}}
+\alias{mig_parameter_component.list}
+\title{Access the \code{ccmpp_input_df} components of a list}
 \usage{
 pop_count_base_component(x)
 
-\method{pop_count_base_component}{ccmpp_input_list}(x)
+\method{pop_count_base_component}{list}(x)
 
 life_table_component(x)
 
-\method{life_table_component}{ccmpp_input_list}(x)
+\method{life_table_component}{list}(x)
 
 fert_rate_component(x)
 
-\method{fert_rate_component}{ccmpp_input_list}(x)
+\method{fert_rate_component}{list}(x)
 
 srb_component(x)
 
-\method{srb_component}{ccmpp_input_list}(x)
+\method{srb_component}{list}(x)
 
 mig_net_count_component(x)
 
-\method{mig_net_count_component}{ccmpp_input_list}(x)
+\method{mig_net_count_component}{list}(x)
 
 mig_net_rate_component(x)
 
-\method{mig_net_rate_component}{ccmpp_input_list}(x)
+\method{mig_net_rate_component}{list}(x)
 
 mig_net_count_tot_component(x)
 
-\method{mig_net_count_tot_component}{ccmpp_input_list}(x)
+\method{mig_net_count_tot_component}{list}(x)
 
 mig_parameter_component(x)
 
-\method{mig_parameter_component}{ccmpp_input_list}(x)
+\method{mig_parameter_component}{list}(x)
 }
 \arguments{
 \item{x}{An object of class \code{ccmpp_input_list}}
@@ -60,7 +60,7 @@ An object inheriting from \code{ccmpp_input_df}.
 }
 \description{
 These functions extract the \code{ccmpp_input_df} elements from an object
-inheriting from \code{ccmpp_input_list}.
+inheriting from \code{list}.
 }
 \author{
 Mark Wheldon

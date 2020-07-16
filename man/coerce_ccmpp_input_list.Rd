@@ -29,13 +29,39 @@ A coerced object in the case of the \code{as_...}
     functions; a logical for the \code{is_...} functions.
 }
 \description{
-These functions coerce an object to a
-\code{ccmpp_input_list} if possible, or check if it is
-one.
+These functions coerce an object to a \code{ccmpp_input_list} if
+possible, or check if it is one. The list method requires that the
+\code{names} of the single argument match the arguments to
+\code{link{ccmpp_input_list}}.
 }
 \seealso{
 \code{\link{coerce_demog_change_component_df}} for an important note on validation.
+
+Other ccmpp_input_objects: 
+\code{\link{ccmpp_input_df}()},
+\code{\link{ccmpp_input_list}()},
+\code{\link{coerce_ccmpp_input_df}},
+\code{\link{coerce_demog_change_component_df}},
+\code{\link{coerce_fert_rate_input_df}},
+\code{\link{coerce_life_table_input_df}},
+\code{\link{coerce_mig_net_count_input_df}},
+\code{\link{coerce_mig_net_count_tot_input_df}},
+\code{\link{coerce_mig_net_rate_input_df}},
+\code{\link{coerce_mig_parameter_input_df}},
+\code{\link{coerce_pop_count_base_input_df}},
+\code{\link{coerce_srb_input_df}},
+\code{\link{coerce_survival_ratio_input_df}},
+\code{\link{fert_rate_input_df}()},
+\code{\link{life_table_input_df}()},
+\code{\link{mig_net_count_input_df}()},
+\code{\link{mig_net_count_tot_input_df}()},
+\code{\link{mig_net_rate_input_df}()},
+\code{\link{mig_parameter_input_df}()},
+\code{\link{pop_count_base_input_df}()},
+\code{\link{srb_input_df}()},
+\code{\link{survival_ratio_input_df}()}
 }
 \author{
 Mark Wheldon
 }
+\concept{ccmpp_input_objects}

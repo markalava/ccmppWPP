@@ -73,6 +73,7 @@ demog_change_component_dimensions.demog_change_component_df <- function(x) {
 #'     (except possibly for \code{values}; see \dQuote{Details}).
 #' @author Mark Wheldon
 #' @name extract_demog_change_component_attributes
+#' @family extract_attributes
 NULL
 
 #' @rdname extract_demog_change_component_attributes

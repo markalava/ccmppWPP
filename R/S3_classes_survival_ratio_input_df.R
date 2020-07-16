@@ -72,6 +72,7 @@ survival_ratio_input_df <-
 #' \code{survival_ratio_input_df} if possible, or check if it is
 #' one.
 #'
+#' @family ccmpp_input_objects
 #' @seealso \code{\link{coerce_demog_change_component_df}} for an important note on validation.
 #'
 #' @inheritParams coerce_demog_change_component_df
@@ -124,7 +125,7 @@ is_survival_ratio_input_df <- function(x) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_time.survival_ratio_input_df <- function(x, time, drop = FALSE) {
+subset_time.survival_ratio_input_df <- function(x, times, drop = FALSE) {
 
     x <- NextMethod()
     return(survival_ratio_input_df(x))
@@ -132,7 +133,7 @@ subset_time.survival_ratio_input_df <- function(x, time, drop = FALSE) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_age.survival_ratio_input_df <- function(x, age, drop = FALSE) {
+subset_age.survival_ratio_input_df <- function(x, ages, drop = FALSE) {
 
     x <- NextMethod()
     return(survival_ratio_input_df(x))
@@ -140,7 +141,7 @@ subset_age.survival_ratio_input_df <- function(x, age, drop = FALSE) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_sex.survival_ratio_input_df <- function(x, sex, drop = FALSE) {
+subset_sex.survival_ratio_input_df <- function(x, sexes, drop = FALSE) {
 
     x <- NextMethod()
     return(survival_ratio_input_df(x))

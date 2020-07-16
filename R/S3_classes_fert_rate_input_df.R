@@ -19,7 +19,7 @@ guess_non_zero_fert_ages <- function(x, digits = 9, age_span = attr(x, "age_span
     else return(ages)
 }
 
-print_non_zero_fert_ages <- function(nzfa, width = 20) {
+print_non_zero_fert_ages <- function(nzfa, width = 30) {
     nzfa_paste <- paste(nzfa, collapse = ", ")
     if (nchar(nzfa_paste) <= width)
         return(nzfa_paste)
@@ -115,7 +115,7 @@ fert_rate_input_df <-
             }
         } else {
             message("'non_zero_fert_ages' set to '",
-                    toString(non_zero_fert_ages, width = 20))
+                    print_non_zero_fert_ages(non_zero_fert_ages, width = 30))
         }
 
         ## Create/Validate
@@ -134,6 +134,7 @@ fert_rate_input_df <-
 #' \code{fert_rate_input_df} if possible, or check if it is
 #' one.
 #'
+#' @family ccmpp_input_objects
 #' @seealso \code{\link{coerce_demog_change_component_df}} for an important note on validation.
 #'
 #' @inheritParams coerce_demog_change_component_df
@@ -186,7 +187,7 @@ is_fert_rate_input_df <- function(x) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_time.fert_rate_input_df <- function(x, time, drop = FALSE) {
+subset_time.fert_rate_input_df <- function(x, times, drop = FALSE) {
 
     x <- NextMethod()
     return(fert_rate_input_df(x))
@@ -194,7 +195,7 @@ subset_time.fert_rate_input_df <- function(x, time, drop = FALSE) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_age.fert_rate_input_df <- function(x, age, drop = FALSE) {
+subset_age.fert_rate_input_df <- function(x, ages, drop = FALSE) {
 
     x <- NextMethod()
     return(fert_rate_input_df(x))

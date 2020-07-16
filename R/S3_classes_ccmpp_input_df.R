@@ -1,106 +1,3 @@
-###-----------------------------------------------------------------------------
-### * Helpers
-
-get_req_attr_names_for_ccmpp_input_dfs_for_dimensions <- function(dimensions) {
-    out <- get_req_attr_names_for_dimensions(dimensions)
-    for (dim_w_span in get_all_dimensions_w_spans()) {
-        if (dim_w_span %in% dimensions)
-            out <- c(out, paste0(dim_w_span, "_span"))
-    }
-    return(out)
-}
-
-get_dimensions_info_for_ccmpp_input_classes <-
-    function(classes = get_all_demog_change_component_df_class_names()) {
-        db <- list(pop_count_base_input_df =
-                       ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
-                   fert_rate_input_df =
-                       ensure_these_dimensions_correctly_ordered(c("time", "age")),
-                   survival_ratio_input_df =
-                       ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
-                   srb_input_df =
-                       ensure_these_dimensions_correctly_ordered(c("time")),
-                   mig_net_count_input_df =
-                       ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
-                   mig_net_rate_input_df =
-                       ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
-                   mig_net_count_tot_input_df =
-                       ensure_these_dimensions_correctly_ordered(c("time")),
-                   mig_parameter_input_df =
-                       ensure_these_dimensions_correctly_ordered(c("indicator", "time")),
-                   life_table_input_df =
-                       ensure_these_dimensions_correctly_ordered(
-                           c("indicator", "time", "sex", "age")
-                       ))
-        if (identical(length(classes), 1L))
-            return(db[[classes]])
-        else return(db[names(db) %in% classes])
-}
-
-get_req_dimensions_for_ccmpp_input_classes <- function(classes) {
-    get_dimensions_info_for_ccmpp_input_classes(classes)
-}
-
-check_dimensions_for_ccmpp_input_class <- function(class, dimensions) {
-    req_dims <- get_req_dimensions_for_ccmpp_input_classes(class)
-    if (!setequal(dimensions, req_dims))
-        stop("'", class, "' objects must have dimensions 'c(\"",
-             paste(req_dims, collapse = "\", \""), "\")'. This object has dimensions 'c(\"",
-             paste(dimensions, collapse = "\", \""), "\")'.")
-    else
-        return(invisible(dimensions))
-}
-
-check_dimensions_for_ccmpp_input_df <- function(x) {
-    class_x <- oldClass(x)[1]
-    dims_x <-
-        check_dimensions_for_ccmpp_input_class(class = class_x,
-                                           dimensions =
-                                               demog_change_component_dimensions(x))
-    req_dims <- get_req_dimensions_for_ccmpp_input_classes(class_x)
-    dims_from_cols <- guess_dimensions_from_df_cols(x)
-    if (!setequal(dims_x, dims_from_cols)) {
-        offending_col_names <-
-            get_df_col_names_for_dimensions(dimensions = dims_from_cols, spans = FALSE)
-        stop("'", class_x, "' objects must have dimensions 'c(\"",
-             paste(req_dims, collapse = "\", \""), "\")'. This object has columns 'c(\"",
-             paste(offending_col_names, collapse = "\", \""), "\")' that correspond to dimensions 'c(\"",
-             paste(dims_from_cols, collapse = "\", \""), "\")'.")
-    }
-    else
-        return(invisible(x))
-}
-
-###-----------------------------------------------------------------------------
-### * Utilities
-
-#' @rdname extract_demog_change_component_attributes
-#' @export
-age_span <- function(x) {
-    UseMethod("age_span")
-}
-
-#' @rdname extract_demog_change_component_attributes
-#' @export
-age_span.demog_change_component_df <- function(x) {
-    if (!is_by_age(x))
-        stop("'age' is not a dimension of 'x'.")
-    attr(x, "age_span")
-}
-
-#' @rdname extract_demog_change_component_attributes
-#' @export
-time_span <- function(x) {
-    UseMethod("time_span")
-}
-
-#' @rdname extract_demog_change_component_attributes
-#' @export
-time_span.ccmpp_input_df <- function(x) {
-    if (!is_by_time(x))
-        stop("'time' is not a dimension of 'x'.")
-    attr(x, "time_span")
-}
 
 ###-----------------------------------------------------------------------------
 ### * Class constructors
@@ -197,6 +94,7 @@ ccmpp_input_df <-
 #' \code{ccmpp_input_df} if possible, or check if it is
 #' one.
 #'
+#' @family ccmpp_input_objects
 #' @seealso \code{\link{coerce_demog_change_component_df}} for an important note on validation.
 #'
 #' @inheritParams coerce_demog_change_component_df
@@ -243,43 +141,4 @@ as_ccmpp_input_df.ccmpp_input_df <- function(x, ...) {
 #' @export
 is_ccmpp_input_df <- function(x) {
     inherits(x, "ccmpp_input_df")
-}
-
-###-----------------------------------------------------------------------------
-### * Subset
-
-#' @rdname subset_demog_change_component_df
-#' @export
-subset_indicator.ccmpp_input_df <- function(x, indicator, drop = FALSE) {
-
-    x <- NextMethod()
-    return(ccmpp_input_df(x, dimensions = demog_change_component_dimensions(x),
-                          value_type = value_type(x)))
-}
-
-#' @rdname subset_demog_change_component_df
-#' @export
-subset_time.ccmpp_input_df <- function(x, time, drop = FALSE) {
-
-    x <- NextMethod()
-    return(ccmpp_input_df(x, dimensions = demog_change_component_dimensions(x),
-                          value_type = value_type(x)))
-}
-
-#' @rdname subset_demog_change_component_df
-#' @export
-subset_age.ccmpp_input_df <- function(x, age, drop = FALSE) {
-
-    x <- NextMethod()
-    return(ccmpp_input_df(x, dimensions = demog_change_component_dimensions(x),
-                          value_type = value_type(x)))
-}
-
-#' @rdname subset_demog_change_component_df
-#' @export
-subset_sex.ccmpp_input_df <- function(x, sex, drop = FALSE) {
-
-    x <- NextMethod()
-    return(ccmpp_input_df(x, dimensions = demog_change_component_dimensions(x),
-                          value_type = value_type(x)))
 }

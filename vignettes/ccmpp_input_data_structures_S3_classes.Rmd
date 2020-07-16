@@ -112,6 +112,8 @@ This system programming efficiencies and is easy to extend over time due to *inh
 
 The classes defined and their inheritance relations are shown in Figure \@ref(fig:S3-class-hierarchy-diagram). The base class is `demog_change_component_df` ("`df`" for "data frame"). All other classes are *descendants*. The descendants' specifications include all those of `demog_change_component_df` plus additions. 
 
+An additional class, `ccmpp_input_list`, is not shown in Figure \@ref(fig:S3-class-hierarchy-diagram). This is a class for a list of all the required data frames for a complete CCMPP run. It is described in Section \@ref(sec:ccmpp-inut-list-defn). 
+
 ```{r S3-class-hierarchy-diagram, echo = FALSE, fig.cap = "Hierarchy of S3 classes for CCMPP input and output objects", width = "10in", height = "10in"}
 graph <-"digraph {
   graph [layout = dot, rankdir = LR, fontsize = 20]
@@ -157,7 +159,7 @@ The class was designed with reference to `data(wpp_input_example)` which is a li
 head(wpp_input_example$life_table_age_sex)
 ```
 
-The class `demog_change_component_df` was designed to accommodate all of the data frames in `wpp_input_example`. It has two main components, a **data component** and **attributes** (meta-data).
+The class `demog_change_component_df` was designed to accommodate all of the data frames in `wpp_input_example`. It has two main components: **attributes** (meta-data) and a **data component**.
 
 
 ### Attributes
@@ -185,7 +187,7 @@ The class `demog_change_component_df` was designed to accommodate all of the dat
     6. real
     7. categorical
 
-The different data frames ins the list of CCMPP inputs have various subsets of the `dimension`s. For example, the sex ratio at birth component has only the time dimension, the fertility rate component has only the time and age dimensions. Specific subclasses for these data frames are defined to formalize their characteristics. 
+The data frames in `wpp_input_example` have various subsets of the `dimension`s. For example, `wpp_input_example$srb` has only the "time" dimension, the fertility rate component has only the "time" and "age" dimensions. Specific subclasses for these data frames are defined to formalize their characteristics. 
 	
 	
 ### Data Component
@@ -258,9 +260,13 @@ The `ccmpp_input_df` has some additional constraints to ensure the objects are v
 
 ## Subclasses of `ccmpp_input_df`
 
-Classes for the individual data frame components of the CCMPP lists are all subclasses of `ccmpp_input_df`. Apart from `fert_rate_input_df` they have no additional attributes; none have additional data columns. All have pre-specified dimensions and `value_type`s as described in Table \@(tab:ccmpp-input-subclass-restrictions). 
+Classes for the individual data frame components of the CCMPP lists are all subclasses of `ccmpp_input_df`. Apart from `fert_rate_input_df` they have no additional attributes; none have additional data columns. All have pre-specified dimensions and `value_type`s as described in Table \@ref(tab:ccmpp-input-subclass-restrictions). 
 
-The class `fert_rate_input_df` gets the additional attribute "non_zero_fert_ages". It lists the values of `age_start` marking the reproductive age groups. Functions can take advantage of this attribute to set fertility to zero in all other age groups regardless of the actual values in the `value` column. 
+The class `fert_rate_input_df` gets the additional attribute:
+
+"non_zero_fert_ages"
+
+:  A list of the values of `age_start` marking the reproductive age groups. Functions can take advantage of this attribute to set fertility to zero in all other age groups regardless of the actual values in the `value` column. 
 
 Table: (\#tab:ccmpp-input-subclass-restrictions) Additional attributes and pre-specified dimensions and values types of subclasses of `ccmpp_input_df`.
 
@@ -292,6 +298,15 @@ Table: (\#tab:ccmpp-input-subclass-restrictions) Additional attributes and pre-s
 |                             |                     |"age")                         |              |
 |                             |                     |                               |              |
 +-----------------------------+---------------------+-------------------------------+--------------+
+
+
+## `ccmpp_input_list` {#sec:ccmpp-inut-list-defn}
+
+The class `ccmpp_input_list` is a list of object with the classes listed in Table \@ref(tab:ccmpp-input-subclass-restrictions). It specifies exactly the inputs needed for a complete run of the CCMPP. It acquires all the attributes of its constituents:
+
+- "age_span"
+- "time_span"
+- "non_zero_fert_ages"
 
 
 # Construction and Validation
@@ -328,6 +343,20 @@ ccmpp_input_example_df <-
 fert_rate_input_example_df <-
     fert_rate_input_df(x = wpp_input_example$fert_rate_age_f,
                        non_zero_fert_ages = 15:45)
+```
+
+To make a `ccmpp_input_list` that binds together all the inputs needed for a projection, pass all the constituent parts as arguments to the constructor:
+
+```{r}
+ccmpp_input_list_example <-
+    ccmpp_input_list(pop_count_base_input_df = wpp_input_example$pop_count_age_sex_base,
+                     life_table_input_df = wpp_input_example$life_table_age_sex,
+                     fert_rate_input_df = wpp_input_example$fert_rate_age_f,
+                     srb_input_df = wpp_input_example$srb,
+                     mig_net_count_input_df = wpp_input_example$mig_net_count_age_sex,
+                     mig_net_rate_input_df = wpp_input_example$mig_net_rate_age_sex,
+                     mig_net_count_tot_input_df = wpp_input_example$mig_net_count_tot_b,
+                     mig_parameter_input_df = wpp_input_example$mig_parameter)
 ```
 
 
@@ -561,7 +590,7 @@ New functions are provided to subset objects inheriting from `demog_change_compo
 
 ```{r}
 x <- subset_time(demog_change_example_df,
-                 time = c("1990", "1991"))
+                 times = c("1990", "1991"))
 class(x)
 summary(x)
 ```
@@ -571,7 +600,7 @@ To subset on multiple dimensions use the respective functions in a pipe:
 ```{r}
 library(magrittr)
 x <- subset_time(demog_change_example_df,
-                 time = c("1990", "1991")) %>%
+                 times = c("1990", "1991")) %>%
     subset_sex("male")
 class(x)
 summary(x)

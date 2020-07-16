@@ -1,6 +1,17 @@
 ###-----------------------------------------------------------------------------
 ### * Helpers
 
+## Names of all classes
+get_all_ccmpp_list_class_names <- function() {
+    c("ccmpp_input_list")
+}
+
+## Manage 'class' attribute
+strip_ccmpp_input_list_classes_attribute <- function(class_att) {
+    class_att[!(class_att %in% get_all_ccmpp_list_class_names())]
+}
+
+## Required element names
 get_all_required_ccmpp_input_list_element_names <- function() {
     c("pop_count_age_sex_base", "life_table_age_sex",
                           "fert_rate_age_f",
@@ -24,12 +35,10 @@ get_all_required_ccmpp_input_list_element_names <- function() {
 #'
 #' @seealso ccmpp_input_list
 #'
-#' @inheritParams new_demog_change_component_df
+#' @inheritParams new_ccmpp_input_df
 #' @inheritParams new_fert_rate_input_df
 #' @return An object of class \code{ccmpp_input_list}.
 #' @author Mark Wheldon
-
-
 new_ccmpp_input_list <-
     function(x,
              age_span = double(),
@@ -50,11 +59,23 @@ new_ccmpp_input_list <-
 
 #' Constructor for class \code{ccmpp_input_list}
 #'
-#' **TBC**
+#' This function creates objects of class \code{ccmpp_input_list}. It
+#' takes as arguments a set of objects inheriting from
+#' \code{\link{ccmpp_input_df}}.
+#'
+#' @seealso \code{\link{as_ccmpp_input_list.list}} for creating
+#'     \code{ccmpp_input_list}s lists.
 #'
 #' @family ccmpp_input_objects
 #'
-#' @inheritParams demog_change_component_df
+#' @param pop_count_base_input_df An object of class \code{\link{pop_count_base_input_df}}
+#' @param life_table_input_df An object of class \code{\link{life_table_input_df}}
+#' @param fert_rate_input_df An object of class \code{\link{fert_rate_input_df}}
+#' @param srb_input_df An object of class \code{\link{srb_input_df}}
+#' @param mig_net_count_input_df An object of class \code{\link{mig_net_count_input_df}}
+#' @param mig_net_rate_input_df An object of class \code{\link{mig_net_rate_input_df}}
+#' @param mig_net_count_tot_input_df An object of class \code{\link{mig_net_count_tot_input_df}}
+#' @param mig_parameter_input_df An object of class \code{\link{mig_parameter_input_df}}
 #' @return An object of class \code{ccmpp_input_list}.
 #' @author Mark Wheldon
 #' @export
@@ -77,9 +98,9 @@ ccmpp_input_list <-
                     mig_net_count_tot_b = as_mig_net_count_tot_input_df(mig_net_count_tot_input_df),
                     mig_parameter = as_mig_parameter_input_df(mig_parameter_input_df))
 
-        age_span <- age_span(mig_net_count_input_df)
-        time_span <- time_span(mig_net_count_input_df)
-        non_zero_fert_ages <- suppressMessages(non_zero_fert_ages(fert_rate_input_df))
+        age_span <- age_span(obj$mig_net_count_age_sex)
+        time_span <- time_span(obj$mig_net_count_age_sex)
+        non_zero_fert_ages <- suppressMessages(non_zero_fert_ages(obj$fert_rate_age_f))
 
         ## Create/Validate
         validate_ccmpp_object(
@@ -95,10 +116,12 @@ ccmpp_input_list <-
 
 #' Coerce to a \code{ccmpp_input_list}
 #'
-#' These functions coerce an object to a
-#' \code{ccmpp_input_list} if possible, or check if it is
-#' one.
+#' These functions coerce an object to a \code{ccmpp_input_list} if
+#' possible, or check if it is one. The list method requires that the
+#' \code{names} of the single argument match the arguments to
+#' \code{link{ccmpp_input_list}}.
 #'
+#' @family ccmpp_input_objects
 #' @seealso \code{\link{coerce_demog_change_component_df}} for an important note on validation.
 #'
 #' @inheritParams coerce_demog_change_component_df
@@ -121,7 +144,23 @@ as_ccmpp_input_list.default <- function(x, ...) {
 #' @rdname coerce_ccmpp_input_list
 #' @export
 as_ccmpp_input_list.list <- function(x, ...) {
-    ccmpp_input_list(as.list(x))
+
+    req_el_names <- get_all_required_ccmpp_input_list_element_names()
+    if (!identical(sort(names(x)),
+                   sort(req_el_names)))
+        stop("'x' must have these elements (no more): ",
+             paste(req_el_names,
+                   collapse = ", "))
+
+        ccmpp_input_list(pop_count_base_input_df = pop_count_base_component(x),
+                         life_table_input_df = life_table_component(x),
+                         fert_rate_input_df = fert_rate_component(x),
+                         srb_input_df = srb_component(x),
+                         mig_net_count_input_df = mig_net_count_component(x),
+                         mig_net_rate_input_df = mig_net_rate_component(x),
+                         mig_net_count_tot_input_df = mig_net_count_tot_component(x),
+                         mig_parameter_input_df = mig_parameter_component(x)
+                         )
 }
 
 #' @rdname coerce_ccmpp_input_list
@@ -141,49 +180,3 @@ is_ccmpp_input_list <- function(x) {
     inherits(x, "ccmpp_input_list")
 }
 
-###-----------------------------------------------------------------------------
-### * Subset
-
-#' @rdname subset_demog_change_component_df
-#' @export
-subset_indicator.ccmpp_input_list <- function(x, indicator, drop = FALSE) {
-
-    for (df_nm in names(x)) {
-        if (is_by_indicator(x[[df_nm]]))
-            x[[df_nm]] <- subset_indicator(x[[df_nm]], indicator = indicator, drop = drop)
-    }
-    return(ccmpp_input_list(x))
-}
-
-#' @rdname subset_demog_change_component_df
-#' @export
-subset_time.ccmpp_input_list <- function(x, time, drop = FALSE) {
-
-    for (df_nm in names(x)) {
-        if (is_by_time(x[[df_nm]]))
-            x[[df_nm]] <- subset_time(x[[df_nm]], time = time, drop = drop)
-    }
-    return(ccmpp_input_list(x))
-}
-
-#' @rdname subset_demog_change_component_df
-#' @export
-subset_age.ccmpp_input_list <- function(x, age, drop = FALSE) {
-
-    for (df_nm in names(x)) {
-        if (is_by_age(x[[df_nm]]))
-            x[[df_nm]] <- subset_age(x[[df_nm]], age = age, drop = drop)
-    }
-    return(ccmpp_input_list(x))
-}
-
-#' @rdname subset_demog_change_component_df
-#' @export
-subset_sex.ccmpp_input_list <- function(x, sex, drop = FALSE) {
-
-    for (df_nm in names(x)) {
-        if (is_by_sex(x[[df_nm]]))
-            x[[df_nm]] <- subset_sex(x[[df_nm]], sex = sex, drop = drop)
-    }
-    return(ccmpp_input_list(x))
-}

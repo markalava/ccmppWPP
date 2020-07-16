@@ -295,12 +295,15 @@ demog_change_component_df <-
 #' @return A coerced object in the case of the \code{as_...}
 #'     functions; a logical for the \code{is_...} functions.
 #' @author Mark Wheldon
+#'
+#' @family ccmpp_input_objects
 #' @name coerce_demog_change_component_df
 #' @export
 as_demog_change_component_df <- function(x, ...) {
     UseMethod("as_demog_change_component_df")
 }
 
+#' @rdname coerce_demog_change_component_df
 #' @export
 as_demog_change_component_df.default <- function(x, ...) {
     if (is_demog_change_component_df(x)) return(x)
@@ -332,6 +335,7 @@ as_demog_change_component_df.matrix <- function(x, ...) {
     as_demog_change_component_df(as.data.frame(x))
 }
 
+#' @rdname coerce_demog_change_component_df
 #' @export
 as_demog_change_component_df.demog_change_component_df <- function(x, ...) {
     ## copied from  'as.data.frame'

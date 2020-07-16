@@ -81,6 +81,7 @@ pop_count_base_input_df <-
 #' \code{pop_count_base_input_df} if possible, or check if it is
 #' one.
 #'
+#' @family ccmpp_input_objects
 #' @seealso \code{\link{coerce_demog_change_component_df}} for an important note on validation.
 #'
 #' @inheritParams coerce_demog_change_component_df
@@ -133,7 +134,7 @@ is_pop_count_base_input_df <- function(x) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_time.pop_count_base_input_df <- function(x, time, drop = FALSE) {
+subset_time.pop_count_base_input_df <- function(x, times, drop = FALSE) {
 
     x <- NextMethod()
     return(pop_count_base_input_df(x))
@@ -141,7 +142,7 @@ subset_time.pop_count_base_input_df <- function(x, time, drop = FALSE) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_age.pop_count_base_input_df <- function(x, age, drop = FALSE) {
+subset_age.pop_count_base_input_df <- function(x, ages, drop = FALSE) {
 
     x <- NextMethod()
     return(pop_count_base_input_df(x))
@@ -149,7 +150,7 @@ subset_age.pop_count_base_input_df <- function(x, age, drop = FALSE) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_sex.pop_count_base_input_df <- function(x, sex, drop = FALSE) {
+subset_sex.pop_count_base_input_df <- function(x, sexes, drop = FALSE) {
 
     x <- NextMethod()
     return(pop_count_base_input_df(x))

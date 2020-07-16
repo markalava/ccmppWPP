@@ -23,6 +23,12 @@
 
 ccmppWPP_workflow_one_country_variant <- function(wpp_input) {
 
+    wpp_input <- as_ccmpp_input_list(wpp_input)
+
+    ## wpp_input <- try(as_ccmpp_input_list(wpp_input), silent = TRUE)
+    ## if (identical(class(wpp_input), "try-error"))
+    ##     stop("Input list is not valid:", wpp_input)
+
 # extract objects needed for ccmpp
 ccmpp_input <- data_parse_ccmpp_input(indata = wpp_input)
 

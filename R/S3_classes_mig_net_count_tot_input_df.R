@@ -67,7 +67,7 @@ mig_net_count_tot_b <-
 #' one.
 #'
 #' @family ccmpp_input_objects
-#' @seealso \code{\link{coerce_demog_change_component_df}} for an important note on validation.
+#' @seealso \code{\link{coerce_demog_change_component_df}}
 #'
 #' @inheritParams coerce_demog_change_component_df
 #' @return A coerced object in the case of the \code{as_...}
@@ -106,7 +106,7 @@ as_mig_net_count_tot_b.mig_net_count_tot_b <- function(x, ...) {
     i <- match("mig_net_count_tot_b", cl)
     if (i > 1L)
         class(x) <- cl[-(1L:(i - 1L))]
-    return(x)
+    return(validate_ccmpp_object(x))
 }
 
 #' @rdname coerce_mig_net_count_tot_b

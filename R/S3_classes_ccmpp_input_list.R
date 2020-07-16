@@ -171,7 +171,7 @@ as_ccmpp_input_list.ccmpp_input_list <- function(x, ...) {
     i <- match("ccmpp_input_list", cl)
     if (i > 1L)
         class(x) <- cl[-(1L:(i - 1L))]
-    return(x)
+    return(validate_ccmpp_object(x))
 }
 
 #' @rdname coerce_ccmpp_input_list

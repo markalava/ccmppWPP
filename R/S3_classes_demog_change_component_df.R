@@ -280,16 +280,6 @@ demog_change_component_df <-
 #' \code{demog_change_component_df} (or subclasses, as appropriate) if
 #' possible, or check if it is one.
 #'
-#' @section Note on Validation:
-#' The method for \code{demog_change_component_df} and subclasses (i.e.,
-#' \code{as_demog_change_component_df.demog_change_component_df}) does
-#' \emph{not} check for validity. If \code{x} is somehow an invalid
-#' \code{demog_change_component_df} object, applying
-#' \code{as_demog_change_component_df} will simply return it (with
-#' \code{attr(x, "class")} potentially modifed), not signal an
-#' error. Use \code{demog_change_component_df} on the object to ensure
-#' validity is checked.
-#'
 #' @param x An object to coerce or check.
 #' @param ... Further arguments passed to specific methods.
 #' @return A coerced object in the case of the \code{as_...}
@@ -343,7 +333,7 @@ as_demog_change_component_df.demog_change_component_df <- function(x, ...) {
     i <- match("demog_change_component_df", cl)
     if (i > 1L)
         class(x) <- cl[-(1L:(i - 1L))]
-    return(x)
+    return(validate_ccmpp_object(x))
 }
 
 #' @rdname coerce_demog_change_component_df

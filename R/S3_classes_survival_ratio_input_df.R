@@ -112,7 +112,7 @@ as_survival_ratio_age_sex.survival_ratio_age_sex <- function(x, ...) {
     i <- match("survival_ratio_age_sex", cl)
     if (i > 1L)
         class(x) <- cl[-(1L:(i - 1L))]
-    return(x)
+    return(validate_ccmpp_object(x))
 }
 
 #' @rdname coerce_survival_ratio_age_sex

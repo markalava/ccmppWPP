@@ -6,6 +6,8 @@
 \alias{pop_count_base_component.list}
 \alias{life_table_component}
 \alias{life_table_component.list}
+\alias{survival_ratio_component}
+\alias{survival_ratio_component.list}
 \alias{fert_rate_component}
 \alias{fert_rate_component.list}
 \alias{srb_component}
@@ -27,6 +29,10 @@ pop_count_base_component(x)
 life_table_component(x)
 
 \method{life_table_component}{list}(x)
+
+survival_ratio_component(x)
+
+\method{survival_ratio_component}{list}(x)
 
 fert_rate_component(x)
 

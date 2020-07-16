@@ -36,18 +36,6 @@ These functions coerce an object to a
 \code{demog_change_component_df} (or subclasses, as appropriate) if
 possible, or check if it is one.
 }
-\section{Note on Validation}{
-
-The method for \code{demog_change_component_df} and subclasses (i.e.,
-\code{as_demog_change_component_df.demog_change_component_df}) does
-\emph{not} check for validity. If \code{x} is somehow an invalid
-\code{demog_change_component_df} object, applying
-\code{as_demog_change_component_df} will simply return it (with
-\code{attr(x, "class")} potentially modifed), not signal an
-error. Use \code{demog_change_component_df} on the object to ensure
-validity is checked.
-}
-
 \seealso{
 Other ccmpp_input_objects: 
 \code{\link{ccmpp_input_df}()},
@@ -62,7 +50,7 @@ Other ccmpp_input_objects:
 \code{\link{coerce_mig_parameter}},
 \code{\link{coerce_pop_count_age_sex_base}},
 \code{\link{coerce_srb}},
-\code{\link{coerce_survival_ratio_input_df}},
+\code{\link{coerce_survival_ratio_age_sex}},
 \code{\link{fert_rate_age_f}()},
 \code{\link{life_table_age_sex}()},
 \code{\link{mig_net_count_age_sex}()},
@@ -71,7 +59,7 @@ Other ccmpp_input_objects:
 \code{\link{mig_parameter}()},
 \code{\link{pop_count_age_sex_base}()},
 \code{\link{srb}()},
-\code{\link{survival_ratio_input_df}()}
+\code{\link{survival_ratio_age_sex}()}
 }
 \author{
 Mark Wheldon

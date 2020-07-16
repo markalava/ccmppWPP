@@ -135,7 +135,7 @@ fert_rate_age_f <-
 #' one.
 #'
 #' @family ccmpp_input_objects
-#' @seealso \code{\link{coerce_demog_change_component_df}} for an important note on validation.
+#' @seealso \code{\link{coerce_demog_change_component_df}}
 #'
 #' @inheritParams coerce_demog_change_component_df
 #' @return A coerced object in the case of the \code{as_...}
@@ -174,7 +174,7 @@ as_fert_rate_age_f.fert_rate_age_f <- function(x, ...) {
     i <- match("fert_rate_age_f", cl)
     if (i > 1L)
         class(x) <- cl[-(1L:(i - 1L))]
-    return(x)
+    return(validate_ccmpp_object(x))
 }
 
 #' @rdname coerce_fert_rate_age_f

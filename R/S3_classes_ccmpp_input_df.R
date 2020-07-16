@@ -95,7 +95,7 @@ ccmpp_input_df <-
 #' one.
 #'
 #' @family ccmpp_input_objects
-#' @seealso \code{\link{coerce_demog_change_component_df}} for an important note on validation.
+#' @seealso \code{\link{coerce_demog_change_component_df}}
 #'
 #' @inheritParams coerce_demog_change_component_df
 #' @return A coerced object in the case of the \code{as_...}
@@ -134,7 +134,7 @@ as_ccmpp_input_df.ccmpp_input_df <- function(x, ...) {
     i <- match("ccmpp_input_df", cl)
     if (i > 1L)
         class(x) <- cl[-(1L:(i - 1L))]
-    return(x)
+    return(validate_ccmpp_object(x))
 }
 
 #' @rdname coerce_ccmpp_input_df

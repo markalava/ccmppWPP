@@ -6,7 +6,7 @@
 \alias{validate_ccmpp_object.demog_change_component_df}
 \alias{validate_ccmpp_object.ccmpp_input_df}
 \alias{validate_ccmpp_object.fert_rate_age_f}
-\alias{validate_ccmpp_object.survival_ratio_input_df}
+\alias{validate_ccmpp_object.survival_ratio_age_sex}
 \alias{validate_ccmpp_object.pop_count_age_sex_base}
 \alias{validate_ccmpp_object.srb}
 \alias{validate_ccmpp_object.mig_net_rate_age_sex}
@@ -27,7 +27,7 @@ validate_ccmpp_object(x, ...)
 
 \method{validate_ccmpp_object}{fert_rate_age_f}(x, ...)
 
-\method{validate_ccmpp_object}{survival_ratio_input_df}(x, ...)
+\method{validate_ccmpp_object}{survival_ratio_age_sex}(x, ...)
 
 \method{validate_ccmpp_object}{pop_count_age_sex_base}(x, ...)
 

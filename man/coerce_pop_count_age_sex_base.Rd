@@ -31,7 +31,7 @@ These functions coerce an object to a
 one.
 }
 \seealso{
-\code{\link{coerce_demog_change_component_df}} for an important note on validation.
+\code{\link{coerce_demog_change_component_df}}
 
 Other ccmpp_input_objects: 
 \code{\link{ccmpp_input_df}()},
@@ -46,7 +46,7 @@ Other ccmpp_input_objects:
 \code{\link{coerce_mig_net_rate_age_sex}},
 \code{\link{coerce_mig_parameter}},
 \code{\link{coerce_srb}},
-\code{\link{coerce_survival_ratio_input_df}},
+\code{\link{coerce_survival_ratio_age_sex}},
 \code{\link{fert_rate_age_f}()},
 \code{\link{life_table_age_sex}()},
 \code{\link{mig_net_count_age_sex}()},
@@ -55,7 +55,7 @@ Other ccmpp_input_objects:
 \code{\link{mig_parameter}()},
 \code{\link{pop_count_age_sex_base}()},
 \code{\link{srb}()},
-\code{\link{survival_ratio_input_df}()}
+\code{\link{survival_ratio_age_sex}()}
 }
 \author{
 Mark Wheldon

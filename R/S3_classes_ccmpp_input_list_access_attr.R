@@ -64,6 +64,17 @@ life_table_component.list <- function(x) {
 
 #' @rdname ccmpp_list_access_elements
 #' @export
+survival_ratio_component <- function(x) {
+    UseMethod("survival_ratio_component")
+}
+#' @rdname ccmpp_list_access_elements
+#' @export
+survival_ratio_component.list <- function(x) {
+    x[["survival_ratio"]]
+}
+
+#' @rdname ccmpp_list_access_elements
+#' @export
 fert_rate_component <- function(x) {
     UseMethod("fert_rate_component")
 }

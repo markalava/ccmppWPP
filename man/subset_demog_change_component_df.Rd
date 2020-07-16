@@ -39,9 +39,9 @@
 \alias{subset_age.pop_count_age_sex_base}
 \alias{subset_sex.pop_count_age_sex_base}
 \alias{subset_time.srb}
-\alias{subset_time.survival_ratio_input_df}
-\alias{subset_age.survival_ratio_input_df}
-\alias{subset_sex.survival_ratio_input_df}
+\alias{subset_time.survival_ratio_age_sex}
+\alias{subset_age.survival_ratio_age_sex}
+\alias{subset_sex.survival_ratio_age_sex}
 \title{Subset by time, age, or sex}
 \usage{
 \method{subset_indicator}{ccmpp_input_df}(x, indicators, drop = FALSE)
@@ -104,11 +104,11 @@ subset_indicator(x, indicators, ...)
 
 \method{subset_time}{srb}(x, times, drop = FALSE)
 
-\method{subset_time}{survival_ratio_input_df}(x, times, drop = FALSE)
+\method{subset_time}{survival_ratio_age_sex}(x, times, drop = FALSE)
 
-\method{subset_age}{survival_ratio_input_df}(x, ages, drop = FALSE)
+\method{subset_age}{survival_ratio_age_sex}(x, ages, drop = FALSE)
 
-\method{subset_sex}{survival_ratio_input_df}(x, sexes, drop = FALSE)
+\method{subset_sex}{survival_ratio_age_sex}(x, sexes, drop = FALSE)
 }
 \arguments{
 \item{x}{An object to subset.}

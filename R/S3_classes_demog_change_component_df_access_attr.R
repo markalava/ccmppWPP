@@ -166,7 +166,7 @@ non_zero_fert_ages <- function(x) {
 
 #' @rdname extract_demog_change_component_attributes
 #' @export
-non_zero_fert_ages.fert_rate_input_df <- function(x) {
+non_zero_fert_ages.fert_rate_age_f <- function(x) {
     attr(x, "non_zero_fert_ages")
     }
 

@@ -3,7 +3,7 @@
 %   R/S3_methods_fert_rate_input_df.R
 \name{demog_change_component_df}
 \alias{demog_change_component_df}
-\alias{print.summary_fert_rate_input_df}
+\alias{print.summary_fert_rate_age_f}
 \title{Constructor for class \code{demog_change_component_df}}
 \usage{
 demog_change_component_df(
@@ -13,7 +13,7 @@ demog_change_component_df(
   ...
 )
 
-\method{print}{summary_fert_rate_input_df}(x, vsep, ...)
+\method{print}{summary_fert_rate_age_f}(x, vsep, ...)
 }
 \arguments{
 \item{x}{For \code{demog_change_component_df}: A data frame with

@@ -3,7 +3,7 @@
 
 #' @rdname generic_coerce_demog_change_component_df
 #' @export
-as.data.frame.fert_rate_input_df <- function(x, restore_columns = FALSE, ...) {
+as.data.frame.fert_rate_age_f <- function(x, restore_columns = FALSE, ...) {
     if (restore_columns) {
         nzfa <- non_zero_fert_ages(x)
         x <- NextMethod()
@@ -17,7 +17,7 @@ as.data.frame.fert_rate_input_df <- function(x, restore_columns = FALSE, ...) {
 ### * Print, Summary, etc.
 
 
-#' Print Values of a \code{fert_rate_input_df}
+#' Print Values of a \code{fert_rate_age_f}
 #'
 #' This is a method for the generic \code{\link{base::print}} function. Only
 #' \code{n} rows are printed for convenience. If all rows are desired use
@@ -33,11 +33,11 @@ as.data.frame.fert_rate_input_df <- function(x, restore_columns = FALSE, ...) {
 #' @inheritParams base::print.data.frame
 #' @inheritParams print.demog_change_component_df
 #'
-#' @seealso print.demog_change_component_df print.ccmpp_input_df fert_rate_input_df
+#' @seealso print.demog_change_component_df print.ccmpp_input_df fert_rate_age_f
 #'
 #' @author Mark Wheldon
 #' @export
-print.fert_rate_input_df <-
+print.fert_rate_age_f <-
     function(x, ..., n = min(6L, nrow(x)), digits = NULL,
              quote = FALSE, right = TRUE, row.names = FALSE, max = NULL,
              print_what = c("info", "table")) {
@@ -88,20 +88,20 @@ print.fert_rate_input_df <-
 
 #' @rdname summary_demog_change_component_df
 #' @export
-summary.fert_rate_input_df <-
+summary.fert_rate_age_f <-
     function(object, maxsum = 7,
              digits = max(3, getOption("digits") - 3), vsep, ...) {
         out <- NextMethod()
         out$non_zero_fert_ages <- non_zero_fert_ages(object)
 
         return(structure(c(out),
-                         class = c("summary_fert_rate_input_df",
+                         class = c("summary_fert_rate_age_f",
                                    "summary_demog_change_component_df", "list")))
     }
 
 #' @rdname demog_change_component_df
 #' @export
-print.summary_fert_rate_input_df <-
+print.summary_fert_rate_age_f <-
     function(x, vsep, ...) {
         if (missing(vsep))
             vsep <- strrep("-", 0.75 * getOption("width"))

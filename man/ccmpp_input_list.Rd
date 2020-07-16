@@ -5,32 +5,32 @@
 \title{Constructor for class \code{ccmpp_input_list}}
 \usage{
 ccmpp_input_list(
-  pop_count_base_input_df,
-  life_table_input_df,
-  fert_rate_input_df,
-  srb_input_df,
-  mig_net_count_input_df,
-  mig_net_rate_input_df,
-  mig_net_count_tot_input_df,
-  mig_parameter_input_df
+  pop_count_age_sex_base,
+  life_table_age_sex,
+  fert_rate_age_f,
+  srb,
+  mig_net_count_age_sex,
+  mig_net_rate_age_sex,
+  mig_net_count_tot_b,
+  mig_parameter
 )
 }
 \arguments{
-\item{pop_count_base_input_df}{An object of class \code{\link{pop_count_base_input_df}}}
+\item{pop_count_age_sex_base}{An object of class \code{\link{pop_count_age_sex_base}}}
 
-\item{life_table_input_df}{An object of class \code{\link{life_table_input_df}}}
+\item{life_table_age_sex}{An object of class \code{\link{life_table_age_sex}}}
 
-\item{fert_rate_input_df}{An object of class \code{\link{fert_rate_input_df}}}
+\item{fert_rate_age_f}{An object of class \code{\link{fert_rate_age_f}}}
 
-\item{srb_input_df}{An object of class \code{\link{srb_input_df}}}
+\item{srb}{An object of class \code{\link{srb}}}
 
-\item{mig_net_count_input_df}{An object of class \code{\link{mig_net_count_input_df}}}
+\item{mig_net_count_age_sex}{An object of class \code{\link{mig_net_count_age_sex}}}
 
-\item{mig_net_rate_input_df}{An object of class \code{\link{mig_net_rate_input_df}}}
+\item{mig_net_rate_age_sex}{An object of class \code{\link{mig_net_rate_age_sex}}}
 
-\item{mig_net_count_tot_input_df}{An object of class \code{\link{mig_net_count_tot_input_df}}}
+\item{mig_net_count_tot_b}{An object of class \code{\link{mig_net_count_tot_b}}}
 
-\item{mig_parameter_input_df}{An object of class \code{\link{mig_parameter_input_df}}}
+\item{mig_parameter}{An object of class \code{\link{mig_parameter}}}
 }
 \value{
 An object of class \code{ccmpp_input_list}.
@@ -49,23 +49,23 @@ Other ccmpp_input_objects:
 \code{\link{coerce_ccmpp_input_df}},
 \code{\link{coerce_ccmpp_input_list}},
 \code{\link{coerce_demog_change_component_df}},
-\code{\link{coerce_fert_rate_input_df}},
-\code{\link{coerce_life_table_input_df}},
-\code{\link{coerce_mig_net_count_input_df}},
-\code{\link{coerce_mig_net_count_tot_input_df}},
-\code{\link{coerce_mig_net_rate_input_df}},
-\code{\link{coerce_mig_parameter_input_df}},
-\code{\link{coerce_pop_count_base_input_df}},
-\code{\link{coerce_srb_input_df}},
+\code{\link{coerce_fert_rate_age_f}},
+\code{\link{coerce_life_table_age_sex}},
+\code{\link{coerce_mig_net_count_age_sex}},
+\code{\link{coerce_mig_net_count_tot_b}},
+\code{\link{coerce_mig_net_rate_age_sex}},
+\code{\link{coerce_mig_parameter}},
+\code{\link{coerce_pop_count_age_sex_base}},
+\code{\link{coerce_srb}},
 \code{\link{coerce_survival_ratio_input_df}},
-\code{\link{fert_rate_input_df}()},
-\code{\link{life_table_input_df}()},
-\code{\link{mig_net_count_input_df}()},
-\code{\link{mig_net_count_tot_input_df}()},
-\code{\link{mig_net_rate_input_df}()},
-\code{\link{mig_parameter_input_df}()},
-\code{\link{pop_count_base_input_df}()},
-\code{\link{srb_input_df}()},
+\code{\link{fert_rate_age_f}()},
+\code{\link{life_table_age_sex}()},
+\code{\link{mig_net_count_age_sex}()},
+\code{\link{mig_net_count_tot_b}()},
+\code{\link{mig_net_rate_age_sex}()},
+\code{\link{mig_parameter}()},
+\code{\link{pop_count_age_sex_base}()},
+\code{\link{srb}()},
 \code{\link{survival_ratio_input_df}()}
 }
 \author{

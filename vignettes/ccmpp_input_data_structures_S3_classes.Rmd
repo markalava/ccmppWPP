@@ -7,15 +7,24 @@ date: |
 output:
     function(...) bookdown::html_document2(..., base_format = rmarkdown::html_vignette, css=c(system.file("rmarkdown", "templates", "html_vignette", "resources", "vignette.css", package = "rmarkdown"), "vignette2.css")):
       toc: true
+      toc_depth: 2
+# output:
+#   bookdown::html_document2:
+#      toc: yes
+#      toc_depth: 3
+#      theme: readable
+#      toc_float: true
+#      includes:
+#        in_header: 'css_theme_readable.css' 
+# output:
+#   word_document:
+#     reference_docx: docx_reference.docx    
 bibliography: bibliography.bib
 link-citations: true
 vignette: >
   %\VignetteIndexEntry{S3 Classes for CCMPP Input Data Structures}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-# output:
-#   word_document:
-#     reference_docx: docx_reference.docx
 ---
 
 ```{r setup, include = FALSE}
@@ -123,14 +132,14 @@ graph <-"digraph {
   rec2 [label = 'demog_change_component_df']
 
   rec3 [label = 'ccmpp_input_df']
-  rec4 [label =  'fert_rate_input_df']
-  rec5 [label = 'srb_input_df']
+  rec4 [label =  'fert_rate_age_f']
+  rec5 [label = 'srb']
   rec6 [label = 'survival_ratio_input_df']
-  rec7 [label = 'pop_count_base_input_df']
-  rec8 [label = 'mig_net_rate_input_df']
-  rec9 [label = 'mig_net_count_input_df']
-  rec10 [label = 'mig_net_count_tot_input_df']
-  rec11 [label = 'life_table_input_df']
+  rec7 [label = 'pop_count_age_sex_base']
+  rec8 [label = 'mig_net_rate_age_sex']
+  rec9 [label = 'mig_net_count_age_sex']
+  rec10 [label = 'mig_net_count_tot_b']
+  rec11 [label = 'life_table_age_sex']
 
   rec12 [label = 'ccmpp_output_df']
   rec13 [label = 'TBD...']
@@ -260,9 +269,9 @@ The `ccmpp_input_df` has some additional constraints to ensure the objects are v
 
 ## Subclasses of `ccmpp_input_df`
 
-Classes for the individual data frame components of the CCMPP lists are all subclasses of `ccmpp_input_df`. Apart from `fert_rate_input_df` they have no additional attributes; none have additional data columns. All have pre-specified dimensions and `value_type`s as described in Table \@ref(tab:ccmpp-input-subclass-restrictions). 
+Classes for the individual data frame components of the CCMPP lists are all subclasses of `ccmpp_input_df`. Apart from `fert_rate_age_f` they have no additional attributes; none have additional data columns. All have pre-specified dimensions and `value_type`s as described in Table \@ref(tab:ccmpp-input-subclass-restrictions). 
 
-The class `fert_rate_input_df` gets the additional attribute:
+The class `fert_rate_age_f` gets the additional attribute:
 
 "non_zero_fert_ages"
 
@@ -274,27 +283,27 @@ Table: (\#tab:ccmpp-input-subclass-restrictions) Additional attributes and pre-s
 | Class                       | Additional          | Dimensions                    | Value type   |
 |                             | Attributes          |                               |              |
 +=============================+=====================+===============================+==============+
-| `fert_rate_input_df`        | "non_zero_fert_ages"| c("time", "age")              | "rate"       |
+| `fert_rate_age_f`           | "non_zero_fert_ages"| c("time", "age")              | "rate"       |
 +-----------------------------+---------------------+-------------------------------+--------------+
-| `srb_input_df`              |                     | c("time")                     | "ratio"      |
+| `srb`                       |                     | c("time")                     | "ratio"      |
 +-----------------------------+---------------------+-------------------------------+--------------+
 | `survival_ratio_input_df`   |                     | c("time", "sex", "age")       | "proportion" |
 |                             |                     |                               |              |
 +-----------------------------+---------------------+-------------------------------+--------------+
-| `mig_net_rate_input_df`     |                     | c("time", "sex", "age")       | "rate"       |
+| `mig_net_rate_age_sex`      |                     | c("time", "sex", "age")       | "rate"       |
 |                             |                     |                               |              |
 +-----------------------------+---------------------+-------------------------------+--------------+
-| `mig_net_count_input_df`    |                     | c("time", "sex", "age")       | "count"      |
+| `mig_net_count_age_sex`     |                     | c("time", "sex", "age")       | "count"      |
 |                             |                     |                               |              |
 +-----------------------------+---------------------+-------------------------------+--------------+
-| `mig_net_count_tot_input_df`|                     | c("time")                     | "count"      |
+| `mig_net_count_tot_b`       |                     | c("time")                     | "count"      |
 +-----------------------------+---------------------+-------------------------------+--------------+
 | `mig_parameter`             |                     | c("time")                     | "categorical"|
 +-----------------------------+---------------------+-------------------------------+--------------+
-| `pop_count_base_input_df`   |                     | c("time", "sex", "age")       | "count"      |
+| `pop_count_age_sex_base`    |                     | c("time", "sex", "age")       | "count"      |
 |                             |                     |                               |              |
 +-----------------------------+---------------------+-------------------------------+--------------+
-| `life_table_input_df`       |                     | c("indicator", "time", "sex", | "real"       |
+| `life_table_age_sex`        |                     | c("indicator", "time", "sex", | "real"       |
 |                             |                     |"age")                         |              |
 |                             |                     |                               |              |
 +-----------------------------+---------------------+-------------------------------+--------------+
@@ -341,7 +350,7 @@ ccmpp_input_example_df <-
                    value_type = "count")
 
 fert_rate_input_example_df <-
-    fert_rate_input_df(x = wpp_input_example$fert_rate_age_f,
+    fert_rate_age_f(x = wpp_input_example$fert_rate_age_f,
                        non_zero_fert_ages = 15:45)
 ```
 
@@ -349,14 +358,14 @@ To make a `ccmpp_input_list` that binds together all the inputs needed for a pro
 
 ```{r}
 ccmpp_input_list_example <-
-    ccmpp_input_list(pop_count_base_input_df = wpp_input_example$pop_count_age_sex_base,
-                     life_table_input_df = wpp_input_example$life_table_age_sex,
-                     fert_rate_input_df = wpp_input_example$fert_rate_age_f,
-                     srb_input_df = wpp_input_example$srb,
-                     mig_net_count_input_df = wpp_input_example$mig_net_count_age_sex,
-                     mig_net_rate_input_df = wpp_input_example$mig_net_rate_age_sex,
-                     mig_net_count_tot_input_df = wpp_input_example$mig_net_count_tot_b,
-                     mig_parameter_input_df = wpp_input_example$mig_parameter)
+    ccmpp_input_list(pop_count_age_sex_base = wpp_input_example$pop_count_age_sex_base,
+                     life_table_age_sex = wpp_input_example$life_table_age_sex,
+                     fert_rate_age_f = wpp_input_example$fert_rate_age_f,
+                     srb = wpp_input_example$srb,
+                     mig_net_count_age_sex = wpp_input_example$mig_net_count_age_sex,
+                     mig_net_rate_age_sex = wpp_input_example$mig_net_rate_age_sex,
+                     mig_net_count_tot_b = wpp_input_example$mig_net_count_tot_b,
+                     mig_parameter = wpp_input_example$mig_parameter)
 ```
 
 
@@ -381,7 +390,7 @@ demog_change_example_df <-
 - The "time_span" and "age_span" attributes will be set using the corresponding columns in the data frame, which will be checked for validity.
 
 
-`fert_rate_input_df`
+`fert_rate_age_f`
 
 :  - An attempt will be made to guess the attribute "non_zero_fert_ages" if it is not supplied as an argument.
 
@@ -450,7 +459,7 @@ Objects of class `ccmpp_input_df` must have a common value for `age_span` and `t
 ccmpp_input_example_df
 ```
 
-The `print` method for objects of class `fert_rate_input_df` attempts to emphasize the "non_zero_fert_ages" attribute: 
+The `print` method for objects of class `fert_rate_age_f` attempts to emphasize the "non_zero_fert_ages" attribute: 
 
 ```{r}
 fert_rate_input_example_df
@@ -614,19 +623,6 @@ A subset that is not a valid class object will not be created and an error will 
 ## Error in validate_ccmpp_object.ccmpp_input_df(new_ccmpp_input_df(li$df,  : 
 ##   'age_start' does not start at '0' for each time * sex combination.
 ```
-
-
-# What Next?
-
-1. The next essential step is to accommodate the different sub-types present in the example CCMPP input list, namely vital rate data frames broken down only by age, or time, or sex, or a combination of two. I plan to do this by adding an attribute to the current class marking its subtype. The validation function will then allow for, e.g., the `sex` column to be missing, or the `age_start` to be missing.
-
-2. Following (1), I will create some superficial classes for the specific vital rates (fertility, migration, sex ratio at birth) etc. These will be a very thin layer on top of the appropriate base class. Where appropriate I will add the requirement of non-negative values or values between 0 and 1. 
-
-3. I will add a life table class to hold life tables. *Alternatively* we can search for an existing class of which I'm sure there are several already on *CRAN*. 
-
-    **Question:** does *DemoTools* already have a life table class? 
-
-3. I will create a `ccmpp_input_list` class that is a list with the required data frames as elements. This will be able to use all the existing creation and validation functions as the elements will be of class `demog_change_component_df`. This will ensure that the inputs passed to the CCMPP functions are complete and valid.
 
 
 # References {-} 

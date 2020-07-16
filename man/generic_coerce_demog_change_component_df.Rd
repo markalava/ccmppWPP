@@ -4,12 +4,12 @@
 \name{generic_coerce_demog_change_component_df}
 \alias{generic_coerce_demog_change_component_df}
 \alias{as.data.frame.demog_change_component_df}
-\alias{as.data.frame.fert_rate_input_df}
+\alias{as.data.frame.fert_rate_age_f}
 \title{Coerce a \code{demog_change_component_df}.}
 \usage{
 \method{as.data.frame}{demog_change_component_df}(x, ...)
 
-\method{as.data.frame}{fert_rate_input_df}(x, restore_columns = FALSE, ...)
+\method{as.data.frame}{fert_rate_age_f}(x, restore_columns = FALSE, ...)
 }
 \arguments{
 \item{x}{An object of class \code{demog_change_component_df}.}

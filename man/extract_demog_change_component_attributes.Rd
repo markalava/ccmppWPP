@@ -20,7 +20,7 @@
 \alias{value_type}
 \alias{value_type.demog_change_component_df}
 \alias{non_zero_fert_ages}
-\alias{non_zero_fert_ages.fert_rate_input_df}
+\alias{non_zero_fert_ages.fert_rate_age_f}
 \title{Extract specific components}
 \usage{
 age_span(x)
@@ -57,7 +57,7 @@ value_type(x)
 
 non_zero_fert_ages(x)
 
-\method{non_zero_fert_ages}{fert_rate_input_df}(x)
+\method{non_zero_fert_ages}{fert_rate_age_f}(x)
 }
 \arguments{
 \item{x}{An object from which to extract attributes.}

@@ -5,15 +5,15 @@
 \alias{validate_ccmpp_object.default}
 \alias{validate_ccmpp_object.demog_change_component_df}
 \alias{validate_ccmpp_object.ccmpp_input_df}
-\alias{validate_ccmpp_object.fert_rate_input_df}
+\alias{validate_ccmpp_object.fert_rate_age_f}
 \alias{validate_ccmpp_object.survival_ratio_input_df}
-\alias{validate_ccmpp_object.pop_count_base_input_df}
-\alias{validate_ccmpp_object.srb_input_df}
-\alias{validate_ccmpp_object.mig_net_rate_input_df}
-\alias{validate_ccmpp_object.mig_net_count_input_df}
-\alias{validate_ccmpp_object.mig_net_count_tot_input_df}
-\alias{validate_ccmpp_object.mig_parameter_input_df}
-\alias{validate_ccmpp_object.life_table_input_df}
+\alias{validate_ccmpp_object.pop_count_age_sex_base}
+\alias{validate_ccmpp_object.srb}
+\alias{validate_ccmpp_object.mig_net_rate_age_sex}
+\alias{validate_ccmpp_object.mig_net_count_age_sex}
+\alias{validate_ccmpp_object.mig_net_count_tot_b}
+\alias{validate_ccmpp_object.mig_parameter}
+\alias{validate_ccmpp_object.life_table_age_sex}
 \alias{validate_ccmpp_object.ccmpp_input_list}
 \title{Validate objects of class \code{demog_change_component_df}.}
 \usage{
@@ -25,23 +25,23 @@ validate_ccmpp_object(x, ...)
 
 \method{validate_ccmpp_object}{ccmpp_input_df}(x, ...)
 
-\method{validate_ccmpp_object}{fert_rate_input_df}(x, ...)
+\method{validate_ccmpp_object}{fert_rate_age_f}(x, ...)
 
 \method{validate_ccmpp_object}{survival_ratio_input_df}(x, ...)
 
-\method{validate_ccmpp_object}{pop_count_base_input_df}(x, ...)
+\method{validate_ccmpp_object}{pop_count_age_sex_base}(x, ...)
 
-\method{validate_ccmpp_object}{srb_input_df}(x, ...)
+\method{validate_ccmpp_object}{srb}(x, ...)
 
-\method{validate_ccmpp_object}{mig_net_rate_input_df}(x, ...)
+\method{validate_ccmpp_object}{mig_net_rate_age_sex}(x, ...)
 
-\method{validate_ccmpp_object}{mig_net_count_input_df}(x, ...)
+\method{validate_ccmpp_object}{mig_net_count_age_sex}(x, ...)
 
-\method{validate_ccmpp_object}{mig_net_count_tot_input_df}(x, ...)
+\method{validate_ccmpp_object}{mig_net_count_tot_b}(x, ...)
 
-\method{validate_ccmpp_object}{mig_parameter_input_df}(x, ...)
+\method{validate_ccmpp_object}{mig_parameter}(x, ...)
 
-\method{validate_ccmpp_object}{life_table_input_df}(x, ...)
+\method{validate_ccmpp_object}{life_table_age_sex}(x, ...)
 
 \method{validate_ccmpp_object}{ccmpp_input_list}(x, ...)
 }
@@ -58,7 +58,7 @@ Checks that an object with \code{class} attribute
 \seealso{
 \code{\link{demog_change_component_df}} and the other
     creator functions (e.g., \code{\link{ccmpp_input_df}},
-    \code{link{fert_rate_input_df}}, etc.)
+    \code{link{fert_rate_age_f}}, etc.)
 }
 \author{
 Mark Wheldon

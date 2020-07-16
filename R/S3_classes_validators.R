@@ -10,7 +10,7 @@
 #'
 #' @seealso \code{\link{demog_change_component_df}} and the other
 #'     creator functions (e.g., \code{\link{ccmpp_input_df}},
-#'     \code{link{fert_rate_input_df}}, etc.)
+#'     \code{link{fert_rate_age_f}}, etc.)
 #'
 #' @param x An object to be validated.
 #' @return Either an error or the object \code{x}.
@@ -252,13 +252,13 @@ validate_ccmpp_object.ccmpp_input_df <- function(x, ...) {
 
 #' @rdname validate_ccmpp_object
 #' @export
-validate_ccmpp_object.fert_rate_input_df <- function(x, ...) {
+validate_ccmpp_object.fert_rate_age_f <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
 
     ## value_type
-    val_type <- get_value_types_for_classes("fert_rate_input_df")
+    val_type <- get_value_types_for_classes("fert_rate_age_f")
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
 
@@ -276,13 +276,13 @@ validate_ccmpp_object.fert_rate_input_df <- function(x, ...) {
 
 #' @rdname validate_ccmpp_object
 #' @export
-validate_ccmpp_object.survival_ratio_input_df <- function(x, ...) {
+validate_ccmpp_object.survival_ratio_age_sex <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
 
     ## value_type
-    val_type <- get_value_types_for_classes("survival_ratio_input_df")
+    val_type <- get_value_types_for_classes("survival_ratio_age_sex")
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
 
@@ -299,13 +299,13 @@ validate_ccmpp_object.survival_ratio_input_df <- function(x, ...) {
 
 #' @rdname validate_ccmpp_object
 #' @export
-validate_ccmpp_object.pop_count_base_input_df <- function(x, ...) {
+validate_ccmpp_object.pop_count_age_sex_base <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
 
     ## value_type
-    val_type <- get_value_types_for_classes("pop_count_base_input_df")
+    val_type <- get_value_types_for_classes("pop_count_age_sex_base")
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
 
@@ -315,7 +315,7 @@ validate_ccmpp_object.pop_count_base_input_df <- function(x, ...) {
     ## no time dimension
     if (is_by_time(x)) {
     if (!identical(length(unique(x$time_start)), 1L))
-        stop("'x$time_start' has more than one unique value; 'pop_count_base_input_df' objects can only refer to a single time period.")
+        stop("'x$time_start' has more than one unique value; 'pop_count_age_sex_base' objects can only refer to a single time period.")
     }
 
     ## Must have 'male' and 'female'
@@ -328,13 +328,13 @@ validate_ccmpp_object.pop_count_base_input_df <- function(x, ...) {
 
 #' @rdname validate_ccmpp_object
 #' @export
-validate_ccmpp_object.srb_input_df <- function(x, ...) {
+validate_ccmpp_object.srb <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
 
     ## value_type
-    val_type <- get_value_types_for_classes("srb_input_df")
+    val_type <- get_value_types_for_classes("srb")
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
 
@@ -347,13 +347,13 @@ validate_ccmpp_object.srb_input_df <- function(x, ...) {
 
 #' @rdname validate_ccmpp_object
 #' @export
-validate_ccmpp_object.mig_net_rate_input_df <- function(x, ...) {
+validate_ccmpp_object.mig_net_rate_age_sex <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
 
     ## value_type
-    val_type <- get_value_types_for_classes("mig_net_rate_input_df")
+    val_type <- get_value_types_for_classes("mig_net_rate_age_sex")
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
 
@@ -370,13 +370,13 @@ validate_ccmpp_object.mig_net_rate_input_df <- function(x, ...) {
 
 #' @rdname validate_ccmpp_object
 #' @export
-validate_ccmpp_object.mig_net_count_input_df <- function(x, ...) {
+validate_ccmpp_object.mig_net_count_age_sex <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
 
     ## value_type
-    val_type <- get_value_types_for_classes("mig_net_count_input_df")
+    val_type <- get_value_types_for_classes("mig_net_count_age_sex")
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
 
@@ -393,13 +393,13 @@ validate_ccmpp_object.mig_net_count_input_df <- function(x, ...) {
 
 #' @rdname validate_ccmpp_object
 #' @export
-validate_ccmpp_object.mig_net_count_tot_input_df <- function(x, ...) {
+validate_ccmpp_object.mig_net_count_tot_b <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
 
     ## value_type
-    val_type <- get_value_types_for_classes("mig_net_count_tot_input_df")
+    val_type <- get_value_types_for_classes("mig_net_count_tot_b")
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
 
@@ -418,13 +418,13 @@ validate_ccmpp_object.mig_net_count_tot_input_df <- function(x, ...) {
 
 #' @rdname validate_ccmpp_object
 #' @export
-validate_ccmpp_object.mig_parameter_input_df <- function(x, ...) {
+validate_ccmpp_object.mig_parameter <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
 
     ## value_type
-    val_type <- get_value_types_for_classes("mig_parameter_input_df")
+    val_type <- get_value_types_for_classes("mig_parameter")
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
 
@@ -453,13 +453,13 @@ validate_ccmpp_object.mig_parameter_input_df <- function(x, ...) {
 
 #' @rdname validate_ccmpp_object
 #' @export
-validate_ccmpp_object.life_table_input_df <- function(x, ...) {
+validate_ccmpp_object.life_table_age_sex <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
 
     ## value_type
-    val_type <- get_value_types_for_classes("life_table_input_df")
+    val_type <- get_value_types_for_classes("life_table_age_sex")
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
 

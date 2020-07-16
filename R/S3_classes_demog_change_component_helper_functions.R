@@ -9,10 +9,10 @@
 
 ## Names of all classes
 get_all_demog_change_component_df_class_names <- function() {
-    c("life_table_input_df", "mig_parameter_input_df",
-      "mig_net_count_tot_input_df", "mig_net_count_input_df",
-      "mig_net_rate_input_df", "srb_input_df", "pop_count_base_input_df",
-      "survival_ratio_input_df", "fert_rate_input_df",
+    c("life_table_age_sex", "mig_parameter",
+      "mig_net_count_tot_b", "mig_net_count_age_sex",
+      "mig_net_rate_age_sex", "srb", "pop_count_age_sex_base",
+      "survival_ratio_age_sex", "fert_rate_age_f",
       "ccmpp_input_df", "demog_change_component_df")
 }
 
@@ -130,23 +130,23 @@ get_all_allowed_value_types <- function() {
 }
 
 get_value_type_info_for_classes <- function(class = get_all_demog_change_component_df_class_names()) {
-    db <- data.frame(rbind(c(class = "fert_rate_input_df",
+    db <- data.frame(rbind(c(class = "fert_rate_age_f",
                        value_type = "rate"),
-                     c(class = "survival_ratio_input_df",
+                     c(class = "survival_ratio_age_sex",
                        value_type = "proportion"),
-                     c(class = "pop_count_base_input_df",
+                     c(class = "pop_count_age_sex_base",
                        value_type = "count"),
-                     c(class = "srb_input_df",
+                     c(class = "srb",
                        value_type = "ratio"),
-                     c(class = "mig_net_rate_input_df",
+                     c(class = "mig_net_rate_age_sex",
                        value_type = "rate"),
-                     c(class = "mig_net_count_input_df",
+                     c(class = "mig_net_count_age_sex",
                        value_type = "count"),
-                     c(class = "mig_net_count_tot_input_df",
+                     c(class = "mig_net_count_tot_b",
                        value_type = "count"),
-                     c(class = "mig_parameter_input_df",
+                     c(class = "mig_parameter",
                        value_type = "categorical"),
-                     c(class = "life_table_input_df",
+                     c(class = "life_table_age_sex",
                        value_type = "real")
                      ), stringsAsFactors = FALSE)
     return(db[db$class %in% class,])

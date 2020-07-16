@@ -12,23 +12,23 @@ get_req_attr_names_for_ccmpp_input_dfs_for_dimensions <- function(dimensions) {
 
 get_dimensions_info_for_ccmpp_input_classes <-
     function(classes = get_all_demog_change_component_df_class_names()) {
-        db <- list(pop_count_base_input_df =
+        db <- list(pop_count_age_sex_base =
                        ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
-                   fert_rate_input_df =
+                   fert_rate_age_f =
                        ensure_these_dimensions_correctly_ordered(c("time", "age")),
-                   survival_ratio_input_df =
+                   survival_ratio_age_sex =
                        ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
-                   srb_input_df =
+                   srb =
                        ensure_these_dimensions_correctly_ordered(c("time")),
-                   mig_net_count_input_df =
+                   mig_net_count_age_sex =
                        ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
-                   mig_net_rate_input_df =
+                   mig_net_rate_age_sex =
                        ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
-                   mig_net_count_tot_input_df =
+                   mig_net_count_tot_b =
                        ensure_these_dimensions_correctly_ordered(c("time")),
-                   mig_parameter_input_df =
+                   mig_parameter =
                        ensure_these_dimensions_correctly_ordered(c("indicator", "time")),
-                   life_table_input_df =
+                   life_table_age_sex =
                        ensure_these_dimensions_correctly_ordered(
                            c("indicator", "time", "sex", "age")
                        ))

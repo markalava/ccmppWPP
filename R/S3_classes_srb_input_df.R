@@ -1,35 +1,35 @@
-#' Low-level constructor for class \code{srb_input_df}.
+#' Low-level constructor for class \code{srb}.
 #'
 #' @description
-#' Creates an object of class \code{srb_input_df}. Minimal
+#' Creates an object of class \code{srb}. Minimal
 #' checks are done; for interactive use see
-#' \code{\link{srb_input_df}}.
+#' \code{\link{srb}}.
 #'
 #' This function is not exported. The user-level constructor is
-#' \code{\link{srb_input_df}}.
+#' \code{\link{srb}}.
 #'
-#' @seealso srb_input_df
+#' @seealso srb
 #'
 #' @inheritParams new_demog_change_component_df
-#' @return An object of class \code{srb_input_df}.
+#' @return An object of class \code{srb}.
 #' @author Mark Wheldon
-new_srb_input_df <-
+new_srb <-
     function(x,
              time_span = double(),
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
                            age_span = double(),
                            time_span = time_span,
-                           dimensions =  get_req_dimensions_for_ccmpp_input_classes("srb_input_df"),
-                           value_type = get_value_types_for_classes("srb_input_df"),
+                           dimensions =  get_req_dimensions_for_ccmpp_input_classes("srb"),
+                           value_type = get_value_types_for_classes("srb"),
                            ...,
-                           class = c(class, "srb_input_df"))
+                           class = c(class, "srb"))
     }
 
 
-#' Constructor for class \code{srb_input_df}
+#' Constructor for class \code{srb}
 #'
-#' \code{srb_input_df} is a subclass of
+#' \code{srb} is a subclass of
 #' \code{\link{ccmpp_input_df}}. It imposes three additional conditions:
 #' \enumerate{
 #'   \item{\code{Value_type} attribute equals \dQuote{ratio}.}
@@ -42,29 +42,29 @@ new_srb_input_df <-
 #'     inherits.
 #'
 #' @inheritParams demog_change_component_df
-#' @return An object of class \code{srb_input_df}.
+#' @return An object of class \code{srb}.
 #' @author Mark Wheldon
 #' @export
-srb_input_df <-
+srb <-
     function(x,
              time_span = attr(x, "time_span")) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
-                            dimensions = get_req_dimensions_for_ccmpp_input_classes("srb_input_df"),
-                            value_type = get_value_types_for_classes("srb_input_df"))
+                            dimensions = get_req_dimensions_for_ccmpp_input_classes("srb"),
+                            value_type = get_value_types_for_classes("srb"))
 
         ## Create/Validate
         validate_ccmpp_object(
-            new_srb_input_df(li$df,
+            new_srb(li$df,
                              time_span = li$time_span)
         )
     }
 
 
-#' Coerce to a \code{srb_input_df}
+#' Coerce to a \code{srb}
 #'
 #' These functions coerce an object to a
-#' \code{srb_input_df} if possible, or check if it is
+#' \code{srb} if possible, or check if it is
 #' one.
 #'
 #' @family ccmpp_input_objects
@@ -74,54 +74,54 @@ srb_input_df <-
 #' @return A coerced object in the case of the \code{as_...}
 #'     functions; a logical for the \code{is_...} functions.
 #' @author Mark Wheldon
-#' @name coerce_srb_input_df
+#' @name coerce_srb
 #' @export
-as_srb_input_df <- function(x, ...) {
-    UseMethod("as_srb_input_df")
+as_srb <- function(x, ...) {
+    UseMethod("as_srb")
 }
 
-#' @rdname coerce_srb_input_df
+#' @rdname coerce_srb
 #' @export
-as_srb_input_df.default <- function(x, ...) {
-    if (is_srb_input_df(x)) return(x)
-    stop("Cannot coerce 'x' to 'srb_input_df'.")
+as_srb.default <- function(x, ...) {
+    if (is_srb(x)) return(x)
+    stop("Cannot coerce 'x' to 'srb'.")
 }
 
-#' @rdname coerce_srb_input_df
+#' @rdname coerce_srb
 #' @export
-as_srb_input_df.data.frame <- function(x, ...) {
-    srb_input_df(as.data.frame(x))
+as_srb.data.frame <- function(x, ...) {
+    srb(as.data.frame(x))
 }
 
-#' @rdname coerce_srb_input_df
+#' @rdname coerce_srb
 #' @export
-as_srb_input_df.matrix <- function(x, ...) {
-    as_srb_input_df(as.data.frame(NextMethod()))
+as_srb.matrix <- function(x, ...) {
+    as_srb(as.data.frame(NextMethod()))
 }
 
-#' @rdname coerce_srb_input_df
+#' @rdname coerce_srb
 #' @export
-as_srb_input_df.srb_input_df <- function(x, ...) {
+as_srb.srb <- function(x, ...) {
     ## copied from  'as.data.frame'
     cl <- oldClass(x)
-    i <- match("srb_input_df", cl)
+    i <- match("srb", cl)
     if (i > 1L)
         class(x) <- cl[-(1L:(i - 1L))]
     return(x)
 }
 
-#' @rdname coerce_srb_input_df
+#' @rdname coerce_srb
 #' @export
-is_srb_input_df <- function(x) {
-    inherits(x, "srb_input_df")
+is_srb <- function(x) {
+    inherits(x, "srb")
 }
 
 
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_time.srb_input_df <- function(x, times, drop = FALSE) {
+subset_time.srb <- function(x, times, drop = FALSE) {
 
     x <- NextMethod()
-    return(srb_input_df(x))
+    return(srb(x))
 }

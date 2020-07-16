@@ -21,24 +21,24 @@
 \alias{subset_sex.demog_change_component_df}
 \alias{subset_indicator}
 \alias{subset_indicator.demog_change_component_df}
-\alias{subset_time.fert_rate_input_df}
-\alias{subset_age.fert_rate_input_df}
-\alias{subset_indicator.life_table_input_df}
-\alias{subset_time.life_table_input_df}
-\alias{subset_age.life_table_input_df}
-\alias{subset_sex.life_table_input_df}
-\alias{subset_time.mig_net_count_input_df}
-\alias{subset_age.mig_net_count_input_df}
-\alias{subset_sex.mig_net_count_input_df}
-\alias{subset_time.mig_net_count_tot_input_df}
-\alias{subset_time.mig_net_rate_input_df}
-\alias{subset_age.mig_net_rate_input_df}
-\alias{subset_sex.mig_net_rate_input_df}
-\alias{subset_time.mig_parameter_input_df}
-\alias{subset_time.pop_count_base_input_df}
-\alias{subset_age.pop_count_base_input_df}
-\alias{subset_sex.pop_count_base_input_df}
-\alias{subset_time.srb_input_df}
+\alias{subset_time.fert_rate_age_f}
+\alias{subset_age.fert_rate_age_f}
+\alias{subset_indicator.life_table_age_sex}
+\alias{subset_time.life_table_age_sex}
+\alias{subset_age.life_table_age_sex}
+\alias{subset_sex.life_table_age_sex}
+\alias{subset_time.mig_net_count_age_sex}
+\alias{subset_age.mig_net_count_age_sex}
+\alias{subset_sex.mig_net_count_age_sex}
+\alias{subset_time.mig_net_count_tot_b}
+\alias{subset_time.mig_net_rate_age_sex}
+\alias{subset_age.mig_net_rate_age_sex}
+\alias{subset_sex.mig_net_rate_age_sex}
+\alias{subset_time.mig_parameter}
+\alias{subset_time.pop_count_age_sex_base}
+\alias{subset_age.pop_count_age_sex_base}
+\alias{subset_sex.pop_count_age_sex_base}
+\alias{subset_time.srb}
 \alias{subset_time.survival_ratio_input_df}
 \alias{subset_age.survival_ratio_input_df}
 \alias{subset_sex.survival_ratio_input_df}
@@ -68,41 +68,41 @@ subset_indicator(x, indicators, ...)
 
 \method{subset_indicator}{demog_change_component_df}(x, indicators = get_all_allowed_indicators(), drop = FALSE)
 
-\method{subset_time}{fert_rate_input_df}(x, times, drop = FALSE)
+\method{subset_time}{fert_rate_age_f}(x, times, drop = FALSE)
 
-\method{subset_age}{fert_rate_input_df}(x, ages, drop = FALSE)
+\method{subset_age}{fert_rate_age_f}(x, ages, drop = FALSE)
 
-\method{subset_indicator}{life_table_input_df}(x, indicators, drop = FALSE)
+\method{subset_indicator}{life_table_age_sex}(x, indicators, drop = FALSE)
 
-\method{subset_time}{life_table_input_df}(x, times, drop = FALSE)
+\method{subset_time}{life_table_age_sex}(x, times, drop = FALSE)
 
-\method{subset_age}{life_table_input_df}(x, ages, drop = FALSE)
+\method{subset_age}{life_table_age_sex}(x, ages, drop = FALSE)
 
-\method{subset_sex}{life_table_input_df}(x, sexes, drop = FALSE)
+\method{subset_sex}{life_table_age_sex}(x, sexes, drop = FALSE)
 
-\method{subset_time}{mig_net_count_input_df}(x, times, drop = FALSE)
+\method{subset_time}{mig_net_count_age_sex}(x, times, drop = FALSE)
 
-\method{subset_age}{mig_net_count_input_df}(x, ages, drop = FALSE)
+\method{subset_age}{mig_net_count_age_sex}(x, ages, drop = FALSE)
 
-\method{subset_sex}{mig_net_count_input_df}(x, sexes, drop = FALSE)
+\method{subset_sex}{mig_net_count_age_sex}(x, sexes, drop = FALSE)
 
-\method{subset_time}{mig_net_count_tot_input_df}(x, times, drop = FALSE)
+\method{subset_time}{mig_net_count_tot_b}(x, times, drop = FALSE)
 
-\method{subset_time}{mig_net_rate_input_df}(x, times, drop = FALSE)
+\method{subset_time}{mig_net_rate_age_sex}(x, times, drop = FALSE)
 
-\method{subset_age}{mig_net_rate_input_df}(x, ages, drop = FALSE)
+\method{subset_age}{mig_net_rate_age_sex}(x, ages, drop = FALSE)
 
-\method{subset_sex}{mig_net_rate_input_df}(x, sexes, drop = FALSE)
+\method{subset_sex}{mig_net_rate_age_sex}(x, sexes, drop = FALSE)
 
-\method{subset_time}{mig_parameter_input_df}(x, times, drop = FALSE)
+\method{subset_time}{mig_parameter}(x, times, drop = FALSE)
 
-\method{subset_time}{pop_count_base_input_df}(x, times, drop = FALSE)
+\method{subset_time}{pop_count_age_sex_base}(x, times, drop = FALSE)
 
-\method{subset_age}{pop_count_base_input_df}(x, ages, drop = FALSE)
+\method{subset_age}{pop_count_age_sex_base}(x, ages, drop = FALSE)
 
-\method{subset_sex}{pop_count_base_input_df}(x, sexes, drop = FALSE)
+\method{subset_sex}{pop_count_age_sex_base}(x, sexes, drop = FALSE)
 
-\method{subset_time}{srb_input_df}(x, times, drop = FALSE)
+\method{subset_time}{srb}(x, times, drop = FALSE)
 
 \method{subset_time}{survival_ratio_input_df}(x, times, drop = FALSE)
 

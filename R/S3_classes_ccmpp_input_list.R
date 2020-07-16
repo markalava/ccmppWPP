@@ -36,7 +36,7 @@ get_all_required_ccmpp_input_list_element_names <- function() {
 #' @seealso ccmpp_input_list
 #'
 #' @inheritParams new_ccmpp_input_df
-#' @inheritParams new_fert_rate_input_df
+#' @inheritParams new_fert_rate_age_f
 #' @return An object of class \code{ccmpp_input_list}.
 #' @author Mark Wheldon
 new_ccmpp_input_list <-
@@ -68,35 +68,35 @@ new_ccmpp_input_list <-
 #'
 #' @family ccmpp_input_objects
 #'
-#' @param pop_count_base_input_df An object of class \code{\link{pop_count_base_input_df}}
-#' @param life_table_input_df An object of class \code{\link{life_table_input_df}}
-#' @param fert_rate_input_df An object of class \code{\link{fert_rate_input_df}}
-#' @param srb_input_df An object of class \code{\link{srb_input_df}}
-#' @param mig_net_count_input_df An object of class \code{\link{mig_net_count_input_df}}
-#' @param mig_net_rate_input_df An object of class \code{\link{mig_net_rate_input_df}}
-#' @param mig_net_count_tot_input_df An object of class \code{\link{mig_net_count_tot_input_df}}
-#' @param mig_parameter_input_df An object of class \code{\link{mig_parameter_input_df}}
+#' @param pop_count_age_sex_base An object of class \code{\link{pop_count_age_sex_base}}
+#' @param life_table_age_sex An object of class \code{\link{life_table_age_sex}}
+#' @param fert_rate_age_f An object of class \code{\link{fert_rate_age_f}}
+#' @param srb An object of class \code{\link{srb}}
+#' @param mig_net_count_age_sex An object of class \code{\link{mig_net_count_age_sex}}
+#' @param mig_net_rate_age_sex An object of class \code{\link{mig_net_rate_age_sex}}
+#' @param mig_net_count_tot_b An object of class \code{\link{mig_net_count_tot_b}}
+#' @param mig_parameter An object of class \code{\link{mig_parameter}}
 #' @return An object of class \code{ccmpp_input_list}.
 #' @author Mark Wheldon
 #' @export
 ccmpp_input_list <-
-    function(pop_count_base_input_df,
-             life_table_input_df,
-             fert_rate_input_df,
-             srb_input_df,
-             mig_net_count_input_df,
-             mig_net_rate_input_df,
-             mig_net_count_tot_input_df,
-             mig_parameter_input_df) {
+    function(pop_count_age_sex_base,
+             life_table_age_sex,
+             fert_rate_age_f,
+             srb,
+             mig_net_count_age_sex,
+             mig_net_rate_age_sex,
+             mig_net_count_tot_b,
+             mig_parameter) {
 
-        obj <- list(pop_count_age_sex_base = as_pop_count_base_input_df(pop_count_base_input_df),
-                    life_table_age_sex = as_life_table_input_df(life_table_input_df),
-                    fert_rate_age_f = as_fert_rate_input_df(fert_rate_input_df),
-                    srb = as_srb_input_df(srb_input_df),
-                    mig_net_count_age_sex = as_mig_net_count_input_df(mig_net_count_input_df),
-                    mig_net_rate_age_sex = as_mig_net_rate_input_df(mig_net_rate_input_df),
-                    mig_net_count_tot_b = as_mig_net_count_tot_input_df(mig_net_count_tot_input_df),
-                    mig_parameter = as_mig_parameter_input_df(mig_parameter_input_df))
+        obj <- list(pop_count_age_sex_base = as_pop_count_age_sex_base(pop_count_age_sex_base),
+                    life_table_age_sex = as_life_table_age_sex(life_table_age_sex),
+                    fert_rate_age_f = as_fert_rate_age_f(fert_rate_age_f),
+                    srb = as_srb(srb),
+                    mig_net_count_age_sex = as_mig_net_count_age_sex(mig_net_count_age_sex),
+                    mig_net_rate_age_sex = as_mig_net_rate_age_sex(mig_net_rate_age_sex),
+                    mig_net_count_tot_b = as_mig_net_count_tot_b(mig_net_count_tot_b),
+                    mig_parameter = as_mig_parameter(mig_parameter))
 
         age_span <- age_span(obj$mig_net_count_age_sex)
         time_span <- time_span(obj$mig_net_count_age_sex)
@@ -152,14 +152,14 @@ as_ccmpp_input_list.list <- function(x, ...) {
              paste(req_el_names,
                    collapse = ", "))
 
-        ccmpp_input_list(pop_count_base_input_df = pop_count_base_component(x),
-                         life_table_input_df = life_table_component(x),
-                         fert_rate_input_df = fert_rate_component(x),
-                         srb_input_df = srb_component(x),
-                         mig_net_count_input_df = mig_net_count_component(x),
-                         mig_net_rate_input_df = mig_net_rate_component(x),
-                         mig_net_count_tot_input_df = mig_net_count_tot_component(x),
-                         mig_parameter_input_df = mig_parameter_component(x)
+        ccmpp_input_list(pop_count_age_sex_base = pop_count_base_component(x),
+                         life_table_age_sex = life_table_component(x),
+                         fert_rate_age_f = fert_rate_component(x),
+                         srb = srb_component(x),
+                         mig_net_count_age_sex = mig_net_count_component(x),
+                         mig_net_rate_age_sex = mig_net_rate_component(x),
+                         mig_net_count_tot_b = mig_net_count_tot_component(x),
+                         mig_parameter = mig_parameter_component(x)
                          )
 }
 

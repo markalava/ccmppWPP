@@ -51,7 +51,7 @@ subset_time.ccmpp_input_list <- function(x, times, drop = FALSE) {
 subset_age.ccmpp_input_list <- function(x, ages, drop = FALSE) {
 
     if (isFALSE(0 %in% ages))
-        stop("'0' must be be in 'ages' for the result to be a valid 'ccmpp_input_list'.")
+        stop("'0' must be in 'ages' for the result to be a valid 'ccmpp_input_list'.")
 
     for (df_nm in names(x)) {
         if (is_by_age(x[[df_nm]]))

@@ -4,7 +4,7 @@
 \name{summary_demog_change_component_df}
 \alias{summary_demog_change_component_df}
 \alias{summary.demog_change_component_df}
-\alias{summary.fert_rate_input_df}
+\alias{summary.fert_rate_age_f}
 \title{Summarize a \code{demog_change_component_df}}
 \usage{
 \method{summary}{demog_change_component_df}(
@@ -15,7 +15,7 @@
   ...
 )
 
-\method{summary}{fert_rate_input_df}(
+\method{summary}{fert_rate_age_f}(
   object,
   maxsum = 7,
   digits = max(3, getOption("digits") - 3),

@@ -227,7 +227,7 @@ print.demog_change_component_df <-
 
             attr_names <- names(demog_change_component_attributes(x))
             attr_names <- attr_names[!(attr_names == "dimensions")]
-            if (inherits(x, "fert_rate_input_df"))
+            if (inherits(x, "fert_rate_age_f"))
                 attr_names <- attr_names[!(attr_names == "non_zero_fert_ages")]
             attr_msgs <- sapply(attr_names, function(z) {
                 att_z <- attr(x, z)
@@ -247,7 +247,7 @@ print.demog_change_component_df <-
                               "\n# dimensions = '", paste(demog_change_component_dimensions(x), collapse = ", "), "'.",
                               "\n# ", attr_msgs,
                               ".\n")
-            if (inherits(x, "fert_rate_input_df"))
+            if (inherits(x, "fert_rate_age_f"))
                 cat_msg <- paste0(cat_msg, paste0("# non_zero_fert_ages = '",
                                                   print_non_zero_fert_ages(attr(x, "non_zero_fert_ages"), width = 20),
                                                   "'.\n"))

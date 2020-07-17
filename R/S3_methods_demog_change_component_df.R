@@ -188,6 +188,9 @@ rbind.demog_change_component_df <-
                         "' and will not have any attributes specific to that class.")
             }
             oldClass(x) <- strip_demog_change_component_df_classes_attribute(oldClass(x))
+    for (a in get_all_allowed_attributes()) {
+        attr(x, a) <- NULL
+    }
             return(x)
         } else return(x)
     }

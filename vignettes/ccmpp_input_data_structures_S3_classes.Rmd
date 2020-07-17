@@ -4,21 +4,13 @@ author: ""
 date: |
     | `r Sys.Date()`
     | (`r paste0("_ccmppWPP_ version ", packageVersion("ccmppWPP"), ")")`
+# output:
+#     function(...) bookdown::html_document2(..., base_format = rmarkdown::html_vignette, css=c(system.file("rmarkdown", "templates", "html_vignette", "resources", "vignette.css", package = "rmarkdown"), "vignette2.css")):
+#       toc: true
+#       toc_depth: 2
 output:
-    function(...) bookdown::html_document2(..., base_format = rmarkdown::html_vignette, css=c(system.file("rmarkdown", "templates", "html_vignette", "resources", "vignette.css", package = "rmarkdown"), "vignette2.css")):
-      toc: true
-      toc_depth: 2
-# output:
-#   bookdown::html_document2:
-#      toc: yes
-#      toc_depth: 3
-#      theme: readable
-#      toc_float: true
-#      includes:
-#        in_header: 'css_theme_readable.css' 
-# output:
-#   word_document:
-#     reference_docx: docx_reference.docx    
+  word_document:
+    reference_docx: docx_reference.docx    
 bibliography: bibliography.bib
 link-citations: true
 vignette: >
@@ -70,7 +62,7 @@ CCMPP requires as input a collection of data by age, sex, and period:
   
 There may also be
 
-  6. Population counts at some years in the interval of projection.
+  1. Population counts at some years in the interval of projection.
   
 CCMPP produces as output 
 
@@ -88,12 +80,12 @@ Other systems will be interacting with the *R* code performing CCMPP operations,
 
 ## Approach 
 
-*R*'s S3 object oriented programming system will be used to formally encode input and output object structures as *classes*. Once such classes are defined one can write functions that validate an object as a member of the class by checking that it's structure matches the class definition. For example, a class for fertility rates might specify that they be non-negative. Objects passed into the CCMPP functions can be validated (once) at the top of the function to ensure that the input object matches the specification the function expects. This approach reduces the chance of failures later on in the function and of undetected errors in computations. 
+*R*'s S3 object oriented programming system is used to formally encode input and output object structures as *classes*. Functions are defined that validate an object as a member of one (or more) of the classes by checking its structure matches the class definitions. For example, the class for fertility rates specifies that all values be non-negative. Objects passed into the CCMPP functions will be validated once at the top of the function to ensure that the input object matches the specification the function expects. This approach reduces the chance of failures later on in the function and of undetected errors in computations. 
 
-In order to minimize errors, especially invisible errors, the inputs to functions should be checked to ensure they contain valid values. To achieve this using classes:
+To achieve this:
 
-1. A complete description of the object class encoded in a series of *R* functions that *create* and *validate* objects as members of the class.
-2. Functions that take objects of the class as their primary input should be *generics* with *methods* for the class. This provides only a *minimal* amount of safety but makes a clear statement to the user that the object expected should conform to expectations.
+1. A complete description of the object class is encoded in a series of *R* functions that *create* and *validate* objects as members of the class.
+2. Special functions that take objects of the class as their primary input are defined as *generics* with *methods* for the class. This provides a *minimal* amount of safety but makes a clear statement to the user that the object expected should conform to expectations.
 3. Functions *validate* the input object before doing any calculations. This should prevent any invalid inputs making their way into the function calculations potentially causing undetected errors. *Subsequent* calculation errors due to the function's own operations are the responsibility of the function, not the class.
 
 For further reading on *R*'s object-oriented programming system, including S3, see (@wickham_advanced_2019, Part III).
@@ -106,15 +98,15 @@ The purpose of the S3 object classes is to specify the structure a set of inputs
 
 ## Justification
 
-Having specifications for valid data structures makes development and maintenance of R code easier, and makes the code less susceptible to errors and failures. It makes it easier for users to generate inputs since they know exactly what is required, and for them to work with the outputs since they know exactly what the outputs will look like. Complete specification of input and output objects are particularly important for interoperability between systems where one system may generate inputs and another process the outputs.
+Having specifications for valid data structures makes development and maintenance of R code easier, and makes the code less susceptible to errors and failures. It makes it easier for users to generate inputs since they know exactly what is required, and for them to work with the outputs since they know exactly what the outputs will look like. Complete specification of input and output objects are particularly important for interoperability between systems in a chained operation, where one system may generate inputs to the CCMPP functions and another processes the outputs.
 
-S3 programming promotes transparency and rigor as the specifications of the objects are defined in *R* code. Each object of a given class has attached to it meta data describing its specification. These meta data are stored in the objects' *attributes*. 
+S3 programming promotes transparency and rigor as the specifications of the objects are defined in *R* code. Each object of a given class will have attached to it meta data describing its characteristics with respect to the class. These meta data are stored in the objects' *attributes*. Constructor and validator functions for, respectively, creating objects and confirming they have valid structure, encode a series of rules which define the structure of the class. 
 
-Creating object classes abstracts the object type from the details. A user-interface can be developed to perform key operations on objects of a class independently of the class's implementation. It is not relevant to the user, nor should it affect the visible behaviour of the function, whether the object uses data frames, matrices, or lists to store the information. These underlying details can be changed without affecting the user interface and, thereby, breaking existing user code. 
+Creating object classes abstracts the object type from the details. A user-interface will be developed to perform key operations on objects of a class independently of the class's implementation. It is not relevant to the user, nor should it affect the visible behaviour of the function, whether the object uses data frames, matrices, or lists to store its data. These underlying details can be changed without affecting the user interface and, thereby, breaking existing user code. 
 
 Functions that operate on objects with classes can be written such that different *methods* are available for different classes of objects. This means that the same function call when applied to objects of different classes can produce different outputs. This is another useful form of abstraction; the user interface is separated from the details of the implementation. In *R* it also allows new behaviours for new classes to be quickly added to existing functions. 
 
-This system programming efficiencies and is easy to extend over time due to *inheritance*. A series of nested class definitions can be defined such that objects inherit the attributes of their 'parents'. This means that specifications of 'child' classes need only include the additional attributes not held by their parents. Moreover, functions with a method defined for a parent will automatically apply that method to objects of a child class, unless a specific method for the child class is defined.
+This system provides programming efficiencies, and can be extended over time in a modular fashion, due to *inheritance*. Where appropriate, class definitions will be nested such that objects inherit the attributes of their 'parents'. This means that specifications of 'child' classes need only include the additional attributes not held by their parents. Moreover, functions with a method defined for a parent will automatically apply that method to objects of a child class, unless a specific method for the child class is defined.
 
 
 # S3 Classes for CCMPP Input and Output
@@ -196,7 +188,7 @@ The class `demog_change_component_df` was designed to accommodate all of the dat
     6. real
     7. categorical
 
-The data frames in `wpp_input_example` have various subsets of the `dimension`s. For example, `wpp_input_example$srb` has only the "time" dimension, the fertility rate component has only the "time" and "age" dimensions. Specific subclasses for these data frames are defined to formalize their characteristics. 
+The data frames in `wpp_input_example` have various subsets of the `dimension`s. For example, `wpp_input_example$srb` has only the "time" dimension, the fertility rate component has only the "time" and "age" dimensions. Specific subclasses for these data frames are defined to formalize their characteristics. The "value_type" "real" is a catch-all for numeric values that do not fall under any other type. It is also used when the `value` column contains a mixture of the other types, as is the case for `wpp_input_example$life_table_age_sex`. 
 	
 	
 ### Data Component
@@ -309,13 +301,31 @@ Table: (\#tab:ccmpp-input-subclass-restrictions) Additional attributes and pre-s
 +-----------------------------+---------------------+-------------------------------+--------------+
 
 
+# Role in CCMPP Workflow
+
 ## `ccmpp_input_list` {#sec:ccmpp-inut-list-defn}
 
-The class `ccmpp_input_list` is a list of object with the classes listed in Table \@ref(tab:ccmpp-input-subclass-restrictions). It specifies exactly the inputs needed for a complete run of the CCMPP. It acquires all the attributes of its constituents:
+`ccmppWPP_workflow_one_country_variant` is the workhorse function for performing the CCMPP on a single country. It takes a single argument, a list of data frame, each containing data for a component of demographic change (population at baseline, fertility, etc.). The class `ccmpp_input_list` is a list of objects with the classes listed in Table \@ref(tab:ccmpp-input-subclass-restrictions). It specifies exactly the inputs needed for a complete run of the CCMPP. It acquires all the attributes of its constituents:
 
 - "age_span"
 - "time_span"
 - "non_zero_fert_ages"
+
+
+## Validating Input
+
+A single line is added to `ccmppWPP_workflow_one_country_variant` to enact the validation:
+
+```{r, eval = FALSE}
+ccmppWPP_workflow_one_country_variant <- function(wpp_input) {
+
+    wpp_input <- as_ccmpp_input_list(wpp_input) #<<<<<<<< ADDED: VALIDATE INPUTS
+
+    # extract objects needed for ccmpp
+    ccmpp_input <- data_parse_ccmpp_input(indata = wpp_input)
+
+    ... etc.
+```
 
 
 # Construction and Validation
@@ -623,6 +633,14 @@ A subset that is not a valid class object will not be created and an error will 
 ## Error in validate_ccmpp_object.ccmpp_input_df(new_ccmpp_input_df(li$df,  : 
 ##   'age_start' does not start at '0' for each time * sex combination.
 ```
+
+
+# What Next?
+
+1. Get feedback on the general set-up, names of things, operation, etc.
+2. Decide if the output list would benefit from having classes defined like the input list. This would be straightforward given the infrastructure already created. 
+3. Complete documentation files for functions and classes (e.g., `?ccmpp_input_list`).
+4. Consider other methods that would be useful. E.g., would a `plot` method be useful to vizualize the inputs? This would allow quick and easier creation of a standard set of vizualizations to check the inputs/outputs.
 
 
 # References {-} 

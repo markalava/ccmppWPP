@@ -488,16 +488,32 @@ validate_ccmpp_object.life_table_age_sex <- function(x, ...) {
 validate_ccmpp_object.ccmpp_input_list <- function(x, ...) {
 
     req_el_names <- get_all_required_ccmpp_input_list_element_names()
+    req_el_classes <- get_all_required_ccmpp_input_list_element_classes()
 
     if (!identical(sort(names(x)),
                    sort(req_el_names)))
-        stop("'x' must have these elements (no more): ",
+        stop("'x' must have these elements (no more):\n\t'",
              paste(req_el_names,
-                   collapse = ", "))
+                   collapse = "', '"),
+             ".\n",
+             "Actual names are:\n\t'",
+             paste(names(x), collapse = "', '"),
+             "'.")
+
+    x_classes <-
+        unname(sapply(x, function(z) oldClass(z)[1], USE.NAMES = FALSE))
+    if (!identical(sort(x_classes), sort(req_el_classes)))
+        stop("Elements of 'x' must have the following classes:\n\t'",
+             paste(req_el_classes, collapse = "', '"),
+             ".\n",
+             "Actual classes are:\n\t'",
+             paste(x_classes, collapse = "', '"), "'.")
 
     ## Check elements
     age_span_attrs <- c()
+    age_levels <- list()
     time_span_attrs <- c()
+    time_levels <- list()
 
     for (df_nm in req_el_names) {
 
@@ -506,13 +522,17 @@ validate_ccmpp_object.ccmpp_input_list <- function(x, ...) {
         if (identical(class(test), "try-error"))
             stop(df_nm, ":\n", strsplit(c(test), " : ")[[1]][2])
 
-        ## Store 'spans'
-        if (is_by_age(x[[df_nm]]))
+        ## Store 'spans' and time and age levels
+        if (is_by_age(x[[df_nm]])) {
             age_span_attrs <-
                 c(age_span_attrs, setNames(age_span(x[[df_nm]]), df_nm))
-        if (is_by_time(x[[df_nm]]))
+            age_levels <- c(age_levels, setNames(list(ages(x[[df_nm]])), df_nm))
+        }
+        if (is_by_time(x[[df_nm]])) {
             time_span_attrs <-
                 c(time_span_attrs, setNames(time_span(x[[df_nm]]), df_nm))
+            time_levels <- c(time_levels, setNames(list(times(x[[df_nm]])), df_nm))
+        }
     }
 
     ## Check age and time spans are identical and scalar
@@ -530,5 +550,32 @@ validate_ccmpp_object.ccmpp_input_list <- function(x, ...) {
         stop("'time_span' must equal 'age_span'. Actual 'time_span' and 'age_span' are printed above.")
     }
 
+    ## Check that all have the same ages
+    age_lengths <- sapply(age_levels, "length")
+    common_length <- unique(age_lengths)
+    if (!identical(length(common_length), 1L)) {
+        print(age_lengths)
+        stop("All elements that have an \"age\" dimension must have the same number of age groups. Actual number of ages by element are printed above.")
+    }
+    if (!all(sapply(age_levels[-1], function(z) identical(z, age_levels[[1]])))) {
+        print(age_levels)
+        stop("All elements that have an \"age\" dimension must have the same age groups ('age_start'). Actual age groups by element are printed above.")
+    }
+
+    ## Check that all have the same times
+    time_levels_not_pop_count_base <-
+        time_levels[-which(names(time_levels) == "pop_count_age_sex_base")]
+    time_lengths <-
+        sapply(time_levels_not_pop_count_base, "length")
+    common_length <- unique(time_lengths)
+    if (!identical(length(common_length), 1L)) {
+        print(time_lengths)
+        stop("All elements except \"pop_count_age_sex_base\" that have a \"time\" dimension must have the same number of time groups. Actual number of times by element are printed above.")
+    }
+    if (!all(sapply(time_levels_not_pop_count_base[-1],
+                    function(z) identical(z, time_levels_not_pop_count_base[[1]])))) {
+        print(time_levels_not_pop_count_base)
+        stop("All elements except \"pop_count_age_sex_base\" that have a \"time\" dimension must have the same time groups ('time_start'). Actual time groups by element are printed above.")
+    }
     return(x)
 }

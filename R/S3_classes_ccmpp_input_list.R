@@ -20,6 +20,11 @@ get_all_required_ccmpp_input_list_element_names <- function() {
       "mig_parameter")
 }
 
+## Required element classes
+get_all_required_ccmpp_input_list_element_classes <- function() {
+    get_all_required_ccmpp_input_list_element_names()
+}
+
 ###-----------------------------------------------------------------------------
 ### * Class constructors
 

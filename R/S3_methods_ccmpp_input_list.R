@@ -1,4 +1,75 @@
 ###-----------------------------------------------------------------------------
+### * Fundamentals
+
+#' Replace Parts of a \code{ccmpp_input_list}
+#'
+#' These are methods for the subset-replacement functions for objects
+#' of class \code{ccmpp_input_list}. The return values differ and,
+#' importantly, are not objects of class \code{ccmpp_input_list} (see
+#' \dQuote{Details}).
+#'
+#' Arbitrary modifications of \code{ccmpp_input_list}s may not be
+#' valid members of the class. Therefore, the object resulting from a
+#' subset operation via \code{`[`}, or a replacement via \code{`[<-`},
+#' and similar, will no longer inherit from class
+#' \code{ccmpp_input_list} (or subclasses) and the attributes specific
+#' to those classes will be lost.
+#'
+#' @seealso \code{\link{ccmpp_input_list}} for class definitions,
+#'     \code{link{subset_time}} and friends, and
+#'     \code{\link{[.demog_change_component_df}} for similar functions
+#'     for the constituent data frame objects.
+#'
+#' @inheritParams base::`[.data.frame`
+#' @inheritParams base::`[<-.data.frame`
+#' @return A \code{list}.
+#' @author Mark Wheldon
+#'
+#' @name ccmpp_input_list_replace
+NULL
+
+
+#' @rdname ccmpp_input_list_replace
+#' @export
+`$<-.ccmpp_input_list` <- function(x, name, value) {
+    if (identical(parent.frame(), .GlobalEnv)) {
+        warning("Replacing elements in a '",
+                oldClass(x)[1],
+                "' will not preserve the class or attributes.")
+    }
+    x <- NextMethod()
+    if(is_ccmpp_input_list(x)) return(as.list(x))
+                                # 'NextMethod()' will preseve the
+                                # 'ccmpp_input_list' class so the
+                                # 'ccmpp_input_list' method for
+                                # 'as.list' will be called. This
+                                # will then produce a simple data
+                                # frame with no extra attributes.
+    else return(x)
+    }
+
+
+#' @rdname ccmpp_input_list_replace
+#' @export
+`[[<-.ccmpp_input_list` <- function(x, i, j, value) {
+    if (identical(parent.frame(), .GlobalEnv)) {
+        warning("Replacing elements in a '",
+                oldClass(x)[1],
+                "' will not preserve the class or attributes.")
+    }
+    x <- NextMethod()
+    if(is_ccmpp_input_list(x)) return(as.list(x))
+                                # 'NextMethod()' will preseve the
+                                # 'ccmpp_input_list' class so the
+                                # 'ccmpp_input_list' method for
+                                # 'as.list' will be called. This
+                                # will then produce a simple data
+                                # frame with no extra attributes.
+    else return(x)
+}
+
+
+###-----------------------------------------------------------------------------
 ### * Print, Summary, and Friends
 
 #' Print Values of a \code{ccmpp_input_list}

@@ -9,14 +9,14 @@
 
 #' Extract or Replace Parts of a \code{demog_change_component_df}
 #'
-#' These are methods for the subset operator and its companion
-#' replacement function for objects of class
+#' These are methods for the subset operators and their companion
+#' replacement functions for objects of class
 #' \code{demog_change_component_df}. The return values differ and,
-#' importantly, subsetting does not return an object of class
+#' importantly, subsetting and subset-replacement do not return objects of class
 #' \code{demog_change_component_df} (see \dQuote{Details}).
 #'
 #' Arbitrary subsets or modifications of
-#' \code{demog_change_component_df}s (an objects of subclasses) may
+#' \code{demog_change_component_df}s (and objects of subclasses) may
 #' not be valid members of the class. Therefore, the object resulting
 #' from a subset operation via \code{`[`}, or a replacement via
 #' \code{`[<-`}, and similar, will no longer inherit from class

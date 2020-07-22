@@ -4,10 +4,20 @@
 #' Extract attributes of a \code{ccmpp_input_list}
 #'
 #' These are convenience functions for accessing specific attributes
-#' of objects inheriting from \code{ccmpp_input_list}.
+#' and dimensions of objects inheriting from
+#' \code{ccmpp_input_list}.
+#'
+#' \code{age_span} and \code{time_span} return the attribute, which
+#' are scalars. \code{ages}, \code{times}, \code{sexes} return the
+#' levels of these dimensions (see also
+#' \code{\link{ages.demog_change_component_df}}). \code{indicators}
+#' and \code{value_type} return lists, with one element per element of
+#' \code{x}. By default, elements that do not have an
+#' \dQuote{indicator} dimension are dropped by \code{indicators}.
 #'
 #' @param x An object inheriting from \code{ccmpp_input_list}
-#' @return The requested attribute
+#' @param drop Logical, for \code{indicators}: should \code{NULL} elements be dropped?
+#' @return The requested attribute or dimension levels; see \dQuote{Details}.
 #' @author Mark Wheldon
 #' @name extract_ccmpp_input_list_attributes
 #' @family extract_attributes
@@ -24,6 +34,51 @@ age_span.ccmpp_input_list <- function(x) {
 time_span.ccmpp_input_list <- function(x) {
     attr(x, "time_span")
 }
+
+
+###-----------------------------------------------------------------------------
+### * Dimensions
+
+#' @rdname extract_ccmpp_input_list_attributes
+#' @export
+ages.ccmpp_input_list <- function(x) {
+    ages(mig_net_count_component(x))
+}
+
+#' @rdname extract_ccmpp_input_list_attributes
+#' @export
+non_zero_fert_ages.ccmpp_input_list <- function(x) {
+    non_zero_fert_ages(fert_rate_component(x))
+}
+
+#' @rdname extract_ccmpp_input_list_attributes
+#' @export
+times.ccmpp_input_list <- function(x) {
+    times(mig_net_count_component(x))
+}
+
+#' @rdname extract_ccmpp_input_list_attributes
+#' @export
+sexes.ccmpp_input_list <- function(x) {
+    sexes(mig_net_count_component(x))
+}
+
+#' @rdname extract_ccmpp_input_list_attributes
+#' @export
+indicators.ccmpp_input_list <- function(x, drop = TRUE) {
+    x <- lapply(x, function(z) {
+        if (is_by_indicator(z)) indicators(z)
+    })
+    if (drop) return(x[!sapply(x, "is.null")])
+    else return(x)
+}
+
+#' @rdname extract_ccmpp_input_list_attributes
+#' @export
+value_type.ccmpp_input_list <- function(x) {
+    lapply(x, "value_type")
+}
+
 
 
 ###-----------------------------------------------------------------------------

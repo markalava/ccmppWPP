@@ -13,7 +13,7 @@ test_that("subsetting drops classes", {
 })
 
 
-test_that("replacement with valid columns passes (time, age, sex)", {
+test_that("replacement with valid columns drops classes", {
 
     z <- ccmpp_input_df_time_age_sex
     z[, "age_start"] <- z$age_start

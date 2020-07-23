@@ -66,7 +66,7 @@ subset_sex(x, sexes, ...)
 
 subset_indicator(x, indicators, ...)
 
-\method{subset_indicator}{demog_change_component_df}(x, indicators = get_all_allowed_indicators(), drop = FALSE)
+\method{subset_indicator}{demog_change_component_df}(x, indicators, drop = FALSE)
 
 \method{subset_time}{fert_rate_age_f}(x, times, drop = FALSE)
 

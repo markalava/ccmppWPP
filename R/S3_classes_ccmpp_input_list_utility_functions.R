@@ -23,6 +23,11 @@
 #' subsetting operations on the data frame component and re-cast the
 #' result as a classed object at the end if desired.
 #'
+#' @seealso \code{link{subset_time}}, etc., for the S3 generic
+#'     function; \code{link{subset_time.demog_change_component_df}}
+#'     for the method for objects inheriting from
+#'     \code{demog_change_component_df}.
+#'
 #' @param x An object to subset.
 #' @param time,age Vectors indicating the levels of
 #'     time, age, or sex to retain.
@@ -58,4 +63,64 @@ subset_age.ccmpp_input_list <- function(x, ages, drop = FALSE) {
             x[[df_nm]] <- subset_age(x[[df_nm]], ages = ages, drop = drop)
     }
     return(as_ccmpp_input_list(as.list(x)))
+}
+
+###-----------------------------------------------------------------------------
+### * Age-time matrices
+
+#' Coerce a \code{ccmpp_input_list} to a list of age-time matrices
+#'
+#' A list of age * time matrices will be created from \code{x} by
+#' calling \code{\link{as_age_time_matrix}} on each element.
+#'
+#' @seealso \code{\link{as_age_time_matrix}}
+#'
+#' @inheritParams as_age_time_matrix
+#' @return A \code{list}.
+#' @author Mark Wheldon
+#' @name as_age_time_matrix_list
+NULL
+
+#' @rdname as_age_time_matrix_list
+#' @export
+as_age_time_matrix_list <- function(x, drop_zero_fert_ages = FALSE, ...) {
+    UseMethod("as_age_time_matrix_list")
+}
+
+#' @rdname as_age_time_matrix_list
+#' @export
+as_age_time_matrix_list.ccmpp_input_list <- function(x, drop_zero_fert_ages = FALSE, ...) {
+    lapply(x, function(y) {
+    ## for (name in names(x)) {
+        ## y <- x[[name]]
+        y <- as_demog_change_component_df(y) #because cannot subset most of the ccmpp input elements
+        if (is_by_indicator(y)) {
+            names_of_indicators_y <- setNames(indicators(y), indicators(y))
+            lapply(names_of_indicators_y, function(this_indicator_name) {
+                y_subset_by_indicator <-
+                    subset_indicator(y, indicators = this_indicator_name, drop = TRUE)
+                if (is_by_sex(y_subset_by_indicator)) {
+                    names_of_sexes_y_subset_by_indicator <-
+                        setNames(sexes(y_subset_by_indicator),
+                                 sexes(y_subset_by_indicator))
+                    lapply(names_of_sexes_y_subset_by_indicator, function(this_sex_name) {
+                        y_subset_by_indicator_and_sex <-
+                            subset_sex(y_subset_by_indicator, this_sex_name, drop = TRUE)
+                        as_age_time_matrix(y_subset_by_indicator_and_sex)
+                    })
+                } else {
+                    as_age_time_matrix(y_subset_by_indicator)
+                }
+            })
+        } else if (is_by_sex(y)) {
+                names_of_sexes_y <- setNames(sexes(y), sexes(y))
+                lapply(names_of_sexes_y, function(this_sex_name) {
+                    this_sex_obj_subset <- subset_sex(y, this_sex_name, drop = TRUE)
+                    as_age_time_matrix(this_sex_obj_subset)
+                })
+        } else {
+            as_age_time_matrix(y)
+        }
+        #}
+    })
 }

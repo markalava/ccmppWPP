@@ -133,9 +133,8 @@ subset_indicator <- function(x, indicators, ...) {
 #' @rdname subset_demog_change_component_df
 #' @export
 subset_indicator.demog_change_component_df <-
-    function(x, indicators = get_all_allowed_indicators(), drop = FALSE) {
+    function(x, indicators, drop = FALSE) {
         stopifnot(is_by_indicator(x))
-        indicators <- match.arg(indicators, several.ok = TRUE)
 
     value_type_x <- value_type(x)
 
@@ -166,24 +165,32 @@ subset_indicator.demog_change_component_df <-
 #' matrix from such an object, first remove the \dQuote{sex} dimension
 #' with \code{\link{subset_sex}}.
 #'
-#' @param x An object of class \code{demog_change_component_df}.
-#' @return A \code{list}.
+#' @param x An object inheriting from class
+#'     \code{demog_change_component_df}.
+#' @param drop_zero_fert_ages Logical; should rows corresponding to
+#'     \dQuote{non_zero_fert_ages} be dropped when converting
+#'     \code{fert_rate_age_f} objects.
+#' @param ... Further arguments passed to and from methods.
+#' @return A \code{matrix}.
 #' @author Mark Wheldon
 #' @name as_age_time_matrix
 NULL
 
 #' @rdname as_age_time_matrix
 #' @export
-as_age_time_matrix <- function(x) {
+as_age_time_matrix <- function(x, ...) {
     UseMethod("as_age_time_matrix")
 }
 
 #' @rdname as_age_time_matrix
 #' @export
-as_age_time_matrix.demog_change_component_df <- function(x) {
+as_age_time_matrix.demog_change_component_df <- function(x, ...) {
 
     if (is_by_sex(x))
         stop("'x' has dimension \"sex\"; select a single sex using 'subset_sex(..., drop = TRUE)' to create an age-time matrix.")
+
+    if (is_by_indicator(x))
+        stop("'x' has dimension \"indicator\"; select a single indicator using 'subset_indicator(..., drop = TRUE)' to create an age-time matrix.")
 
     dims <- demog_change_component_dimensions(x)
 

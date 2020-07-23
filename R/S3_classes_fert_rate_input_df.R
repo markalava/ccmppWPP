@@ -128,6 +128,9 @@ fert_rate_age_f <-
     }
 
 
+###-----------------------------------------------------------------------------
+### * Coercion
+
 #' Coerce to a \code{fert_rate_age_f}
 #'
 #' These functions coerce an object to a
@@ -184,6 +187,8 @@ is_fert_rate_age_f <- function(x) {
 }
 
 
+###-----------------------------------------------------------------------------
+### * Subset
 
 #' @rdname subset_demog_change_component_df
 #' @export
@@ -200,3 +205,17 @@ subset_age.fert_rate_age_f <- function(x, ages, drop = FALSE) {
     x <- NextMethod()
     return(fert_rate_age_f(x))
 }
+
+
+###-----------------------------------------------------------------------------
+### * Utilities
+
+#' @rdname as_age_time_matrix
+#' @export
+as_age_time_matrix.fert_rate_age_f <- function(x, drop_zero_fert_ages = FALSE, ...) {
+    nzfa <- non_zero_fert_ages(x)
+    x <- NextMethod()
+    if (drop_zero_fert_ages)
+        x <- x[dimnames(x)$age %in% nzfa, ]
+    return(x)
+    }

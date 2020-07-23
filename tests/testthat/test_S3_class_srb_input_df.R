@@ -9,7 +9,7 @@ test_that("valid member created", {
 test_that("age dimension detected", {
     x <- srb_time
     y <- cbind(x, age_start = 0, age_span = 1)
-    z <- new_srb(y, time_span = 1)
+    z <- ccmppWPP:::new_srb(y, time_span = 1)
     attr(z, "dimensions") <- c(attr(z, "dimensions"), "age")
     attr(z, "age_span") <- 1
     expect_error(validate_ccmpp_object(z),

@@ -181,8 +181,6 @@ sort_demog_change_component_df <- function(x) {
         x[[coln_info_x[coln_info_x$dimension == dimension, "colname"]]]
     }
 
-    dims_names_not_age <- dims_names_x[!dims_names_x == "age"]
-
     sort_factors <-
         unname(as.data.frame(lapply(dims_names_x, "get_x_col")))
 
@@ -204,8 +202,6 @@ tabulate_demog_change_component_df <- function(x) {
     get_x_col <- function(dimension) {
         x[[coln_info_x[coln_info_x$dimension == dimension, "colname"]]]
     }
-
-    dims_names_not_age <- dims_names_x[!dims_names_x == "age"]
 
     tab_factors <- lapply(dims_names_x, "get_x_col")
     return(table(tab_factors))

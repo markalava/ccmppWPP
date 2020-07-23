@@ -1,4 +1,4 @@
-context("Tst methods for S3 class 'fert_rate_age_f'")
+context("Test methods for S3 class 'fert_rate_age_f'")
 
 test_that("valid member created", {
     expect_s3_class(fert_rate_input_df_time_age,

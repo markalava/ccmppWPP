@@ -193,7 +193,6 @@ is_fert_rate_age_f <- function(x) {
 #' @rdname subset_demog_change_component_df
 #' @export
 subset_time.fert_rate_age_f <- function(x, times, drop = FALSE) {
-
     x <- NextMethod()
     return(fert_rate_age_f(x))
 }
@@ -201,7 +200,6 @@ subset_time.fert_rate_age_f <- function(x, times, drop = FALSE) {
 #' @rdname subset_demog_change_component_df
 #' @export
 subset_age.fert_rate_age_f <- function(x, ages, drop = FALSE) {
-
     x <- NextMethod()
     return(fert_rate_age_f(x))
 }

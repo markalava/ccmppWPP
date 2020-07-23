@@ -51,10 +51,10 @@ test_that("subsetting works properly", {
 
 test_that("subsetting errors are caught", {
 
-    expect_error(subset_time(dcc_df_time_age_sex, times = "a"),
-                 "is.finite")
-    expect_error(subset_age(dcc_df_time_age_sex, ages = "a"),
-                 "is.finite")
+    expect_warning(expect_error(subset_time(dcc_df_time_age_sex, times = "a"),
+                 "is.finite"), "NAs introduced")
+    expect_warning(expect_error(subset_age(dcc_df_time_age_sex, ages = "a"),
+                 "is.finite"), "NAs introduced")
     expect_error(subset_sex(dcc_df_time_age_sex, sexes = 1),
                  "character")
 
@@ -73,11 +73,3 @@ test_that("subsetting errors are caught", {
                             age = 20),
                  "is_by_age")
 })
-
-
-test_that("'age_time_matrix's are created properly", {
-    expect_error(as_age_time_matrix(dcc_df_time_age_sex),
-                 "'x' has dimension \"sex\"; select a single sex")
-    expect_is(as_age_time_matrix(subset_sex(dcc_df_time_age_sex, sexes = "female", drop = TRUE)),
-              "matrix")
-    })

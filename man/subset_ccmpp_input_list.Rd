@@ -48,6 +48,11 @@ result as a classed object at the end if desired.
 }
 
 \seealso{
+\code{link{subset_time}}, etc., for the S3 generic
+    function; \code{link{subset_time.demog_change_component_df}}
+    for the method for objects inheriting from
+    \code{demog_change_component_df}.
+
 Other subset_by_demographic_dimension: 
 \code{\link{subset_indicator.ccmpp_input_df}()}
 }

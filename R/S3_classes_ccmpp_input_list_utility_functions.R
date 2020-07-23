@@ -91,8 +91,6 @@ as_age_time_matrix_list <- function(x, drop_zero_fert_ages = FALSE, ...) {
 #' @export
 as_age_time_matrix_list.ccmpp_input_list <- function(x, drop_zero_fert_ages = FALSE, ...) {
     lapply(x, function(y) {
-    ## for (name in names(x)) {
-        ## y <- x[[name]]
         y <- as_demog_change_component_df(y) #because cannot subset most of the ccmpp input elements
         if (is_by_indicator(y)) {
             names_of_indicators_y <- setNames(indicators(y), indicators(y))
@@ -121,6 +119,5 @@ as_age_time_matrix_list.ccmpp_input_list <- function(x, drop_zero_fert_ages = FA
         } else {
             as_age_time_matrix(y)
         }
-        #}
     })
 }

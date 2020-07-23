@@ -1,4 +1,13 @@
-context("Age time matrices")
+context("Conversion to age time matrices")
+
+
+test_that("'age_time_matrix's are created properly", {
+    expect_error(as_age_time_matrix(dcc_df_time_age_sex),
+                 "'x' has dimension \"sex\"; select a single sex")
+    expect_is(as_age_time_matrix(subset_sex(dcc_df_time_age_sex, sexes = "female", drop = TRUE)),
+              "matrix")
+    })
+
 
 test_that("age * time matrices are produced", {
     expect_is(as_age_time_matrix(mig_net_count_tot_input_df_time),
@@ -20,4 +29,6 @@ test_that("age * time matrices are produced", {
 })
 
 test_that("age * time matrix lists are produced", {
-    as_age_time_matrix_list(ccmpp_input_list_example)
+    expect_is(as_age_time_matrix_list(ccmpp_input_list_example),
+              "list")
+    })

@@ -98,7 +98,7 @@ devtools::install(build_vignettes = FALSE, upgrade = "never")
 
 ### Do all tests
 divider("RUNNING TESTS")
-devtools::test(reporter = c("summary", "fail"))
+testthat::test_package(reporter = c("summary", "fail"))
 
 ## ### Benchmark
 ## divider("BENCHMARKING")

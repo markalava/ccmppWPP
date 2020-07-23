@@ -150,8 +150,8 @@ test_that("superfluous columns are caught", {
           colnames(demog_change_component_df(z,
                        dimensions = c("time", "age", "sex")))))
 
-    y <- new_demog_change_component_df(z[,
-                             c(ccmppWPP::get_all_req_col_names_for_dimensions(
+    y <- ccmppWPP:::new_demog_change_component_df(z[,
+                             c(ccmppWPP:::get_all_req_col_names_for_dimensions(
                                              dimensions =
                                                  c("age", "time", "sex")),
                                "source")],
@@ -182,8 +182,8 @@ test_that("'indicator' column OK", {
         "indicator" %in%
           colnames(demog_change_component_df(z)))
 
-    y <- new_demog_change_component_df(z[,
-                             c(ccmppWPP::get_all_req_col_names_for_dimensions(
+    y <- ccmppWPP:::new_demog_change_component_df(z[,
+                             c(ccmppWPP:::get_all_req_col_names_for_dimensions(
                                              dimensions =
                                                  c("age", "time", "sex", "indicator")))],
                              value_type = "real",

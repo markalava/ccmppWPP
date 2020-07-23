@@ -1,4 +1,4 @@
-context("Tst methods for S3 class 'survival_ratio_age_sex'")
+context("Test methods for S3 class 'survival_ratio_age_sex'")
 
 test_that("subsetting drops class", {
 

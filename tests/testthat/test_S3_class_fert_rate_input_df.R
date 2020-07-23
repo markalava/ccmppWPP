@@ -65,8 +65,8 @@ test_that("superfluous columns are caught", {
         !("source" %in%
           colnames(fert_rate_age_f(z))))
 
-    y <- new_fert_rate_age_f(z[,
-                             c(ccmppWPP::get_all_req_col_names_for_dimensions(
+    y <- ccmppWPP:::new_fert_rate_age_f(z[,
+                             c(ccmppWPP:::get_all_req_col_names_for_dimensions(
                                              dimensions =
                                                  c("age", "time")),
                                "source")],
@@ -117,7 +117,7 @@ test_that("sorting is handled properly", {
 test_that("erroneous sex dimension detected", {
     y <- fert_rate_input_df_time_age
     z <- cbind(y, sex = "female")
-    z <- new_fert_rate_age_f(z, non_zero_fert_ages = non_zero_fert_ages(y),
+    z <- ccmppWPP:::new_fert_rate_age_f(z, non_zero_fert_ages = non_zero_fert_ages(y),
                                 time_span = 1, age_span = 1)
     expect_error(check_dimensions_for_ccmpp_input_df(z),
                  "that correspond to dimensions")
@@ -141,7 +141,7 @@ test_that("sex column removed", {
 test_that("indicator dimension detected", {
     y <- fert_rate_input_df_time_age
     z <- cbind(y, indicator = "ltX")
-    z <- new_fert_rate_age_f(z, time_span = time_span(y),
+    z <- ccmppWPP:::new_fert_rate_age_f(z, time_span = time_span(y),
                                 age_span = age_span(y),
                                 non_zero_fert_ages = non_zero_fert_ages(y))
     attr(z, "dimensions") <- unique(c(attr(z, "dimensions"), "indicator"))

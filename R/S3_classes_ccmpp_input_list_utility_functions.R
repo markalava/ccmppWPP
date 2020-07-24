@@ -91,8 +91,13 @@ as_age_time_matrix_list <- function(x, drop_zero_fert_ages = FALSE, ...) {
 #' @export
 as_age_time_matrix_list.ccmpp_input_list <- function(x, drop_zero_fert_ages = FALSE, ...) {
     lapply(x, function(y) {
-        y <- as_demog_change_component_df(y) #because cannot subset most of the ccmpp input elements
         if (is_by_indicator(y)) {
+            y <- as_demog_change_component_df(y)
+                                #because cannot subset most of the ccmpp input
+                                #elements. Note that this will mean dispatch will go
+                                #straight to the 'as_demog_change_component_df' method;
+                                #any methods added for ccmpp_input_df or subclasses will
+                                #not be called
             names_of_indicators_y <- setNames(indicators(y), indicators(y))
             lapply(names_of_indicators_y, function(this_indicator_name) {
                 y_subset_by_indicator <-
@@ -104,20 +109,29 @@ as_age_time_matrix_list.ccmpp_input_list <- function(x, drop_zero_fert_ages = FA
                     lapply(names_of_sexes_y_subset_by_indicator, function(this_sex_name) {
                         y_subset_by_indicator_and_sex <-
                             subset_sex(y_subset_by_indicator, this_sex_name, drop = TRUE)
-                        as_age_time_matrix(y_subset_by_indicator_and_sex)
+                        as_age_time_matrix(y_subset_by_indicator_and_sex,
+                                           drop_zero_fert_ages = drop_zero_fert_ages, ...)
                     })
                 } else {
-                    as_age_time_matrix(y_subset_by_indicator)
+                    as_age_time_matrix(y_subset_by_indicator,
+                                       drop_zero_fert_ages = drop_zero_fert_ages, ...)
                 }
             })
         } else if (is_by_sex(y)) {
-                names_of_sexes_y <- setNames(sexes(y), sexes(y))
-                lapply(names_of_sexes_y, function(this_sex_name) {
-                    this_sex_obj_subset <- subset_sex(y, this_sex_name, drop = TRUE)
-                    as_age_time_matrix(this_sex_obj_subset)
-                })
+            y <- as_demog_change_component_df(y)
+                                #because cannot subset most of the ccmpp input
+                                #elements. Note that this will mean dispatch will go
+                                #straight to the 'as_demog_change_component_df' method;
+                                #any methods added for ccmpp_input_df or subclasses will
+                                #not be called
+            names_of_sexes_y <- setNames(sexes(y), sexes(y))
+            lapply(names_of_sexes_y, function(this_sex_name) {
+                this_sex_obj_subset <- subset_sex(y, this_sex_name, drop = TRUE)
+                as_age_time_matrix(this_sex_obj_subset,
+                                   drop_zero_fert_ages = drop_zero_fert_ages, ...)
+            })
         } else {
-            as_age_time_matrix(y)
+            as_age_time_matrix(y, drop_zero_fert_ages = drop_zero_fert_ages, ...)
         }
     })
 }

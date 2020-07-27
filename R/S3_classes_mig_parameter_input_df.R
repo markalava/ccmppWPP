@@ -5,7 +5,7 @@ get_allowed_value_categories_mig_parameter <- function() {
     c("counts", "end")
 }
 
-get_allowed_indicator_categories_mig_parameter <- function() {
+get_required_indicator_categories_mig_parameter <- function() {
     c("mig_type", "mig_assumption")
 }
 

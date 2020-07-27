@@ -3,60 +3,60 @@
 \name{ccmpp_list_access_elements}
 \alias{ccmpp_list_access_elements}
 \alias{pop_count_base_component}
-\alias{pop_count_base_component.list}
+\alias{pop_count_base_component.ccmpp_input_list}
 \alias{life_table_component}
-\alias{life_table_component.list}
+\alias{life_table_component.ccmpp_input_list}
 \alias{survival_ratio_component}
-\alias{survival_ratio_component.list}
+\alias{survival_ratio_component.ccmpp_input_list}
 \alias{fert_rate_component}
-\alias{fert_rate_component.list}
+\alias{fert_rate_component.ccmpp_input_list}
 \alias{srb_component}
-\alias{srb_component.list}
+\alias{srb_component.ccmpp_input_list}
 \alias{mig_net_count_component}
-\alias{mig_net_count_component.list}
+\alias{mig_net_count_component.ccmpp_input_list}
 \alias{mig_net_rate_component}
-\alias{mig_net_rate_component.list}
+\alias{mig_net_rate_component.ccmpp_input_list}
 \alias{mig_net_count_tot_component}
-\alias{mig_net_count_tot_component.list}
+\alias{mig_net_count_tot_component.ccmpp_input_list}
 \alias{mig_parameter_component}
-\alias{mig_parameter_component.list}
+\alias{mig_parameter_component.ccmpp_input_list}
 \title{Access the \code{ccmpp_input_df} components of a list}
 \usage{
 pop_count_base_component(x)
 
-\method{pop_count_base_component}{list}(x)
+\method{pop_count_base_component}{ccmpp_input_list}(x)
 
 life_table_component(x)
 
-\method{life_table_component}{list}(x)
+\method{life_table_component}{ccmpp_input_list}(x)
 
 survival_ratio_component(x)
 
-\method{survival_ratio_component}{list}(x)
+\method{survival_ratio_component}{ccmpp_input_list}(x)
 
 fert_rate_component(x)
 
-\method{fert_rate_component}{list}(x)
+\method{fert_rate_component}{ccmpp_input_list}(x)
 
 srb_component(x)
 
-\method{srb_component}{list}(x)
+\method{srb_component}{ccmpp_input_list}(x)
 
 mig_net_count_component(x)
 
-\method{mig_net_count_component}{list}(x)
+\method{mig_net_count_component}{ccmpp_input_list}(x)
 
 mig_net_rate_component(x)
 
-\method{mig_net_rate_component}{list}(x)
+\method{mig_net_rate_component}{ccmpp_input_list}(x)
 
 mig_net_count_tot_component(x)
 
-\method{mig_net_count_tot_component}{list}(x)
+\method{mig_net_count_tot_component}{ccmpp_input_list}(x)
 
 mig_parameter_component(x)
 
-\method{mig_parameter_component}{list}(x)
+\method{mig_parameter_component}{ccmpp_input_list}(x)
 }
 \arguments{
 \item{x}{An object of class \code{ccmpp_input_list}}

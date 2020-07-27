@@ -14,9 +14,9 @@ strip_ccmpp_input_list_classes_attribute <- function(class_att) {
 ## Required element names
 get_all_required_ccmpp_input_list_element_names <- function() {
     c("pop_count_age_sex_base", "life_table_age_sex",
-                          "fert_rate_age_f",
-                          "srb", "mig_net_count_age_sex",
-                          "mig_net_rate_age_sex", "mig_net_count_tot_b",
+      "fert_rate_age_f",
+      "srb", "mig_net_count_age_sex",
+      "mig_net_rate_age_sex", "mig_net_count_tot_b",
       "mig_parameter")
 }
 
@@ -157,14 +157,14 @@ as_ccmpp_input_list.list <- function(x, ...) {
              paste(req_el_names,
                    collapse = ", "))
 
-        ccmpp_input_list(pop_count_age_sex_base = pop_count_base_component(x),
-                         life_table_age_sex = life_table_component(x),
-                         fert_rate_age_f = fert_rate_component(x),
-                         srb = srb_component(x),
-                         mig_net_count_age_sex = mig_net_count_component(x),
-                         mig_net_rate_age_sex = mig_net_rate_component(x),
-                         mig_net_count_tot_b = mig_net_count_tot_component(x),
-                         mig_parameter = mig_parameter_component(x)
+        ccmpp_input_list(pop_count_age_sex_base = x[["pop_count_age_sex_base"]],
+                         life_table_age_sex = x[["life_table_age_sex"]],
+                         fert_rate_age_f = x[["fert_rate_age_f"]],
+                         srb = x[["srb"]],
+                         mig_net_count_age_sex = x[["mig_net_count_age_sex"]],
+                         mig_net_rate_age_sex = x[["mig_net_rate_age_sex"]],
+                         mig_net_count_tot_b = x[["mig_net_count_tot_b"]],
+                         mig_parameter = x[["mig_parameter"]]
                          )
 }
 

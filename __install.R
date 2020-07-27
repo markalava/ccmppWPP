@@ -98,7 +98,7 @@ devtools::install(build_vignettes = FALSE, upgrade = "never")
 
 ### Do all tests
 divider("RUNNING TESTS")
-testthat::test_package(reporter = c("summary", "fail"))
+testthat::test_package(package = "ccmppWPP", reporter = c("summary", "fail"))
 
 ## ### Benchmark
 ## divider("BENCHMARKING")

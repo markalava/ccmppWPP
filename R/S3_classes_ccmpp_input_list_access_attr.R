@@ -102,7 +102,7 @@ pop_count_base_component <- function(x) {
 }
 #' @rdname ccmpp_list_access_elements
 #' @export
-pop_count_base_component.list <- function(x) {
+pop_count_base_component.ccmpp_input_list <- function(x) {
     x[["pop_count_age_sex_base"]]
 }
 
@@ -113,7 +113,7 @@ life_table_component <- function(x) {
 }
 #' @rdname ccmpp_list_access_elements
 #' @export
-life_table_component.list <- function(x) {
+life_table_component.ccmpp_input_list <- function(x) {
     x[["life_table_age_sex"]]
 }
 
@@ -124,8 +124,11 @@ survival_ratio_component <- function(x) {
 }
 #' @rdname ccmpp_list_access_elements
 #' @export
-survival_ratio_component.list <- function(x) {
-    x[["survival_ratio"]]
+survival_ratio_component.ccmpp_input_list <- function(x) {
+    lt <- life_table_component(x)
+    lt[lt$indicator == "lt_Sx",
+       c("time_start", "time_span", "sex",
+         "age_start", "age_span", "value")]
 }
 
 #' @rdname ccmpp_list_access_elements
@@ -135,7 +138,7 @@ fert_rate_component <- function(x) {
 }
 #' @rdname ccmpp_list_access_elements
 #' @export
-fert_rate_component.list <- function(x) {
+fert_rate_component.ccmpp_input_list <- function(x) {
     x[["fert_rate_age_f"]]
 }
 
@@ -146,7 +149,7 @@ srb_component <- function(x) {
 }
 #' @rdname ccmpp_list_access_elements
 #' @export
-srb_component.list <- function(x) {
+srb_component.ccmpp_input_list <- function(x) {
     x[["srb"]]
 }
 
@@ -157,7 +160,7 @@ mig_net_count_component <- function(x) {
 }
 #' @rdname ccmpp_list_access_elements
 #' @export
-mig_net_count_component.list <- function(x) {
+mig_net_count_component.ccmpp_input_list <- function(x) {
     x[["mig_net_count_age_sex"]]
 }
 
@@ -168,7 +171,7 @@ mig_net_rate_component <- function(x) {
 }
 #' @rdname ccmpp_list_access_elements
 #' @export
-mig_net_rate_component.list <- function(x) {
+mig_net_rate_component.ccmpp_input_list <- function(x) {
     x[["mig_net_rate_age_sex"]]
 }
 
@@ -179,7 +182,7 @@ mig_net_count_tot_component <- function(x) {
 }
 #' @rdname ccmpp_list_access_elements
 #' @export
-mig_net_count_tot_component.list <- function(x) {
+mig_net_count_tot_component.ccmpp_input_list <- function(x) {
     x[["mig_net_count_tot_b"]]
 }
 
@@ -190,6 +193,6 @@ mig_parameter_component <- function(x) {
 }
 #' @rdname ccmpp_list_access_elements
 #' @export
-mig_parameter_component.list <- function(x) {
+mig_parameter_component.ccmpp_input_list <- function(x) {
     x[["mig_parameter"]]
 }

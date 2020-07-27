@@ -432,9 +432,9 @@ validate_ccmpp_object.mig_parameter <- function(x, ...) {
     check_dimensions_for_ccmpp_input_df(x)
 
     ## Allowed indicator and value categories
-    if (!all(indicators(x) %in% get_allowed_indicator_categories_mig_parameter()))
-        stop("The only values allowed in the 'indicator' column are: '",
-             paste(get_allowed_indicator_categories_mig_parameter(),
+    if (!all(get_required_indicator_categories_mig_parameter() %in% unique(indicators(x))))
+        stop("The 'indicator' column must contain all of the following (and no more): '",
+             paste(get_required_indicator_categories_mig_parameter(),
                    collapse = ", "),
              "'. 'x' has '",
              toString(unique(x$indicator), 240),
@@ -467,9 +467,9 @@ validate_ccmpp_object.life_table_age_sex <- function(x, ...) {
     check_dimensions_for_ccmpp_input_df(x)
 
     ## Allowed indicator and value categories
-    if (!all(indicators(x) %in% get_allowed_indicator_categories_life_table()))
-        stop("The only values allowed in the 'indicator' column are: '",
-             paste(get_allowed_indicator_categories_mig_parameter(),
+    if (!all(get_required_indicator_categories_life_table() %in% unique(indicators(x))))
+        stop("The 'indicator' column must contain all of the following (and no more): '",
+             paste(get_required_indicator_categories_life_table(),
                    collapse = ", "),
              "'. 'x' has '",
              toString(unique(x$indicator), 240),

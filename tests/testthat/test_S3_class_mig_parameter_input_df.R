@@ -19,7 +19,7 @@ test_that("Indicator categories enforced", {
     x <- mig_parameter_input_df_indicator_time
     x[x$indicator == "mig_type", "indicator"] <- "foo"
     expect_error(mig_parameter(x),
-                 "only values allowed in the 'indicator' column")
+                 "'indicator' column must contain all of the following")
 })
 
 

@@ -23,10 +23,10 @@
 
 ccmppWPP_workflow_one_country_variant <- function(wpp_input) {
 
-    wpp_input <- as_ccmpp_input_list(wpp_input)
+    ccmpp_input <- as_ccmpp_input_list(wpp_input)
 
-# extract objects needed for ccmpp
-ccmpp_input <- data_parse_ccmpp_input(indata = wpp_input)
+## # extract objects needed for ccmpp
+## ccmpp_input <- data_parse_ccmpp_input(indata = wpp_input)
 
 # run ccmpp, looping over time steps for the full projection period
 ccmpp_output <- project_ccmpp_loop_over_time(indata = ccmpp_input)

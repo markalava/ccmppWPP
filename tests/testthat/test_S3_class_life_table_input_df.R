@@ -29,5 +29,5 @@ test_that("Value categories enforced", {
     x <- life_table_input_df_indicator_time_age_sex
     x[x$indicator == "lt_ex", "indicator"] <- "foo"
     expect_error(life_table_age_sex(x),
-                 "only values allowed in the 'indicator' column")
+                 "'indicator' column must contain all of the following")
 })

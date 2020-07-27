@@ -28,7 +28,38 @@ test_that("age * time matrices are produced", {
                  "select a single indicator")
 })
 
+
 test_that("age * time matrix lists are produced", {
     expect_is(as_age_time_matrix_list(ccmpp_input_list_example),
               "list")
-    })
+})
+
+
+test_that("zero fertility rate ages are dropped", {
+    fert_rate_df <-
+        expand.grid(age_start = seq(from = 0, to = 10, by = 1),
+                    time_start = c(1990, 1991),
+                    time_span = 1, age_span = 1)
+    fert_rate_df$value <- rep(0.1, nrow(fert_rate_df))
+    fert_rate_df <-
+        fert_rate_age_f(fert_rate_df,
+                        non_zero_fert_ages = 4:7)
+
+    expect_identical(dim(as_age_time_matrix(fert_rate_df)),
+                     c(11L, 2L))
+
+    expect_identical(dim(as_age_time_matrix(fert_rate_df,
+                                            drop_zero_fert_ages = TRUE)),
+                     c(4L, 2L))
+
+
+    ccmpp_list <- as_age_time_matrix_list(ccmpp_input_list_example)
+    expect_identical(dim(ccmpp_list$fert_rate_age_f),
+                     c(101L, 70L))
+
+    ccmpp_list <-
+        as_age_time_matrix_list(ccmpp_input_list_example,
+                                drop_zero_fert_ages = TRUE)
+    expect_identical(dim(ccmpp_list$fert_rate_age_f),
+                     c(42L, 70L))
+})

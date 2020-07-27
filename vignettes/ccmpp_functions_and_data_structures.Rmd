@@ -1,0 +1,364 @@
+---
+title: "CCMPP Data Structures"
+author: ""
+date: |
+    | `r Sys.Date()`
+    | (`r paste0("_ccmppWPP_ version ", packageVersion("ccmppWPP"), ")")`
+output:
+    function(...) rmarkdown::html_vignette(..., css=c(system.file("rmarkdown", "templates", "html_vignette", "resources", "vignette.css", package = "rmarkdown"), "vignette2.css")):
+      toc: true
+bibliography: bibliography.bib
+link-citations: true
+vignette: >
+  %\VignetteIndexEntry{Introduction to FPEMglobal}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+# output:
+#   word_document:
+#     reference_docx: docx_reference.docx
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE,
+  results = "hide"
+)
+
+## set global chunk options
+options(formatR.arrow=TRUE,width=80)
+```
+
+<!-- 
+STYLE CONVENTIONS
+- Filenames: single quoted
+- Software: italics
+-->
+
+
+```{r source-package-functions, echo = FALSE, results = "hide"}
+example(source)
+sourceDir("../R")
+```
+
+	
+#  `project_ccmpp_loop_over_periods()` 
+
+## General Comment
+
+Currently this function has two purposes: 
+
+  1. apply `project_ccmpp_z_by_z()` to a time-series of inputs; 
+  2. post-process the raw CCMPP outputs
+
+Could these be modularized into two functions, one for each purpose? A simple wrapper could also be written to combine the two operations. 
+
+Separation would have the logical advantage of keeping one purpose-one function. Also, in the probabilistic reconstruction the post-processing should not have to be done at each iteration since it would add a lot of extra time. The post-processing can be quickly done at the end, after the MCMC samples are drawn, if the functionality is separated. 
+
+
+## Input Arguments
+
+- Instead of passing in the counts and rates as separate components I suggest we have a single input list that should be of a specific S3 class. See proposal below. 
+
+
+## Output List Comments
+
+### data.frame Elements
+
+I had been working with matrices as the underlying data structure, with age as rows and periods/years as columns. This ensures that, for example, all the age-period combinations are included since the matrices are square. For two-sex data structures I was thinking about a 3D array. However, I actually think data frames are a better idea. They're simpler to understand and I think more portable and extensible. It's straightforward to write validator functions to check any criteria we decide to set as definitions of the object class and R has got a lot more efficient at storing data frames in memory. 
+
+
+### `LocID`
+
+- Consider renaming to something more specific like `country_code_numeric` or `location_code_num` to make it clear it's not another ID such as the 3-letter codes.
+- I suggest making this an attribute of the object _or_ including it explicitly as a column in the various data frames. 
+
+
+### `Variant` 
+
+- What is the purpose of this indicator? Is it simply a function of the year of the data point? Or does it differentiate inputs from outputs?
+- 'Variant' made me think of 'low-medium-high'. Is there a more descriptive name for it? `estimate_or_projection` or `outcome_type`.. something .. this is tricky ..
+
+
+### `year_base`, `year_stop`,`age`, `age_width`
+
+What is the requirement going to be? For basic CCMPP the age widths and year widths have to be equal and the age has to start at 0. If we keep these requirements:
+
+- Can we encode these in the same way? E.g., is `year_base`, `year_width` possible? Or just `years`? Or maybe `years`, 
+- Is there redundancy? E.g., if we have `age` and we assume all ages are present and have to be equally spaced then `age_width` can be calculated from `age` as `diff(age)[1]` so it need not be explicitly stored (saves (a tiny amount of) space but importantly reduces chance of error/inconsistency creeping in).
+  - We should decide why certain values are stored as separate elements in the list. If it's so the user can easily 'see' them without having to inspect the data frame alternative options include
+    - An extractor function specific to ccmpp input lists. e.g., `age_width()`, could be defined that returns the `age_width`. This could simply extract the `age_width` attribute or calculate it from `age` depending on whether `age_width` is stored or not. 
+	- A method for the generic `print()` function that calculates certain important summary values and prints them to the console whenever the user prints the object. 
+
+
+### `pop_count_age_sex_base`
+
+- Define a class for data frames holding population counts. 
+- The name extends the naming convention defined so far with "`_sex`" indicating the data are broken down by sex, analagous with the use of "`_age`" to indicate data broken down by age. 
+- The name extends the naming convention defined so far with `_base` referring to a specific time period. 
+  - Is "`_base`" sufficient, or is "`_baseline`" better? Or can something shorter like "`t0`" work? The arguments to `project_ccmpp_z_by_z()` use "`_begin`" (`pop_count_age_m_begin` and `pop_count_age_f_begin`). Should we make them consistent? 
+  - Unlike "`_age`" and "`_sex`", we don't add "`_year`" or "`_period`" (or similar) to indicate inputs broken down by time. 
+
+
+### `life_table_age_sex`
+
+- Is this _necessary_ for CCMPP or is it only used for post-processing the raw output to produce, e.g., period mortality rates? 
+- Would it make sense to set up `project_ccmpp_loop_over_periods()` so that post-processing is an option?
+- In any case, we could have a dedicated class for life tables (which could possibly be nested within the class for ccmpp inputs).
+
+
+### `fert_rate_age_f`
+
+- Define a class for data frames holding fertility rates.
+
+
+### `srb`
+
+- Define a class for data frames holding sex ratios at birth.
+
+
+### `mig_assumption`
+
+- This is an argument to the CCMPP function so would only be present in the ccmpp output (?) 
+- I suggest making this an `attribute` of the object.
+
+	
+## General Comments
+
+- "`year`" as a column name or something like "`period`"? What if they are 5-year averages? 
+
+
+### `"character"` versus `"factor"`
+
+I don't think we should spend time worrying about this as we don't stand to lose memory or efficiency (e.g., see `?factor`. _Logically_ `sex` and `mig_assumption` are enumerations ([Lumley](https://notstatschat.tumblr.com/post/124987394001/stringsasfactors-sigh)) as there is a fixed, finite number of possibilities that cannot be altered dynamically (we may alter them in new versions but the user cannot and neither can the ccmpp functions). So there's an argument for requiring them to be factors. Some functions then behave differently so maybe it's not worth it.
+
+
+# Proposal for S3 Classes
+
+Classes have two main components:
+
+1. Data component: This holds the actual data and could be a list, data frame, matrix, etc.
+2. Attributes: These are named and hold meta data. The row and column names of a matrix are the `dimnames` attribute, for example. 
+
+
+## CCMPP Input
+
+### Description
+
+- **Class name:** `project_pop_input_list`
+- **Content:** All inputs required for CCMPP for a single country. 
+- **Parent class:** None.
+- **Data component:** A list of data frames, each of which can be of a specific class in its own right:
+  1. `pop_count_age_sex_base`
+  2. `life_table_age_sex` (I think this should not be a constituent of `project_pop_input_list` but a separate argument to the CCMPP function)
+  3. `fert_rate_age_f`
+- **Attributes:** 
+  1. `location_code_num`: Numeric, scalar. ISO country code.
+  2. `periods`: Numeric. Vector of years starting the periods covered by the CCMPP inputs (fertility rates, survival proportions, etc.).
+  3. `period_width`: Numeric, scalar. The width of the period intervals (probably 1 or 5).
+	  - Does this have to be the same as the `age_width`? If so we could have a single `width` attribute (or maybe a better name).
+  4. `ages`: Numeric. Vector of ages starting the age ranges covered by the CCMPP inputs (fertility rates, survival proportions, etc.). 
+  5. `age_width`: Numeric, scalar. The width of the age intervals (probably 1 or 5).
+	  - Does this have to be the same as the `period_width`? If so we could have a single `width` attribute (or maybe a better name).
+  
+
+### R Implementation
+
+#### Low-level Constructor
+
+```{r ccmpp-input-low-lev-construct}
+
+#' Low-level constructor for \code{project_pop_input_list}
+#'
+#' @description
+#' Creates an object of \code{project_pop_input_list}. Minimal checks
+#' on the inputs are done. The user-level function for creating these
+#' objects is \code{\link{project_pop_input_list}}.
+#'
+#' This function is not exported.
+#'
+#' @seealso \code{\link{project_pop_input_list}}
+#' 
+#' @param x A list with data frames as elements. 
+#' @param location_code_num ISO numeric code.
+#' @param period Vector of years indicating the beginning year of the periods covered by the data.
+#' @param period_width Width of the periods.
+#' @param age Vector of ages indicating the beginning age of the age groups covered by the data.
+#' @param age_width Width of the age groups.
+#' @param ... 
+#' @param class 
+#' @return An object of class \code{project_pop_input_list}.
+#' @author 
+new_project_pop_input_list <-
+    function(x,
+             location_code_num,
+             period,
+             period_width,
+             age,
+             age_width,
+             ...,
+             class = character()) {
+        stopifnot(is.list(x))
+        stopifnot(identical(period_width, age_width)) # !!!<< We could just have one 'width' attribute.
+        structure(x,
+             location_code_num = location_code_num,
+             period = period,
+             period_width = period_width,
+             age = age,
+             age_width = age_width,
+             ...,
+             class = c(class, "project_pop_input_list", "list"))
+    }
+```
+
+
+#### User-level Constructor
+
+```{r ccmpp-input-user-lev-construct}
+
+#' Creates objects of class \code{project_pop_input_list}
+#'
+#' This is the recommended way to create objects of class
+#' \code{project_pop_input_list} for use in CCMPP with fucntion
+#' \code{\link{project_ccmpp_loop_over_periods}}.
+#'
+#' @seealso \code{link{validate_project_pop_input_list}}.
+#'
+#' @param x A list of data frames with classes [... etc. ...]
+#' @param ... 
+#' @return An object of class \code{project_pop_input_list}.
+#' @author
+#' @export
+project_pop_input_list <-
+    function(x, ...) {
+        
+       ## Create the attributes location_code_num, period,
+        ## period_width, age, age_width, from the elements of 'x'.
+
+        ## Finish with validation-creation step:
+        return(validate_project_pop_input_list(new_project_pop_input_list(x,
+                                                                          [attributes assigned],
+                                                                          ...)))
+    }
+```
+
+
+#### Validator
+
+```{r ccmpp-input-validator}
+
+#' Validates objects of class \code{project_pop_input_list}
+#'
+#' Given an object \code{x}, this function validates it as a member of
+#' the \code{project_pop_input_list} class. It either returns the
+#' object if it is valid or stops with an error explaining why it
+#' isn't.
+#'
+#' @seealso \code{link{project_pop_input_list}}.
+#' 
+#' @param x A list to be validated.
+#' @param ...
+#' @return The object \code{x} if it is a valid member of the
+#'     \code{project_pop_input_list} class or nothing and an error
+#'     explaining why it isn't.
+#' @author
+#' @export
+validate_project_pop_input_list <-
+    function(x, ...) {
+        
+        ## Various checks on the data component list 'x'.
+        ## 
+        ## 1. All data frames should be of the right subclasses. Use
+        ## the respective validator functions.
+        ## 
+        ## 2. They should cover the same periods and the same years,
+        ## and have the same 'widths' (period_width, age_width).
+        ##
+        ## Attributes should match the contents of the data frame,
+        ## e.g., if the attribute 'age' is 0, 5, 10, ..., 100 then the
+        ## constituent data frames should have all of these same age
+        ## groups.
+
+        ## At the point of discovery of any invalid part:
+        stop("'...' is invalide because '...'.")
+
+        ## If the checks haved passed and have made it this far,
+        ## return the original list (this is the convention):
+        return(x)
+    }
+```
+
+
+#### Methods
+
+Methods for generic functions like `print()` and `summary()` could be defined. Methods for `plot()` could also be defined which would probably want to resort to `lapply()`ing over the data frame constituents, those constituents having their own methods.
+  
+  
+## CCMPP Output
+
+- **Class name:** `project_pop_output_list`
+- **Content:** All outputs from a CCMPP for a single country. 
+- **Parent class:** None.
+- **Data component:** A list of data frames, each of which can be of a specific subclass:
+  1. `pop_count_age_sex_base`
+  2. `life_table_age_sex` (I think this should not be a subclass but a separate argument to the CCMPP function)
+  3. `fert_rate_age_f`
+- **Attributes:** 
+  1. `location_code_num`: Numeric, scalar. ISO country code.
+  2. `periods`: Numeric. Vector of years starting the periods covered by the CCMPP inputs (fertility rates, survival proportions, etc.).
+  3. `period_width`: Numeric, scalar. The width of the period intervals (probably 1 or 5).
+	  - Does this have to be the same as the `age_width`? If so we could have a single `width` attribute (or maybe a better name).
+  4. `ages`: Numeric. Vector of ages starting the age ranges covered by the CCMPP inputs (fertility rates, survival proportions, etc.). 
+  5. `age_width`: Numeric, scalar. The width of the age intervals (probably 1 or 5).
+	  - Does this have to be the same as the `period_width`? If so we could have a single `width` attribute (or maybe a better name).
+	  
+	  
+### R Implementation
+
+Follows the same pattern as for the input list.
+
+
+## Data Frame Classes for Vital Rates
+
+The data frame components of the input and output lists could have their own classes. This would delegate much of the validation of the input and output lists to validation of the constituent data frames. 
+
+These could be 'children' of a 'parent' vital rate data frame class `vital_rate_data_frame`.
+
+
+### Generic Vital Rate Data Frame
+
+- **Class name:** `vital_rate_data_frame`
+- **Content:** Age- sex-specific vital rates for a single country. 
+- **Parent class:** None.
+- **Data component:** A data frame with particular columns:
+  1. `age`
+  2. `period`
+  3. `value`
+  4. [others?]
+- **Attributes**: 
+  1. `location_code_num`: Numeric, scalar. ISO country code.
+  2. `periods`: Numeric. Vector of years starting the periods covered by the CCMPP inputs (fertility rates, survival proportions, etc.).
+  3. `period_width`: Numeric, scalar. The width of the period intervals (probably 1 or 5).
+	  - Does this have to be the same as the `age_width`? If so we could have a single `width` attribute (or maybe a better name).
+  4. `ages`: Numeric. Vector of ages starting the age ranges covered by the CCMPP inputs (fertility rates, survival proportions, etc.). 
+  5. `age_width`: Numeric, scalar. The width of the age intervals (probably 1 or 5).
+	  - Does this have to be the same as the `period_width`? If so we could have a single `width` attribute (or maybe a better name).
+	  
+The implementation would follow the same pattern as for `ccmpp_input_list`, with low-level and user-level creator functions, plus a validator. 
+
+
+### Fertility Rate Data Frame
+
+- **Class name:** `fert_rate_data_frame`
+- **Content:** Age-specific fertility rates for a single country. 
+- **Parent class:** `vital_rate_data_frame`.
+- **Data component:** A data frame of class `vital_rate_data_frame`.
+- **Attributes:** 
+  - All those that `vital_rate_data_frame` has.
+  6. `non_zero_fert_ages`: Vector of age labels indicating the reproductive age groups. Probably could come up with a better name. 
+  
+In addition to the extra attribute, the validator for `fert_rate_data_frame`s could check that the entries in the `value` column are all non-negtive. 
+
+
+# References {-}

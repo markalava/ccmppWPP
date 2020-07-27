@@ -18,6 +18,10 @@ sweden_1993 <- function() {
     srb <- 1.05
     n <- 5
 
+    Bx <- c(rep(0, 3),
+            15244, 126688, 229354, 170057, 63203, 10971, 472,
+            rep(0, 8))
+
     PzF <- c(302392, 298682, 252007, 244150, 268267, 293515, 320624,
           284767, 288031, 303166, 322062, 243989, 205841, 205516,
           205270, 194771, 142565, 131966)
@@ -28,7 +32,7 @@ sweden_1993 <- function() {
     return(list(P0F = P0F, P0M = P0M, LxF = LxF, LxM = LxM,
                 NMxF = NMxF, NMxM = NMxM, SxF = SxF, SxM = SxM,
                 asfr = asfr, srb = srb, n = n,
-                PzF = PzF, PzM = PzM))
+                Bx = Bx, PzF = PzF, PzM = PzM))
 }
 
 ## Overwrites function

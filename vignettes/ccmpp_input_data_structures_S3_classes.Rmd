@@ -1,0 +1,646 @@
+---
+title: "S3 Classes for CCMPP Input Data Structures"
+author: ""
+date: |
+    | `r Sys.Date()`
+    | (`r paste0("_ccmppWPP_ version ", packageVersion("ccmppWPP"), ")")`
+# output:
+#     function(...) bookdown::html_document2(..., base_format = rmarkdown::html_vignette, css=c(system.file("rmarkdown", "templates", "html_vignette", "resources", "vignette.css", package = "rmarkdown"), "vignette2.css")):
+#       toc: true
+#       toc_depth: 2
+output:
+  word_document:
+    reference_docx: docx_reference.docx    
+bibliography: bibliography.bib
+link-citations: true
+vignette: >
+  %\VignetteIndexEntry{S3 Classes for CCMPP Input Data Structures}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = TRUE,
+  results = TRUE
+)
+
+## set global chunk options
+options(formatR.arrow=TRUE,width=80)
+```
+
+<!-- 
+STYLE CONVENTIONS
+- Filenames: single quoted
+- Software: italics
+- S3 classes: italics
+- Object attributes: double quoted
+-->
+
+
+```{r source-package-functions, echo = FALSE, results = "hide"}
+library(ccmppWPP)
+```
+
+
+# Introduction
+
+This document presents a general framework for a set of S3 classes that will be used for objects that are inputs and outputs to CCMPP functions.
+
+
+## Context
+
+CCMPP requires as input a collection of data by age, sex, and period:
+
+  1. Population counts at the baseline year (or "jump-off" population).
+  2. Period(?) fertility rates in each period of the projection.
+  3. Period(?) sex ratios at birth in each period of the projection.
+  4. Cohort(?) survival ratios in each period of the projection.
+  5. Period(?) net migration in each period of the projection, preferably as counts.
+  
+There may also be
+
+  1. Population counts at some years in the interval of projection.
+  
+CCMPP produces as output 
+
+  - Projected population counts at each period, according to the step size. 
+  
+Other quantities of interest that can be derived from the inputs and outputs include (all possibly age- sex- period-specific):
+
+  - Birth counts in each period of the projection.
+  - (Period, Cohort ?) Death counts in each period of the projection.
+  - Period(?) mortality rates in each period of the projection.
+  - Other?
+  
+Other systems will be interacting with the *R* code performing CCMPP operations, such as systems that prepare the input and systems that read and process the output.
+  
+
+## Approach 
+
+*R*'s S3 object oriented programming system is used to formally encode input and output object structures as *classes*. Functions are defined that validate an object as a member of one (or more) of the classes by checking its structure matches the class definitions. For example, the class for fertility rates specifies that all values be non-negative. Objects passed into the CCMPP functions will be validated once at the top of the function to ensure that the input object matches the specification the function expects. This approach reduces the chance of failures later on in the function and of undetected errors in computations. 
+
+To achieve this:
+
+1. A complete description of the object class is encoded in a series of *R* functions that *create* and *validate* objects as members of the class.
+2. Special functions that take objects of the class as their primary input are defined as *generics* with *methods* for the class. This provides a *minimal* amount of safety but makes a clear statement to the user that the object expected should conform to expectations.
+3. Functions *validate* the input object before doing any calculations. This should prevent any invalid inputs making their way into the function calculations potentially causing undetected errors. *Subsequent* calculation errors due to the function's own operations are the responsibility of the function, not the class.
+
+For further reading on *R*'s object-oriented programming system, including S3, see (@wickham_advanced_2019, Part III).
+
+
+## Purpose and Limitations
+
+The purpose of the S3 object classes is to specify the structure a set of inputs to CCMPP functions requires to be valid. They are not intended to be classes for a data bases or any other use-case. 
+
+
+## Justification
+
+Having specifications for valid data structures makes development and maintenance of R code easier, and makes the code less susceptible to errors and failures. It makes it easier for users to generate inputs since they know exactly what is required, and for them to work with the outputs since they know exactly what the outputs will look like. Complete specification of input and output objects are particularly important for interoperability between systems in a chained operation, where one system may generate inputs to the CCMPP functions and another processes the outputs.
+
+S3 programming promotes transparency and rigor as the specifications of the objects are defined in *R* code. Each object of a given class will have attached to it meta data describing its characteristics with respect to the class. These meta data are stored in the objects' *attributes*. Constructor and validator functions for, respectively, creating objects and confirming they have valid structure, encode a series of rules which define the structure of the class. 
+
+Creating object classes abstracts the object type from the details. A user-interface will be developed to perform key operations on objects of a class independently of the class's implementation. It is not relevant to the user, nor should it affect the visible behaviour of the function, whether the object uses data frames, matrices, or lists to store its data. These underlying details can be changed without affecting the user interface and, thereby, breaking existing user code. 
+
+Functions that operate on objects with classes can be written such that different *methods* are available for different classes of objects. This means that the same function call when applied to objects of different classes can produce different outputs. This is another useful form of abstraction; the user interface is separated from the details of the implementation. In *R* it also allows new behaviours for new classes to be quickly added to existing functions. 
+
+This system provides programming efficiencies, and can be extended over time in a modular fashion, due to *inheritance*. Where appropriate, class definitions will be nested such that objects inherit the attributes of their 'parents'. This means that specifications of 'child' classes need only include the additional attributes not held by their parents. Moreover, functions with a method defined for a parent will automatically apply that method to objects of a child class, unless a specific method for the child class is defined.
+
+
+# S3 Classes for CCMPP Input and Output
+
+The classes defined and their inheritance relations are shown in Figure \@ref(fig:S3-class-hierarchy-diagram). The base class is `demog_change_component_df` ("`df`" for "data frame"). All other classes are *descendants*. The descendants' specifications include all those of `demog_change_component_df` plus additions. 
+
+An additional class, `ccmpp_input_list`, is not shown in Figure \@ref(fig:S3-class-hierarchy-diagram). This is a class for a list of all the required data frames for a complete CCMPP run. It is described in Section \@ref(sec:ccmpp-inut-list-defn). 
+
+```{r S3-class-hierarchy-diagram, echo = FALSE, fig.cap = "Hierarchy of S3 classes for CCMPP input and output objects", width = "10in", height = "10in"}
+graph <-"digraph {
+  graph [layout = dot, rankdir = LR, fontsize = 20]
+  
+  node [shape = rectangle]        
+  rec1 [label = 'data.frame']
+  rec2 [label = 'demog_change_component_df']
+
+  rec3 [label = 'ccmpp_input_df']
+  rec4 [label =  'fert_rate_age_f']
+  rec5 [label = 'srb']
+  rec6 [label = 'survival_ratio_input_df']
+  rec7 [label = 'pop_count_age_sex_base']
+  rec8 [label = 'mig_net_rate_age_sex']
+  rec9 [label = 'mig_net_count_age_sex']
+  rec10 [label = 'mig_net_count_tot_b']
+  rec11 [label = 'life_table_age_sex']
+
+  rec12 [label = 'ccmpp_output_df']
+  rec13 [label = 'TBD...']
+  rec14 [label = 'etc ...']
+  
+  # edge definitions with the node IDs
+  rec1 -> rec2 -> {rec3, rec12}
+  rec3 -> {rec4, rec5, rec6, rec7, rec8, rec9, rec10, rec11}
+  rec12 -> {rec13, rec14}
+  }"
+
+DiagrammeR::grViz(graph, width = 800, height = 500)
+
+## htmltools::html_print(DiagrammeR::add_mathjax(DiagrammeR::grViz(graph))) %>%
+##   webshot::webshot(file = 'dag-test-1.png', delay = 10,
+##           selector = '.html-widget-static-bound')
+
+```
+
+
+## Base Class: `demog_change_component_df`
+
+The class was designed with reference to `data(wpp_input_example)` which is a list data frames of components of demographic change down by time, age, and sex. The most general of these data frames is `wpp_input_example$life_table_age_sex` which contains life table parameters by indicator, time, sex, and age group. 
+
+```{r test-data-wpp}
+head(wpp_input_example$life_table_age_sex)
+```
+
+The class `demog_change_component_df` was designed to accommodate all of the data frames in `wpp_input_example`. It has two main components: **attributes** (meta-data) and a **data component**.
+
+
+### Attributes
+
+`demog_change_component_df` inherits from *R*'s standard `data.frame` class (Figure \@ref(fig:S3-class-hierarchy-diagram)). Therefore, it has all the attributes of data frames plus two new attributes, `dimensions` and `value_type`.
+
+"dimensions"
+
+:  This attribute indicates which dimensions are present in the object. Each object must have at least one dimension of the possible four:
+
+    1. indicator
+    2. time
+    3. sex
+    4. age
+
+"value_type"
+
+:  This attribute specifies the type of data in the `value` column (see below). There are seven value types:
+
+    1. count
+    2. rate
+    3. ratio
+    4. proportion
+    5. percentage
+    6. real
+    7. categorical
+
+The data frames in `wpp_input_example` have various subsets of the `dimension`s. For example, `wpp_input_example$srb` has only the "time" dimension, the fertility rate component has only the "time" and "age" dimensions. Specific subclasses for these data frames are defined to formalize their characteristics. The "value_type" "real" is a catch-all for numeric values that do not fall under any other type. It is also used when the `value` column contains a mixture of the other types, as is the case for `wpp_input_example$life_table_age_sex`. 
+	
+	
+### Data Component
+
+The data component of `demog_change_component_df`s is a standard *R* data frame. Therefore, `demog_change_component_df` inherits from the class `data.frame` and any functions applied to `demog_change_component_df`s that do not have specifically defined methods (see below) will behave as if they were given a data frame. 
+
+The data frame must contain a column called `value` to hold the parameter values. Additional columns depend on the dimensions of the object, as detailed in Table \@ref(tab:data-frame-columns-by-dimension). 
+
+Table: (\#tab:data-frame-columns-by-dimension) Required columns by dimension for `demog_change_component_df` objects.
+
++--------------------+--------------------+----------------------------------------------------------------+
+|   Dimension        | Columns Required   | Description                                                    |
++====================+====================+================================================================+
+|indicator           | - `indicator`      | Character values labeling the indicator (no restrictions)      |
++--------------------+--------------------+----------------------------------------------------------------+
+| time               | - `time_start`     | Numeric values indicating the start and span of the time period|
+|                    | - `time_span`      |                                                                |
++--------------------+--------------------+----------------------------------------------------------------+
+| sex                | - sex              | Character values in `c("female", "male", "both")`              |
++--------------------+--------------------+----------------------------------------------------------------+
+| age                | - `age_start`      | Numeric values indicating the start and span of the age period |
+|                    | - `age_span`       |                                                                |
++--------------------+--------------------+----------------------------------------------------------------+
+
+**NOTE** We could add `age_open_ended` to indicate which row is the open-ended age group.
+
+
+### Constraints
+
+The following constraints must be satisfied for an object to be a valid member of the class:
+
+1. Exactly the columns required for the "dimensions" must all be present; none can be absent and no additional columns can be present.
+2. The `value` column must conform to the "value_type" attribute.
+3. The data frame has exactly one finite and non-missing value per `indicator` $\times$ `age_start` $\times$ `sex` $\times$` time_start` combination .
+4.  The only values allowed in the `sex` column are "both", "female", and "male". 
+
+
+## Class `ccmpp_input_df`
+
+The class `ccmpp_input_df` is a subclass of `demog_change_component_df`. It has all the features of its parent plus the following. 
+
+### Attributes
+
+As well as the "dimensions" and "value_type" attributes from its parent, the `ccmpp_input_df` class has attributes
+
+"age_span"
+
+:  The common `age_span` value. If "age" is a dimension it must be a finite, non-missing scalar. Otherwise it is equal to the zero-length `double()`.
+
+"time_span"
+
+:  The common `time_span` value. If "time" is a dimension it must be a finite, non-missing scalar. Otherwise it is equal to the zero-length `double()`.
+
+The `age_span`s and `time_span`s must all be equal to a single common value for the CCMPP to work, therefore they are conceptually better represented as attributes. 
+
+
+### Data Component
+
+No structural differences. Although `age_span` and `time_span` are attributes the columns are retained in the data frame.
+
+
+### Constraints
+
+The `ccmpp_input_df` has some additional constraints to ensure the objects are valid CCMPP inputs.
+
+1. `age_span` and `time_span` are equal to each other and apply to all ages and times.
+2. For every unique `indicator` $\times$ `time_start` $\times$ `sex` combination there is an `age_start` that equals 0; i.e., the age breakdown must start at age 0.
+3. The rows must be sorted by `indicator`, `time`, `sex`, `age`, varying slowest to fastest in that order. 
+
+
+## Subclasses of `ccmpp_input_df`
+
+Classes for the individual data frame components of the CCMPP lists are all subclasses of `ccmpp_input_df`. Apart from `fert_rate_age_f` they have no additional attributes; none have additional data columns. All have pre-specified dimensions and `value_type`s as described in Table \@ref(tab:ccmpp-input-subclass-restrictions). 
+
+The class `fert_rate_age_f` gets the additional attribute:
+
+"non_zero_fert_ages"
+
+:  A list of the values of `age_start` marking the reproductive age groups. Functions can take advantage of this attribute to set fertility to zero in all other age groups regardless of the actual values in the `value` column. 
+
+Table: (\#tab:ccmpp-input-subclass-restrictions) Additional attributes and pre-specified dimensions and values types of subclasses of `ccmpp_input_df`.
+
++-----------------------------+---------------------+-------------------------------+--------------+
+| Class                       | Additional          | Dimensions                    | Value type   |
+|                             | Attributes          |                               |              |
++=============================+=====================+===============================+==============+
+| `fert_rate_age_f`           | "non_zero_fert_ages"| c("time", "age")              | "rate"       |
++-----------------------------+---------------------+-------------------------------+--------------+
+| `srb`                       |                     | c("time")                     | "ratio"      |
++-----------------------------+---------------------+-------------------------------+--------------+
+| `survival_ratio_input_df`   |                     | c("time", "sex", "age")       | "proportion" |
+|                             |                     |                               |              |
++-----------------------------+---------------------+-------------------------------+--------------+
+| `mig_net_rate_age_sex`      |                     | c("time", "sex", "age")       | "rate"       |
+|                             |                     |                               |              |
++-----------------------------+---------------------+-------------------------------+--------------+
+| `mig_net_count_age_sex`     |                     | c("time", "sex", "age")       | "count"      |
+|                             |                     |                               |              |
++-----------------------------+---------------------+-------------------------------+--------------+
+| `mig_net_count_tot_b`       |                     | c("time")                     | "count"      |
++-----------------------------+---------------------+-------------------------------+--------------+
+| `mig_parameter`             |                     | c("time")                     | "categorical"|
++-----------------------------+---------------------+-------------------------------+--------------+
+| `pop_count_age_sex_base`    |                     | c("time", "sex", "age")       | "count"      |
+|                             |                     |                               |              |
++-----------------------------+---------------------+-------------------------------+--------------+
+| `life_table_age_sex`        |                     | c("indicator", "time", "sex", | "real"       |
+|                             |                     |"age")                         |              |
+|                             |                     |                               |              |
++-----------------------------+---------------------+-------------------------------+--------------+
+
+
+# Role in CCMPP Workflow
+
+## `ccmpp_input_list` {#sec:ccmpp-inut-list-defn}
+
+`ccmppWPP_workflow_one_country_variant` is the workhorse function for performing the CCMPP on a single country. It takes a single argument, a list of data frame, each containing data for a component of demographic change (population at baseline, fertility, etc.). The class `ccmpp_input_list` is a list of objects with the classes listed in Table \@ref(tab:ccmpp-input-subclass-restrictions). It specifies exactly the inputs needed for a complete run of the CCMPP. It acquires all the attributes of its constituents:
+
+- "age_span"
+- "time_span"
+- "non_zero_fert_ages"
+
+
+## Validating Input
+
+A single line is added to `ccmppWPP_workflow_one_country_variant` to enact the validation:
+
+```{r, eval = FALSE}
+ccmppWPP_workflow_one_country_variant <- function(wpp_input) {
+
+    wpp_input <- as_ccmpp_input_list(wpp_input) #<<<<<<<< ADDED: VALIDATE INPUTS
+
+    # extract objects needed for ccmpp
+    ccmpp_input <- data_parse_ccmpp_input(indata = wpp_input)
+
+    ... etc.
+```
+
+
+# Construction and Validation
+
+Functions to construct objects of the various classes, and validate existing objects of unconfirmed class, are provided. 
+
+## Main Constructor Functions
+
+A user-level constructor is provided for each class which takes as input the base data frame object plus arguments specifying the dimensions and value types. The names of these functions are the class names.
+
+```{r construct-vital-rate-df-1}
+demog_change_example_df <-
+    demog_change_component_df(x = wpp_input_example$mig_net_count_age_sex,
+                              dimensions = c("time", "sex", "age"),
+                              value_type = "count")
+```
+
+The class of the object is contained in the "class" attribute accessed with base *R* function `class()`
+
+```{r class-of-vrdf}
+class(demog_change_example_df)
+```
+
+Note that the `data.frame` is the second element of the class, indicating that objects of class `demog_change_component_df` explicitly inherit from the base class `data.frame`. 
+
+Constructing objects of the other classes is done in the same way, e.g.:
+
+```{r construct-ccmpp-input-df-1}
+ccmpp_input_example_df <-
+    ccmpp_input_df(x = wpp_input_example$mig_net_count_age_sex,
+                   dimensions = c("time", "sex", "age"),
+                   value_type = "count")
+
+fert_rate_input_example_df <-
+    fert_rate_age_f(x = wpp_input_example$fert_rate_age_f,
+                       non_zero_fert_ages = 15:45)
+```
+
+To make a `ccmpp_input_list` that binds together all the inputs needed for a projection, pass all the constituent parts as arguments to the constructor:
+
+```{r}
+ccmpp_input_list_example <-
+    ccmpp_input_list(pop_count_age_sex_base = wpp_input_example$pop_count_age_sex_base,
+                     life_table_age_sex = wpp_input_example$life_table_age_sex,
+                     fert_rate_age_f = wpp_input_example$fert_rate_age_f,
+                     srb = wpp_input_example$srb,
+                     mig_net_count_age_sex = wpp_input_example$mig_net_count_age_sex,
+                     mig_net_rate_age_sex = wpp_input_example$mig_net_rate_age_sex,
+                     mig_net_count_tot_b = wpp_input_example$mig_net_count_tot_b,
+                     mig_parameter = wpp_input_example$mig_parameter)
+```
+
+
+### Construction Conveniences
+
+The constructor functions check that the data frame being supplied is valid as an input for the class being created. The following operations are also done as conveniences. Note that these are hierarchical; everything that is listed under a function applies to all those beneath it.
+
+`demog_change_component_df`
+
+:  - Superfluous columns will be discarded; only the columns needed for the specified "dimensions" and the `value` column are retained. 
+- If the `dimensions` argument is omitted the constructor functions will attempt to guess the "dimensions" attribute from the columns in the data frame. 
+
+```{r construct-vital-rate-df-2}
+## Dimensions can be guessed from the columns in the data frame
+demog_change_example_df <-
+    demog_change_component_df(x = wpp_input_example$mig_net_count_age_sex)
+```
+
+`ccmpp_input_df`
+
+:  - Pre-sorting is not required; the data frame will be sorted appropriately.
+- The "time_span" and "age_span" attributes will be set using the corresponding columns in the data frame, which will be checked for validity.
+
+
+`fert_rate_age_f`
+
+:  - An attempt will be made to guess the attribute "non_zero_fert_ages" if it is not supplied as an argument.
+
+
+### User Responsibilities
+
+The following are the responsibility of the user and will *not* be done automatically . Note that these are hierarchical; everything that is listed under a function applies to all those beneath it.
+
+`demog_change_component_df`
+
+:  - There must be only one row per unique `indicator` $\times$ `time_start` $\times$ `sex` combination. Use `dplyr` or similar before passing to `demog_change_component_df()`.
+- There cannot be any missing values; CCMPP won't work with them.
+- The `sex` column (if present) can only have values "both", "female", or "male". Variations such as "Both", "MALE", etc. are not valid.
+ 
+
+`ccmpp_input_df`
+
+:  - Ensuring that the age breakdown starts at age 0 for every unique `indicator` $\times$ `time_start` $\times$ `sex` combination. 
+
+
+## Validation
+
+The function `validate_ccmpp_object()` is available to validate any object as a member of the class. As per convention, if the object is valid it is returned; if not, an error is signalled:
+
+```{r validate-vr-class}
+x <- validate_ccmpp_object(x = demog_change_example_df)
+class(x)
+ 
+## Not run:
+## y <- validate_ccmpp_object(x = wpp_input_example$mig_net_count_age_sex)
+## > Error in validate_ccmpp_object.default(x = wpp_input_example$mig_net_count_age_sex) :
+## 'x' is not an object with a valid CCMPP object class ...
+```
+
+`validate_ccmpp_object()` is an S3 generic function; it has methods for all the classes and subclasses associated with the `demog_change_component_df` base class. 
+
+You can always check if an existing object inherits from a particular class using the appropriate `is_` function. These functions only check the "class" attribute; they do not check that the underlying data components are valid.
+
+```{r}
+is_demog_change_component_df(demog_change_example_df)
+is_demog_change_component_df(ccmpp_input_example_df) #inheritance
+
+is_ccmpp_input_df(demog_change_example_df) #inheritance does not go backwards
+is_ccmpp_input_df(ccmpp_input_example_df) 
+```
+
+## Object Visualization
+
+### `print`
+
+`print` and `summary` are two common functions for examining objects. Special methods have been written to make these useful for the `demog_change_component_df` class. The `print` method takes inspiration from the method for `tibble`s. It prints a short summary of the object and then the first few rows of the data. By default, the first six rows are printed:
+
+```{r}
+demog_change_example_df
+```
+
+To show more rows, call `print` explicitly and use the argument `n`:
+
+```{r}
+print(demog_change_example_df, n = 10)
+```
+
+Objects of class `ccmpp_input_df` must have a common value for `age_span` and `time_span`. The `print` method emphasizes this by showing only the first row. In subsequent rows the entries are shown as ".". The values are also printed in the summary above the table. 
+
+```{r}
+ccmpp_input_example_df
+```
+
+The `print` method for objects of class `fert_rate_age_f` attempts to emphasize the "non_zero_fert_ages" attribute: 
+
+```{r}
+fert_rate_input_example_df
+```
+
+Note that the special formatting is only for vizualization; the actual values for `age_span`, `time_span` and `value` are not altered in the data components. 
+
+```{r}
+fert_rate_input_example_df$value[1:10]
+```
+
+
+### `summary`
+
+The method for `summary` is based on the `data.frame` method, but gives some additional summary information:
+
+```{r}
+summary(demog_change_example_df)
+```
+
+
+# Using and Manipulating Objects
+
+## Object Queries
+
+Utility functions are provided for querying various attributes and characteristics of objects inheriting from `demog_change_component_df`.
+
+
+### Dimensions Present
+
+To get the names of the dimensions of an object use `demog_change_component_dimensions`^[This name is probably too long.] 
+
+```{r}
+demog_change_component_dimensions(demog_change_example_df)
+```
+
+Each dimension also has an associated "`is_by_[dim]`" function to test whether "`[dim]`" is present:
+
+```{r}
+is_by_age(demog_change_example_df)
+is_by_indicator(demog_change_example_df)
+```
+
+
+### Dimension Values
+
+To get the values of specific dimensions functions named for the dimensions are provided, e.g., `ages`, `times`. These return the unique values of the requested dimension.
+
+```{r}
+ages(demog_change_example_df)
+
+## NOT RUN:
+## indicators(demog_change_example_df)
+## Error in indicators.demog_change_component_df(demog_change_example_df) : 
+##   'indicator' is not a dimension of 'x'.
+```
+
+
+### Other Attributes
+
+Functions `value_type`, `age_span`, `time_span`, `non_zero_fert_ages` are also available to access those attributes for classes that have them. 
+
+
+## Methods for Standard Generic Functions
+
+The following *methods* are provided for *R*'s existing generic functions.
+
+
+### Subsetting ###
+
+If an object inheriting from the `demog_change_component_df` class is subsetted using any of "`[`" , "`$`", "`[[`" the result looses the class. A warning will be issued if used interactively:
+
+```{r subsetting-vrdf-1-col}
+## Extract one column:
+z <- demog_change_example_df[, "age_start"]
+class(z)
+```
+
+```{r subsetting-vrdf-data-frame}
+## Extract a sub-data frame
+z <- demog_change_example_df[demog_change_example_df$time_start == 1950, ]
+class(z)
+```
+
+The warning is only issued if "`[`" (or "`$`", or "`[[`") are called at the top level. E.g.,
+
+```{r subsetting-vrdf-via-subset}
+## Same effect as `[` above but no warning
+z <- subset(demog_change_example_df, time_start == 1950)
+class(z)
+```
+
+To create a valid subset, re-make the object as a member of the class (`suppressWarnings()` is optional):
+
+```{r subset-vrdf-remake}
+z <-
+    demog_change_component_df(
+        suppressWarnings(
+            demog_change_example_df[demog_change_example_df$time_start == 1950, ]),
+        age_span = attr(demog_change_example_df, "age_span"),
+        time_span = attr(demog_change_example_df, "time_span"))
+class(z)
+```
+
+Alternatively, one of the special subset functions could be used (see Section \@ref(new-subset-functions)).
+
+
+### Subset-Replacing ###
+
+If a column in an object inheriting from `demog_change_component_df` is replaced using any of "`[<-`" , "`$<-`", "`[[<-`" the class will, again, be dropped.
+
+```{r replacement-vrdf}
+z <- demog_change_example_df
+z[, "age_start"] <- z$age_start
+class(z)
+```
+
+
+### Combining ###
+
+Combining objects inheriting from `demog_change_component_df` via `base::rbind` will also cause the class to be dropped. As above, pass the result back to the relevant constructor function to create a new classed object after the bind.
+
+
+### Coercion to Data Frames ###
+
+A method has been written for `base::as.data.frame` that also ensures the class is dropped. 
+
+```{r}
+z <- as.data.frame(demog_change_example_df)
+class(z)
+```
+
+
+### New Utility Functions for Subsetting {#new-subset-functions}
+
+New functions are provided to subset objects inheriting from `demog_change_component_df` by one or more of their dimensions, and return an object that still inherits from the class. They are named systematically as follows `subset_[dimension]`, where "`[dimension]`" is one of the valid dimensions. The first argument is the object to subset, the second is a vector giving the values of the dimension to be retained in the subset. For example, to subset on time use `subset_time`:
+
+```{r}
+x <- subset_time(demog_change_example_df,
+                 times = c("1990", "1991"))
+class(x)
+summary(x)
+```
+
+To subset on multiple dimensions use the respective functions in a pipe:
+
+```{r}
+library(magrittr)
+x <- subset_time(demog_change_example_df,
+                 times = c("1990", "1991")) %>%
+    subset_sex("male")
+class(x)
+summary(x)
+```
+
+A subset that is not a valid class object will not be created and an error will be signalled:
+
+```{r}
+## NOT RUN:
+## x <- subset_age(ccmpp_input_example_df, age = 5)
+## Error in validate_ccmpp_object.ccmpp_input_df(new_ccmpp_input_df(li$df,  : 
+##   'age_start' does not start at '0' for each time * sex combination.
+```
+
+
+# What Next?
+
+1. Get feedback on the general set-up, names of things, operation, etc.
+2. Decide if the output list would benefit from having classes defined like the input list. This would be straightforward given the infrastructure already created. 
+3. Complete documentation files for functions and classes (e.g., `?ccmpp_input_list`).
+4. Consider other methods that would be useful. E.g., would a `plot` method be useful to vizualize the inputs? This would allow quick and easier creation of a standard set of vizualizations to check the inputs/outputs.
+
+
+# References {-} 

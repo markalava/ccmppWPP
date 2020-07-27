@@ -29,6 +29,7 @@ vignettes/*.log
 vignettes/*.run.xml
 vignettes/*.tex
 vignettes/auto/*
+vignettes/*.md
 
 # produced vignettes
 vignettes/*.html
@@ -50,3 +51,6 @@ vignettes/*.pdf
 
 # pkgdown site
 docs/
+
+# Local files
+_no_install/

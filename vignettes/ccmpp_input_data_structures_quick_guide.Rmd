@@ -1,0 +1,275 @@
+---
+title: "CCMPP Input Data Structures Quick Guide"
+author: ""
+date: |
+    | `r Sys.Date()`
+    | (`r paste0("_ccmppWPP_ version ", packageVersion("ccmppWPP"), ")")`
+# output:
+#     function(...) bookdown::html_document2(..., base_format = rmarkdown::html_vignette, css=c(system.file("rmarkdown", "templates", "html_vignette", "resources", "vignette.css", package = "rmarkdown"), "vignette2.css")):
+      # toc: true
+      # toc_depth: 2
+output:
+  word_document:
+    reference_docx: docx_reference.docx    
+bibliography: bibliography.bib
+link-citations: true
+vignette: >
+  %\VignetteIndexEntry{CCMPP Input Data Structures Quick Guide}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = TRUE,
+  results = TRUE
+)
+
+## set global chunk options
+options(formatR.arrow=TRUE,width=80)
+```
+
+<!-- 
+STYLE CONVENTIONS
+- Filenames: single quoted
+- Software: italics
+- S3 classes: italics
+- Object attributes: double quoted
+-->
+
+
+```{r source-package-functions, echo = FALSE, results = "hide"}
+library(ccmppWPP)
+```
+
+
+# Introduction
+
+This is a quick guide to using the S3 classes for CCMPP input objects. See the vignette "S3 Classes for CCMPP Input Data Structures" for full details of the classes.
+
+
+# The S3 Classes for CCMPP
+
+## Role in CCMPP Workflow
+
+`ccmppWPP_workflow_one_country_variant` is the workhorse function for performing the CCMPP on a single country. It takes a single argument, a list of data frame, each containing data for a component of demographic change (population at baseline, fertility, etc.). The S3 class `ccmpp_input_list` was created to 
+
+  1. Rigorously define the input list (names of elements, structure of the data frames);
+  2. Encode the definition in *R* through a set of *constructor* and *validator* functions.
+  
+The constructor functions provide a way to create valid inputs to `ccmpp_input_list` from data frames. The validator functions provide a mechanism for validating arbitrary lists as members of the `ccmpp_input_list` class.
+
+A single line is added to `ccmppWPP_workflow_one_country_variant` to enact the validation:
+
+```{r, eval = FALSE}
+ccmppWPP_workflow_one_country_variant <- function(wpp_input) {
+
+    wpp_input <- as_ccmpp_input_list(wpp_input) #<<<<<<<< ADDED: VALIDATE INPUTS
+
+    # extract objects needed for ccmpp
+    ccmpp_input <- data_parse_ccmpp_input(indata = wpp_input)
+
+    ... etc.
+    ## rest of code.. 
+```
+
+
+## Structure of CCMPP Input Lists
+
+Table: (\#tab:ccmpp-input-subclass-restrictions) Names, demographic dimensions, and value types of data frame components of `ccmpp_input_list` objects.
+
+| Element name                | Dimensions                    | Value type   |
+|:----------------------------|:------------------------------|:-------------|
+| `fert_rate_age_f`           | time, age                     | rate         |
+| `srb`                       | time                          | ratio        |
+| `survival_ratio_input_df`   | time, sex, age                | proportion   |
+| `mig_net_rate_age_sex`      | time, sex, age                | rate         |
+| `mig_net_count_age_sex`     | time, sex, age                | count        |
+| `mig_net_count_tot_b`       | time                          | count        |
+| `mig_parameter`             | time                          | categorical  |
+| `pop_count_age_sex_base`    | time, sex, age                | count        |
+| `life_table_age_sex`        | indicator, time, sex, age     | real         |
+
+The elements of a `ccmpp_input_list` object are in Table \@ref(tab:ccmpp-input-subclass-restrictions). Each is a data frame with column names taken from the following list:
+
+  - indicator
+  - time_start
+  - time_span
+  - age_start
+  - age_span 
+  - sex
+  - value
+  
+Each data frame is also given an S3 class with the same name as its element. The element `fert_rate_age_f` is a data frame with class `fert_rate_age_f`, and so on. These data frames have two *attributes* (meta-data), including "dimension" and "value_type". The "dimension" attribute indicates the demographic breakdown of the data. Allowed dimensions are 
+
+  - indicator
+  - time
+  - sex
+  - age
+  
+The "value_type" attribute indicates the type of values the `value` column contains. Allowed "value_type"s are 
+
+  - count
+  - rate
+  - ratio
+  - proportion
+  - percentage
+  - real
+  - categorical
+
+Type "real" is a catch-all for numeric values that do not fall under any other type. It is also used when the `value` column contains a mixture of the other types, as is the case for `life_table_age_sex` objects. 
+
+
+## Creating Data Frame Components
+
+To create a data frame for inclusion in a `ccmpp_input_list`, use the constructor function of the same name:
+
+```{r}
+library(ccmppWPP) #load the package first
+data(wpp_input_example) #load the example data
+
+## The 'fert_rate_age_f' data frame in the example is a basic R data frame:
+class(wpp_input_example$fert_rate_age_f)
+
+## Use the constructor to create a data frame with extra class memberships:
+fert_example <- fert_rate_age_f(wpp_input_example$fert_rate_age_f)
+class(fert_example)
+
+## Look at the attributes of the new object
+names(attributes(fert_example))
+```
+
+The classed data frame has the standard data frame attributes, "names", "row.names", "class", and "dimensions". Additionally, it has attributes "dimensions", "value_type", 
+"age_span", "time_span", and "non_zero_fert_ages". These can be inspected with functions of the same name, e.g.,:
+
+```{r}
+age_span(fert_example)
+non_zero_fert_ages(fert_example)
+```
+
+Special `print` and `summary` methods have been written to concisely display the data frames:
+
+```{r}
+## Print method
+fert_example
+```
+
+```{r}
+## Summary method
+summary(fert_example)
+```
+
+Similar functions exist for the other data frame elements. 
+
+
+## Validating Data Frame Components
+
+At any time, the validity of an object as a member of its class can be checked using the function `validate_ccmpp_object`. This function inspects the objects "class" and calls the appropriate subfunction to check that the data structure and attributes of the object match the class definition. If they match the object is simply returned as-is; this is standard *R* convention. If the object is not valid, an error is signalled:
+
+```{r}
+## Not run:
+## validate_ccmpp_object(wpp_input_example$fert_rate_age_f)
+## Error in validate_ccmpp_object.default(wpp_input_example$fert_rate_age_f) : 
+##   'x' is not an object with a valid CCMPP object class. 'class(x) = data.frame'. Valid classes are 'life_table_age_sex', 'mig_parameter', 'mig_net_count_tot_b', 'mig_net_count_age_sex', 'mig_net_rate_age_sex', 'srb', 'pop_count_age_sex_base', 'survival_ratio_input_df', 'fert_rate_age_f', 'ccmpp_input_df', 'demog_change_component_df'.
+
+## Valid objects are simply returned to the console
+validate_ccmpp_object(fert_example)
+```
+
+
+## Creating Input Lists
+
+### From Data Frames
+
+The function `ccmpp_input_list` can be used to create a valid input list from constituent data frames:
+
+```{r}
+ccmpp_input_list_example <-
+    ccmpp_input_list(pop_count_age_sex_base = wpp_input_example$pop_count_age_sex_base,
+                     life_table_age_sex = wpp_input_example$life_table_age_sex,
+                     fert_rate_age_f = wpp_input_example$fert_rate_age_f,
+                     srb = wpp_input_example$srb,
+                     mig_net_count_age_sex = wpp_input_example$mig_net_count_age_sex,
+                     mig_net_rate_age_sex = wpp_input_example$mig_net_rate_age_sex,
+                     mig_net_count_tot_b = wpp_input_example$mig_net_count_tot_b,
+                     mig_parameter = wpp_input_example$mig_parameter)
+
+class(ccmpp_input_list_example)
+```
+
+
+### From a List
+
+If the user has already assembled a list with the necessary components and proper element names, `as_ccmpp_input_list` can be used to *coerce* it to a member of the class:
+
+```{r}
+ccmpp_input_list_example_2 <-
+    as_ccmpp_input_list(wpp_input_example)
+
+class(ccmpp_input_list_example_2)
+```
+
+       
+## Validating Input Lists
+
+The same function used above, `validate_ccmpp_object` can be used to validate a list
+
+```{r}
+validate_ccmpp_object(ccmpp_input_list_example)
+```
+
+
+# Working with CCMPP Input Classes
+
+In general, `ccmpp_input_list`s and the component data frames will behave just like regular *R* lists and data frames. However, it is useful to note that subsetting a data frame component of a `ccmpp_input_list` will drop the special class and the attributes. This is because a data frame must have exactly the right columns, column names, and structure to be a valid member of the class. Subsetting or otherwise manipulating a data frame will likely make it invalid as a member.
+
+```{r}
+class(fert_example)
+```
+```{r}
+x <- fert_example[1:5,]
+class(x)
+attributes(x)
+```
+
+```{r}
+y <- fert_example$time_start
+class(y)
+attributes(x)
+```
+
+To subset a data frame there are special functions `subset_[dimension]`, where "`[dimension]`" is one of the dimensions in Table \@ref(tab:ccmpp-input-subclass-restrictions). 
+
+```{r}
+fert_example_1950s_only <- subset_time(fert_example, times = 1950:1959)
+summary(fert_example_1950s_only)
+```
+
+Alternatively, subset the object as normal and recreate it as a member of the class:
+
+```{r}
+### Tidyverse style:
+library(magrittr)
+library(dplyr)
+fert_example_1950s_only_2 <-
+    dplyr::filter(fert_example, time_start < 1960) %>%
+    fert_rate_age_f()
+class(fert_example_1950s_only_2)
+
+### Base R style:
+fert_example_1950s_only_3 <-
+    fert_example[fert_example$time_start < 1960, ]
+fert_example_1950s_only_3 <- fert_rate_age_f(fert_example_1950s_only_3)
+class(fert_example_1950s_only_3)
+```
+
+
+# What Next?
+
+1. Get feedback on the general set-up, names of things, operation, etc.
+2. Decide if the output list would benefit from having classes defined like the input list. This would be straightforward given the infrastructure already created. 
+3. Complete documentation files for functions and classes (e.g., `?ccmpp_input_list`).
+4. Consider other methods that would be useful. E.g., would a `plot` method be useful to vizualize the inputs? This would allow quick and easier creation of a standard set of vizualizations to check the inputs/outputs.
+

@@ -72,4 +72,15 @@ test_that("common set of times is enforced", {
                               time_span = time_span(x))
     expect_error(validate_ccmpp_object(y),
                  "must have the same time groups")
+})
+
+
+test_that("non-zero fert ages can be changed", {
+    x <- ccmpp_input_list_example
+    nzfa <- non_zero_fert_ages(x)
+    non_zero_fert_ages(x) <- 20:30
+    expect_false(identical(as.double(nzfa),
+                           as.double(non_zero_fert_ages(x))))
+    expect_identical(as.double(20:30),
+                     as.double(non_zero_fert_ages(x)))
     })

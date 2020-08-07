@@ -53,6 +53,21 @@ non_zero_fert_ages.ccmpp_input_list <- function(x) {
 
 #' @rdname extract_ccmpp_input_list_attributes
 #' @export
+`non_zero_fert_ages<-.ccmpp_input_list` <- function(x, value) {
+    f <- fert_rate_age_f(fert_rate_component(x),
+                         non_zero_fert_ages = value)
+    ccmpp_input_list(pop_count_age_sex_base = pop_count_base_component(x),
+             life_table_age_sex = life_table_component(x),
+             fert_rate_age_f = f,
+             srb = srb_component(x),
+             mig_net_count_age_sex = mig_net_count_component(x),
+             mig_net_rate_age_sex = mig_net_rate_component(x),
+             mig_net_count_tot_b = mig_net_count_tot_component(x),
+             mig_parameter = mig_parameter_component(x))
+}
+
+#' @rdname extract_ccmpp_input_list_attributes
+#' @export
 times.ccmpp_input_list <- function(x) {
     times(mig_net_count_component(x))
 }
@@ -78,7 +93,6 @@ indicators.ccmpp_input_list <- function(x, drop = TRUE) {
 value_type.ccmpp_input_list <- function(x) {
     lapply(x, "value_type")
 }
-
 
 
 ###-----------------------------------------------------------------------------

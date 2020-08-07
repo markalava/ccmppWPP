@@ -206,6 +206,34 @@ subset_age.fert_rate_age_f <- function(x, ages, drop = FALSE) {
 
 
 ###-----------------------------------------------------------------------------
+### * Attributes
+
+#' @rdname extract_demog_change_component_attributes
+#' @export
+non_zero_fert_ages <- function(x) {
+    UseMethod("non_zero_fert_ages")
+}
+
+#' @rdname extract_demog_change_component_attributes
+#' @export
+non_zero_fert_ages.fert_rate_age_f <- function(x) {
+    attr(x, "non_zero_fert_ages")
+}
+
+#' @rdname extract_demog_change_component_attributes
+#' @export
+`non_zero_fert_ages<-` <- function(x, value, ...) {
+    UseMethod("non_zero_fert_ages<-")
+}
+
+#' @rdname extract_demog_change_component_attributes
+#' @export
+`non_zero_fert_ages<-.fert_rate_age_f` <- function(x, value, ...) {
+    fert_rate_age_f(x, non_zero_fert_ages = value)
+    }
+
+
+###-----------------------------------------------------------------------------
 ### * Utilities
 
 #' @rdname as_age_time_matrix

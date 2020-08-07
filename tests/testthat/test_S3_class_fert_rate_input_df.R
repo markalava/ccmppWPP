@@ -151,3 +151,14 @@ test_that("indicator dimension detected", {
 
     expect_false("indicator" %in% colnames(fert_rate_age_f(z)))
 })
+
+
+test_that("non-zero fertility rate ages can be changed", {
+    y <- fert_rate_input_df_time_age
+    nzfa_y <- non_zero_fert_ages(y)
+    non_zero_fert_ages(y) <- 30:40
+    expect_false(identical(as.double(nzfa_y),
+                           as.double(non_zero_fert_ages(y))))
+    expect_identical(as.double(non_zero_fert_ages(y)),
+                     as.double(seq(from = 30, to = 40, by = 1)))
+    })

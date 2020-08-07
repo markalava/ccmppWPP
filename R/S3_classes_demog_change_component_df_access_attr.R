@@ -158,18 +158,6 @@ value_type.demog_change_component_df <- function(x) {
     attr(x, "value_type")
 }
 
-#' @rdname extract_demog_change_component_attributes
-#' @export
-non_zero_fert_ages <- function(x) {
-    UseMethod("non_zero_fert_ages")
-}
-
-#' @rdname extract_demog_change_component_attributes
-#' @export
-non_zero_fert_ages.fert_rate_age_f <- function(x) {
-    attr(x, "non_zero_fert_ages")
-    }
-
 #' Test for vital rate dimensions
 #'
 #' These functions test whether an object has a particular vital rate

@@ -6,6 +6,7 @@
 \alias{time_span.ccmpp_input_list}
 \alias{ages.ccmpp_input_list}
 \alias{non_zero_fert_ages.ccmpp_input_list}
+\alias{non_zero_fert_ages<-.ccmpp_input_list}
 \alias{times.ccmpp_input_list}
 \alias{sexes.ccmpp_input_list}
 \alias{indicators.ccmpp_input_list}
@@ -19,6 +20,8 @@
 \method{ages}{ccmpp_input_list}(x)
 
 \method{non_zero_fert_ages}{ccmpp_input_list}(x)
+
+\method{non_zero_fert_ages}{ccmpp_input_list}(x) <- value
 
 \method{times}{ccmpp_input_list}(x)
 

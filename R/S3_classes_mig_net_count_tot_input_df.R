@@ -16,13 +16,18 @@
 #' @author Mark Wheldon
 new_mig_net_count_tot_b <-
     function(x,
+             age_span = double(),
              time_span = double(),
+             dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_net_count_tot_b"),
+             value_type = get_value_types_for_classes("mig_net_count_tot_b"),
+             value_scale = double(),
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
-                           age_span = double(),
+                           age_span = age_span,
                            time_span = time_span,
-                           dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_net_count_tot_b"),
-                           value_type = get_value_types_for_classes("mig_net_count_tot_b"),
+                           dimensions = dimensions,
+                           value_type = value_type,
+                           value_scale = value_scale,
                            ...,
                            class = c(class, "mig_net_count_tot_b"))
     }
@@ -47,15 +52,18 @@ new_mig_net_count_tot_b <-
 #' @export
 mig_net_count_tot_b <-
     function(x,
-             time_span = attr(x, "time_span")) {
+             time_span = attr(x, "time_span"),
+             value_scale = attr(x, "value_scale")) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
                             dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_net_count_tot_b"),
-                            value_type = get_value_types_for_classes("mig_net_count_tot_b"))
+                            value_type = get_value_types_for_classes("mig_net_count_tot_b"),
+                            value_scale = value_scale)
         ## Create/Validate
         validate_ccmpp_object(
             new_mig_net_count_tot_b(li$df,
-                               time_span = li$time_span)
+                                    time_span = li$time_span,
+                                    value_scale = li$value_scale)
         )
     }
 
@@ -125,3 +133,13 @@ subset_time.mig_net_count_tot_b <- function(x, times, drop = FALSE) {
     x <- NextMethod()
     return(mig_net_count_tot_b(x))
 }
+
+
+###-----------------------------------------------------------------------------
+### * Attributes
+
+## #' @rdname extract_demog_change_component_attributes
+## #' @export
+## `value_scale<-.mig_net_count_tot_b` <- function(x, value, ...) {
+##     mig_net_count_tot_b(x, value_scale = value)
+##     }

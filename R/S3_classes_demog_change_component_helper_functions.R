@@ -18,7 +18,7 @@ get_all_demog_change_component_df_class_names <- function() {
 
 get_all_allowed_attributes <- function() {
     c("dimensions", "value_type", "age_span", "time_span",
-      "non_zero_fert_ages")
+      "non_zero_fert_ages", "value_scale")
     }
 
 ## Define allowed dimensions
@@ -154,9 +154,71 @@ get_value_type_info_for_classes <- function(class = get_all_demog_change_compone
 
 get_value_types_for_classes <- function(classes) {
     tb <- get_value_type_info_for_classes()
-    tb[tb$class %in% classes, "value_type"]
-    }
+    out <- tb[tb$class %in% classes, "value_type"]
+    if (!length(out)) out <- NA
+    return(out)
+}
 
+###-----------------------------------------------------------------------------
+### * 'value_scale' Attribute
+
+## Value types that can have non-NA value_scales
+get_value_types_w_non_NA_value_scale <- function() {
+    c("rate", "real", "count")
+}
+
+get_value_scale_prefixes_info_for_value_types <-
+    function(value_type = get_value_types_w_non_NA_value_scale()) {
+    db <- data.frame(rbind(c(value_type = "count",
+                       prefix = NA),
+                     c(value_type = "rate",
+                       prefix = "per"),
+                     c(value_type = "real",
+                       prefix = NA)
+                     ), stringsAsFactors = FALSE)
+    return(db[db$value_type %in% value_type,])
+}
+
+get_value_scale_prefixes_for_value_types <- function(value_types) {
+    tb <- get_value_scale_prefixes_info_for_value_types()
+    out <- tb[tb$value_type %in% value_types, "prefix"]
+    if (!length(out)) out <- NA
+    return(out)
+}
+
+get_value_scale_annotations_info_for_classes <- function(class = get_all_demog_change_component_df_class_names()) {
+    db <- data.frame(rbind(c(class = "demog_change_component_df",
+                             annotation = NA),
+        c(class = "ccmpp_input_df",
+                             annotation = NA),
+                           c(class = "fert_rate_age_f",
+                       annotation = NA),
+                     c(class = "survival_ratio_age_sex",
+                       annotation = NA),
+                     c(class = "pop_count_age_sex_base",
+                       annotation = NA),
+                     c(class = "srb",
+                       annotation = NA),
+                     c(class = "mig_net_rate_age_sex",
+                       annotation = NA),
+                     c(class = "mig_net_count_age_sex",
+                       annotation = NA),
+                     c(class = "mig_net_count_tot_b",
+                       annotation = NA),
+                     c(class = "mig_parameter",
+                       annotation = NA),
+                     c(class = "life_table_age_sex",
+                       annotation = "radix")
+        ), stringsAsFactors = FALSE)
+    return(db[db$class %in% class,])
+}
+
+get_value_scale_annotations_for_classes <- function(classes) {
+    tb <- get_value_scale_annotations_info_for_classes()
+    out <- tb[tb$class %in% classes, "annotation"]
+    if (!length(out)) out <- NA
+    return(out)
+}
 
 ###-----------------------------------------------------------------------------
 ### * Data frame checking
@@ -234,6 +296,7 @@ get_min_age_in_dims_in_df <- function(x) {
         return(min(get_x_col("age")))
 }
 
+## Check value type
 check_value_type_of_value_in_df <- function(value, type) {
 
     stop_msg <- function(suff) {

@@ -346,7 +346,8 @@ summary.demog_change_component_df <-
 
         return(structure(list(dimensions = demog_change_component_dimensions(object),
                               time = time, age = age, sex = sex, indicator = indicator,
-                              value_type = value_type(object), values = values, table = table),
+                              value_type = value_type(object), values = values,
+                              value_scale = value_scale(object), table = table),
                          class = c("summary_demog_change_component_df", "list")))
     }
 
@@ -385,50 +386,58 @@ print.summary_demog_change_component_df <-
                           "\n")
 
             ## Time
-            if (!is.null(x$time))
-                msg <- paste0(msg, "      time:  range = [",
+            if (!is.null(x$time)) {
+                msg <- paste0(msg, "       time:  range = [",
                               paste(x$time$range, collapse = ", "),
                               "]")
-            if (!is.null(x$time$span))
-                msg <- paste0(msg,
-                              "\tspan = ",
-                              toString(x$time$span, 7))
-            msg <- paste0(msg, "\n")
+                if (!is.null(x$time$span))
+                    msg <- paste0(msg,
+                                  "\tspan = ",
+                                  toString(x$time$span, 7))
+                msg <- paste0(msg, "\n")
+            }
 
             ## Age
-            if (!is.null(x$age))
-                msg <- paste0(msg, "       age:  range = [",
+            if (!is.null(x$age)) {
+                msg <- paste0(msg, "        age:  range = [",
                               paste(x$age$range, collapse = ", "),
                               "]")
-            if (!is.null(x$age$span))
-                msg <- paste0(msg,
-                              "\tspan = ",
-                              toString(x$age$span, 7))
-            msg <- paste0(msg, "\n")
+                if (!is.null(x$age$span))
+                    msg <- paste0(msg,
+                                  "\tspan = ",
+                                  toString(x$age$span, 7))
+                msg <- paste0(msg, "\n")
+            }
 
             ## Sex
             if (!is.null(x$sex))
-                msg <- paste0(msg, "       sex:  levels = ",
+                msg <- paste0(msg, "        sex:  levels = ",
                               paste(x$sex$levels, collapse = ", "),
                               "\n")
 
             ## Indicator
             if (!is.null(x$indicator))
-                msg <- paste0(msg, " indicator:  levels = ",
+                msg <- paste0(msg, "  indicator:  levels = ",
                               toString(x$indicator$levels, 50),
                               "\n")
 
             ## Values
             if (!is.null(x$values)) {
-                msg <- paste0(msg, "value_type:  ",
+                msg <- paste0(msg, " value_type:  ",
                               x$value_type,
                               "\tlevels = ", toString(x$values$levels, 20),
                               "\n")
             } else {
-                msg <- paste0(msg, "value_type:  ",
+                msg <- paste0(msg, " value_type:  ",
                               x$value_type,
                               "\n")
             }
+
+            ## Value_Scale
+            if (!is.na(x$value_scale))
+                msg <- paste0(msg, "value_scale:  ",
+                              print(x$value_scale),
+                              "\n")
 
             ## Print
             if (length(msg > 0))

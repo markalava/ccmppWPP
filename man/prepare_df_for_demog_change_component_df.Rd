@@ -7,7 +7,8 @@
 prepare_df_for_demog_change_component_df(
   x,
   dimensions = attr(x, "dimensions"),
-  value_type = attr(x, "value_type")
+  value_type = attr(x, "value_type"),
+  value_scale = attr(x, "value_scale")
 )
 }
 \arguments{
@@ -20,6 +21,9 @@ columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
 
 \item{value_type}{Scalar indicating the type of the \dQuote{value}
 column (e.g., \dQuote{count}, \dQuote{rate}, etc.).}
+
+\item{value_scale}{\emph{Numeric} scalar indicating the value_scale of the
+counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
 }
 \value{
 A data frame

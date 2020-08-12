@@ -20,6 +20,13 @@
 \alias{indicators.demog_change_component_df}
 \alias{value_type}
 \alias{value_type.demog_change_component_df}
+\alias{value_type<-}
+\alias{value_type<-.demog_change_component_df}
+\alias{value_scale}
+\alias{value_scale.demog_change_component_df}
+\alias{print.demog_change_component_df_value_scale}
+\alias{value_scale<-}
+\alias{value_scale<-.demog_change_component_df}
 \alias{non_zero_fert_ages}
 \alias{non_zero_fert_ages.fert_rate_age_f}
 \alias{non_zero_fert_ages<-}
@@ -57,6 +64,20 @@ indicators(x)
 value_type(x)
 
 \method{value_type}{demog_change_component_df}(x)
+
+value_type(x, ...) <- value
+
+\method{value_type}{demog_change_component_df}(x, ...) <- value
+
+value_scale(x)
+
+\method{value_scale}{demog_change_component_df}(x)
+
+\method{print}{demog_change_component_df_value_scale}(x, ...)
+
+value_scale(x, ...) <- value
+
+\method{value_scale}{demog_change_component_df}(x, ...) <- value
 
 non_zero_fert_ages(x)
 

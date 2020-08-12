@@ -10,6 +10,7 @@ new_ccmpp_input_df(
   age_span = double(),
   time_span = double(),
   value_type = character(),
+  value_scale = numeric(),
   ...,
   class = character()
 )
@@ -24,6 +25,9 @@ new_ccmpp_input_df(
 
 \item{value_type}{Scalar indicating the type of the \dQuote{value}
 column (e.g., \dQuote{count}, \dQuote{rate}, etc.).}
+
+\item{value_scale}{\emph{Numeric} scalar indicating the value_scale of the
+counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
 }
 \value{
 An object of class \code{ccmpp_input_df}.

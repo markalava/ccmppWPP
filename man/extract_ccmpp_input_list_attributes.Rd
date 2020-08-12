@@ -11,6 +11,7 @@
 \alias{sexes.ccmpp_input_list}
 \alias{indicators.ccmpp_input_list}
 \alias{value_type.ccmpp_input_list}
+\alias{value_scale.ccmpp_input_list}
 \title{Extract attributes of a \code{ccmpp_input_list}}
 \usage{
 \method{age_span}{ccmpp_input_list}(x)
@@ -30,6 +31,8 @@
 \method{indicators}{ccmpp_input_list}(x, drop = TRUE)
 
 \method{value_type}{ccmpp_input_list}(x)
+
+\method{value_scale}{ccmpp_input_list}(x)
 }
 \arguments{
 \item{x}{An object inheriting from \code{ccmpp_input_list}}

@@ -56,13 +56,17 @@ new_fert_rate_age_f <-
     function(x,
              age_span = double(),
              time_span = double(),
+             dimensions = get_req_dimensions_for_ccmpp_input_classes("fert_rate_age_f"),
+             value_type = get_value_types_for_classes("fert_rate_age_f"),
+             value_scale = double(),
              non_zero_fert_ages = double(),
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
                            age_span = age_span,
                            time_span = time_span,
-                           dimensions = get_req_dimensions_for_ccmpp_input_classes("fert_rate_age_f"),
-                           value_type = get_value_types_for_classes("fert_rate_age_f"),
+                           dimensions = dimensions,
+                           value_type = value_type,
+                           value_scale = value_scale,
                            non_zero_fert_ages = non_zero_fert_ages,
                            ...,
                            class = c(class, "fert_rate_age_f"))
@@ -99,11 +103,13 @@ new_fert_rate_age_f <-
 #' @export
 fert_rate_age_f <-
     function(x,
-             non_zero_fert_ages = attr(x, "non_zero_fert_ages")) {
+             non_zero_fert_ages = attr(x, "non_zero_fert_ages"),
+             value_scale = attr(x, "value_scale")) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
                             dimensions = get_req_dimensions_for_ccmpp_input_classes("fert_rate_age_f"),
-                            value_type = get_value_types_for_classes("fert_rate_age_f"))
+                            value_type = get_value_types_for_classes("fert_rate_age_f"),
+                            value_scale = value_scale)
 
         if (is.null(non_zero_fert_ages)) {
             non_zero_fert_ages <- guess_non_zero_fert_ages(li$df, age_span = li$age_span)
@@ -123,6 +129,7 @@ fert_rate_age_f <-
             new_fert_rate_age_f(li$df,
                                age_span = li$age_span,
                                time_span = li$time_span,
+                               value_scale = li$value_scale,
                                non_zero_fert_ages = non_zero_fert_ages)
         )
     }
@@ -231,6 +238,12 @@ non_zero_fert_ages.fert_rate_age_f <- function(x) {
 `non_zero_fert_ages<-.fert_rate_age_f` <- function(x, value, ...) {
     fert_rate_age_f(x, non_zero_fert_ages = value)
     }
+
+## #' @rdname extract_demog_change_component_attributes
+## #' @export
+## `value_scale<-.fert_rate_age_f` <- function(x, value, ...) {
+##     fert_rate_age_f(x, value_scale = value, non_zero_fert_ages = non_zero_fert_ages(x))
+##     }
 
 
 ###-----------------------------------------------------------------------------

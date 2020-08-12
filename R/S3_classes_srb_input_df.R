@@ -15,13 +15,18 @@
 #' @author Mark Wheldon
 new_srb <-
     function(x,
+             age_span = double(),
              time_span = double(),
+             dimensions =  get_req_dimensions_for_ccmpp_input_classes("srb"),
+             value_type = get_value_types_for_classes("srb"),
+             value_scale = NA,
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
-                           age_span = double(),
+                           age_span = age_span,
                            time_span = time_span,
-                           dimensions =  get_req_dimensions_for_ccmpp_input_classes("srb"),
-                           value_type = get_value_types_for_classes("srb"),
+                           dimensions = dimensions,
+                           value_type = value_type,
+                           value_scale = value_scale,
                            ...,
                            class = c(class, "srb"))
     }
@@ -51,12 +56,14 @@ srb <-
 
         li <- prepare_df_for_ccmpp_input_df(x,
                             dimensions = get_req_dimensions_for_ccmpp_input_classes("srb"),
-                            value_type = get_value_types_for_classes("srb"))
+                            value_type = get_value_types_for_classes("srb"),
+                            value_scale = NA)
 
         ## Create/Validate
         validate_ccmpp_object(
             new_srb(li$df,
-                             time_span = li$time_span)
+                    time_span = li$time_span,
+                    value_scale = NA)
         )
     }
 

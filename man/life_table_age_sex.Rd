@@ -4,20 +4,29 @@
 \alias{life_table_age_sex}
 \title{Constructor for class \code{life_table_age_sex}}
 \usage{
-life_table_age_sex(x)
+life_table_age_sex(x, value_scale = attr(x, "value_scale"))
 }
 \arguments{
 \item{x}{For \code{demog_change_component_df}: A data frame with
 columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
 \dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.}
+
+\item{value_scale}{\emph{Numeric} scalar indicating the value_scale of the
+counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
 }
 \value{
 An object of class \code{life_table_age_sex}.
 }
 \description{
 \code{life_table_age_sex} is a subclass of
-\code{\link{ccmpp_input_df}}. It has an indicator column that
+\code{\link{ccmpp_input_df}}. It has an indicator column that **TO BE COMPLETED**
 }
+\section{Note}{
+
+The \dQuote{value_scale} attribute for objects of class
+\code{life_table_age_sex} is the \emph{radix} of the life table.
+}
+
 \seealso{
 \code{\link{validate_ccmpp_object}} for object validation,
     \code{\link{ccmpp_input_df}} for the class from which this one

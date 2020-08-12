@@ -4,7 +4,11 @@
 \alias{fert_rate_age_f}
 \title{Constructor for class \code{fert_rate_age_f}}
 \usage{
-fert_rate_age_f(x, non_zero_fert_ages = attr(x, "non_zero_fert_ages"))
+fert_rate_age_f(
+  x,
+  non_zero_fert_ages = attr(x, "non_zero_fert_ages"),
+  value_scale = attr(x, "value_scale")
+)
 }
 \arguments{
 \item{x}{For \code{demog_change_component_df}: A data frame with
@@ -13,6 +17,9 @@ columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
 
 \item{non_zero_fert_ages}{Numeric vector of unique ages indicating
 the reproductive age range.}
+
+\item{value_scale}{\emph{Numeric} scalar indicating the value_scale of the
+counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
 }
 \value{
 An object of class \code{fert_rate_age_f}.

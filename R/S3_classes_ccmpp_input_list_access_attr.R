@@ -94,6 +94,12 @@ value_type.ccmpp_input_list <- function(x) {
     lapply(x, "value_type")
 }
 
+#' @rdname extract_ccmpp_input_list_attributes
+#' @export
+value_scale.ccmpp_input_list <- function(x) {
+    lapply(x, "value_scale")
+}
+
 
 ###-----------------------------------------------------------------------------
 ### * Access Elements

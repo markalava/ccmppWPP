@@ -47,6 +47,8 @@
 #'
 #' @param age_span Scalar indicating the span of the age groups.
 #' @param time_span Scalar indicating the span of the time periods.
+#' @param value_scale \emph{Numeric} scalar indicating the value_scale of the
+#'     counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.
 #' @param dimensions Character vector listing the dimensions such as
 #'     \dQuote{time}, \dQuote{age}, \dQuote{sex}.
 #' @param value_type Scalar indicating the type of the \dQuote{value}
@@ -56,6 +58,7 @@
 new_demog_change_component_df <-
     function(x, dimensions = character(),
              value_type = character(),
+             value_scale = double(),
              ..., class = character()) {
         if (missing(x)) x <- data.frame()
         stopifnot(is.data.frame(x))
@@ -65,6 +68,7 @@ new_demog_change_component_df <-
                   ## age_span = age_span,
                   ## time_span = time_span,
                   value_type = value_type,
+                  value_scale = value_scale,
                   ...,
                   class = c(class, "demog_change_component_df", "data.frame"))
     }
@@ -80,7 +84,8 @@ new_demog_change_component_df <-
 #' @author Mark Wheldon
 prepare_df_for_demog_change_component_df <- function(x,
         dimensions = attr(x, "dimensions"),
-        value_type = attr(x, "value_type")) {
+        value_type = attr(x, "value_type"),
+        value_scale = attr(x, "value_scale")) {
 
         if (!is.data.frame(x))
             stop("'x' is not a data.frame.")
@@ -157,6 +162,14 @@ prepare_df_for_demog_change_component_df <- function(x,
             value_type <- "real"
         }
 
+       ## -------* Value_Scale
+
+    if (is.null(value_scale)) {
+        if (value_type %in% get_value_types_w_non_NA_value_scale())
+            value_scale <- 1
+        else value_scale <- NA
+    }
+
         ## -------* Other
 
         ## Clean 'x' and convert factors to character
@@ -174,7 +187,7 @@ prepare_df_for_demog_change_component_df <- function(x,
         ## row.names might have been muddled by sorting so reset
     row.names(x) <- NULL
 
-    return(list(df = x, dimensions = dimensions, value_type = value_type))
+    return(list(df = x, dimensions = dimensions, value_type = value_type, value_scale = value_scale))
 }
 
 
@@ -245,6 +258,8 @@ prepare_df_for_demog_change_component_df <- function(x,
 #'     \dQuote{time}, \dQuote{age}, \dQuote{sex}.
 #' @param value_type Scalar indicating the type of the \dQuote{value}
 #'     column (e.g., \dQuote{count}, \dQuote{rate}, etc.).
+#' @param value_scale \emph{Numeric} scalar indicating the value_scale of the
+#'     counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.
 #' @param ... Passed to the low-level constructor.
 #' @return An object of class \code{demog_change_component_df}.
 #' @author Mark Wheldon
@@ -253,13 +268,15 @@ demog_change_component_df <-
     function(x,
              dimensions = attr(x, "dimensions"),
              value_type = attr(x, "value_type"),
+             value_scale = attr(x, "value_scale"),
              ...) {
 
         li <-
             prepare_df_for_demog_change_component_df(
                 x,
                 dimensions = dimensions,
-                value_type = value_type)
+                value_type = value_type,
+                value_scale = value_scale)
 
         ## Create/Validate
         validate_ccmpp_object(
@@ -268,6 +285,7 @@ demog_change_component_df <-
                               ## age_span = (if (is.null(age_span)) double() else age_span),
                               ## time_span = (if (is.null(time_span)) double() else time_span),
                               value_type = li$value_type,
+                              value_scale = li$value_scale,
                               ...
                               )
         )

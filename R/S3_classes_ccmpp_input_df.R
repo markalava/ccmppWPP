@@ -22,12 +22,14 @@ new_ccmpp_input_df <-
              age_span = double(),
              time_span = double(),
              value_type = character(),
+             value_scale = numeric(),
              ..., class = character()) {
         new_demog_change_component_df(x = x,
                                       age_span = age_span,
                                       time_span = time_span,
                                       dimensions = dimensions,
                                       value_type = value_type,
+                                      value_scale = value_scale,
                                       ...,
                                       class = c(class, "ccmpp_input_df"))
     }
@@ -35,12 +37,14 @@ new_ccmpp_input_df <-
 
 prepare_df_for_ccmpp_input_df <- function(x,
              dimensions = attr(x, "dimensions"),
-             value_type = attr(x, "value_type")) {
+             value_type = attr(x, "value_type"),
+             value_scale = attr(x, "value_scale")) {
 
     li <- prepare_df_for_demog_change_component_df(
                 x,
                 dimensions = dimensions,
-        value_type = value_type)
+        value_type = value_type,
+        value_scale = value_scale)
 
     age_span <- unique(li$df$age_span)
     time_span <- unique(li$df$time_span)
@@ -66,13 +70,15 @@ ccmpp_input_df <-
     function(x,
              dimensions = attr(x, "dimensions"),
              value_type = attr(x, "value_type"),
+             value_scale = attr(x, "value_scale"),
              ...) {
 
         li <-
             prepare_df_for_ccmpp_input_df(
                 x,
                 dimensions = dimensions,
-                value_type = value_type)
+                value_type = value_type,
+                value_scale = value_scale)
 
         ## Create/Validate
         validate_ccmpp_object(
@@ -81,6 +87,7 @@ ccmpp_input_df <-
                                age_span = li$age_span,
                                time_span = li$time_span,
                                value_type = li$value_type,
+                               value_scale = li$value_scale,
                                ...)
         )
     }

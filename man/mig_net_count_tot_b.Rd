@@ -4,12 +4,19 @@
 \alias{mig_net_count_tot_b}
 \title{Constructor for class \code{mig_net_count_tot_b}}
 \usage{
-mig_net_count_tot_b(x, time_span = attr(x, "time_span"))
+mig_net_count_tot_b(
+  x,
+  time_span = attr(x, "time_span"),
+  value_scale = attr(x, "value_scale")
+)
 }
 \arguments{
 \item{x}{For \code{demog_change_component_df}: A data frame with
 columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
 \dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.}
+
+\item{value_scale}{\emph{Numeric} scalar indicating the value_scale of the
+counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
 }
 \value{
 An object of class \code{mig_net_count_tot_b}.

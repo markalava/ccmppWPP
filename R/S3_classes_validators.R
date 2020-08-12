@@ -47,6 +47,7 @@ validate_ccmpp_object.demog_change_component_df <-
         ## 1. The "dimensions" attribute must be formed correctly.
         ## 2. The attributes that go with the dimensions must be present.
         ## 3. The "value_type" attribute must be formed correctly.
+        ## 4. The "value_scale" attribute must be formed correctly.
 
         demog_change_component_dims_x <- demog_change_component_dimensions(x)
         if (is.na(demog_change_component_dims_x) || !is.character(demog_change_component_dims_x) ||
@@ -64,13 +65,26 @@ validate_ccmpp_object.demog_change_component_df <-
 
         value_type <- attr(x, "value_type")
         if (!identical(length(value_type), 1L) || !is.character(value_type)) {
-            stop("'value_type' must be a single character string, or 'NULL'.")
+            stop("'value_type' must be a single character string.")
         }
         allowed_value_types <- get_all_allowed_value_types()
         if (!(value_type %in% allowed_value_types))
             stop("'value_type' must be one of '",
                  paste(allowed_value_types, collapse = "', '"),
                  "'.")
+
+        value_scale <- attr(x, "value_scale")
+        if (!identical(length(value_scale), 1L) ||
+            !(is.numeric(value_scale) || is.na(value_scale))
+        ) {
+            stop("'value_scale' must be a numeric scalar or 'NA'.")
+        }
+        vt_nonNA_value_scale <- get_value_types_w_non_NA_value_scale()
+        if (!is.na(value_scale) && !value_type %in% vt_nonNA_value_scale)
+            stop("'value_type' is '", value_type, "' but 'value_scale' is '",
+                 value_scale, "'. Only value types ",
+                 toString(vt_nonNA_value_scale),
+                 " can have non-NA 'value_scale'.")
 
         ## VALUE COLUMN
         ## 1. The value column must conform to the stated "value_type"
@@ -514,6 +528,7 @@ validate_ccmpp_object.ccmpp_input_list <- function(x, ...) {
     age_levels <- list()
     time_span_attrs <- c()
     time_levels <- list()
+    value_scale_attrs <- c()
 
     for (df_nm in req_el_names) {
 
@@ -522,7 +537,7 @@ validate_ccmpp_object.ccmpp_input_list <- function(x, ...) {
         if (identical(class(test), "try-error"))
             stop(df_nm, ":\n", strsplit(c(test), " : ")[[1]][2])
 
-        ## Store 'spans' and time and age levels
+        ## Store 'spans' time and age levels, and value_scales
         if (is_by_age(x[[df_nm]])) {
             age_span_attrs <-
                 c(age_span_attrs, setNames(age_span(x[[df_nm]]), df_nm))
@@ -533,7 +548,26 @@ validate_ccmpp_object.ccmpp_input_list <- function(x, ...) {
                 c(time_span_attrs, setNames(time_span(x[[df_nm]]), df_nm))
             time_levels <- c(time_levels, setNames(list(times(x[[df_nm]])), df_nm))
         }
+        value_scale_attrs <- c(value_scale_attrs, setNames(attr(x[[df_nm]], "value_scale"), df_nm))
+                                # use 'attr' because 'value_scale' creates a
+                                # special object and don't need that
+                                # here.
     }
+
+    ## Check value_scales are conformable
+    value_scale_attrs <- value_scale_attrs[!is.na(value_scale_attrs)]
+    value_scale_attrs_not_lt <- value_scale_attrs[!grepl("life_table", names(value_scale_attrs))]
+    if (!identical(1L, length(unique(value_scale_attrs_not_lt)))) {
+        print(value_scale_attrs_not_lt)
+        stop("All 'value_scales' must be equal among elements of 'x' (except the life table element). Actual 'value_scale's are printed above.")
+    }
+    if (!identical(as.double(1e+05),
+                   as.double(value_scale_attrs[grepl("life_table", names(value_scale_attrs))])))
+        stop("The life table element must have value_scale ",
+             1e+05,
+             "; actual value_scale is '",
+             value_scale_attrs[grepl("life_table", names(value_scale_attrs))],
+             "'.")
 
     ## Check age and time spans are identical and scalar
     if (!identical(length(unique(age_span_attrs)), 1L)) {
@@ -569,13 +603,13 @@ validate_ccmpp_object.ccmpp_input_list <- function(x, ...) {
         sapply(time_levels_not_pop_count_base, "length")
     common_length <- unique(time_lengths)
     if (!identical(length(common_length), 1L)) {
-        print(time_lengths)
-        stop("All elements except \"pop_count_age_sex_base\" that have a \"time\" dimension must have the same number of time groups. Actual number of times by element are printed above.")
+        ptl <- print(time_lengths)
+        stop("All elements except \"pop_count_age_sex_base\" that have a \"time\" dimension must have the same number of unique times. Actual number of unique times by element are printed above.", ptl)
     }
     if (!all(sapply(time_levels_not_pop_count_base[-1],
                     function(z) identical(z, time_levels_not_pop_count_base[[1]])))) {
         print(time_levels_not_pop_count_base)
-        stop("All elements except \"pop_count_age_sex_base\" that have a \"time\" dimension must have the same time groups ('time_start'). Actual time groups by element are printed above.")
+        stop("All elements except \"pop_count_age_sex_base\" that have a \"time\" dimension must have the same unique times ('time_start'). Actual unique times by element are printed above.")
     }
     return(x)
 }

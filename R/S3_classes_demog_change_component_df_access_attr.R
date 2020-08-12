@@ -158,6 +158,102 @@ value_type.demog_change_component_df <- function(x) {
     attr(x, "value_type")
 }
 
+#' @rdname extract_demog_change_component_attributes
+#' @export
+`value_type<-` <- function(x, value, ...) {
+    UseMethod("value_type<-")
+}
+
+#' @rdname extract_demog_change_component_attributes
+#' @export
+`value_type<-.demog_change_component_df` <- function(x, value, ...) {
+    allowed_value_types <- get_all_allowed_value_types()
+    if (!(value %in% allowed_value_types))
+        stop("'value_type' must be one of '",
+             paste(allowed_value_types, collapse = "', '"),
+             "'.")
+    vtx <- get_value_types_for_classes(oldClass(x)[1])
+    if (!is.na(vtx)) {
+        stop("'value_type' of 'x' cannot be changed; it must always be '",
+             value_type(x),
+             "' for 'x' to remain a valid member of class '",
+             oldClass(x)[1],
+             "'.")
+        } else {
+            attr(x, "value_type") <- value
+            validate_ccmpp_object(x)
+        }
+}
+
+
+## Value_Scale
+new_demog_change_component_df_value_scale <-
+    function(x, class_of_df = character(),
+             value_type = character()) {
+        stopifnot(is.na(x) || is.numeric(x))
+        if (is.na(x)) x <- as.numeric(NA)
+        structure(x, class_of_df = class_of_df,
+                  value_type = value_type,
+                  class = c("demog_change_component_df_value_scale"))
+    }
+
+#' @rdname extract_demog_change_component_attributes
+#' @export
+value_scale <- function(x) {
+    UseMethod("value_scale")
+}
+
+#' @rdname extract_demog_change_component_attributes
+#' @export
+value_scale.demog_change_component_df <- function(x) {
+    new_demog_change_component_df_value_scale(x = attr(x, "value_scale"),
+                                        class_of_df = oldClass(x)[1],
+                                     value_type = value_type(x))
+}
+
+#' @rdname extract_demog_change_component_attributes
+#' @export
+print.demog_change_component_df_value_scale <- function(x, ...) {
+    msg <- c("value_scale: ")
+    if (!is.na(x)) {
+        pref <- get_value_scale_prefixes_for_value_types(attr(x, "value_type"))
+        ann <- get_value_scale_annotations_for_classes(attr(x, "class_of_df"))
+        msg <- c("value_scale: ")
+        if (!is.na(pref)) msg <- paste0(msg, pref, " ")
+        msg <- paste0(msg, as.character(x))
+        if (!is.na(ann)) msg <- paste0(msg, " (", ann, ")")
+    } else {
+        msg <- paste0(msg, as.character(x))
+    }
+    cat(msg, "\n")
+    return(invisible(x))
+}
+
+#' @rdname extract_demog_change_component_attributes
+#' @export
+`value_scale<-` <- function(x, value, ...) {
+    UseMethod("value_scale<-")
+}
+
+#' @rdname extract_demog_change_component_attributes
+#' @export
+`value_scale<-.demog_change_component_df` <- function(x, value, ...) {
+    vtx <- value_type(x)
+    if (length(vtx) > 1) {
+        stop("'x' has value_type '",
+                vtx,
+                "' which has length > 1. Cannot change the value_scale.")
+    }
+    if (!vtx %in% get_value_types_w_non_NA_value_scale()) {
+        stop("Cannot change the value_scale of an object with value_type '",
+                vtx,
+                "'.")
+    }
+    attr(x, "value_scale") <- value
+    validate_ccmpp_object(x)
+    }
+
+
 #' Test for vital rate dimensions
 #'
 #' These functions test whether an object has a particular vital rate

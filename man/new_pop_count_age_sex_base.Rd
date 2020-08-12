@@ -8,6 +8,9 @@ new_pop_count_age_sex_base(
   x,
   age_span = double(),
   time_span = double(),
+  dimensions = get_req_dimensions_for_ccmpp_input_classes("pop_count_age_sex_base"),
+  value_type = get_value_types_for_classes("pop_count_age_sex_base"),
+  value_scale = double(),
   ...,
   class = character()
 )
@@ -22,6 +25,9 @@ new_pop_count_age_sex_base(
 
 \item{value_type}{Scalar indicating the type of the \dQuote{value}
 column (e.g., \dQuote{count}, \dQuote{rate}, etc.).}
+
+\item{value_scale}{\emph{Numeric} scalar indicating the value_scale of the
+counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
 }
 \value{
 An object of class \code{pop_count_age_sex_base}.

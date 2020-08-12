@@ -47,6 +47,8 @@ test_that("subsetting returns valid objects", {
 
 
 test_that("common set of times is enforced", {
+
+
     x <- ccmpp_input_list_example
     y <- x
     ty <- times(y[["fert_rate_age_f"]])
@@ -56,8 +58,9 @@ test_that("common set of times is enforced", {
                     )
     y <- new_ccmpp_input_list(y, age_span = age_span(x),
                               time_span = time_span(x))
-    expect_error(validate_ccmpp_object(y),
-                 "must have the same number of time")
+        expect_error(capture.output(validate_ccmpp_object(y),
+                                    file = OS_null_file_string),
+                 "must have the same number of unique times")
 
     y <- x
     ty <- y[["fert_rate_age_f"]]$time_start
@@ -66,12 +69,14 @@ test_that("common set of times is enforced", {
         new_fert_rate_age_f(y[["fert_rate_age_f"]],
                             age_span = age_span(x),
                             time_span = time_span(x),
+                            value_scale = 1,
                             non_zero_fert_ages = non_zero_fert_ages(x[["fert_rate_age_f"]])
                             )
     y <- new_ccmpp_input_list(y, age_span = age_span(x),
                               time_span = time_span(x))
-    expect_error(validate_ccmpp_object(y),
-                 "must have the same time groups")
+        expect_error(capture.output(validate_ccmpp_object(y),
+                                   file = OS_null_file_string),
+                     "must have the same unique times")
 })
 
 

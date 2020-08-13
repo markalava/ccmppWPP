@@ -130,7 +130,7 @@ as_ccmpp_input_df.data.frame <- function(x, ...) {
 #' @rdname coerce_ccmpp_input_df
 #' @export
 as_ccmpp_input_df.matrix <- function(x, ...) {
-    as_ccmpp_input_df(as.data.frame(NextMethod()))
+    as_ccmpp_input_df(as_demog_change_component_df(x))
 }
 
 #' @rdname coerce_ccmpp_input_df

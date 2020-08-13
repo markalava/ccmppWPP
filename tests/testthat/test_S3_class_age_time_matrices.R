@@ -63,3 +63,25 @@ test_that("zero fertility rate ages are dropped", {
     expect_identical(dim(ccmpp_list$fert_rate_age_f),
                      c(42L, 70L))
 })
+
+
+test_that("age * time matrices can be coerced to demog_change_component_df", {
+    x <- subset_sex(dcc_df_time_age_sex,
+                    sexes = "female", drop = TRUE)
+    y <- as_age_time_matrix(x)
+    z <- as_demog_change_component_df(y)
+    expect_is(y, "matrix")
+    expect_s3_class(z, "demog_change_component_df")
+    expect_identical(x$value, z$value)
+    })
+
+
+test_that("age * time matrices can be coerced to ccmpp_input_df", {
+    x <- subset_sex(ccmpp_input_df_time_age_sex,
+                    sexes = "female", drop = TRUE)
+    y <- as_age_time_matrix(x)
+    z <- as_ccmpp_input_df(y)
+    expect_is(y, "matrix")
+    expect_s3_class(z, "ccmpp_input_df")
+    expect_identical(x$value, z$value)
+    })

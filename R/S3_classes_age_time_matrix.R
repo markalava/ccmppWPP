@@ -1,3 +1,14 @@
+################################################################################
+###
+### 'age_time_matrix's are not (yet) a formal S3 class but could
+### become so if worthwhile later on.
+###
+### Part of the 'matrix' method for 'as_demog_change_component_df' is
+### motived by the 'age_time_matrix' concept.
+###
+################################################################################
+
+
 ###-----------------------------------------------------------------------------
 ### * Age-time matrices
 
@@ -42,12 +53,12 @@ as_age_time_matrix.demog_change_component_df <- function(x, ...) {
             tx <- times(x)
             return(matrix(x$value,
                           nrow = 1, ncol = length(tx), byrow = FALSE,
-                          dimnames = list(NULL, time = tx)))
+                          dimnames = list(NULL, time_start = tx)))
         } else if (is_by_age(x)) {
             ax <- ages(x)
             return(matrix(x$value,
                           nrow = length(ax), ncol = 1, byrow = FALSE,
-                          dimnames = list(age = ax, NULL)))
+                          dimnames = list(age_start = ax, NULL)))
         }
     } else {
             ax <- ages(x)
@@ -55,7 +66,7 @@ as_age_time_matrix.demog_change_component_df <- function(x, ...) {
             return(matrix(x$value,
                           nrow = length(ax), ncol = length(tx),
                           byrow = FALSE,
-                          dimnames = list(age = ax, time = tx)))
+                          dimnames = list(age_start = ax, time_start = tx)))
     }
 }
 

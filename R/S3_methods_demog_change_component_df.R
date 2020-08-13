@@ -211,6 +211,8 @@ rbind.demog_change_component_df <-
 #' \code{print_what}.
 #'
 #' @inheritParams base::print.data.frame
+#' @inheritParams base::print.table
+#' @inheritParams base::print.default
 #'
 #' @param x An object of class \code{demog_change_component_df}.
 #' @param n Integer controlling how many rows of \code{x} are
@@ -222,6 +224,7 @@ rbind.demog_change_component_df <-
 print.demog_change_component_df <-
     function(x, ..., n = min(6L, nrow(x)), digits = NULL,
              quote = FALSE, right = TRUE, row.names = FALSE,
+             na.print = ".",
              print_what = c("info", "table")) {
 
         print_what <- match.arg(print_what, several.ok = TRUE)
@@ -274,11 +277,11 @@ print.demog_change_component_df <-
         }
 
         if ("table" %in% print_what) {
-            x <- as.matrix(x[seq_len(n),])
-            if (!row.names) dimnames(x)[[1]] <- rep("", nrow(x))
-            print.table(x,
-                        digits = digits, quote = quote, na.print = ".",
-                        right = right,
+            y <- x[seq_len(n),]
+            y[is.na(y)] <- na.print
+            print(y,
+                  digits = digits, quote = quote, na.print = ".",
+                        right = right, row.names = row.names,
                         ...)
             cat("# ... etc.\n")
         }

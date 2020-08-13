@@ -12,7 +12,7 @@
   quote = FALSE,
   right = TRUE,
   row.names = FALSE,
-  max = NULL,
+  na.print = ".",
   print_what = c("info", "table")
 )
 }
@@ -20,10 +20,6 @@
 \item{x}{object of class \code{data.frame}.}
 
 \item{...}{optional arguments to \code{print} or \code{plot} methods.}
-
-\item{n}{Integer controlling how many rows of \code{x} are
-printed. Passed to \code{link{head}}; see the documentation of
-that function for valid values and associated behaviours.}
 
 \item{digits}{the minimum number of significant digits to be used: see
     \code{\link[base]{print.default}}.}
@@ -37,11 +33,9 @@ that function for valid values and associated behaviours.}
 \item{row.names}{logical (or character vector), indicating whether (or
     what) row names should be printed.}
 
-\item{max}{numeric or \code{NULL}, specifying the maximal number of
-    entries to be printed.  By default, when \code{NULL},
-    \code{\link[base]{getOption}("max.print")} used.}
-
-\item{print_what}{What should be printed?}
+\item{na.print}{character string (or \code{NULL}) indicating
+    \code{\link[base]{NA}} values in printed output, see
+    \code{\link[base]{print.default}}.}
 }
 \description{
 This is a method for the generic \code{\link{base::print}} function. Only

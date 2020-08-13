@@ -4,13 +4,13 @@ author: ""
 date: |
     | `r Sys.Date()`
     | (`r paste0("_ccmppWPP_ version ", packageVersion("ccmppWPP"), ")")`
-output:
-    function(...) bookdown::html_document2(..., base_format = rmarkdown::html_vignette, css=c(system.file("rmarkdown", "templates", "html_vignette", "resources", "vignette.css", package = "rmarkdown"), "vignette2.css")):
-      toc: true
-      toc_depth: 2
 # output:
-#   word_document:
-#     reference_docx: docx_reference.docx    
+#     function(...) bookdown::html_document2(..., base_format = rmarkdown::html_vignette, css=c(system.file("rmarkdown", "templates", "html_vignette", "resources", "vignette.css", package = "rmarkdown"), "vignette2.css")):
+#       toc: true
+#       toc_depth: 2
+output:
+  word_document:
+    reference_docx: docx_reference.docx    
 bibliography: bibliography.bib
 link-citations: true
 vignette: >
@@ -190,7 +190,7 @@ The class `demog_change_component_df` was designed to accommodate all of the dat
 
 "value_scale"
 
-:  This attribute specifies the scale of the `value` column (see below). It is either a numeric scalar or `NA`. It is numeric only for objects with "value_type"s `r toString(ccmppWPP:::get_value_types_w_non_NA_value_scale())`.
+:  This attribute specifies the scale of the `value` column (see below). It is either a numeric scalar or `NA`. It is non-missing only for objects with "value_type"s `r toString(ccmppWPP:::get_value_types_w_non_NA_value_scale())`.
 
 The data frames in `wpp_input_example` have various subsets of the `dimension`s. For example, `wpp_input_example$srb` has only the "time" dimension, the fertility rate component has only the "time" and "age" dimensions. Specific subclasses for these data frames are defined to formalize their characteristics (see below). 
 

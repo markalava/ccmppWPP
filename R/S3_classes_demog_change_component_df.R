@@ -165,9 +165,13 @@ prepare_df_for_demog_change_component_df <- function(x,
        ## -------* Value_Scale
 
     if (is.null(value_scale)) {
-        if (value_type %in% get_value_types_w_non_NA_value_scale())
+        if (value_type %in% get_value_types_w_non_NA_value_scale()) {
+            message("Argument 'value_scale' is 'NULL'; setting 'value_scale' to '1'.")
             value_scale <- 1
-        else value_scale <- NA
+        } else {
+            value_scale <- NA
+            message("Argument 'value_scale' is 'NULL'; setting 'value_scale' to 'NA'.")
+        }
     }
 
         ## -------* Other

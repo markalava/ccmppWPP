@@ -101,9 +101,11 @@ test_that("'value_type' is set properly", {
 
 test_that("'value_scale' is set properly", {
     z <- dcc_df_time_age_sex
-    value_scale(z) <- 1
+    expect_warning(value_scale(z) <- 1,
+                   ("Changing the 'value_scale' attribute does not automatically re-scale the 'value' column in the data"))
     expect_identical(as.numeric(value_scale(z)), 1)
-    value_scale(z) <- 10
+    expect_warning(value_scale(z) <- 10,
+                   ("Changing the 'value_scale' attribute does not automatically re-scale the 'value' column in the data"))
     expect_identical(as.numeric(value_scale(z)), 10)
     })
 

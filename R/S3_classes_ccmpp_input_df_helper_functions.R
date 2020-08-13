@@ -105,3 +105,38 @@ get_value_types_for_ccmpp_input_classes <- function(classes) {
     if (!length(out)) out <- NA
     return(out)
 }
+
+###-----------------------------------------------------------------------------
+### * 'value_scale' attribute
+
+get_value_scale_annotations_info_for_ccmpp_input_classes <- function(class = get_all_demog_change_component_df_class_names()) {
+    db <- data.frame(rbind(c(class = "ccmpp_input_df",
+                             annotation = NA),
+                           c(class = "fert_rate_age_f",
+                       annotation = NA),
+                     c(class = "survival_ratio_age_sex",
+                       annotation = NA),
+                     c(class = "pop_count_age_sex_base",
+                       annotation = NA),
+                     c(class = "srb",
+                       annotation = NA),
+                     c(class = "mig_net_rate_age_sex",
+                       annotation = NA),
+                     c(class = "mig_net_count_age_sex",
+                       annotation = NA),
+                     c(class = "mig_net_count_tot_b",
+                       annotation = NA),
+                     c(class = "mig_parameter",
+                       annotation = NA),
+                     c(class = "life_table_age_sex",
+                       annotation = "radix")
+        ), stringsAsFactors = FALSE)
+    return(db[db$class %in% class,])
+}
+
+get_value_scale_annotations_for_ccmpp_input_classes <- function(classes) {
+    tb <- get_value_scale_annotations_info_for_ccmpp_input_classes()
+    out <- tb[tb$class %in% classes, "annotation"]
+    if (!length(out)) out <- NA
+    return(out)
+}

@@ -8,6 +8,8 @@
 \alias{time_span}
 \alias{time_span.ccmpp_input_df}
 \alias{value_type<-.ccmpp_input_df}
+\alias{value_scale.ccmpp_input_df}
+\alias{print.ccmpp_input_df_value_scale}
 \alias{extract_demog_change_component_attributes}
 \alias{values}
 \alias{values.demog_change_component_df}
@@ -43,6 +45,10 @@ time_span(x)
 \method{time_span}{ccmpp_input_df}(x)
 
 \method{value_type}{ccmpp_input_df}(x, ...) <- value
+
+\method{value_scale}{ccmpp_input_df}(x)
+
+\method{print}{ccmpp_input_df_value_scale}(x, ...)
 
 values(x)
 

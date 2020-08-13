@@ -193,12 +193,15 @@ value_type.demog_change_component_df <- function(x) {
 ## Value_Scale
 new_demog_change_component_df_value_scale <-
     function(x, class_of_df = character(),
-             value_type = character()) {
+             value_type = character(),
+             ...,
+             class = character()) {
         stopifnot(is.na(x) || is.numeric(x))
         if (is.na(x)) x <- as.numeric(NA)
         structure(x, class_of_df = class_of_df,
                   value_type = value_type,
-                  class = c("demog_change_component_df_value_scale"))
+                  ...,
+                  class = c(class, "demog_change_component_df_value_scale"))
     }
 
 #' @rdname extract_demog_change_component_attributes
@@ -221,11 +224,9 @@ print.demog_change_component_df_value_scale <- function(x, ...) {
     msg <- c("value_scale: ")
     if (!is.na(x)) {
         pref <- get_value_scale_prefixes_for_value_types(attr(x, "value_type"))
-        ann <- get_value_scale_annotations_for_classes(attr(x, "class_of_df"))
         msg <- c("value_scale: ")
         if (!is.na(pref)) msg <- paste0(msg, pref, " ")
         msg <- paste0(msg, as.character(x))
-        if (!is.na(ann)) msg <- paste0(msg, " (", ann, ")")
     } else {
         msg <- paste0(msg, as.character(x))
     }
@@ -254,6 +255,7 @@ print.demog_change_component_df_value_scale <- function(x, ...) {
                 "'.")
     }
     attr(x, "value_scale") <- value
+    warning("Changing the 'value_scale' attribute does not automatically re-scale the 'value' column in the data; you must do that yourself to ensure consistency, or see the 'rescale_value' function for an alternative approach (NOT YET IMPLEMENTED).")
     validate_ccmpp_object(x)
     }
 

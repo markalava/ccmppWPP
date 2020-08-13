@@ -9,7 +9,7 @@ new_mig_parameter(
   age_span = double(),
   time_span = double(),
   dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_parameter"),
-  value_type = get_value_types_for_classes("mig_parameter"),
+  value_type = get_value_types_for_ccmpp_input_classes("mig_parameter"),
   value_scale = NA,
   ...,
   class = character()

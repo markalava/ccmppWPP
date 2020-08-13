@@ -1,5 +1,5 @@
 ###-----------------------------------------------------------------------------
-### * Helpers
+### * dimensions
 
 get_req_attr_names_for_ccmpp_input_dfs_for_dimensions <- function(dimensions) {
     out <- get_req_attr_names_for_dimensions(dimensions)
@@ -23,6 +23,8 @@ get_dimensions_info_for_ccmpp_input_classes <-
                    mig_net_count_age_sex =
                        ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
                    mig_net_rate_age_sex =
+                       ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
+                   mig_net_prop_age_sex =
                        ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
                    mig_net_count_tot_b =
                        ensure_these_dimensions_correctly_ordered(c("time")),
@@ -69,4 +71,37 @@ check_dimensions_for_ccmpp_input_df <- function(x) {
     }
     else
         return(invisible(x))
+}
+
+###-----------------------------------------------------------------------------
+### * 'value_type' attribute
+
+get_value_type_info_for_ccmpp_input_classes <- function(class = get_all_demog_change_component_df_class_names()) {
+    db <- data.frame(rbind(c(class = "fert_rate_age_f",
+                       value_type = "rate"),
+                     c(class = "survival_ratio_age_sex",
+                       value_type = "proportion"),
+                     c(class = "pop_count_age_sex_base",
+                       value_type = "count"),
+                     c(class = "srb",
+                       value_type = "ratio"),
+                     c(class = "mig_net_rate_age_sex",
+                       value_type = "rate"),
+                     c(class = "mig_net_count_age_sex",
+                       value_type = "count"),
+                     c(class = "mig_net_count_tot_b",
+                       value_type = "count"),
+                     c(class = "mig_parameter",
+                       value_type = "categorical"),
+                     c(class = "life_table_age_sex",
+                       value_type = "real")
+                     ), stringsAsFactors = FALSE)
+    return(db[db$class %in% class,])
+}
+
+get_value_types_for_ccmpp_input_classes <- function(classes) {
+    tb <- get_value_type_info_for_ccmpp_input_classes()
+    out <- tb[tb$class %in% classes, "value_type"]
+    if (!length(out)) out <- NA
+    return(out)
 }

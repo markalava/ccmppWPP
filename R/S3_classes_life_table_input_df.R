@@ -38,7 +38,7 @@ new_life_table_age_sex <-
              age_span = double(),
              time_span = double(),
              dimensions = get_req_dimensions_for_ccmpp_input_classes("life_table_age_sex"),
-             value_type = get_value_types_for_classes("life_table_age_sex"),
+             value_type = get_value_types_for_ccmpp_input_classes("life_table_age_sex"),
              value_scale = double(),
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
@@ -76,7 +76,7 @@ life_table_age_sex <-
 
         li <- prepare_df_for_ccmpp_input_df(x,
                             dimensions = get_req_dimensions_for_ccmpp_input_classes("life_table_age_sex"),
-                            value_type = get_value_types_for_classes("life_table_age_sex"),
+                            value_type = get_value_types_for_ccmpp_input_classes("life_table_age_sex"),
                             value_scale = value_scale)
 
         ## Set 'value_scale' to the radix
@@ -182,13 +182,3 @@ subset_sex.life_table_age_sex <- function(x, sexes, drop = FALSE) {
     x <- NextMethod()
     return(life_table_age_sex(x, value_scale = vsx))
 }
-
-
-###-----------------------------------------------------------------------------
-### * Attributes
-
-## #' @rdname extract_demog_change_component_attributes
-## #' @export
-## `value_scale<-.life_table_age_sex` <- function(x, value, ...) {
-##     life_table_age_sex(x, value_scale = value)
-##     }

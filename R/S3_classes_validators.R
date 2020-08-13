@@ -272,7 +272,7 @@ validate_ccmpp_object.fert_rate_age_f <- function(x, ...) {
     x <- NextMethod()
 
     ## value_type
-    val_type <- get_value_types_for_classes("fert_rate_age_f")
+    val_type <- get_value_types_for_ccmpp_input_classes("fert_rate_age_f")
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
 
@@ -296,7 +296,7 @@ validate_ccmpp_object.survival_ratio_age_sex <- function(x, ...) {
     x <- NextMethod()
 
     ## value_type
-    val_type <- get_value_types_for_classes("survival_ratio_age_sex")
+    val_type <- get_value_types_for_ccmpp_input_classes("survival_ratio_age_sex")
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
 
@@ -319,7 +319,7 @@ validate_ccmpp_object.pop_count_age_sex_base <- function(x, ...) {
     x <- NextMethod()
 
     ## value_type
-    val_type <- get_value_types_for_classes("pop_count_age_sex_base")
+    val_type <- get_value_types_for_ccmpp_input_classes("pop_count_age_sex_base")
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
 
@@ -348,7 +348,7 @@ validate_ccmpp_object.srb <- function(x, ...) {
     x <- NextMethod()
 
     ## value_type
-    val_type <- get_value_types_for_classes("srb")
+    val_type <- get_value_types_for_ccmpp_input_classes("srb")
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
 
@@ -367,7 +367,7 @@ validate_ccmpp_object.mig_net_rate_age_sex <- function(x, ...) {
     x <- NextMethod()
 
     ## value_type
-    val_type <- get_value_types_for_classes("mig_net_rate_age_sex")
+    val_type <- get_value_types_for_ccmpp_input_classes("mig_net_rate_age_sex")
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
 
@@ -390,7 +390,7 @@ validate_ccmpp_object.mig_net_count_age_sex <- function(x, ...) {
     x <- NextMethod()
 
     ## value_type
-    val_type <- get_value_types_for_classes("mig_net_count_age_sex")
+    val_type <- get_value_types_for_ccmpp_input_classes("mig_net_count_age_sex")
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
 
@@ -413,7 +413,7 @@ validate_ccmpp_object.mig_net_count_tot_b <- function(x, ...) {
     x <- NextMethod()
 
     ## value_type
-    val_type <- get_value_types_for_classes("mig_net_count_tot_b")
+    val_type <- get_value_types_for_ccmpp_input_classes("mig_net_count_tot_b")
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
 
@@ -438,7 +438,7 @@ validate_ccmpp_object.mig_parameter <- function(x, ...) {
     x <- NextMethod()
 
     ## value_type
-    val_type <- get_value_types_for_classes("mig_parameter")
+    val_type <- get_value_types_for_ccmpp_input_classes("mig_parameter")
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
 
@@ -473,7 +473,7 @@ validate_ccmpp_object.life_table_age_sex <- function(x, ...) {
     x <- NextMethod()
 
     ## value_type
-    val_type <- get_value_types_for_classes("life_table_age_sex")
+    val_type <- get_value_types_for_ccmpp_input_classes("life_table_age_sex")
     if (!identical(value_type(x), val_type))
         stop("'value_type' must be \"", val_type, "\".")
 

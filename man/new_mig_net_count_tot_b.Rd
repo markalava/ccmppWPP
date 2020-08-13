@@ -9,7 +9,7 @@ new_mig_net_count_tot_b(
   age_span = double(),
   time_span = double(),
   dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_net_count_tot_b"),
-  value_type = get_value_types_for_classes("mig_net_count_tot_b"),
+  value_type = get_value_types_for_ccmpp_input_classes("mig_net_count_tot_b"),
   value_scale = double(),
   ...,
   class = character()

@@ -9,7 +9,7 @@ new_fert_rate_age_f(
   age_span = double(),
   time_span = double(),
   dimensions = get_req_dimensions_for_ccmpp_input_classes("fert_rate_age_f"),
-  value_type = get_value_types_for_classes("fert_rate_age_f"),
+  value_type = get_value_types_for_ccmpp_input_classes("fert_rate_age_f"),
   value_scale = double(),
   non_zero_fert_ages = double(),
   ...,

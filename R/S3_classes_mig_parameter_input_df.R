@@ -32,7 +32,7 @@ new_mig_parameter <-
              age_span = double(),
              time_span = double(),
              dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_parameter"),
-             value_type = get_value_types_for_classes("mig_parameter"),
+             value_type = get_value_types_for_ccmpp_input_classes("mig_parameter"),
              value_scale = NA,
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
@@ -69,7 +69,7 @@ mig_parameter <-
 
         li <- prepare_df_for_ccmpp_input_df(x,
                             dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_parameter"),
-                            value_type = get_value_types_for_classes("mig_parameter"),
+                            value_type = get_value_types_for_ccmpp_input_classes("mig_parameter"),
                             value_scale = NA)
         ## Create/Validate
         validate_ccmpp_object(

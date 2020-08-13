@@ -7,6 +7,7 @@
 \alias{age_span.ccmpp_input_df}
 \alias{time_span}
 \alias{time_span.ccmpp_input_df}
+\alias{value_type<-.ccmpp_input_df}
 \alias{extract_demog_change_component_attributes}
 \alias{values}
 \alias{values.demog_change_component_df}
@@ -40,6 +41,8 @@ age_span(x)
 time_span(x)
 
 \method{time_span}{ccmpp_input_df}(x)
+
+\method{value_type}{ccmpp_input_df}(x, ...) <- value
 
 values(x)
 

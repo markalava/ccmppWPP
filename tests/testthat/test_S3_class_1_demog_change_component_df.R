@@ -196,29 +196,6 @@ test_that("'indicator' column OK", {
 })
 
 
-test_that("'value_type' is checked properly", {
-
-    x <- S3_demog_change_component_time_age_sex_test_df
-
-    expect_error(demog_change_component_df(x,
-                                           value_type = "census"),
-                 "'value_type' must be one of")
-
-        expect_error(demog_change_component_df(x,
-                                           value_type = "proportion"),
-                     "values less than 0 or greater than 1 are present")
-})
-
-
-test_that("dimensions are correctly detected", {
-    y <- demog_change_component_df(S3_demog_change_component_time_age_sex_test_df,
-                                   dimensions = c("time", "age", "sex"))
-    expect_true(is_by_time(y))
-    expect_true(is_by_age(y))
-    expect_true(is_by_sex(y))
-})
-
-
 test_that("non-squareness is caught", {
     x <- S3_demog_change_component_time_age_sex_test_df
     y <- rbind(x, x[1,])

@@ -172,17 +172,21 @@ value_type.demog_change_component_df <- function(x) {
         stop("'value_type' must be one of '",
              paste(allowed_value_types, collapse = "', '"),
              "'.")
-    vtx <- get_value_types_for_classes(oldClass(x)[1])
-    if (!is.na(vtx)) {
-        stop("'value_type' of 'x' cannot be changed; it must always be '",
-             value_type(x),
-             "' for 'x' to remain a valid member of class '",
-             oldClass(x)[1],
-             "'.")
-        } else {
-            attr(x, "value_type") <- value
-            validate_ccmpp_object(x)
+    attr(x, "value_type") <- value
+
+    vsx <- value_scale(x)
+    if (value %in% get_value_types_w_non_NA_value_scale()) {
+        if (is.na(vsx) || is.null(vsx) || !length(vsx)) {
+            attr(x, "value_scale") <- 1
+            message("Setting 'value_scale' to '1'.")
         }
+    } else {
+        if (!is.na(vsx)) {
+            attr(x, "value_scale") <- NA
+            message("Setting 'value_scale' to 'NA'.")
+        }
+    }
+    validate_ccmpp_object(x)
 }
 
 

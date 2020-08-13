@@ -9,7 +9,7 @@ new_srb(
   age_span = double(),
   time_span = double(),
   dimensions = get_req_dimensions_for_ccmpp_input_classes("srb"),
-  value_type = get_value_types_for_classes("srb"),
+  value_type = get_value_types_for_ccmpp_input_classes("srb"),
   value_scale = NA,
   ...,
   class = character()

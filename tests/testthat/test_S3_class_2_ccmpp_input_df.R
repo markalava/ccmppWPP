@@ -194,6 +194,16 @@ test_that("'value_type' is checked properly", {
 })
 
 
+test_that("'value_type' is set properly", {
+    x <- ccmpp_input_df_time_age_sex
+    value_type(x) <- "real"
+    expect_identical(value_type(x), "real")
+    value_type(x) <- "ratio"
+    expect_identical(value_type(x), "ratio")
+    expect_true(is.na(value_scale(x)))
+    })
+
+
 test_that("dimensions are correctly detected", {
     y <- ccmpp_input_df(S3_demog_change_component_time_age_sex_test_df,
                                    dimensions = c("time", "age", "sex"))

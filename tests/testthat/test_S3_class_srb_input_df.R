@@ -25,3 +25,14 @@ test_that("age columns removed", {
     expect_false("age_span" %in% colnames(z))
 })
 
+
+
+
+test_that("attribute replacement functions work", {
+
+    expect_error(value_scale(srb_time) <- 10,
+                 "Cannot change the value_scale of an object")
+
+    expect_error(value_type(srb_time) <- "real",
+                 "'value_type' of 'x' cannot be changed")
+})

@@ -176,7 +176,7 @@ test_that("'indicator' column OK", {
 
     z <- transform(z, indicator = 84)
     expect_error(ccmpp_input_df(z),
-                 "'indicator' must be character")
+                 "Cannot coerce column 'indicator' to 'character'")
 })
 
 

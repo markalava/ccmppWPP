@@ -192,7 +192,7 @@ test_that("'indicator' column OK", {
 
     z <- transform(z, indicator = 84)
     expect_error(demog_change_component_df(z),
-                 "'indicator' must be character")
+                 "Cannot coerce column 'indicator' to 'character'")
 })
 
 

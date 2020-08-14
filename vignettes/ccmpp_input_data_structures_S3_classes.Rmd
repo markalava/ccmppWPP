@@ -230,8 +230,9 @@ The following constraints must be satisfied for an object to be a valid member o
 
 1. Exactly the columns required for the "dimensions" must all be present; none can be absent and no additional columns can be present.
 2. The `value` column must conform to the "value_type" attribute.
-3. The data frame has exactly one finite and non-missing value per `indicator` $\times$ `age_start` $\times$ `sex` $\times$` time_start` combination .
-4.  The only values allowed in the `sex` column are "both", "female", and "male". 
+3. The data frame has exactly one finite and non-missing value per `indicator` $\times$ `age_start` $\times$ `sex` $\times$` time_start` combination.
+4. The rows must be sorted by `indicator`, `time`, `sex`, `age`, varying slowest to fastest in that order. 
+5. The only values allowed in the `sex` column are "both", "female", and "male". 
 
 
 ## Class `ccmpp_input_df`
@@ -264,7 +265,6 @@ The `ccmpp_input_df` has some additional constraints to ensure the objects are v
 
 1. `age_span` and `time_span` are equal to each other and apply to all ages and times.
 2. For every unique `indicator` $\times$ `time_start` $\times$ `sex` combination there is an `age_start` that equals 0; i.e., the age breakdown must start at age 0.
-3. The rows must be sorted by `indicator`, `time`, `sex`, `age`, varying slowest to fastest in that order. 
 
 
 ## Subclasses of `ccmpp_input_df` {#sec:subclasses-ccmpp}

@@ -87,10 +87,11 @@ check_value_type_of_value_in_ccmpp_input_df <- function(value) {
 ### * 'value_type' attribute
 
 get_value_type_info_for_ccmpp_input_classes <- function(class = get_all_demog_change_component_df_class_names()) {
+    ## NOTE: Make sure anything added here is also added to 'get_all_demog_change_component_df_class_names()'
     db <- data.frame(rbind(c(class = "fert_rate_age_f",
                        value_type = "rate"),
                      c(class = "survival_ratio_age_sex",
-                       value_type = "proportion"),
+                       value_type = "proportion"), #proportion!
                      c(class = "pop_count_age_sex_base",
                        value_type = "count"),
                      c(class = "srb",
@@ -101,6 +102,8 @@ get_value_type_info_for_ccmpp_input_classes <- function(class = get_all_demog_ch
                        value_type = "count"),
                      c(class = "mig_net_count_tot_b",
                        value_type = "count"),
+                     c(class = "mig_net_prop_age_sex",
+                       value_type = "ratio"), #ratio! can be negative or > 1
                      c(class = "mig_parameter",
                        value_type = "categorical"),
                      c(class = "life_table_age_sex",

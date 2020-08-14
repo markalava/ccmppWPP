@@ -153,3 +153,60 @@ subset_indicator.demog_change_component_df <-
                                                           dimensions = NULL,
                                                           value_type = value_type_x)))
     }
+
+###-----------------------------------------------------------------------------
+### * Calculation conveniences
+
+#' Calculate the ratio of values in two data frames
+#'
+#' The ratio of the \dQuote{value} columns in the numerator
+#' (\code{num}) and denominator (\code{denom}) data frames is
+#' calculated and returned. \code{num} and \code{denom} are first
+#' merged on columns named \code{by_vars_names} and these columns are
+#' in the output, which is also a data frame.
+#'
+#' @param num A data frame with columns \dQuote{\code{by_vars_names}}
+#'     and \dQuote{value}, holding the numerator values.
+#' @param denom Similar to \code{num} but holding the denominator
+#'     values.
+#' @param by_vars_names Character vector of names of columns to merge
+#'     by. By default, all columns except \dQuote{value}.
+#' @inheritParams base::merge
+#' @return A data frame with columns \dQuote{\code{by_vars_names}} and
+#'     \dQuote{value}, where the latter holds the ratio of
+#'     \dQuote{value}s in \code{num} and \code{denom}.
+#' @author Mark Wheldon
+#' @export
+make_value_ratio <- function(num, denom,
+                             by_vars_names = NULL,
+                             all.x = TRUE, all.y = FALSE) {
+    num <- as.data.frame(num)
+    denom <- as.data.frame(denom)
+    if (is.null(by_vars_names)) {
+        by_vars_names <- intersect(names(num), names(denom))
+        by_vars_names <- by_vars_names[!by_vars_names == "value"]
+    }
+    if (!length(by_vars_names))
+        stop("'No 'by_vars' variables in common.")
+
+    if (!is.null(attr(num, "value_type")) &&
+        !is.null(attr(denom, "value_type"))) {
+        if (!identical(as.numeric(value_type(num)),
+                       as.numeric(value_type(denom))))
+            stop("'value_type's are different for 'num' and 'denom'.")
+    }
+
+    if (!is.null(attr(num, "value_scale")) &&
+        !is.null(attr(denom, "value_scale"))) {
+        if (!identical(as.numeric(value_scale(num)),
+                       as.numeric(value_scale(denom))))
+            stop("'value_scale's are different for 'num' and 'denom'.")
+    }
+
+    x <- base::merge(num, denom, by = by_vars_names,
+                     all.x = all.x, all.y = all.y,
+                     sort = FALSE, suffixes = c(".num", ".denom"))
+    x$value <- x$value.num / x$value.denom
+    x <- x[, -which(names(x) %in% c("value.num", "value.denom"))]
+    return(x)
+}

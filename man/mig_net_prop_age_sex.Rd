@@ -11,15 +11,9 @@ mig_net_prop_age_sex(x, ...)
 
 \method{mig_net_prop_age_sex}{data.frame}(x, value_scale = attr(x, "value_scale"), ...)
 
-\method{mig_net_prop_age_sex}{ccmpp_input_list}(x, strict = TRUE, ...)
+\method{mig_net_prop_age_sex}{ccmpp_input_list}(x, ...)
 
-\method{mig_net_prop_age_sex}{mig_net_count_age_sex}(
-  x,
-  pop_count_age_sex,
-  value_scale = attr(mig_net_count_age_sex, "value_scale"),
-  strict = TRUE,
-  ...
-)
+\method{mig_net_prop_age_sex}{mig_net_count_age_sex}(x, pop_count_age_sex, ...)
 }
 \arguments{
 \item{x}{Depending on the method
@@ -33,24 +27,13 @@ mig_net_prop_age_sex(x, ...)
 \item{value_scale}{\emph{Numeric} scalar indicating the value_scale of the
 counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
 
-\item{strict}{Logical. If \code{TRUE} (default) \code{x} and
-\code{pop_count_age_sex} must have the same time, age, and sex
-values, i.e., an \dQuote{inner} join on these variables must be
-equivalent to an \dQuote{outer} join. If this is not the case
-an error will be signalled. If \code{strict = FALSE} then an
-\dQuote{inner} join will be performed and the result will have
-only those age, time, sex combinations in both sets of
-counts. This may result in an object of class
-\code{demog_change_component_df} being returned; see
-\dQuote{Details}.}
-
 \item{pop_count_age_sex}{For the \code{mig_net_count_age_sex}
-method, an object of class \code{\link{ccmpp_input_df}} holding
-population counts from which to calculate the migration
-proportions. The \code{value_type} must be \dQuote{count}. If
-necessary, values will be rescaled (via
-\code{\link{rescale_value}}) so that they match the
-\code{value_scale(x)}.}
+method, an object that will be coreced to a
+\code{\link{ccmpp_input_df}} object, holding population counts
+from which to calculate the migration proportions. The
+\code{value_scale} must be \dQuote{count}. If necessary, values
+will be rescaled (via \code{\link{rescale_value}}) so that they
+match the \code{value_scale(x)}.}
 }
 \value{
 An object of class \code{mig_net_prop_age_sex} with the

@@ -8,6 +8,7 @@ source("tests/testthat/helper_S3_class_demog_change_component_df.R")
 testthat::test_dir("tests/testthat", filter = "_S3_")
 
 
+
 ## ## cat(paste0("source(", dir(path = "tests/testthat", pattern = "^test_S3_.*\\.R$"), ")\n", collapse = ""))
 
 ## source("tests/testthat/test_S3_class_demog_change_component_df.R")

@@ -243,6 +243,7 @@ test_that("sorting is handled properly", {
 test_that("'NA's are not allowed", {
     x <- S3_demog_change_component_time_age_sex_test_df
     x[1, "value"] <- NA
-    expect_error(ccmpp_input_df(x),
-                   "'value' column has missing entries")
+    expect_warning(expect_error(ccmpp_input_df(x),
+                                "'value' column has missing entries"),
+                   "'value' column has some 'NA' entries")
     })

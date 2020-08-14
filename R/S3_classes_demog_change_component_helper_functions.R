@@ -11,7 +11,8 @@
 get_all_demog_change_component_df_class_names <- function() {
     c("life_table_age_sex", "mig_parameter",
       "mig_net_count_tot_b", "mig_net_count_age_sex",
-      "mig_net_rate_age_sex", "srb", "pop_count_age_sex_base",
+      "mig_net_rate_age_sex", "mig_net_prop_age_sex",
+      "srb", "pop_count_age_sex_base",
       "survival_ratio_age_sex", "fert_rate_age_f",
       "ccmpp_input_df", "demog_change_component_df")
 }

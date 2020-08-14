@@ -1,17 +1,4 @@
 ###-----------------------------------------------------------------------------
-### * Utilities
-
-## make_mig_net_prop <- function(mig_counts, pop_counts,
-##                               by_vars_names = NULL, value_var_name = "value") {
-##     mig_counts <- as.data.frame(mig_counts)
-##     pop_counts <- as.data.frame(pop_counts)
-##     if (is.null(by_vars_names)) {
-##         by_vars_names <- intersect(names(mig_counts), names(pop_counts))
-##         by_vars_names <- by_vars_names[!by_vars_names == value_var_name]
-##     }
-##     base::merge(mig_counts, pop_counts)
-
-###-----------------------------------------------------------------------------
 ### * Object class
 
 #' Low-level constructor for class \code{mig_net_prop_age_sex}.
@@ -76,23 +63,12 @@ new_mig_net_prop_age_sex <-
 #'   \item{\code{mig_net_count_age_sex}}{A \code{\link{mig_net_count_age_sex}} object}}
 #'
 #' @param pop_count_age_sex For the \code{mig_net_count_age_sex}
-#'     method, an object of class \code{\link{ccmpp_input_df}} holding
-#'     population counts from which to calculate the migration
-#'     proportions. The \code{value_type} must be \dQuote{count}. If
-#'     necessary, values will be rescaled (via
-#'     \code{\link{rescale_value}}) so that they match the
-#'     \code{value_scale(x)}.
-#'
-#' @param strict Logical. If \code{TRUE} (default) \code{x} and
-#'     \code{pop_count_age_sex} must have the same time, age, and sex
-#'     values, i.e., an \dQuote{inner} join on these variables must be
-#'     equivalent to an \dQuote{outer} join. If this is not the case
-#'     an error will be signalled. If \code{strict = FALSE} then an
-#'     \dQuote{inner} join will be performed and the result will have
-#'     only those age, time, sex combinations in both sets of
-#'     counts. This may result in an object of class
-#'     \code{demog_change_component_df} being returned; see
-#'     \dQuote{Details}.
+#'     method, an object that will be coreced to a
+#'     \code{\link{ccmpp_input_df}} object, holding population counts
+#'     from which to calculate the migration proportions. The
+#'     \code{value_scale} must be \dQuote{count}. If necessary, values
+#'     will be rescaled (via \code{\link{rescale_value}}) so that they
+#'     match the \code{value_scale(x)}.
 #'
 #' @inheritParams demog_change_component_df
 #'
@@ -128,7 +104,7 @@ mig_net_prop_age_sex.data.frame <-
 #' @rdname mig_net_prop_age_sex
 #' @export
 mig_net_prop_age_sex.ccmpp_input_list <-
-    function(x, strict = TRUE, ...) {
+    function(x, ...) {
         pop_count_age_sex <-
             rbind(x$pop_count_age_sex_base,
                   data_reshape_ccmpp_output(
@@ -136,26 +112,19 @@ mig_net_prop_age_sex.ccmpp_input_list <-
         pop_count_age_sex <-
             pop_count_age_sex[pop_count_age_sex$sex %in% c("male", "female"),]
         mig_net_prop_age_sex(x = mig_net_count_component(x),
-                             pop_count_age_sex = pop_count_component(x),
-                             strict = strict, ...)
+                             pop_count_age_sex = pop_count_age_sex,
+                             ...)
     }
 
 #' @rdname mig_net_prop_age_sex
 #' @export
 mig_net_prop_age_sex.mig_net_count_age_sex <-
     function(x, pop_count_age_sex,
-             value_scale = attr(mig_net_count_age_sex, "value_scale"),
-             strict = TRUE, ...) {
-        pop_count_age_sex <- as_ccmpp_input_df(pop_count_age_sex)
-        stopifnot(identical(sort(as.numeric(x$age_start)),
-                            sort(as.numeric(pop_count_age_sex$age_start))))
-        stopifnot(identical(sort(as.numeric(x$sex)),
-                            sort(as.numeric(pop_count_age_sex$sex))))
-        stopifnot(identical(sort(as.numeric(x$time_start)),
-                            sort(as.numeric(pop_count_age_sex$time_start))))
-        x <- merge(x = x, y = pop_count_age_sex,
-                         by = c("age_start", "sex", "time_start"))
-
+             ...) {
+        pop_count_age_sex <- ccmpp_input_df(pop_count_age_sex,
+                                            value_type = "count")
+        mig_net_prop_age_sex(make_value_ratio(num = x,
+                                              denom = pop_count_age_sex))
     }
 
 

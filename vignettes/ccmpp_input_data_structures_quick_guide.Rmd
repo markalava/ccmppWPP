@@ -4,13 +4,14 @@ author: ""
 date: |
     | `r Sys.Date()`
     | (`r paste0("_ccmppWPP_ version ", packageVersion("ccmppWPP"), ")")`
-# output:
-#     function(...) bookdown::html_document2(..., base_format = rmarkdown::html_vignette, css=c(system.file("rmarkdown", "templates", "html_vignette", "resources", "vignette.css", package = "rmarkdown"), "vignette2.css")):
-#       toc: true
-#       toc_depth: 2
 output:
-  word_document:
-    reference_docx: docx_reference.docx    
+    function(...) bookdown::html_document2(..., base_format = rmarkdown::html_vignette, css=c(system.file("rmarkdown", "templates", "html_vignette", "resources", "vignette.css", package = "rmarkdown"), "vignette2.css")):
+      toc: true
+      toc_depth: 2
+# output:
+#   word_document:
+#     reference_docx: docx_reference.docx 
+    
 bibliography: bibliography.bib
 link-citations: true
 vignette: >

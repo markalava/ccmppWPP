@@ -183,6 +183,10 @@ validate_ccmpp_object.ccmpp_input_df <- function(x, ...) {
 
     x <- NextMethod()
 
+    ## VALUES:
+    ## 1. Cannot be 'NA':
+    check_value_type_of_value_in_ccmpp_input_df(x$value)
+
     ## ATTRIBUTES:
     ## 1. Extra attributes required
 

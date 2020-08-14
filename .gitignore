@@ -32,6 +32,7 @@ vignettes/auto/*
 vignettes/*.md
 
 # produced vignettes
+vignettes/*.docx
 vignettes/*.html
 vignettes/*.pdf
 

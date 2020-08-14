@@ -74,6 +74,16 @@ check_dimensions_for_ccmpp_input_df <- function(x) {
 }
 
 ###-----------------------------------------------------------------------------
+### * Values
+
+## Check value type
+check_value_type_of_value_in_ccmpp_input_df <- function(value) {
+    if (any(is.na(value)))
+        stop("'value' column has missing entries; these are not permitted in 'ccmpp_input_df' objects.")
+    return(invisible())
+}
+
+###-----------------------------------------------------------------------------
 ### * 'value_type' attribute
 
 get_value_type_info_for_ccmpp_input_classes <- function(class = get_all_demog_change_component_df_class_names()) {

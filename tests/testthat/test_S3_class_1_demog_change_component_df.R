@@ -202,3 +202,19 @@ test_that("non-squareness is caught", {
     expect_error(demog_change_component_df(y),
                  "does not have exactly one 'value'")
 })
+
+
+test_that("'NA's are allowed", {
+    x <- S3_demog_change_component_time_age_sex_test_df
+    x[, "value"] <- NA
+    expect_warning(demog_change_component_df(x),
+                   "All 'value' entries are 'NA'")
+
+    x <- S3_demog_change_component_time_age_sex_test_df
+    x[1, "value"] <- NA
+    expect_warning(demog_change_component_df(x),
+                   "'value' column has some 'NA' entries")
+    })
+
+
+

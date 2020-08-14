@@ -2,27 +2,75 @@
 % Please edit documentation in R/S3_classes_mig_net_prop_input_df.R
 \name{mig_net_prop_age_sex}
 \alias{mig_net_prop_age_sex}
+\alias{mig_net_prop_age_sex.data.frame}
+\alias{mig_net_prop_age_sex.ccmpp_input_list}
+\alias{mig_net_prop_age_sex.mig_net_count_age_sex}
 \title{Constructor for class \code{mig_net_prop_age_sex}}
 \usage{
-mig_net_prop_age_sex(x, value_scale = attr(x, "value_scale"))
+mig_net_prop_age_sex(x, ...)
+
+\method{mig_net_prop_age_sex}{data.frame}(x, value_scale = attr(x, "value_scale"), ...)
+
+\method{mig_net_prop_age_sex}{ccmpp_input_list}(x, strict = TRUE, ...)
+
+\method{mig_net_prop_age_sex}{mig_net_count_age_sex}(
+  x,
+  pop_count_age_sex,
+  value_scale = attr(mig_net_count_age_sex, "value_scale"),
+  strict = TRUE,
+  ...
+)
 }
 \arguments{
-\item{x}{For \code{demog_change_component_df}: A data frame with
-columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
-\dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.}
+\item{x}{Depending on the method
+\describe{
+  \item{\code{data.frame}}{A \code{\link{base::data.frame}} object}
+  \item{\code{ccmpp_input_list}}{A \code{\link{ccmpp_input_list}} object}
+  \item{\code{mig_net_count_age_sex}}{A \code{\link{mig_net_count_age_sex}} object}}}
+
+\item{...}{Passed to the low-level constructor.}
 
 \item{value_scale}{\emph{Numeric} scalar indicating the value_scale of the
 counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
+
+\item{strict}{Logical. If \code{TRUE} (default) \code{x} and
+\code{pop_count_age_sex} must have the same time, age, and sex
+values, i.e., an \dQuote{inner} join on these variables must be
+equivalent to an \dQuote{outer} join. If this is not the case
+an error will be signalled. If \code{strict = FALSE} then an
+\dQuote{inner} join will be performed and the result will have
+only those age, time, sex combinations in both sets of
+counts. This may result in an object of class
+\code{demog_change_component_df} being returned; see
+\dQuote{Details}.}
+
+\item{pop_count_age_sex}{For the \code{mig_net_count_age_sex}
+method, an object of class \code{\link{ccmpp_input_df}} holding
+population counts from which to calculate the migration
+proportions. The \code{value_type} must be \dQuote{count}. If
+necessary, values will be rescaled (via
+\code{\link{rescale_value}}) so that they match the
+\code{value_scale(x)}.}
 }
 \value{
-An object of class \code{mig_net_prop_age_sex}.
+An object of class \code{mig_net_prop_age_sex} with the
+    same \code{\link{value_scale}} as \code{x}.
 }
 \description{
 \code{mig_net_prop_age_sex} is a subclass of
 \code{\link{ccmpp_input_df}}. It imposes two additional conditions:
-\enumeprop{
+\enumerate{
   \item{\code{Value_type} attribute equals \dQuote{prop}.}
   \item{Within year and sex, age must start at 0.}}
+\code{mig_net_prop_age_sex} objects are not a required element of
+\code{\link{ccmpp_input_list}}.
+}
+\details{
+This function is generic with methods for \code{data.frame},
+\code{ccmpp_input_list} and \code{mig_net_count_age_sex}. The
+latter two methods will compute the proportions from counts of
+migration and a baseline population by simple division of migration
+counts by population counts, matched by age, sex, and time.
 }
 \seealso{
 \code{\link{validate_ccmpp_object}} for object validation,

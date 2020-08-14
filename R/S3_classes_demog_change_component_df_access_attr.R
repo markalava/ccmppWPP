@@ -255,7 +255,7 @@ print.demog_change_component_df_value_scale <- function(x, ...) {
                 "'.")
     }
     attr(x, "value_scale") <- value
-    S3_class_message("Changing the 'value_scale' attribute does not automatically re-scale the 'value' column in the data; you must do that yourself to ensure consistency, or see the 'rescale_value' function for an alternative approach (NOT YET IMPLEMENTED).")
+    S3_class_warning("Changing the 'value_scale' attribute does not automatically re-scale the 'value' column in the data; you must do that yourself to ensure consistency, or see the 'rescale_value' function for an alternative approach (NOT YET IMPLEMENTED).")
     validate_ccmpp_object(x)
     }
 

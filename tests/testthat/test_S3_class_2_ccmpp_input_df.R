@@ -164,15 +164,8 @@ test_that("'indicator' column OK", {
         "indicator" %in%
           colnames(ccmpp_input_df(z)))
 
-    y <- ccmppWPP:::new_ccmpp_input_df(z[,
-                             c(ccmppWPP:::get_all_req_col_names_for_dimensions(
-                                             dimensions =
-                                                 c("age", "time", "sex", "indicator")))],
-                            value_type = "real", value_scale = 1,
-                            age_span = 1,
-                            time_span = 1,
-                       dimensions = c("time", "age", "sex", "indicator"))
-    expect_s3_class(validate_ccmpp_object(y), "demog_change_component_df")
+    y <- ccmpp_input_df(z)
+    expect_s3_class(validate_ccmpp_object(y), "ccmpp_input_df")
 
     z <- transform(z, indicator = 84)
     expect_error(ccmpp_input_df(z),

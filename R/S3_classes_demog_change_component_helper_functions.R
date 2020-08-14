@@ -186,7 +186,7 @@ sort_demog_change_component_df <- function(x) {
     if (length(sex_col)) {
         sort_factors[, sex_col] <-
             factor(sort_factors[, sex_col],
-                   levels = rev(sort(unique((sort_factors[, sex_col])), decreasing = TRUE)),
+                   levels = c("male", "female"),
                    ordered = TRUE)
     }
 
@@ -238,6 +238,16 @@ get_min_age_in_dims_in_df <- function(x) {
 ## Check value type
 check_value_type_of_value_in_df <- function(value, type) {
 
+    is_na <- is.na(value)
+    if (all(is_na)) {
+        S3_class_warning("All 'value' entries are 'NA'.")
+        return(invisible())
+    }
+    if (any(is_na)) {
+        S3_class_warning("'value' column has some 'NA' entries.")
+        value <- value[!is_na]
+    }
+
     stop_msg <- function(suff) {
         paste0("'value_type' is '", type, "' but ", suff)
     }
@@ -252,7 +262,7 @@ check_value_type_of_value_in_df <- function(value, type) {
             stop("Not all 'value's are finite and non-missing.")
 
         if (type %in% c("rate", "ratio", "real", "count"))
-            return(invisible(value))
+            return(invisible())
 
         if (identical(type, "proportion")) {
             if (any(value < 0 | value > 1))
@@ -261,7 +271,7 @@ check_value_type_of_value_in_df <- function(value, type) {
             if (any(value < 0 | value > 100))
                 stop(stop_msg("values less than 0 or greater than 100 are present."))
         } else {
-            return(invisible(value))
+            return(invisible())
         }
     }
 }

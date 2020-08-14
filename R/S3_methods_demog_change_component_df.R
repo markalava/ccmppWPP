@@ -48,7 +48,7 @@ NULL
 #' @export
 `[.demog_change_component_df` <- function(x, i, j, drop) {
     if (identical(parent.frame(), .GlobalEnv)) {
-        warning("Subsetting a '",
+        S3_class_message("Subsetting a '",
                 oldClass(x)[1],
                 "' will not preserve the class or attributes. See '?subset_time' and friends for an alternative approach.")
     }
@@ -68,7 +68,7 @@ NULL
 #' @export
 `[<-.demog_change_component_df` <- function(x, i, j, value) {
     if (identical(parent.frame(), .GlobalEnv)) {
-        warning("Replacing elements in a '",
+        S3_class_message("Replacing elements in a '",
                 oldClass(x)[1],
                 "' will not preserve the class or attributes.")
     }
@@ -88,7 +88,7 @@ NULL
 #' @export
 `$<-.demog_change_component_df` <- function(x, name, value) {
     if (identical(parent.frame(), .GlobalEnv)) {
-        warning("Replacing elements in a '",
+        S3_class_message("Replacing elements in a '",
                 oldClass(x)[1],
                 "' will not preserve the class or attributes.")
     }
@@ -108,7 +108,7 @@ NULL
 #' @export
 `[[<-.demog_change_component_df` <- function(x, i, j, value) {
     if (identical(parent.frame(), .GlobalEnv)) {
-        warning("Replacing elements in a '",
+        S3_class_message("Replacing elements in a '",
                 oldClass(x)[1],
                 "' will not preserve the class or attributes.")
     }
@@ -143,7 +143,7 @@ NULL
 #' @export
 as.data.frame.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
-        warning("The result of the coercion will not inherit from class '",
+        S3_class_message("The result of the coercion will not inherit from class '",
                 oldClass(x)[1],
                 "' and will not have any attributes specific to that class.")
     }
@@ -183,7 +183,7 @@ rbind.demog_change_component_df <-
         x <- NextMethod(generic = "rbind")
         if (is_demog_change_component_df(x)) {
             if (identical(parent.frame(), .GlobalEnv)) {
-                warning("The result of the rbind will not inherit from class '",
+                S3_class_message("The result of the rbind will not inherit from class '",
                         oclass[1],
                         "' and will not have any attributes specific to that class.")
             }
@@ -248,7 +248,7 @@ print.demog_change_component_df <-
             })
             attr_msgs <- paste(attr_msgs[!sapply(attr_msgs, "is.null")], collapse = ", ")
 
-            cat_msg <- paste0("# A '", class(x)[1], "' with ", format(nrow(x), big.mark = ","),
+            cat_msg <- paste0("# A '", class(x)[1], "' object with ", format(nrow(x), big.mark = ","),
                               " rows.",
                               "\n# dimensions = '", paste(demog_change_component_dimensions(x), collapse = ", "), "'.",
                               "\n# ", attr_msgs,

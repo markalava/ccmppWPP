@@ -183,8 +183,11 @@ sort_demog_change_component_df <- function(x) {
         unname(as.data.frame(lapply(dims_names_x, "get_x_col")))
 
     sex_col <- which(dims_names_x == "sex")
-    if (length(sex_col) > 0) {
-        sort_factors[, sex_col] <- rev(sort_factors[, sex_col])
+    if (length(sex_col)) {
+        sort_factors[, sex_col] <-
+            factor(sort_factors[, sex_col],
+                   levels = rev(sort(unique((sort_factors[, sex_col])), decreasing = TRUE)),
+                   ordered = TRUE)
     }
 
     return(x[do.call("order", sort_factors), ])

@@ -178,12 +178,12 @@ value_type.demog_change_component_df <- function(x) {
     if (value %in% get_value_types_w_non_NA_value_scale()) {
         if (is.na(vsx) || is.null(vsx) || !length(vsx)) {
             attr(x, "value_scale") <- 1
-            message("Setting 'value_scale' to '1'.")
+            S3_class_message("Setting 'value_scale' to '1'.")
         }
     } else {
         if (!is.na(vsx)) {
             attr(x, "value_scale") <- NA
-            message("Setting 'value_scale' to 'NA'.")
+            S3_class_message("Setting 'value_scale' to 'NA'.")
         }
     }
     validate_ccmpp_object(x)
@@ -255,7 +255,7 @@ print.demog_change_component_df_value_scale <- function(x, ...) {
                 "'.")
     }
     attr(x, "value_scale") <- value
-    warning("Changing the 'value_scale' attribute does not automatically re-scale the 'value' column in the data; you must do that yourself to ensure consistency, or see the 'rescale_value' function for an alternative approach (NOT YET IMPLEMENTED).")
+    S3_class_message("Changing the 'value_scale' attribute does not automatically re-scale the 'value' column in the data; you must do that yourself to ensure consistency, or see the 'rescale_value' function for an alternative approach (NOT YET IMPLEMENTED).")
     validate_ccmpp_object(x)
     }
 

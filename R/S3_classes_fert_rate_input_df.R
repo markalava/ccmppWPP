@@ -116,11 +116,11 @@ fert_rate_age_f <-
         }
         if (is.logical(non_zero_fert_ages)) {
             if (!non_zero_fert_ages)  {
-                message("'non_zero_fert_ages' not supplied and guessing failed; setting to 'sort(unique(x$age_start))'.")
+                S3_class_message("'non_zero_fert_ages' not supplied and guessing failed; setting to 'sort(unique(x$age_start))'.")
                 non_zero_fert_ages <- sort(unique(li$df$age_start))
             }
         } else {
-            message("'non_zero_fert_ages' set to '",
+            S3_class_message("'non_zero_fert_ages' set to '",
                     print_non_zero_fert_ages(non_zero_fert_ages, width = 30))
         }
 

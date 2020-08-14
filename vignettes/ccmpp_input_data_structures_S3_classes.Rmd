@@ -688,6 +688,11 @@ A subset that is not a valid class object will not be created and an error will 
 ```
 
 
+# Other Features
+
+Messages are issued for various reasons during object creation and manipulation. These can be turned off globally with the option "ccmppWPP.suppress_S3_class_messages", e.g., `r options(ccmppWPP.suppress_S3_class_messages = TRUE)`.
+
+
 # What Next?
 
 1. Get feedback on the general set-up, names of things, operation, etc.

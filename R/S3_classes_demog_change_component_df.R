@@ -99,7 +99,7 @@ prepare_df_for_demog_change_component_df <- function(x,
 
     if (is.null(dimensions)) {
         dimensions <- guess_dimensions_from_df_cols(x)
-        message("Argument 'dimensions' is 'NULL'; setting 'dimensions' to '",
+        S3_class_message("Argument 'dimensions' is 'NULL'; setting 'dimensions' to '",
                 paste(dimensions, collapse = ", "),
                 "' based on column names of 'x'.")
     } else {
@@ -155,7 +155,7 @@ prepare_df_for_demog_change_component_df <- function(x,
         if (!(is.numeric(diff_x) & is.finite(diff_x))) {
             stop("'time_span' is not a column in 'x' and cannot determine it from 'x$time_span'.")
         } else {
-            message("'time_span' is not a column in 'x'; setting 'x$time_span' to '",
+            S3_class_message("'time_span' is not a column in 'x'; setting 'x$time_span' to '",
                     diff_x,
                     "'.")
             x$time_span <- diff_x
@@ -168,7 +168,7 @@ prepare_df_for_demog_change_component_df <- function(x,
         if (!(is.numeric(diff_x) & is.finite(diff_x))) {
             stop("'age_span' is not a column in 'x' and cannot determine it from 'x$age_span'.")
         } else {
-            message("'age_span' is not a column in 'x'; setting 'x$age_span' to '",
+            S3_class_message("'age_span' is not a column in 'x'; setting 'x$age_span' to '",
                     diff_x,
                     "'.")
             x$age_span <- diff_x
@@ -186,7 +186,7 @@ prepare_df_for_demog_change_component_df <- function(x,
     ## -------* Values
 
     if (is.null(value_type)) {
-        message("Argument 'value_type' is 'NULL'; setting 'value_type' to 'real'.")
+        S3_class_message("Argument 'value_type' is 'NULL'; setting 'value_type' to 'real'.")
         value_type <- "real"
     }
 
@@ -194,11 +194,11 @@ prepare_df_for_demog_change_component_df <- function(x,
 
     if (is.null(value_scale)) {
         if (value_type %in% get_value_types_w_non_NA_value_scale()) {
-            message("Argument 'value_scale' is 'NULL'; setting 'value_scale' to '1'.")
+            S3_class_message("Argument 'value_scale' is 'NULL'; setting 'value_scale' to '1'.")
             value_scale <- 1
         } else {
             value_scale <- NA
-            message("Argument 'value_scale' is 'NULL'; setting 'value_scale' to 'NA'.")
+            S3_class_message("Argument 'value_scale' is 'NULL'; setting 'value_scale' to 'NA'.")
         }
     }
 

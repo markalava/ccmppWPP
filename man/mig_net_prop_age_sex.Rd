@@ -9,7 +9,7 @@
 \usage{
 mig_net_prop_age_sex(x, ...)
 
-\method{mig_net_prop_age_sex}{data.frame}(x, value_scale = attr(x, "value_scale"), ...)
+\method{mig_net_prop_age_sex}{data.frame}(x, ...)
 
 \method{mig_net_prop_age_sex}{ccmpp_input_list}(x, ...)
 
@@ -23,9 +23,6 @@ mig_net_prop_age_sex(x, ...)
   \item{\code{mig_net_count_age_sex}}{A \code{\link{mig_net_count_age_sex}} object}}}
 
 \item{...}{Passed to the low-level constructor.}
-
-\item{value_scale}{\emph{Numeric} scalar indicating the value_scale of the
-counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
 
 \item{pop_count_age_sex}{For the \code{mig_net_count_age_sex}
 method, an object that can be coreced to a

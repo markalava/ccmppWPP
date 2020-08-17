@@ -41,10 +41,10 @@ as_age_time_matrix <- function(x, ...) {
 as_age_time_matrix.demog_change_component_df <- function(x, ...) {
 
     if (is_by_sex(x))
-        stop("'x' has dimension \"sex\"; select a single sex using 'subset_sex(..., drop = TRUE)' to create an age-time matrix.")
+        stop("'x' has dimension \"sex\"; select a single sex using 'subset_sex(as_demog_change_component_df(x), ..., drop = TRUE)' to create an age-time matrix. See '?as_age_time_matrix_list' for an alternative approach.")
 
     if (is_by_indicator(x))
-        stop("'x' has dimension \"indicator\"; select a single indicator using 'subset_indicator(..., drop = TRUE)' to create an age-time matrix.")
+        stop("'x' has dimension \"indicator\"; select a single indicator using 'subset_indicator(as_demog_change_component_df(x), ..., drop = TRUE)' to create an age-time matrix. See '?as_age_time_matrix_list' for an alternative approach.")
 
     dims <- demog_change_component_dimensions(x)
 
@@ -77,9 +77,15 @@ as_age_time_matrix.demog_change_component_df <- function(x, ...) {
 #' Coerce a \code{ccmpp_input_list} to a list of age-time matrices
 #'
 #' A list of age * time matrices will be created from \code{x} by
-#' calling \code{\link{as_age_time_matrix}} on each element.
+#' calling \code{\link{as_age_time_matrix}} according to the
+#' method. The \code{ccmpp_input_list} method
 #'
 #' @seealso \code{\link{as_age_time_matrix}}
+#'
+#' @param x Depending on the method
+#' \describe{
+#'   \item{\code{demog_change_component_df}}{An object inheriting from \code{\link{demog_change_component_df}}}
+#'   \item{\code{ccmpp_input_list}}{A \code{\link{ccmpp_input_list}} object}}
 #'
 #' @inheritParams as_age_time_matrix
 #' @return A \code{list}.
@@ -91,6 +97,26 @@ NULL
 #' @export
 as_age_time_matrix_list <- function(x, drop_zero_fert_ages = FALSE, ...) {
     UseMethod("as_age_time_matrix_list")
+}
+
+#' @rdname as_age_time_matrix_list
+#' @export
+as_age_time_matrix_list.demog_change_component_df <- function(x, drop_zero_fert_ages = FALSE, ...) {
+    if (is_by_indicator(x)) {
+        lapply(setNames(indicators(x), indicators(x)), function(z) {
+            as_age_time_matrix_list(subset_indicator(as_demog_change_component_df(x), z,
+                                                     drop = TRUE),
+                                    drop_zero_fert_ages = FALSE, ...)
+        })
+    } else if (is_by_sex(x)) {
+        lapply(setNames(sexes(x), sexes(x)), function(z) {
+            as_age_time_matrix_list(subset_sex(as_demog_change_component_df(x), z,
+                                               drop = TRUE),
+                                    drop_zero_fert_ages = FALSE, ...)
+        })
+    } else {
+        return(as_age_time_matrix(x))
+    }
 }
 
 #' @rdname as_age_time_matrix_list

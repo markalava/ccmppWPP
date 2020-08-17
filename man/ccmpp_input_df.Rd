@@ -8,6 +8,7 @@ ccmpp_input_df(
   x,
   dimensions = attr(x, "dimensions"),
   value_type = attr(x, "value_type"),
+  value_scale = attr(x, "value_scale"),
   ...
 )
 }
@@ -21,6 +22,9 @@ columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
 
 \item{value_type}{Scalar indicating the type of the \dQuote{value}
 column (e.g., \dQuote{count}, \dQuote{rate}, etc.).}
+
+\item{value_scale}{\emph{Numeric} scalar indicating the value_scale of the
+counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
 
 \item{...}{Passed to the low-level constructor.}
 }
@@ -40,6 +44,7 @@ Other ccmpp_input_objects:
 \code{\link{coerce_life_table_age_sex}},
 \code{\link{coerce_mig_net_count_age_sex}},
 \code{\link{coerce_mig_net_count_tot_b}},
+\code{\link{coerce_mig_net_prop_age_sex}},
 \code{\link{coerce_mig_net_rate_age_sex}},
 \code{\link{coerce_mig_parameter}},
 \code{\link{coerce_pop_count_age_sex_base}},
@@ -49,6 +54,7 @@ Other ccmpp_input_objects:
 \code{\link{life_table_age_sex}()},
 \code{\link{mig_net_count_age_sex}()},
 \code{\link{mig_net_count_tot_b}()},
+\code{\link{mig_net_prop_age_sex}()},
 \code{\link{mig_net_rate_age_sex}()},
 \code{\link{mig_parameter}()},
 \code{\link{pop_count_age_sex_base}()},

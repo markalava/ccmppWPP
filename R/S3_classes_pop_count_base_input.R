@@ -15,6 +15,8 @@
 #'
 #' @param age_span Scalar indicating the span of the age groups.
 #' @param time_span Scalar indicating the span of the time periods.
+#' @param value_scale \emph{Numeric} scalar indicating the value_scale of the
+#'     counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.
 #' @param dimensions Character vector listing the dimensions such as
 #'     \dQuote{age}, \dQuote{sex}.
 #' @param value_type Scalar indicating the type of the \dQuote{value}
@@ -25,12 +27,16 @@ new_pop_count_age_sex_base <-
     function(x,
              age_span = double(),
              time_span = double(),
+             dimensions =  get_req_dimensions_for_ccmpp_input_classes("pop_count_age_sex_base"),
+             value_type = get_value_types_for_ccmpp_input_classes("pop_count_age_sex_base"),
+             value_scale = double(),
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
                            age_span = age_span,
                            time_span = time_span,
-                           dimensions =  get_req_dimensions_for_ccmpp_input_classes("pop_count_age_sex_base"),
-                           value_type = get_value_types_for_classes("pop_count_age_sex_base"),
+                           dimensions = dimensions,
+                           value_type = value_type,
+                           value_scale = value_scale,
                            ...,
                            class = c(class, "pop_count_age_sex_base"))
     }
@@ -43,8 +49,6 @@ new_pop_count_age_sex_base <-
 #' \enumerate{
 #'   \item{\code{Value_type} attribute equals \dQuote{count}.}
 #'   \item{Within year and sex, age must start at 0.}
-#'   \item{There can be no 'time' dimension since, by definition, this
-#'   object contains values for one time-period only.}}
 #'
 #' @family ccmpp_input_objects
 #' @seealso \code{\link{validate_ccmpp_object}} for object validation,
@@ -58,19 +62,23 @@ new_pop_count_age_sex_base <-
 pop_count_age_sex_base <-
     function(x,
              age_span = attr(x, "age_span"),
-             time_span = attr(x, "time_span")) {
+             time_span = attr(x, "time_span"),
+             value_scale = attr(x, "value_scale")) {
 
-
+        if (is.null(value_scale)) value_scale <- 1
+        else if (!is.numeric(value_scale)) stop("'value_scale' must be numeric.")
 
         li <- prepare_df_for_ccmpp_input_df(x,
                             dimensions =  get_req_dimensions_for_ccmpp_input_classes("pop_count_age_sex_base"),
-                            value_type = get_value_types_for_classes("pop_count_age_sex_base"))
+                            value_type = get_value_types_for_ccmpp_input_classes("pop_count_age_sex_base"),
+                            value_scale = value_scale)
 
         ## Create/Validate
         validate_ccmpp_object(
             new_pop_count_age_sex_base(li$df,
                                age_span = li$age_span,
-                               time_span = li$time_span)
+                               time_span = li$time_span,
+                               value_scale = li$value_scale)
         )
     }
 

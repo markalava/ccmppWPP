@@ -10,7 +10,7 @@ test_that("objects are created properly", {
     expect_s3_class(y, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(y), c("time", "age", "sex")))
     expect_true(identical(names(demog_change_component_attributes(y)),
-                          c("dimensions", "value_type")))
+                          c("dimensions", "value_type", "value_scale")))
 
     ## Guess dimensions
     y <- demog_change_component_df(S3_demog_change_component_time_age_sex_test_df)
@@ -18,7 +18,7 @@ test_that("objects are created properly", {
     expect_s3_class(y, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(y), c("time", "age", "sex")))
     expect_true(identical(names(demog_change_component_attributes(y)),
-                          c("dimensions", "value_type")))
+                          c("dimensions", "value_type", "value_scale")))
 
     ## Guess spans
     y <- demog_change_component_df(
@@ -28,7 +28,7 @@ test_that("objects are created properly", {
     expect_s3_class(y, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(y), c("time", "age", "sex")))
     expect_true(identical(names(demog_change_component_attributes(y)),
-                          c("dimensions", "value_type")))
+                          c("dimensions", "value_type", "value_scale")))
 
 ### Time, Age
     ## Specify dimensions
@@ -41,7 +41,7 @@ test_that("objects are created properly", {
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(z), c("time", "age")))
     expect_true(identical(names(demog_change_component_attributes(z)),
-                          c("dimensions", "value_type")))
+                          c("dimensions", "value_type", "value_scale")))
 
     ## Guess dimensions and spans
     x <- S3_demog_change_component_time_age_test_df[, c("time_start", "age_start", "value")]
@@ -50,7 +50,7 @@ test_that("objects are created properly", {
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(z), c("time", "age")))
     expect_true(identical(names(demog_change_component_attributes(z)),
-                          c("dimensions", "value_type")))
+                          c("dimensions", "value_type", "value_scale")))
 
 ### Time, Sex
     ## specify dimensions
@@ -61,7 +61,7 @@ test_that("objects are created properly", {
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(z), c("time", "sex")))
     expect_true(identical(names(demog_change_component_attributes(z)),
-                          c("dimensions", "value_type")))
+                          c("dimensions", "value_type", "value_scale")))
 
     ## Guess dimensions and spans
     x <- S3_demog_change_component_time_sex_test_df[,
@@ -71,7 +71,7 @@ test_that("objects are created properly", {
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(z), c("time", "sex")))
     expect_true(identical(names(demog_change_component_attributes(z)),
-                          c("dimensions", "value_type")))
+                          c("dimensions", "value_type", "value_scale")))
 
 ### Time
     ## Specify dimensions
@@ -81,7 +81,7 @@ test_that("objects are created properly", {
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(z), "time"))
     expect_true(identical(names(demog_change_component_attributes(z)),
-                          c("dimensions", "value_type")))
+                          c("dimensions", "value_type", "value_scale")))
 
     x <- S3_demog_change_component_time_test_df[, c("time_start", "time_span", "value")]
     z <- demog_change_component_df(x)
@@ -89,7 +89,7 @@ test_that("objects are created properly", {
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dimensions(z), "time"))
     expect_true(identical(names(demog_change_component_attributes(z)),
-                          c("dimensions", "value_type")))
+                          c("dimensions", "value_type", "value_scale")))
 })
 
 
@@ -155,7 +155,7 @@ test_that("superfluous columns are caught", {
                                              dimensions =
                                                  c("age", "time", "sex")),
                                "source")],
-                             value_type = "real",
+                             value_type = "real", value_scale = 1,
                        dimensions = c("time", "age", "sex"))
     expect_error(## Fail: Catches the extra column
         validate_ccmpp_object(y),
@@ -186,36 +186,13 @@ test_that("'indicator' column OK", {
                              c(ccmppWPP:::get_all_req_col_names_for_dimensions(
                                              dimensions =
                                                  c("age", "time", "sex", "indicator")))],
-                             value_type = "real",
+                             value_type = "real", value_scale = 1,
                        dimensions = c("time", "age", "sex", "indicator"))
     expect_s3_class(validate_ccmpp_object(y), "demog_change_component_df")
 
     z <- transform(z, indicator = 84)
     expect_error(demog_change_component_df(z),
-                 "'indicator' must be character")
-})
-
-
-test_that("'value_type' is checked properly", {
-
-    x <- S3_demog_change_component_time_age_sex_test_df
-
-    expect_error(demog_change_component_df(x,
-                                           value_type = "census"),
-                 "'value_type' must be one of")
-
-        expect_error(demog_change_component_df(x,
-                                           value_type = "proportion"),
-                     "values less than 0 or greater than 1 are present")
-})
-
-
-test_that("dimensions are correctly detected", {
-    y <- demog_change_component_df(S3_demog_change_component_time_age_sex_test_df,
-                                   dimensions = c("time", "age", "sex"))
-    expect_true(is_by_time(y))
-    expect_true(is_by_age(y))
-    expect_true(is_by_sex(y))
+                 "Cannot coerce column 'indicator' to 'character'")
 })
 
 
@@ -225,3 +202,19 @@ test_that("non-squareness is caught", {
     expect_error(demog_change_component_df(y),
                  "does not have exactly one 'value'")
 })
+
+
+test_that("'NA's are allowed", {
+    x <- S3_demog_change_component_time_age_sex_test_df
+    x[, "value"] <- NA
+    expect_warning(demog_change_component_df(x),
+                   "All 'value' entries are 'NA'")
+
+    x <- S3_demog_change_component_time_age_sex_test_df
+    x[1, "value"] <- NA
+    expect_warning(demog_change_component_df(x),
+                   "'value' column has some 'NA' entries")
+    })
+
+
+

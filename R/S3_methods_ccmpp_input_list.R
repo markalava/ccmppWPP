@@ -33,7 +33,7 @@ NULL
 #' @export
 `$<-.ccmpp_input_list` <- function(x, name, value) {
     if (identical(parent.frame(), .GlobalEnv)) {
-        warning("Replacing elements in a '",
+        S3_class_warning("Replacing elements in a '",
                 oldClass(x)[1],
                 "' will not preserve the class or attributes.")
     }
@@ -53,7 +53,7 @@ NULL
 #' @export
 `[[<-.ccmpp_input_list` <- function(x, i, j, value) {
     if (identical(parent.frame(), .GlobalEnv)) {
-        warning("Replacing elements in a '",
+        S3_class_warning("Replacing elements in a '",
                 oldClass(x)[1],
                 "' will not preserve the class or attributes.")
     }
@@ -191,7 +191,7 @@ summary.ccmpp_input_list <-
 #' @export
 as.list.ccmpp_input_list <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
-        warning("The result of the coercion will not inherit from class '",
+        S3_class_warning("The result of the coercion will not inherit from class '",
                 oldClass(x)[1],
                 "' and will not have any attributes specific to that class.")
     }

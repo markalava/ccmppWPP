@@ -69,7 +69,7 @@ test_that("superfluous columns are caught", {
                              c(ccmppWPP:::get_all_req_col_names_for_dimensions(
                                              dimensions =
                                                  c("age", "time")),
-                               "source")],
+                               "source")], value_scale = 1,
                              age_span = 1, time_span = 1)
     expect_error(## Fail: Catches the extra column
         validate_ccmpp_object(y),
@@ -118,7 +118,7 @@ test_that("erroneous sex dimension detected", {
     y <- fert_rate_input_df_time_age
     z <- cbind(y, sex = "female")
     z <- ccmppWPP:::new_fert_rate_age_f(z, non_zero_fert_ages = non_zero_fert_ages(y),
-                                time_span = 1, age_span = 1)
+                                time_span = 1, age_span = 1, value_scale = 1)
     expect_error(check_dimensions_for_ccmpp_input_df(z),
                  "that correspond to dimensions")
 
@@ -142,7 +142,7 @@ test_that("indicator dimension detected", {
     y <- fert_rate_input_df_time_age
     z <- cbind(y, indicator = "ltX")
     z <- ccmppWPP:::new_fert_rate_age_f(z, time_span = time_span(y),
-                                age_span = age_span(y),
+                                age_span = age_span(y), value_scale = 1,
                                 non_zero_fert_ages = non_zero_fert_ages(y))
     attr(z, "dimensions") <- unique(c(attr(z, "dimensions"), "indicator"))
 
@@ -151,3 +151,14 @@ test_that("indicator dimension detected", {
 
     expect_false("indicator" %in% colnames(fert_rate_age_f(z)))
 })
+
+
+test_that("non-zero fertility rate ages can be changed", {
+    y <- fert_rate_input_df_time_age
+    nzfa_y <- non_zero_fert_ages(y)
+    non_zero_fert_ages(y) <- 30:40
+    expect_false(identical(as.double(nzfa_y),
+                           as.double(non_zero_fert_ages(y))))
+    expect_identical(as.double(non_zero_fert_ages(y)),
+                     as.double(seq(from = 30, to = 40, by = 1)))
+    })

@@ -29,13 +29,18 @@ get_required_indicator_categories_mig_parameter <- function() {
 #' @author Mark Wheldon
 new_mig_parameter <-
     function(x,
+             age_span = double(),
              time_span = double(),
+             dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_parameter"),
+             value_type = get_value_types_for_ccmpp_input_classes("mig_parameter"),
+             value_scale = NA,
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
-                           age_span = double(),
+                           age_span = age_span,
                            time_span = time_span,
-                           dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_parameter"),
-                           value_type = get_value_types_for_classes("mig_parameter"),
+                           dimensions = dimensions,
+                           value_type = value_type,
+                           value_scale = value_scale,
                            ...,
                            class = c(class, "mig_parameter"))
     }
@@ -64,11 +69,13 @@ mig_parameter <-
 
         li <- prepare_df_for_ccmpp_input_df(x,
                             dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_parameter"),
-                            value_type = get_value_types_for_classes("mig_parameter"))
+                            value_type = get_value_types_for_ccmpp_input_classes("mig_parameter"),
+                            value_scale = NA)
         ## Create/Validate
         validate_ccmpp_object(
             new_mig_parameter(li$df,
-                               time_span = li$time_span)
+                              time_span = li$time_span,
+                              value_scale = NA)
         )
     }
 

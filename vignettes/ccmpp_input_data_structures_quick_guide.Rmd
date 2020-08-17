@@ -4,13 +4,14 @@ author: ""
 date: |
     | `r Sys.Date()`
     | (`r paste0("_ccmppWPP_ version ", packageVersion("ccmppWPP"), ")")`
-# output:
-#     function(...) bookdown::html_document2(..., base_format = rmarkdown::html_vignette, css=c(system.file("rmarkdown", "templates", "html_vignette", "resources", "vignette.css", package = "rmarkdown"), "vignette2.css")):
-      # toc: true
-      # toc_depth: 2
 output:
-  word_document:
-    reference_docx: docx_reference.docx    
+    function(...) bookdown::html_document2(..., base_format = rmarkdown::html_vignette, css=c(system.file("rmarkdown", "templates", "html_vignette", "resources", "vignette.css", package = "rmarkdown"), "vignette2.css")):
+      toc: true
+      toc_depth: 2
+# output:
+#   word_document:
+#     reference_docx: docx_reference.docx 
+    
 bibliography: bibliography.bib
 link-citations: true
 vignette: >
@@ -80,17 +81,17 @@ ccmppWPP_workflow_one_country_variant <- function(wpp_input) {
 
 Table: (\#tab:ccmpp-input-subclass-restrictions) Names, demographic dimensions, and value types of data frame components of `ccmpp_input_list` objects.
 
-| Element name                | Dimensions                    | Value type   |
-|:----------------------------|:------------------------------|:-------------|
-| `fert_rate_age_f`           | time, age                     | rate         |
-| `srb`                       | time                          | ratio        |
-| `survival_ratio_input_df`   | time, sex, age                | proportion   |
-| `mig_net_rate_age_sex`      | time, sex, age                | rate         |
-| `mig_net_count_age_sex`     | time, sex, age                | count        |
-| `mig_net_count_tot_b`       | time                          | count        |
-| `mig_parameter`             | time                          | categorical  |
-| `pop_count_age_sex_base`    | time, sex, age                | count        |
-| `life_table_age_sex`        | indicator, time, sex, age     | real         |
+| Element name              | Dimensions                | Value type  | Value scale |
+|:--------------------------|:--------------------------|:------------|:------------|
+| `fert_rate_age_f`         | time, age                 | rate        | numeric     |
+| `srb`                     | time                      | ratio       | `NA`        |
+| `survival_ratio_input_df` | time, sex, age            | proportion  | `NA`        |
+| `mig_net_rate_age_sex`    | time, sex, age            | rate        | numeric     |
+| `mig_net_count_age_sex`   | time, sex, age            | count       | numeric     |
+| `mig_net_count_tot_b`     | time                      | count       | numeric     |
+| `mig_parameter`           | time                      | categorical | `NA`        |
+| `pop_count_age_sex_base`  | time, sex, age            | count       | numeric     |
+| `life_table_age_sex`      | indicator, time, sex, age | real        | numeric     |
 
 The elements of a `ccmpp_input_list` object are in Table \@ref(tab:ccmpp-input-subclass-restrictions). Each is a data frame with column names taken from the following list:
 
@@ -102,14 +103,14 @@ The elements of a `ccmpp_input_list` object are in Table \@ref(tab:ccmpp-input-s
   - sex
   - value
   
-Each data frame is also given an S3 class with the same name as its element. The element `fert_rate_age_f` is a data frame with class `fert_rate_age_f`, and so on. These data frames have two *attributes* (meta-data), including "dimension" and "value_type". The "dimension" attribute indicates the demographic breakdown of the data. Allowed dimensions are 
+Each data frame is also given an S3 class with the same name as its element. The element `fert_rate_age_f` is a data frame with class `fert_rate_age_f`, and so on. These data frames have *attributes* (meta-data), including "dimension", "value_type", and "value_scale". The "dimension" attribute indicates the demographic breakdown of the data. Use the function `demog_change_component_dimensions()` on an object to extract them. Allowed dimensions are 
 
   - indicator
   - time
   - sex
   - age
   
-The "value_type" attribute indicates the type of values the `value` column contains. Allowed "value_type"s are 
+The "value_type" attribute indicates the type of values the `value` column contains. Use the function `value_type()` on an object to extract it. Allowed "value_type"s are 
 
   - count
   - rate
@@ -120,6 +121,8 @@ The "value_type" attribute indicates the type of values the `value` column conta
   - categorical
 
 Type "real" is a catch-all for numeric values that do not fall under any other type. It is also used when the `value` column contains a mixture of the other types, as is the case for `life_table_age_sex` objects. 
+
+The "value_scale" attribute specifies the scale of the `value` column. Use the function `value_scale()` on an object to extract it. It is either a numeric scalar (`1` by default) or `NA`. It is non-missing only for objects with "value_type"s `r toString(ccmppWPP:::get_value_types_w_non_NA_value_scale())`. Objects of class `life_table_age_sex` are the exception where the default is `1e+05` to indicate the radix. The interpretation of the "value_scale" is dependent on the both the "value_type" and object class. For "value_types" `count` and `real` "value_scale" is a mulitplier. For `count` a typical "value_type" might be `1000` to indicate the counts are in thousands. For "value_type" "rate" the "value_scale" is interpreted as the scale of the denominator (exposure).
 
 
 ## Creating Data Frame Components

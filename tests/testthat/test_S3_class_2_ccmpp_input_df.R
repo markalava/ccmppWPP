@@ -137,7 +137,7 @@ test_that("superfluous columns are caught", {
                                              dimensions =
                                                  c("age", "time", "sex")),
                                "source")],
-                             value_type = "real",
+                             value_type = "real", value_scale = 1,
                        dimensions = c("time", "age", "sex"))
     expect_error(## Fail: Catches the extra column
         validate_ccmpp_object(y),
@@ -164,19 +164,12 @@ test_that("'indicator' column OK", {
         "indicator" %in%
           colnames(ccmpp_input_df(z)))
 
-    y <- ccmppWPP:::new_ccmpp_input_df(z[,
-                             c(ccmppWPP:::get_all_req_col_names_for_dimensions(
-                                             dimensions =
-                                                 c("age", "time", "sex", "indicator")))],
-                            value_type = "real",
-                            age_span = 1,
-                            time_span = 1,
-                       dimensions = c("time", "age", "sex", "indicator"))
-    expect_s3_class(validate_ccmpp_object(y), "demog_change_component_df")
+    y <- ccmpp_input_df(z)
+    expect_s3_class(validate_ccmpp_object(y), "ccmpp_input_df")
 
     z <- transform(z, indicator = 84)
     expect_error(ccmpp_input_df(z),
-                 "'indicator' must be character")
+                 "Cannot coerce column 'indicator' to 'character'")
 })
 
 
@@ -192,6 +185,16 @@ test_that("'value_type' is checked properly", {
                                            value_type = "proportion"),
                      "values less than 0 or greater than 1 are present")
 })
+
+
+test_that("'value_type' is set properly", {
+    x <- ccmpp_input_df_time_age_sex
+    value_type(x) <- "real"
+    expect_identical(value_type(x), "real")
+    value_type(x) <- "ratio"
+    expect_identical(value_type(x), "ratio")
+    expect_true(is.na(value_scale(x)))
+    })
 
 
 test_that("dimensions are correctly detected", {
@@ -235,3 +238,12 @@ test_that("sorting is handled properly", {
     expect_identical(z$sex, x$sex)
 
 })
+
+
+test_that("'NA's are not allowed", {
+    x <- S3_demog_change_component_time_age_sex_test_df
+    x[1, "value"] <- NA
+    expect_warning(expect_error(ccmpp_input_df(x),
+                                "'value' column has missing entries"),
+                   "'value' column has some 'NA' entries")
+    })

@@ -5,10 +5,7 @@ devtools::load_all(helpers = FALSE)
 
 source("tests/testthat/helper_S3_class_demog_change_component_df.R")
 
-for(x in dir(path = "tests/testthat", pattern = "^test_S3_.*\\.R$")) {
-    cat("\n\n", x, "\n", sep = "")
-    source(file.path("tests/testthat", x))
-}
+testthat::test_dir("tests/testthat", filter = "_S3_")
 
 
 

@@ -4,7 +4,15 @@
 get_required_indicator_categories_life_table <- function() {
     c("lt_nMx", "lt_nAx", "lt_nqx", "lt_lx", "lt_ndx", "lt_nLx",
       "lt_Sx", "lt_Tx", "lt_ex")
-    }
+}
+
+get_life_table_radix_from_li <- function(li) {
+        lx_age_0 <- li$df[li$df$indicator == "lt_lx" &
+                          li$df$age_start == 0, ][1, "value"]
+        if (length(lx_age_0) && is.finite(lx_age_0))
+            return(lx_age_0)
+        else return(NA)
+}
 
 ###-----------------------------------------------------------------------------
 ### * Class constructors
@@ -29,12 +37,16 @@ new_life_table_age_sex <-
     function(x,
              age_span = double(),
              time_span = double(),
+             dimensions = get_req_dimensions_for_ccmpp_input_classes("life_table_age_sex"),
+             value_type = get_value_types_for_ccmpp_input_classes("life_table_age_sex"),
+             value_scale = double(),
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
                            age_span = age_span,
                            time_span = time_span,
-                           dimensions = get_req_dimensions_for_ccmpp_input_classes("life_table_age_sex"),
-                           value_type = get_value_types_for_classes("life_table_age_sex"),
+                           dimensions = dimensions,
+                           value_type = value_type,
+                           value_scale = value_scale,
                            ...,
                            class = c(class, "life_table_age_sex"))
     }
@@ -43,7 +55,11 @@ new_life_table_age_sex <-
 #' Constructor for class \code{life_table_age_sex}
 #'
 #' \code{life_table_age_sex} is a subclass of
-#' \code{\link{ccmpp_input_df}}. It has an indicator column that
+#' \code{\link{ccmpp_input_df}}. It has an indicator column that **TO BE COMPLETED**
+#'
+#' @section Note:
+#' The \dQuote{value_scale} attribute for objects of class
+#' \code{life_table_age_sex} is the \emph{radix} of the life table.
 #'
 #' @family ccmpp_input_objects
 #' @seealso \code{\link{validate_ccmpp_object}} for object validation,
@@ -55,17 +71,23 @@ new_life_table_age_sex <-
 #' @author Mark Wheldon
 #' @export
 life_table_age_sex <-
-    function(x) {
+    function(x,
+             value_scale = attr(x, "value_scale")) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
                             dimensions = get_req_dimensions_for_ccmpp_input_classes("life_table_age_sex"),
-                            value_type = get_value_types_for_classes("life_table_age_sex"))
+                            value_type = get_value_types_for_ccmpp_input_classes("life_table_age_sex"),
+                            value_scale = value_scale)
+
+        ## Set 'value_scale' to the radix
+        if (is.null(attr(x, "value_scale"))) li$value_scale <- get_life_table_radix_from_li(li)
 
         ## Create/Validate
         validate_ccmpp_object(
             new_life_table_age_sex(li$df,
                                age_span = li$age_span,
-                               time_span = li$time_span)
+                               time_span = li$time_span,
+                               value_scale = li$value_scale)
         )
     }
 
@@ -126,34 +148,37 @@ is_life_table_age_sex <- function(x) {
 }
 
 
+###-----------------------------------------------------------------------------
+### * Subset
+
 #' @rdname subset_demog_change_component_df
 #' @export
 subset_indicator.life_table_age_sex <- function(x, indicators, drop = FALSE) {
-
+    vsx <- attr(x, "value_scale")
     x <- NextMethod()
-    return(life_table_age_sex(x))
+    return(life_table_age_sex(x, value_scale = vsx))
 }
 
 #' @rdname subset_demog_change_component_df
 #' @export
 subset_time.life_table_age_sex <- function(x, times, drop = FALSE) {
-
+    vsx <- attr(x, "value_scale")
     x <- NextMethod()
-    return(life_table_age_sex(x))
+    return(life_table_age_sex(x, value_scale = vsx))
 }
 
 #' @rdname subset_demog_change_component_df
 #' @export
 subset_age.life_table_age_sex <- function(x, ages, drop = FALSE) {
-
+    vsx <- attr(x, "value_scale")
     x <- NextMethod()
-    return(life_table_age_sex(x))
+    return(life_table_age_sex(x, value_scale = vsx))
 }
 
 #' @rdname subset_demog_change_component_df
 #' @export
 subset_sex.life_table_age_sex <- function(x, sexes, drop = FALSE) {
-
+    vsx <- attr(x, "value_scale")
     x <- NextMethod()
-    return(life_table_age_sex(x))
+    return(life_table_age_sex(x, value_scale = vsx))
 }

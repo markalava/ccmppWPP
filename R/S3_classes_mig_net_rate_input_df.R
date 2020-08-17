@@ -18,12 +18,16 @@ new_mig_net_rate_age_sex <-
     function(x,
              age_span = double(),
              time_span = double(),
+             dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_net_rate_age_sex"),
+             value_type = get_value_types_for_ccmpp_input_classes("mig_net_rate_age_sex"),
+             value_scale = double(),
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
                            age_span = age_span,
                            time_span = time_span,
-                           dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_net_rate_age_sex"),
-                           value_type = get_value_types_for_classes("mig_net_rate_age_sex"),
+                           dimensions = dimensions,
+                           value_type = value_type,
+                           value_scale = value_scale,
                            ...,
                            class = c(class, "mig_net_rate_age_sex"))
     }
@@ -47,17 +51,20 @@ new_mig_net_rate_age_sex <-
 #' @author Mark Wheldon
 #' @export
 mig_net_rate_age_sex <-
-    function(x) {
+    function(x,
+             value_scale = attr(x, "value_scale")) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
                             dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_net_rate_age_sex"),
-                            value_type = get_value_types_for_classes("mig_net_rate_age_sex"))
+                            value_type = get_value_types_for_ccmpp_input_classes("mig_net_rate_age_sex"),
+                            value_scale = value_scale)
 
         ## Create/Validate
         validate_ccmpp_object(
             new_mig_net_rate_age_sex(li$df,
                                age_span = li$age_span,
-                               time_span = li$time_span)
+                               time_span = li$time_span,
+                               value_scale = li$value_scale)
         )
     }
 

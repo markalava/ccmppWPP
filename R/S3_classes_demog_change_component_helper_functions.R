@@ -11,14 +11,15 @@
 get_all_demog_change_component_df_class_names <- function() {
     c("life_table_age_sex", "mig_parameter",
       "mig_net_count_tot_b", "mig_net_count_age_sex",
-      "mig_net_rate_age_sex", "srb", "pop_count_age_sex_base",
+      "mig_net_rate_age_sex", "mig_net_prop_age_sex",
+      "srb", "pop_count_age_sex_base",
       "survival_ratio_age_sex", "fert_rate_age_f",
       "ccmpp_input_df", "demog_change_component_df")
 }
 
 get_all_allowed_attributes <- function() {
     c("dimensions", "value_type", "age_span", "time_span",
-      "non_zero_fert_ages")
+      "non_zero_fert_ages", "value_scale")
     }
 
 ## Define allowed dimensions
@@ -129,34 +130,32 @@ get_all_allowed_value_types <- function() {
     c("count", "rate", "ratio", "proportion", "percentage", "real", "categorical")
 }
 
-get_value_type_info_for_classes <- function(class = get_all_demog_change_component_df_class_names()) {
-    db <- data.frame(rbind(c(class = "fert_rate_age_f",
-                       value_type = "rate"),
-                     c(class = "survival_ratio_age_sex",
-                       value_type = "proportion"),
-                     c(class = "pop_count_age_sex_base",
-                       value_type = "count"),
-                     c(class = "srb",
-                       value_type = "ratio"),
-                     c(class = "mig_net_rate_age_sex",
-                       value_type = "rate"),
-                     c(class = "mig_net_count_age_sex",
-                       value_type = "count"),
-                     c(class = "mig_net_count_tot_b",
-                       value_type = "count"),
-                     c(class = "mig_parameter",
-                       value_type = "categorical"),
-                     c(class = "life_table_age_sex",
-                       value_type = "real")
-                     ), stringsAsFactors = FALSE)
-    return(db[db$class %in% class,])
+###-----------------------------------------------------------------------------
+### * 'value_scale' Attribute
+
+## Value types that can have non-NA value_scales
+get_value_types_w_non_NA_value_scale <- function() {
+    c("rate", "real", "count")
 }
 
-get_value_types_for_classes <- function(classes) {
-    tb <- get_value_type_info_for_classes()
-    tb[tb$class %in% classes, "value_type"]
-    }
+get_value_scale_prefixes_info_for_value_types <-
+    function(value_type = get_value_types_w_non_NA_value_scale()) {
+    db <- data.frame(rbind(c(value_type = "count",
+                       prefix = NA),
+                     c(value_type = "rate",
+                       prefix = "per"),
+                     c(value_type = "real",
+                       prefix = NA)
+                     ), stringsAsFactors = FALSE)
+    return(db[db$value_type %in% value_type,])
+}
 
+get_value_scale_prefixes_for_value_types <- function(value_types) {
+    tb <- get_value_scale_prefixes_info_for_value_types()
+    out <- tb[tb$value_type %in% value_types, "prefix"]
+    if (!length(out)) out <- NA
+    return(out)
+}
 
 ###-----------------------------------------------------------------------------
 ### * Data frame checking
@@ -185,8 +184,11 @@ sort_demog_change_component_df <- function(x) {
         unname(as.data.frame(lapply(dims_names_x, "get_x_col")))
 
     sex_col <- which(dims_names_x == "sex")
-    if (length(sex_col) > 0) {
-        sort_factors[, sex_col] <- rev(sort_factors[, sex_col])
+    if (length(sex_col)) {
+        sort_factors[, sex_col] <-
+            factor(sort_factors[, sex_col],
+                   levels = c("male", "female"),
+                   ordered = TRUE)
     }
 
     return(x[do.call("order", sort_factors), ])
@@ -234,7 +236,18 @@ get_min_age_in_dims_in_df <- function(x) {
         return(min(get_x_col("age")))
 }
 
+## Check value type
 check_value_type_of_value_in_df <- function(value, type) {
+
+    is_na <- is.na(value)
+    if (all(is_na)) {
+        S3_class_warning("All 'value' entries are 'NA'.")
+        return(invisible())
+    }
+    if (any(is_na)) {
+        S3_class_warning("'value' column has some 'NA' entries.")
+        value <- value[!is_na]
+    }
 
     stop_msg <- function(suff) {
         paste0("'value_type' is '", type, "' but ", suff)
@@ -250,7 +263,7 @@ check_value_type_of_value_in_df <- function(value, type) {
             stop("Not all 'value's are finite and non-missing.")
 
         if (type %in% c("rate", "ratio", "real", "count"))
-            return(invisible(value))
+            return(invisible())
 
         if (identical(type, "proportion")) {
             if (any(value < 0 | value > 1))
@@ -259,7 +272,7 @@ check_value_type_of_value_in_df <- function(value, type) {
             if (any(value < 0 | value > 100))
                 stop(stop_msg("values less than 0 or greater than 100 are present."))
         } else {
-            return(invisible(value))
+            return(invisible())
         }
     }
 }

@@ -154,64 +154,59 @@ subset_indicator.demog_change_component_df <-
                                                           value_type = value_type_x)))
     }
 
-
 ###-----------------------------------------------------------------------------
-### * Age-time matrices
+### * Calculation conveniences
 
-#' Coerce a \code{demog_change_component_df} to \code{matrix}
+#' Calculate the ratio of values in two data frames
 #'
-#' An age * time matrix will be created from the input object,
-#' \code{x}, which must not have a \dQuote{sex} dimension. To create a
-#' matrix from such an object, first remove the \dQuote{sex} dimension
-#' with \code{\link{subset_sex}}.
+#' The ratio of the \dQuote{value} columns in the numerator
+#' (\code{num}) and denominator (\code{denom}) data frames is
+#' calculated and returned. \code{num} and \code{denom} are first
+#' merged on columns named \code{by_vars_names} and these columns are
+#' in the output, which is also a data frame.
 #'
-#' @param x An object inheriting from class
-#'     \code{demog_change_component_df}.
-#' @param drop_zero_fert_ages Logical; should rows corresponding to
-#'     \dQuote{non_zero_fert_ages} be dropped when converting
-#'     \code{fert_rate_age_f} objects.
-#' @param ... Further arguments passed to and from methods.
-#' @return A \code{matrix}.
+#' @param num A data frame with columns \dQuote{\code{by_vars_names}}
+#'     and \dQuote{value}, holding the numerator values.
+#' @param denom Similar to \code{num} but holding the denominator
+#'     values.
+#' @param by_vars_names Character vector of names of columns to merge
+#'     by. By default, all columns except \dQuote{value}.
+#' @inheritParams base::merge
+#' @return A data frame with columns \dQuote{\code{by_vars_names}} and
+#'     \dQuote{value}, where the latter holds the ratio of
+#'     \dQuote{value}s in \code{num} and \code{denom}.
 #' @author Mark Wheldon
-#' @name as_age_time_matrix
-NULL
-
-#' @rdname as_age_time_matrix
 #' @export
-as_age_time_matrix <- function(x, ...) {
-    UseMethod("as_age_time_matrix")
-}
-
-#' @rdname as_age_time_matrix
-#' @export
-as_age_time_matrix.demog_change_component_df <- function(x, ...) {
-
-    if (is_by_sex(x))
-        stop("'x' has dimension \"sex\"; select a single sex using 'subset_sex(..., drop = TRUE)' to create an age-time matrix.")
-
-    if (is_by_indicator(x))
-        stop("'x' has dimension \"indicator\"; select a single indicator using 'subset_indicator(..., drop = TRUE)' to create an age-time matrix.")
-
-    dims <- demog_change_component_dimensions(x)
-
-    if (identical(length(dims), 1L)) {
-        if(is_by_time(x)) {
-            tx <- times(x)
-            return(matrix(x$value,
-                          nrow = 1, ncol = length(tx), byrow = FALSE,
-                          dimnames = list(NULL, time = tx)))
-        } else if (is_by_age(x)) {
-            ax <- ages(x)
-            return(matrix(x$value,
-                          nrow = length(ax), ncol = 1, byrow = FALSE,
-                          dimnames = list(age = ax, NULL)))
-        }
-    } else {
-            ax <- ages(x)
-            tx <- times(x)
-            return(matrix(x$value,
-                          nrow = length(ax), ncol = length(tx),
-                          byrow = FALSE,
-                          dimnames = list(age = ax, time = tx)))
+make_value_ratio <- function(num, denom,
+                             by_vars_names = NULL,
+                             all.x = TRUE, all.y = FALSE) {
+    num <- as.data.frame(num)
+    denom <- as.data.frame(denom)
+    if (is.null(by_vars_names)) {
+        by_vars_names <- intersect(names(num), names(denom))
+        by_vars_names <- by_vars_names[!by_vars_names == "value"]
     }
+    if (!length(by_vars_names))
+        stop("'No 'by_vars' variables in common.")
+
+    if (!is.null(attr(num, "value_type")) &&
+        !is.null(attr(denom, "value_type"))) {
+        if (!identical(as.numeric(value_type(num)),
+                       as.numeric(value_type(denom))))
+            stop("'value_type's are different for 'num' and 'denom'.")
+    }
+
+    if (!is.null(attr(num, "value_scale")) &&
+        !is.null(attr(denom, "value_scale"))) {
+        if (!identical(as.numeric(value_scale(num)),
+                       as.numeric(value_scale(denom))))
+            stop("'value_scale's are different for 'num' and 'denom'.")
+    }
+
+    x <- base::merge(num, denom, by = by_vars_names,
+                     all.x = all.x, all.y = all.y,
+                     sort = FALSE, suffixes = c(".num", ".denom"))
+    x$value <- x$value.num / x$value.denom
+    x <- x[, -which(names(x) %in% c("value.num", "value.denom"))]
+    return(x)
 }

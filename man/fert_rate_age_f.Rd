@@ -4,7 +4,11 @@
 \alias{fert_rate_age_f}
 \title{Constructor for class \code{fert_rate_age_f}}
 \usage{
-fert_rate_age_f(x, non_zero_fert_ages = attr(x, "non_zero_fert_ages"))
+fert_rate_age_f(
+  x,
+  non_zero_fert_ages = attr(x, "non_zero_fert_ages"),
+  value_scale = attr(x, "value_scale")
+)
 }
 \arguments{
 \item{x}{For \code{demog_change_component_df}: A data frame with
@@ -13,6 +17,9 @@ columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
 
 \item{non_zero_fert_ages}{Numeric vector of unique ages indicating
 the reproductive age range.}
+
+\item{value_scale}{\emph{Numeric} scalar indicating the value_scale of the
+counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
 }
 \value{
 An object of class \code{fert_rate_age_f}.
@@ -50,6 +57,7 @@ Other ccmpp_input_objects:
 \code{\link{coerce_life_table_age_sex}},
 \code{\link{coerce_mig_net_count_age_sex}},
 \code{\link{coerce_mig_net_count_tot_b}},
+\code{\link{coerce_mig_net_prop_age_sex}},
 \code{\link{coerce_mig_net_rate_age_sex}},
 \code{\link{coerce_mig_parameter}},
 \code{\link{coerce_pop_count_age_sex_base}},
@@ -58,6 +66,7 @@ Other ccmpp_input_objects:
 \code{\link{life_table_age_sex}()},
 \code{\link{mig_net_count_age_sex}()},
 \code{\link{mig_net_count_tot_b}()},
+\code{\link{mig_net_prop_age_sex}()},
 \code{\link{mig_net_rate_age_sex}()},
 \code{\link{mig_parameter}()},
 \code{\link{pop_count_age_sex_base}()},

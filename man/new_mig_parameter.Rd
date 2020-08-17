@@ -4,10 +4,30 @@
 \alias{new_mig_parameter}
 \title{Low-level constructor for class \code{mig_parameter}.}
 \usage{
-new_mig_parameter(x, time_span = double(), ..., class = character())
+new_mig_parameter(
+  x,
+  age_span = double(),
+  time_span = double(),
+  dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_parameter"),
+  value_type = get_value_types_for_ccmpp_input_classes("mig_parameter"),
+  value_scale = NA,
+  ...,
+  class = character()
+)
 }
 \arguments{
+\item{age_span}{Scalar indicating the span of the age groups.}
+
 \item{time_span}{Scalar indicating the span of the time periods.}
+
+\item{dimensions}{Character vector listing the dimensions such as
+\dQuote{time}, \dQuote{age}, \dQuote{sex}.}
+
+\item{value_type}{Scalar indicating the type of the \dQuote{value}
+column (e.g., \dQuote{count}, \dQuote{rate}, etc.).}
+
+\item{value_scale}{\emph{Numeric} scalar indicating the value_scale of the
+counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
 }
 \value{
 An object of class \code{mig_parameter}.

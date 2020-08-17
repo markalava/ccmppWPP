@@ -48,7 +48,7 @@ NULL
 #' @export
 `[.demog_change_component_df` <- function(x, i, j, drop) {
     if (identical(parent.frame(), .GlobalEnv)) {
-        warning("Subsetting a '",
+        S3_class_warning("Subsetting a '",
                 oldClass(x)[1],
                 "' will not preserve the class or attributes. See '?subset_time' and friends for an alternative approach.")
     }
@@ -68,7 +68,7 @@ NULL
 #' @export
 `[<-.demog_change_component_df` <- function(x, i, j, value) {
     if (identical(parent.frame(), .GlobalEnv)) {
-        warning("Replacing elements in a '",
+        S3_class_warning("Replacing elements in a '",
                 oldClass(x)[1],
                 "' will not preserve the class or attributes.")
     }
@@ -88,7 +88,7 @@ NULL
 #' @export
 `$<-.demog_change_component_df` <- function(x, name, value) {
     if (identical(parent.frame(), .GlobalEnv)) {
-        warning("Replacing elements in a '",
+        S3_class_warning("Replacing elements in a '",
                 oldClass(x)[1],
                 "' will not preserve the class or attributes.")
     }
@@ -108,7 +108,7 @@ NULL
 #' @export
 `[[<-.demog_change_component_df` <- function(x, i, j, value) {
     if (identical(parent.frame(), .GlobalEnv)) {
-        warning("Replacing elements in a '",
+        S3_class_warning("Replacing elements in a '",
                 oldClass(x)[1],
                 "' will not preserve the class or attributes.")
     }
@@ -143,7 +143,7 @@ NULL
 #' @export
 as.data.frame.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
-        warning("The result of the coercion will not inherit from class '",
+        S3_class_warning("The result of the coercion will not inherit from class '",
                 oldClass(x)[1],
                 "' and will not have any attributes specific to that class.")
     }
@@ -183,7 +183,7 @@ rbind.demog_change_component_df <-
         x <- NextMethod(generic = "rbind")
         if (is_demog_change_component_df(x)) {
             if (identical(parent.frame(), .GlobalEnv)) {
-                warning("The result of the rbind will not inherit from class '",
+                S3_class_warning("The result of the rbind will not inherit from class '",
                         oclass[1],
                         "' and will not have any attributes specific to that class.")
             }
@@ -211,6 +211,8 @@ rbind.demog_change_component_df <-
 #' \code{print_what}.
 #'
 #' @inheritParams base::print.data.frame
+#' @inheritParams base::print.table
+#' @inheritParams base::print.default
 #'
 #' @param x An object of class \code{demog_change_component_df}.
 #' @param n Integer controlling how many rows of \code{x} are
@@ -222,6 +224,7 @@ rbind.demog_change_component_df <-
 print.demog_change_component_df <-
     function(x, ..., n = min(6L, nrow(x)), digits = NULL,
              quote = FALSE, right = TRUE, row.names = FALSE,
+             na.print = ".",
              print_what = c("info", "table")) {
 
         print_what <- match.arg(print_what, several.ok = TRUE)
@@ -245,7 +248,7 @@ print.demog_change_component_df <-
             })
             attr_msgs <- paste(attr_msgs[!sapply(attr_msgs, "is.null")], collapse = ", ")
 
-            cat_msg <- paste0("# A '", class(x)[1], "' with ", format(nrow(x), big.mark = ","),
+            cat_msg <- paste0("# A '", class(x)[1], "' object with ", format(nrow(x), big.mark = ","),
                               " rows.",
                               "\n# dimensions = '", paste(demog_change_component_dimensions(x), collapse = ", "), "'.",
                               "\n# ", attr_msgs,
@@ -274,11 +277,11 @@ print.demog_change_component_df <-
         }
 
         if ("table" %in% print_what) {
-            x <- as.matrix(x[seq_len(n),])
-            if (!row.names) dimnames(x)[[1]] <- rep("", nrow(x))
-            print.table(x,
-                        digits = digits, quote = quote, na.print = ".",
-                        right = right,
+            y <- x[seq_len(n),]
+            y[is.na(y)] <- na.print
+            print(y,
+                  digits = digits, quote = quote, na.print = ".",
+                        right = right, row.names = row.names,
                         ...)
             cat("# ... etc.\n")
         }
@@ -346,7 +349,8 @@ summary.demog_change_component_df <-
 
         return(structure(list(dimensions = demog_change_component_dimensions(object),
                               time = time, age = age, sex = sex, indicator = indicator,
-                              value_type = value_type(object), values = values, table = table),
+                              value_type = value_type(object), values = values,
+                              value_scale = value_scale(object), table = table),
                          class = c("summary_demog_change_component_df", "list")))
     }
 
@@ -385,50 +389,58 @@ print.summary_demog_change_component_df <-
                           "\n")
 
             ## Time
-            if (!is.null(x$time))
-                msg <- paste0(msg, "      time:  range = [",
+            if (!is.null(x$time)) {
+                msg <- paste0(msg, "       time:  range = [",
                               paste(x$time$range, collapse = ", "),
                               "]")
-            if (!is.null(x$time$span))
-                msg <- paste0(msg,
-                              "\tspan = ",
-                              toString(x$time$span, 7))
-            msg <- paste0(msg, "\n")
+                if (!is.null(x$time$span))
+                    msg <- paste0(msg,
+                                  "\tspan = ",
+                                  toString(x$time$span, 7))
+                msg <- paste0(msg, "\n")
+            }
 
             ## Age
-            if (!is.null(x$age))
-                msg <- paste0(msg, "       age:  range = [",
+            if (!is.null(x$age)) {
+                msg <- paste0(msg, "        age:  range = [",
                               paste(x$age$range, collapse = ", "),
                               "]")
-            if (!is.null(x$age$span))
-                msg <- paste0(msg,
-                              "\tspan = ",
-                              toString(x$age$span, 7))
-            msg <- paste0(msg, "\n")
+                if (!is.null(x$age$span))
+                    msg <- paste0(msg,
+                                  "\tspan = ",
+                                  toString(x$age$span, 7))
+                msg <- paste0(msg, "\n")
+            }
 
             ## Sex
             if (!is.null(x$sex))
-                msg <- paste0(msg, "       sex:  levels = ",
+                msg <- paste0(msg, "        sex:  levels = ",
                               paste(x$sex$levels, collapse = ", "),
                               "\n")
 
             ## Indicator
             if (!is.null(x$indicator))
-                msg <- paste0(msg, " indicator:  levels = ",
+                msg <- paste0(msg, "  indicator:  levels = ",
                               toString(x$indicator$levels, 50),
                               "\n")
 
             ## Values
             if (!is.null(x$values)) {
-                msg <- paste0(msg, "value_type:  ",
+                msg <- paste0(msg, " value_type:  ",
                               x$value_type,
                               "\tlevels = ", toString(x$values$levels, 20),
                               "\n")
             } else {
-                msg <- paste0(msg, "value_type:  ",
+                msg <- paste0(msg, " value_type:  ",
                               x$value_type,
                               "\n")
             }
+
+            ## Value_Scale
+            if (!is.na(x$value_scale))
+                msg <- paste0(msg, "value_scale:  ",
+                              print(x$value_scale),
+                              "\n")
 
             ## Print
             if (length(msg > 0))

@@ -4,9 +4,9 @@
 %   R/S3_classes_fert_rate_input_df.R, R/S3_classes_life_table_input_df.R,
 %   R/S3_classes_mig_net_count_input_df.R,
 %   R/S3_classes_mig_net_count_tot_input_df.R,
-%   R/S3_classes_mig_net_rate_input_df.R, R/S3_classes_mig_parameter_input_df.R,
-%   R/S3_classes_pop_count_base_input.R, R/S3_classes_srb_input_df.R,
-%   R/S3_classes_survival_ratio_input_df.R
+%   R/S3_classes_mig_net_prop_input_df.R, R/S3_classes_mig_net_rate_input_df.R,
+%   R/S3_classes_mig_parameter_input_df.R, R/S3_classes_pop_count_base_input.R,
+%   R/S3_classes_srb_input_df.R, R/S3_classes_survival_ratio_input_df.R
 \name{subset_indicator.ccmpp_input_df}
 \alias{subset_indicator.ccmpp_input_df}
 \alias{subset_time.ccmpp_input_df}
@@ -31,6 +31,9 @@
 \alias{subset_age.mig_net_count_age_sex}
 \alias{subset_sex.mig_net_count_age_sex}
 \alias{subset_time.mig_net_count_tot_b}
+\alias{subset_time.mig_net_prop_age_sex}
+\alias{subset_age.mig_net_prop_age_sex}
+\alias{subset_sex.mig_net_prop_age_sex}
 \alias{subset_time.mig_net_rate_age_sex}
 \alias{subset_age.mig_net_rate_age_sex}
 \alias{subset_sex.mig_net_rate_age_sex}
@@ -87,6 +90,12 @@ subset_indicator(x, indicators, ...)
 \method{subset_sex}{mig_net_count_age_sex}(x, sexes, drop = FALSE)
 
 \method{subset_time}{mig_net_count_tot_b}(x, times, drop = FALSE)
+
+\method{subset_time}{mig_net_prop_age_sex}(x, times, drop = FALSE)
+
+\method{subset_age}{mig_net_prop_age_sex}(x, ages, drop = FALSE)
+
+\method{subset_sex}{mig_net_prop_age_sex}(x, sexes, drop = FALSE)
 
 \method{subset_time}{mig_net_rate_age_sex}(x, times, drop = FALSE)
 

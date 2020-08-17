@@ -102,14 +102,18 @@ summary.fert_rate_age_f <-
 #' @rdname demog_change_component_df
 #' @export
 print.summary_fert_rate_age_f <-
-    function(x, vsep, ...) {
+    function(x, vsep, ..., print_what = c("info", "table")) {
+        print_what <- match.arg(print_what, several.ok = TRUE)
         if (missing(vsep))
             vsep <- strrep("-", 0.75 * getOption("width"))
-        NextMethod(print_what = "info")
-        cat(paste0("non_zero_fert_ages:\t",
-               print_non_zero_fert_ages(x$non_zero_fert_ages, 30),
-               "\n"),
-            vsep, "\n",
-            sep = "")
-        NextMethod(print_what = "table")
+        if ("info" %in% print_what) {
+            NextMethod(print_what = "info")
+            cat(paste0("non_zero_fert_ages:\t",
+                       print_non_zero_fert_ages(x$non_zero_fert_ages, 30),
+                       "\n"),
+                vsep, "\n",
+                sep = "")
+        }
+        if ("table" %in% print_what)
+            NextMethod(print_what = "table")
     }

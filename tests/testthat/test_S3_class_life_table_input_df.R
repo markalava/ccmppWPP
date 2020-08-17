@@ -9,7 +9,7 @@ test_that("valid member created", {
 test_that("Non-zero age detected", {
     y <- life_table_input_df_indicator_time_age_sex
     z <- y[y$age_start > 0,]
-    z <- ccmppWPP:::new_life_table_age_sex(z,
+    z <- ccmppWPP:::new_life_table_age_sex(z, value_scale = 1,
                                      age_span = age_span(y),
                                      time_span = time_span(y))
     expect_error(validate_ccmpp_object(z))

@@ -4,15 +4,27 @@
 \alias{mig_net_count_age_sex}
 \title{Constructor for class \code{mig_net_count_age_sex}}
 \usage{
-mig_net_count_age_sex(x, value_scale = attr(x, "value_scale"))
+mig_net_count_age_sex(x, ...)
 }
 \arguments{
-\item{x}{For \code{demog_change_component_df}: A data frame with
-columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
-\dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.}
+\item{x}{Depending on the method
+\describe{
+  \item{\code{data.frame}}{A \code{\link{base::data.frame}} object}
+  \item{\code{mig_net_prop_age_sex}}{A \code{\link{mig_net_prop_age_sex}} object}}}
 
-\item{value_scale}{\emph{Numeric} scalar indicating the value_scale of the
-counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
+\item{...}{Passed to the low-level constructor.}
+
+\item{pop_count_age_sex}{For the \code{mig_net_prop_age_sex}
+method, an object that can be coreced to a
+\code{\link{ccmpp_input_df}} object (e.g., a
+\code{data.frame}), holding population counts from which to
+calculate the migration counts. The \code{value_type} must be
+\dQuote{count} and the \code{value_scale}s must match.}
+
+\item{value_scale_pop_count}{The scale of the \code{value} column
+in \code{pop_count_age_sex}. If unspecified, defaults to the
+\dQuote{value_scale} attribute of \code{pop_count_age_sex} if
+non-\code{NULL}, otherwise \code{1}.}
 }
 \value{
 An object of class \code{mig_net_count_age_sex}.
@@ -23,6 +35,16 @@ An object of class \code{mig_net_count_age_sex}.
 \enumerate{
   \item{\code{Value_type} attribute equals \dQuote{rate}.}
   \item{Within year and sex, age must start at 0.}}
+}
+\details{
+This function is generic with methods for \code{data.frame}, and
+\code{mig_net_prop_age_sex}. The latter method will compute the
+counts from migration proportions and a baseline population by
+simple multiplication of migration proportions by population
+counts, matched by age, sex, and time. Unlike
+\code{link{mig_net_prop_age_sex}} there is no
+\code{ccmpp_input_list} method because migration proportions are not a
+valid element of \code{ccmpp_input_list}s.
 }
 \seealso{
 \code{\link{validate_ccmpp_object}} for object validation,

@@ -63,12 +63,11 @@ new_mig_net_prop_age_sex <-
 #'   \item{\code{mig_net_count_age_sex}}{A \code{\link{mig_net_count_age_sex}} object}}
 #'
 #' @param pop_count_age_sex For the \code{mig_net_count_age_sex}
-#'     method, an object that will be coreced to a
-#'     \code{\link{ccmpp_input_df}} object, holding population counts
-#'     from which to calculate the migration proportions. The
-#'     \code{value_scale} must be \dQuote{count}. If necessary, values
-#'     will be rescaled (via \code{\link{rescale_value}}) so that they
-#'     match the \code{value_scale(x)}.
+#'     method, an object that can be coreced to a
+#'     \code{\link{ccmpp_input_df}} object (e.g., a
+#'     \code{data.frame}), holding population counts from which to
+#'     calculate the migration proportions. The \code{value_type} must
+#'     be \dQuote{count} and the \code{value_scale}s must match.
 #'
 #' @inheritParams demog_change_component_df
 #'

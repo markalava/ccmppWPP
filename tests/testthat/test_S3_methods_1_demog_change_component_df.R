@@ -98,3 +98,15 @@ test_that("'rbind()' drops class", {
     z <- rbind(dcc_df_time_age_sex, dcc_df_time_age_sex)
     expect_not_s3_class(z, "demog_change_component_df")
 })
+
+
+test_that("'transform()' drops class", {
+    z <- transform(dcc_df_time_age_sex, age_start = age_start - 1)
+    expect_not_s3_class(z, "demog_change_component_df")
+})
+
+
+test_that("'within()' drops class", {
+    z <- within(dcc_df_time_age_sex, { age_start <- age_start - 1 })
+    expect_not_s3_class(z, "demog_change_component_df")
+})

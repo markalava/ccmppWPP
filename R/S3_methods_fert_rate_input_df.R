@@ -39,7 +39,8 @@ as.data.frame.fert_rate_age_f <- function(x, restore_columns = FALSE, ...) {
 #' @export
 print.fert_rate_age_f <-
     function(x, ..., n = min(6L, nrow(x)), digits = NULL,
-             quote = FALSE, right = TRUE, row.names = FALSE, max = NULL,
+             quote = FALSE, right = TRUE, row.names = FALSE,
+             na.print = ".",
              print_what = c("info", "table")) {
 
         print_what = c("info", "table")
@@ -73,13 +74,12 @@ print.fert_rate_age_f <-
                 } else {
                     rows_to_print <- seq_len(n)
                 }
-                x <- x[rows_to_print, ]
-                x <- as.matrix(x)
-                if (!row.names) dimnames(x)[[1]] <- rep("", nrow(x))
-                print.table(x,
-                            digits = digits, quote = quote, na.print = ".",
-                            right = right,
-                            ...)
+                y <- x[rows_to_print, ]
+                y[is.na(y)] <- na.print
+                print(y,
+                      digits = digits, quote = quote, na.print = ".",
+                      right = right, row.names = row.names,
+                      ...)
                 cat("# ... etc.\n")
             }
         }

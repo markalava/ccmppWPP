@@ -417,6 +417,28 @@ gather.demog_change_component_df <- function(x, ...) {
     else return(x)
 }
 
+pivot_longer.demog_change_component_df <- function(x, ...) {
+    if (identical(parent.frame(), .GlobalEnv)) {
+        S3_class_warning("Manipulating a '",
+                oldClass(x)[1],
+                "' will not preserve the class or attributes.")
+    }
+    x <- NextMethod()
+    if (is_demog_change_component_df(x)) return(as.data.frame(x))
+    else return(x)
+}
+
+pivot_wider.demog_change_component_df <- function(x, ...) {
+    if (identical(parent.frame(), .GlobalEnv)) {
+        S3_class_warning("Manipulating a '",
+                oldClass(x)[1],
+                "' will not preserve the class or attributes.")
+    }
+    x <- NextMethod()
+    if (is_demog_change_component_df(x)) return(as.data.frame(x))
+    else return(x)
+}
+
 replace_na.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",

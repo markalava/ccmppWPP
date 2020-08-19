@@ -53,6 +53,8 @@
     vctrs__s3_register("tidyr::expand", "demog_change_component_df")
     vctrs__s3_register("tidyr::fill", "demog_change_component_df")
     vctrs__s3_register("tidyr::gather", "demog_change_component_df")
+    vctrs__s3_register("tidyr::pivot_longer", "demog_change_component_df")
+    vctrs__s3_register("tidyr::pivot_wider", "demog_change_component_df")
     vctrs__s3_register("tidyr::replace_na", "demog_change_component_df")
     vctrs__s3_register("tidyr::separate", "demog_change_component_df")
     vctrs__s3_register("tidyr::separate_rows", "demog_change_component_df")

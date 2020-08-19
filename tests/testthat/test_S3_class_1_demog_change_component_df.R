@@ -52,6 +52,14 @@ test_that("objects are created properly", {
     expect_true(identical(names(demog_change_component_attributes(z)),
                           c("dimensions", "value_type", "value_scale")))
 
+    ## Remove un-wanted dimensions
+    x <- subset_sex(
+        demog_change_component_df(
+            S3_demog_change_component_time_age_sex_test_df),
+        "male", drop = FALSE)
+    y <- demog_change_component_df(as.data.frame(x), dimensions = c("time", "age"))
+    expect_setequal(demog_change_component_dimensions(y), c("time", "age"))
+
 ### Time, Sex
     ## specify dimensions
     x <- S3_demog_change_component_time_sex_test_df[, c("time_start",

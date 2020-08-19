@@ -7,6 +7,7 @@
 \alias{life_table_component}
 \alias{life_table_component.ccmpp_input_list}
 \alias{survival_ratio_component}
+\alias{survival_ratio_component.life_table_age_sex}
 \alias{survival_ratio_component.ccmpp_input_list}
 \alias{fert_rate_component}
 \alias{fert_rate_component.ccmpp_input_list}
@@ -31,6 +32,8 @@ life_table_component(x)
 \method{life_table_component}{ccmpp_input_list}(x)
 
 survival_ratio_component(x)
+
+\method{survival_ratio_component}{life_table_age_sex}(x)
 
 \method{survival_ratio_component}{ccmpp_input_list}(x)
 

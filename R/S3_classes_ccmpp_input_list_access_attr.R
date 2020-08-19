@@ -144,11 +144,15 @@ survival_ratio_component <- function(x) {
 }
 #' @rdname ccmpp_list_access_elements
 #' @export
+survival_ratio_component.life_table_age_sex <- function(x) {
+    as_survival_ratio_age_sex(x[x$indicator == "lt_Sx",
+                                c("time_start", "time_span", "sex",
+                                  "age_start", "age_span", "value")])
+    }
+#' @rdname ccmpp_list_access_elements
+#' @export
 survival_ratio_component.ccmpp_input_list <- function(x) {
-    lt <- life_table_component(x)
-    lt[lt$indicator == "lt_Sx",
-       c("time_start", "time_span", "sex",
-         "age_start", "age_span", "value")]
+    survival_ratio_component(life_table_component(x))
 }
 
 #' @rdname ccmpp_list_access_elements

@@ -460,3 +460,51 @@ print.summary_demog_change_component_df <-
         return(invisible(x))
     }
 
+
+###-----------------------------------------------------------------------------
+### * Plot
+
+plot.demog_change_component_df <-
+    function(x, type = c("line"), ...
+             ## , ask = TRUE
+             ## , framework = c("ggplot2", "base"),
+             ) {
+        ## framework <- match.arg(framework)
+        type <- match.arg(type)
+        dcc_dims_x <- demog_change_component_dimensions(x)
+
+        if (identical(type, "line")) {
+        if (identical(framework, "base") || !requireNamespace(ggplot2)) {
+            stop("'base' plots not implemented; install ggplot2.")
+            ## if (!identical(framework, "base"))
+            ##     S3_class_message("Install 'ggplot2' for enhanced plots.")
+
+            ## if (identical(sort(c("time", "sex", "age")), sort(dcc_dims_x))) {
+            ##     times_x <- times(x)
+        ##     par(ask = TRUE)
+        ##     for (y in seq_along(times(x))) {
+        ##         ty <- times_x[y]
+        ##         df <- x[x$time_start == ty,]
+
+        ##         plot(x = df$age_start, y = df$value, type = "n",
+        ##              xlab = "age_start", ylab = "value",
+        ##              main = ty)
+        ##         legend(
+
+        ##         for (sex %in% sexes(x)) {
+        ##             df_sex <- df[df$sex == sex, ]
+        ##             lines(x = df_sex$age_start, y = df_sex$value, col = y, type = "b")
+        ##         }
+    }
+
+        if (identical(sort(c("time", "sex", "age")), sort(dcc_dims_x))) {
+            gp <- ggplot(data = x, aes(x = age_start, y = value, col = sex),
+                         ...) +
+                geom_line() +
+                facet_wrap(~ time_start)
+            print(gp)
+            return(gp)
+        } else stop("These dimensions not yet implemented.")
+        } else stop("This 'type' not yet implemented.")
+    }
+

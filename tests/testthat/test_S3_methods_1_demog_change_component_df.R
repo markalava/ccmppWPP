@@ -110,3 +110,13 @@ test_that("'within()' drops class", {
     z <- within(dcc_df_time_age_sex, { age_start <- age_start - 1 })
     expect_not_s3_class(z, "demog_change_component_df")
 })
+
+
+test_that("'plot' method produces a valid 'ggplot2' object", {
+    if (!requireNamespace("ggplot2")) skip("'ggplot2' not installed.")
+
+    expect_s3_class(plot(dcc_df_time_age_sex, type = "line", framework = "ggplot2",
+                         plot = FALSE),
+                    c("gg", "ggplot"))
+
+})

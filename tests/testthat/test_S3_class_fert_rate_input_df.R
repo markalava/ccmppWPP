@@ -161,4 +161,5 @@ test_that("non-zero fertility rate ages can be changed", {
                            as.double(non_zero_fert_ages(y))))
     expect_identical(as.double(non_zero_fert_ages(y)),
                      as.double(seq(from = 30, to = 40, by = 1)))
-    })
+})
+

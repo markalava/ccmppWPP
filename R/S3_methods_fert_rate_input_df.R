@@ -43,7 +43,8 @@ print.fert_rate_age_f <-
              na.print = ".",
              print_what = c("info", "table")) {
 
-        print_what = c("info", "table")
+        obj <- x
+        print_what <- match.arg(print_what, several.ok = TRUE)
 
         if ("info" %in% print_what) {
             NextMethod(generic = "print", print_what = "info")
@@ -56,7 +57,8 @@ print.fert_rate_age_f <-
             if (is_by_time(x))
                 x[-1, "time_span"] <- NA
 
-            if (is_by_age(x) && !is.null(nzfa)) {
+            rows_to_print <- seq_len(n)
+            if (is_by_age(x) && !is.null(nzfa) && length(nzfa)) {
                 nzf_rows <- x$age_start %in% nzfa
                 x[!nzf_rows, "value"] <- "[zero]"
                 if (sum(nzf_rows) < nrow(x) && n < nrow(x) && sum((!nzf_rows[n])) > 0 && n > 5) {
@@ -71,19 +73,19 @@ print.fert_rate_age_f <-
                         x[n1 + 1, ] <- NA
                         rownames(x)[n1 + 1] <- ""
                     }
-                } else {
-                    rows_to_print <- seq_len(n)
                 }
-                y <- x[rows_to_print, ]
-                y[is.na(y)] <- na.print
-                print(y,
-                      digits = digits, quote = quote, na.print = ".",
-                      right = right, row.names = row.names,
-                      ...)
-                cat("# ... etc.\n")
+            } else if (is_by_age(x) && !length(nzfa)) {
+                x[, "value"] <- "[zero]"
             }
+            x <- x[rows_to_print, ]
+            x[is.na(x)] <- na.print
+            print(x,
+                  digits = digits, quote = quote, na.print = ".",
+                  right = right, row.names = row.names,
+                  ...)
+            cat("# ... etc.\n")
         }
-        return(invisible(x))
+        return(invisible(obj))
     }
 
 #' @rdname summary_demog_change_component_df

@@ -2,7 +2,7 @@
 ### * Helpers
 
 get_allowed_value_categories_mig_parameter <- function() {
-    c("counts", "end")
+    c("counts", "end", "even")
 }
 
 get_required_indicator_categories_mig_parameter <- function() {

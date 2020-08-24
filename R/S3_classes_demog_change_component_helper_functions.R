@@ -70,6 +70,10 @@ get_master_df_dimensions_w_span_colnames_coltypes <- function() {
                type = c("numeric"))
 }
 
+get_as_function_for_class <- function(class) {
+    paste("as", class, sep = "_")
+}
+
 ###-----------------------------------------------------------------------------
 ### * Attributes
 

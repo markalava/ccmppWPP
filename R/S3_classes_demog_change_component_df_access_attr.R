@@ -38,15 +38,15 @@ demog_change_component_attributes.demog_change_component_df <- function(x) {
 #' @param x An object from which to extract attributes.
 #' @return The extracted attribute
 #' @author Mark Wheldon
-#' @name demog_change_component_dimensions
+#' @name demog_change_component_dims
 #' @export
-demog_change_component_dimensions <- function(x) {
-    UseMethod("demog_change_component_dimensions")
+demog_change_component_dims <- function(x) {
+    UseMethod("demog_change_component_dims")
 }
 
-#' @rdname demog_change_component_dimensions
+#' @rdname demog_change_component_dims
 #' @export
-demog_change_component_dimensions.demog_change_component_df <- function(x) {
+demog_change_component_dims.demog_change_component_df <- function(x) {
     attr(x, "dimensions")
 }
 
@@ -88,6 +88,20 @@ values.demog_change_component_df <- function(x) {
     if (identical(value_type(x), "categorical"))
         levels(factor(x$value))
     else x$value
+}
+
+#' @rdname extract_demog_change_component_attributes
+#' @export
+`values<-` <- function(x, value) {
+    UseMethod("values<-")
+}
+
+#' @rdname extract_demog_change_component_attributes
+#' @export
+`values<-.demog_change_component_df` <- function(x, value) {
+    as_fn <- get_as_function_for_class(oldClass(x)[1])
+    x$value <- value
+    do.call(as_fn, list(x = x))
 }
 
 #' @rdname extract_demog_change_component_attributes
@@ -270,60 +284,60 @@ print.demog_change_component_df_value_scale <- function(x, ...) {
 #' @param x An object to test.
 #' @return \code{TRUE} or \code{FALSE} depending on the result.
 #' @author Mark Wheldon
-#' @name test_demog_change_component_dimensions
+#' @name test_demog_change_component_dims
 NULL
 
-#' @rdname test_demog_change_component_dimensions
+#' @rdname test_demog_change_component_dims
 #' @export
 is_by_time <- function(x) {
     UseMethod("is_by_time")
 }
 
-#' @rdname test_demog_change_component_dimensions
+#' @rdname test_demog_change_component_dims
 #' @export
 is_by_time.demog_change_component_df <- function(x) {
-    isTRUE("time" %in% demog_change_component_dimensions(x))
+    isTRUE("time" %in% demog_change_component_dims(x))
     }
 
-#' @rdname test_demog_change_component_dimensions
+#' @rdname test_demog_change_component_dims
 #' @export
 is_by_time.data.frame <- function(x) {
     time_col_name <- get_df_col_names_for_dimensions(dimensions = "time", spans = FALSE)
     isTRUE(time_col_name %in% colnames(x))
     }
 
-#' @rdname test_demog_change_component_dimensions
+#' @rdname test_demog_change_component_dims
 #' @export
 is_by_age <- function(x) {
     UseMethod("is_by_age")
 }
 
-#' @rdname test_demog_change_component_dimensions
+#' @rdname test_demog_change_component_dims
 #' @export
 is_by_age.demog_change_component_df <- function(x) {
-    isTRUE("age" %in% demog_change_component_dimensions(x))
+    isTRUE("age" %in% demog_change_component_dims(x))
 }
 
-#' @rdname test_demog_change_component_dimensions
+#' @rdname test_demog_change_component_dims
 #' @export
 is_by_age.data.frame <- function(x) {
     age_col_name <- get_df_col_names_for_dimensions(dimensions = "age", spans = FALSE)
     isTRUE(age_col_name %in% colnames(x))
     }
 
-#' @rdname test_demog_change_component_dimensions
+#' @rdname test_demog_change_component_dims
 #' @export
 is_by_sex <- function(x) {
     UseMethod("is_by_sex")
 }
 
-#' @rdname test_demog_change_component_dimensions
+#' @rdname test_demog_change_component_dims
 #' @export
 is_by_sex.demog_change_component_df <- function(x) {
-    isTRUE("sex" %in% demog_change_component_dimensions(x))
+    isTRUE("sex" %in% demog_change_component_dims(x))
     }
 
-#' @rdname test_demog_change_component_dimensions
+#' @rdname test_demog_change_component_dims
 #' @export
 is_by_sex.data.frame <- function(x) {
     sex_col_name <- get_df_col_names_for_dimensions(dimensions = "sex", spans = FALSE)
@@ -331,19 +345,19 @@ is_by_sex.data.frame <- function(x) {
            length(unique(x[[sex_col_name]]) > 1))
     }
 
-#' @rdname test_demog_change_component_dimensions
+#' @rdname test_demog_change_component_dims
 #' @export
 is_by_indicator <- function(x) {
     UseMethod("is_by_indicator")
 }
 
-#' @rdname test_demog_change_component_dimensions
+#' @rdname test_demog_change_component_dims
 #' @export
 is_by_indicator.demog_change_component_df <- function(x) {
-    isTRUE("indicator" %in% demog_change_component_dimensions(x))
+    isTRUE("indicator" %in% demog_change_component_dims(x))
     }
 
-#' @rdname test_demog_change_component_dimensions
+#' @rdname test_demog_change_component_dims
 #' @export
 is_by_indicator.data.frame <- function(x) {
     indicator_col_name <- get_df_col_names_for_dimensions(dimensions = "indicator", spans = FALSE)

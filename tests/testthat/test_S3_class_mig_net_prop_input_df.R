@@ -11,7 +11,7 @@ test_that("subsetting works", {
 
     y <- subset_sex(x, "female")
     expect_s3_class(y, "mig_net_prop_age_sex")
-    expect_identical(demog_change_component_dimensions(y),
+    expect_identical(demog_change_component_dims(y),
                      c("time", "sex", "age"))
 
     ## Cannot work because the class 'mig_net_prop_age_sex' has to have a 'sex' dimension.

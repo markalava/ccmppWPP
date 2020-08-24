@@ -4,6 +4,8 @@
 \alias{ccmpp_list_access_elements}
 \alias{pop_count_base_component}
 \alias{pop_count_base_component.ccmpp_input_list}
+\alias{pop_count_base_component<-}
+\alias{pop_count_base_component<-.ccmpp_input_list}
 \alias{life_table_component}
 \alias{life_table_component.ccmpp_input_list}
 \alias{survival_ratio_component}
@@ -26,6 +28,10 @@
 pop_count_base_component(x)
 
 \method{pop_count_base_component}{ccmpp_input_list}(x)
+
+pop_count_base_component(x) <- value
+
+\method{pop_count_base_component}{ccmpp_input_list}(x) <- value
 
 life_table_component(x)
 

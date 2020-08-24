@@ -49,7 +49,7 @@ validate_ccmpp_object.demog_change_component_df <-
         ## 3. The "value_type" attribute must be formed correctly.
         ## 4. The "value_scale" attribute must be formed correctly.
 
-        demog_change_component_dims_x <- demog_change_component_dimensions(x)
+        demog_change_component_dims_x <- demog_change_component_dims(x)
         if (is.na(demog_change_component_dims_x) || !is.character(demog_change_component_dims_x) ||
             length(demog_change_component_dims_x) < 1 ||
             !all(demog_change_component_dims_x %in% get_all_allowed_dimensions()))
@@ -191,7 +191,7 @@ validate_ccmpp_object.ccmpp_input_df <- function(x, ...) {
     ## 1. Extra attributes required
 
     req_attr <-
-        get_req_attr_names_for_ccmpp_input_dfs_for_dimensions(demog_change_component_dimensions(x))
+        get_req_attr_names_for_ccmpp_input_dfs_for_dimensions(demog_change_component_dims(x))
     if (!all(req_attr %in% names(attributes(x))))
         stop("'x' must have attributes '",
              paste(req_attr, collapse = "', '"),
@@ -202,7 +202,7 @@ validate_ccmpp_object.ccmpp_input_df <- function(x, ...) {
     ## single-step ccmpp function will turn out incorrect
     ## results. The class imposes full sorting.
 
-    demog_change_component_dims_x <- demog_change_component_dimensions(x)
+    demog_change_component_dims_x <- demog_change_component_dims(x)
 
     order_cols <-
         subset_master_df_of_dimensions_colnames_coltypes(dimensions = demog_change_component_dims_x)$colname

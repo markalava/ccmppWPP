@@ -46,7 +46,7 @@ as_age_time_matrix.demog_change_component_df <- function(x, ...) {
     if (is_by_indicator(x))
         stop("'x' has dimension \"indicator\"; select a single indicator using 'subset_indicator(as_demog_change_component_df(x), ..., drop = TRUE)' to create an age-time matrix. See '?as_age_time_matrix_list' for an alternative approach.")
 
-    dims <- demog_change_component_dimensions(x)
+    dims <- demog_change_component_dims(x)
 
     if (identical(length(dims), 1L)) {
         if(is_by_time(x)) {

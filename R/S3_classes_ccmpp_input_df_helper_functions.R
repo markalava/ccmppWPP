@@ -58,7 +58,7 @@ check_dimensions_for_ccmpp_input_df <- function(x) {
     dims_x <-
         check_dimensions_for_ccmpp_input_class(class = class_x,
                                            dimensions =
-                                               demog_change_component_dimensions(x))
+                                               demog_change_component_dims(x))
     req_dims <- get_req_dimensions_for_ccmpp_input_classes(class_x)
     dims_from_cols <- guess_dimensions_from_df_cols(x)
     if (!setequal(dims_x, dims_from_cols)) {

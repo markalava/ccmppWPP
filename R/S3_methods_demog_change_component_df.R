@@ -250,7 +250,7 @@ print.demog_change_component_df <-
 
             cat_msg <- paste0("# A '", class(x)[1], "' object with ", format(nrow(x), big.mark = ","),
                               " rows.",
-                              "\n# dimensions = '", paste(demog_change_component_dimensions(x), collapse = ", "), "'.",
+                              "\n# dimensions = '", paste(demog_change_component_dims(x), collapse = ", "), "'.",
                               "\n# ", attr_msgs,
                               ".\n")
             if (inherits(x, "fert_rate_age_f"))
@@ -347,7 +347,7 @@ summary.demog_change_component_df <-
         ## Stats
         table <- NextMethod()
 
-        return(structure(list(dimensions = demog_change_component_dimensions(object),
+        return(structure(list(dimensions = demog_change_component_dims(object),
                               time = time, age = age, sex = sex, indicator = indicator,
                               value_type = value_type(object), values = values,
                               value_scale = value_scale(object), table = table),
@@ -487,7 +487,7 @@ plot.demog_change_component_df <-
              ) {
         ## framework <- match.arg(framework)
         type <- match.arg(type)
-        dcc_dims_x <- demog_change_component_dimensions(x)
+        dcc_dims_x <- demog_change_component_dims(x)
 
         if (identical(type, "line")) {
             if (identical(framework, "base") || !requireNamespace("ggplot2")) {

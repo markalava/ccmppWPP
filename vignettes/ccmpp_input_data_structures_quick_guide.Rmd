@@ -103,7 +103,7 @@ The elements of a `ccmpp_input_list` object are in Table \@ref(tab:ccmpp-input-s
   - sex
   - value
   
-Each data frame is also given an S3 class with the same name as its element. The element `fert_rate_age_f` is a data frame with class `fert_rate_age_f`, and so on. These data frames have *attributes* (meta-data), including "dimension", "value_type", and "value_scale". The "dimension" attribute indicates the demographic breakdown of the data. Use the function `demog_change_component_dimensions()` on an object to extract them. Allowed dimensions are 
+Each data frame is also given an S3 class with the same name as its element. The element `fert_rate_age_f` is a data frame with class `fert_rate_age_f`, and so on. These data frames have *attributes* (meta-data), including "dimension", "value_type", and "value_scale". The "dimension" attribute indicates the demographic breakdown of the data. Use the function `demog_change_component_dims()` on an object to extract them. Allowed dimensions are 
 
   - indicator
   - time

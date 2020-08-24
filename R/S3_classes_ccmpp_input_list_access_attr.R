@@ -128,6 +128,18 @@ pop_count_base_component.ccmpp_input_list <- function(x) {
 
 #' @rdname ccmpp_list_access_elements
 #' @export
+`pop_count_base_component<-` <- function(x, value) {
+    UseMethod("pop_count_base_component<-")
+}
+#' @rdname ccmpp_list_access_elements
+#' @export
+`pop_count_base_component<-.ccmpp_input_list` <- function(x, value) {
+    x[["pop_count_age_sex_base"]] <- value
+    as_ccmpp_input_list(x)
+}
+
+#' @rdname ccmpp_list_access_elements
+#' @export
 life_table_component <- function(x) {
     UseMethod("life_table_component")
 }

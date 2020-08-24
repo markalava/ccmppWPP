@@ -513,10 +513,10 @@ Utility functions are provided for querying various attributes and characteristi
 
 ### Dimensions Present
 
-To get the names of the dimensions of an object use `demog_change_component_dimensions`^[This name is probably too long.] 
+To get the names of the dimensions of an object use `demog_change_component_dims`^[This name is probably too long.] 
 
 ```{r}
-demog_change_component_dimensions(demog_change_example_df)
+demog_change_component_dims(demog_change_example_df)
 ```
 
 Each dimension also has an associated "`is_by_[dim]`" function to test whether "`[dim]`" is present:

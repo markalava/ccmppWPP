@@ -7,7 +7,7 @@ test_that("objects are created properly", {
     z <- fert_rate_age_f(x)
     expect_s3_class(z, "fert_rate_age_f")
     expect_s3_class(z, "data.frame")
-    expect_true(setequal(demog_change_component_dimensions(z), c("time", "age")))
+    expect_true(setequal(demog_change_component_dims(z), c("time", "age")))
     expect_true(is_by_age(z))
 
     x <- subset(fert_rate_input_df_time_age,
@@ -15,7 +15,7 @@ test_that("objects are created properly", {
     z <- fert_rate_age_f(x)
     expect_s3_class(z, "fert_rate_age_f")
     expect_s3_class(z, "data.frame")
-    expect_true(setequal(demog_change_component_dimensions(z), c("time", "age")))
+    expect_true(setequal(demog_change_component_dims(z), c("time", "age")))
     expect_true(is_by_age(z))
 
     x <- subset(fert_rate_input_df_time_age,

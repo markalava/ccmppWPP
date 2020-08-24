@@ -88,4 +88,17 @@ test_that("non-zero fert ages can be changed", {
                            as.double(non_zero_fert_ages(x))))
     expect_identical(as.double(20:30),
                      as.double(non_zero_fert_ages(x)))
+})
+
+
+test_that("'pop_count_age_sex_base' component can be changed", {
+    x <- pop_count_base_component(ccmpp_input_list_example)
+    expect_s3_class(x, "pop_count_age_sex_base")
+
+    values(x) <- 1
+    expect_s3_class(x, "pop_count_age_sex_base")
+
+    expect_equal(values(x), rep(1, nrow(x)))
     })
+
+

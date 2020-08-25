@@ -18,7 +18,8 @@ License: What license it uses
 Encoding: UTF-8
 LazyData: true
 Suggests: 
-    testthat
+    testthat,
+    ggplot2
 RoxygenNote: 7.1.1
 LinkingTo: 
     Rcpp

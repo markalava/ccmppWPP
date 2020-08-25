@@ -8,7 +8,7 @@ across.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -19,7 +19,7 @@ add_column.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -30,7 +30,7 @@ add_row.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -41,7 +41,7 @@ arrange.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -52,7 +52,7 @@ column_to_rownames.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -63,7 +63,7 @@ filter.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Subsetting a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -74,7 +74,7 @@ mutate.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -85,7 +85,7 @@ mutate_all.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -96,7 +96,7 @@ mutate_if.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -107,7 +107,7 @@ mutate_at.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -118,7 +118,7 @@ pull.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -129,7 +129,7 @@ remove_rownames.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -140,7 +140,7 @@ rename.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -151,7 +151,7 @@ rownames_to_column.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -162,7 +162,7 @@ select.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -173,7 +173,7 @@ slice.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -184,7 +184,7 @@ summarise.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -195,7 +195,7 @@ summarize.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -206,7 +206,7 @@ transmute.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -217,7 +217,7 @@ transmute_all.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -228,7 +228,7 @@ transmute_if.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -239,7 +239,7 @@ transmute_at.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -253,7 +253,7 @@ anti_join.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -264,7 +264,7 @@ bind_rows.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -275,7 +275,7 @@ full_join.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -286,7 +286,7 @@ inner_join.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -297,7 +297,7 @@ intersect.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -308,7 +308,7 @@ left_join.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -319,7 +319,7 @@ right_join.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -330,7 +330,7 @@ semi_join.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -341,7 +341,7 @@ setdiff.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -352,7 +352,7 @@ union.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -366,7 +366,7 @@ complete.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -377,7 +377,7 @@ drop_na.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -388,7 +388,7 @@ expand.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -399,7 +399,7 @@ fill.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -410,7 +410,7 @@ gather.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -421,7 +421,7 @@ pivot_longer.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -432,7 +432,7 @@ pivot_wider.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -443,7 +443,7 @@ replace_na.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -454,7 +454,7 @@ separate.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -465,7 +465,7 @@ separate_rows.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -476,7 +476,7 @@ spread.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))
@@ -487,7 +487,7 @@ unite.demog_change_component_df <- function(x, ...) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("Manipulating a '",
                 oldClass(x)[1],
-                "' will not preserve the class or attributes. This can occurr even when this warning is not issued.")
+                "' will not preserve the class or attributes. Note that this can occurr even when this warning is not issued.")
     }
     x <- NextMethod()
     if (is_demog_change_component_df(x)) return(as.data.frame(x))

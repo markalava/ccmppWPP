@@ -4,7 +4,13 @@
 \alias{plot.demog_change_component_df}
 \title{Plot \code{demog_change_component_df} objects}
 \usage{
-\method{plot}{demog_change_component_df}(x, type = c("line"), ..., framework = c("ggplot2", "base"), plot = TRUE)
+\method{plot}{demog_change_component_df}(
+  x,
+  type = c("point", "line", "both"),
+  ...,
+  framework = c("ggplot2", "base"),
+  plot = TRUE
+)
 }
 \arguments{
 \item{x}{An object of class \code{demog_change_component_df}.}

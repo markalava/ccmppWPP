@@ -23,16 +23,18 @@ Development of a CCMPP specification and implementation(s) at UNPD &amp; Co.
 
 ## PDF Help Files via LaTeX 
 
-To get PDF versions of the help files a version of *LaTeX* is required. Some options include:
+To get PDF versions of the help files you will need to download and install a version of the [*LaTeX*](https://www.latex-project.org/) typesetting system. Some options include:
 
 * [TinyTex](https://yihui.org/tinytex/)
 * [TeXLive](https://www.tug.org/texlive/)
 * [MiKTeX](https://miktex.org/)
+
+Follow the installation instructions for the version you choose. The path to *LaTeX* executables should be added to your system's "PATH" environment variable; this will typically be done by the installers. 
   
  
 ## Contributing via GitHub
 
-To contribute to the package you will need a (free) account with [*GitHub*](https://github.com/) *and* a [*Git*](https://git-scm.com/) distribution. 
+To contribute to the package you will need a (free) account with [*GitHub*](https://docs.github.com/en/github/getting-started-with-github) *and* a [*Git*](https://git-scm.com/) distribution. 
 
 If you are using *R Studio* you can interact with *GitHub* from within the program. Here are some learning resources to help you get started:
 

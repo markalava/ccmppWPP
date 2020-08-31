@@ -15,7 +15,7 @@ Below are basic instructions to download and install the package on your system.
     ```
     install.packages("remotes", dependencies = TRUE) #only do once per user/workstation
 	
-    remotes::install_github(https://github.com/markalava/ccmppWPP, ref = "develop/sara")
+    remotes::install_github(https://github.com/markalava/ccmppWPP, ref = "develop/sara", dependencies = TRUE)
     ```
 	
 	You can change `ref = "develop/sara"` to `ref = "develop/mark"` or `ref = "master"` to install from different branches. 
@@ -78,11 +78,12 @@ Here is a grab bag of various issues that may come up in no particular order. Pl
   
     ```
 	install.packages(c("testthat", "ggplot2", "knitr", "rmarkdown", 
-	                   "Rcpp", "stringr", "DemoTools", "devtools", "remotes", "roxygen2"),
+	                   "Rcpp", "stringr", "DemoTools", "devtools", "remotes", "roxygen2",
+					   "DiagrammeR"),
 	                 dependencies = TRUE)
     ```
 	
-	before step 4 to head off any missing package warnings that might occur. 
+	before step 4 to head off most missing package warnings that might occur. 
 	
 2. **Cannot switch to a different *Git* branch.**
 

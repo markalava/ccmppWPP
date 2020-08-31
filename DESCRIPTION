@@ -21,7 +21,8 @@ Suggests:
     testthat,
     ggplot2,
     knitr,
-    rmarkdown
+    rmarkdown,
+    DiagrammeR
 RoxygenNote: 7.1.1
 LinkingTo: 
     Rcpp

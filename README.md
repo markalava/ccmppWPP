@@ -15,7 +15,7 @@ Below are basic instructions to download and install the package on your system.
     ```
     install.packages("remotes", dependencies = TRUE) #only do once per user/workstation
 	
-    remotes::install_github(https://github.com/markalava/ccmppWPP, ref = "develop/sara", dependencies = TRUE)
+    remotes::install_github(https://github.com/markalava/ccmppWPP, ref = "develop/sara", build_vignettes = TRUE, dependencies = TRUE)
     ```
 	
 	You can change `ref = "develop/sara"` to `ref = "develop/mark"` or `ref = "master"` to install from different branches. 

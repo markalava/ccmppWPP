@@ -7,6 +7,7 @@ get_allowed_mig_assumptions_mig_parameter <- function() {
 
 get_allowed_mig_types_mig_parameter <- function() {
     c("counts", "rates")
+}
 
 get_allowed_value_categories_mig_parameter <- function() {
     c(get_allowed_mig_types_mig_parameter(),

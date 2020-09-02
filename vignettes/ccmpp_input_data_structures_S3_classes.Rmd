@@ -45,6 +45,8 @@ STYLE CONVENTIONS
 library(ccmppWPP)
 ```
 
+You can access this vignette via `vignette("S3 Classes for CCMPP Input Data Structures", package = "ccmppWPP")`.
+
 
 # Introduction
 
@@ -127,7 +129,7 @@ graph <-"digraph {
   rec3 [label = 'ccmpp_input_df']
   rec4 [label =  'fert_rate_age_f']
   rec5 [label = 'srb']
-  rec6 [label = 'survival_ratio_input_df']
+  rec6 [label = 'survival_ratio_age_sex']
   rec7 [label = 'pop_count_age_sex_base']
   rec8 [label = 'mig_net_rate_age_sex']
   rec9 [label = 'mig_net_count_age_sex']

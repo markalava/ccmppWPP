@@ -115,7 +115,9 @@ test_that("'within()' drops class", {
 test_that("'plot' method produces a valid 'ggplot2' object", {
     if (!requireNamespace("ggplot2")) skip("'ggplot2' not installed.")
 
-    expect_s3_class(plot(dcc_df_time_age_sex, type = "line", framework = "ggplot2",
+    expect_s3_class(plot(dcc_df_time_age_sex,
+                         type = "line",
+                         framework = "ggplot2",
                          plot = FALSE),
                     c("gg", "ggplot"))
 

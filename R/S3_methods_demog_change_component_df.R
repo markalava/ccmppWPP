@@ -546,13 +546,13 @@ plot.demog_change_component_df <-
 
             if (!identical("sex", dcc_dims_x)) {
                 if (identical(type, "line"))
-                    gp <- gp + geom_line()
+                    gp <- gp + ggplot2::geom_line()
                 else if (identical(type, "point"))
-                    gp <- gp + geom_point()
+                    gp <- gp + ggplot2::geom_point()
                 else if (identical(type, "both"))
-                    gp <- gp + geom_point() + geom_line()
+                    gp <- gp + ggplot2::geom_point() + ggplot2::geom_line()
             } else {
-                gp <- gp + geom_bar()
+                gp <- gp + ggplot2::geom_bar()
             }
 
             if (plot) print(gp)

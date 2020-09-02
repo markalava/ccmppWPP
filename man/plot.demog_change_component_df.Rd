@@ -17,6 +17,9 @@
 
 \item{type}{The type of plot to produce, e.g., \dQuote{line}.}
 
+\item{...}{When \code{type} is \dQuote{ggplot2} (default) passed on
+to \code{\link[ggplot2]{ggplot}}. Otherwise passed on to \code{\link{plot}}.}
+
 \item{framework}{Plotting framework to use; either \dQuote{ggplot2}
 or \dQuote{base}. Use the former (default) for better results.}
 

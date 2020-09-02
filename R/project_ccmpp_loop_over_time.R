@@ -71,7 +71,7 @@ project_ccmpp_loop_over_time <- function(indata) {
       # multiply age and sex specific rates by age and sex specific population counts
       mig_f           <- indata$mig_net_rate_age_sex[which(indata$mig_net_rate_age_sex$time_start == time &
                                                               indata$mig_net_rate_age_sex$sex == "female"), "value"]
-      mig_f           <- mig_f * pop_m_start
+      mig_f           <- mig_f * pop_f_start
       mig_m           <- indata$mig_net_rate_age_sex[which(indata$mig_net_rate_age_sex$time_start == time &
                                                              indata$mig_net_rate_age_sex$sex == "male"), "value"]
       mig_m           <- mig_m * pop_m_start

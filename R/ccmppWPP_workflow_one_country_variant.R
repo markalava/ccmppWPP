@@ -84,7 +84,7 @@ ccmpp_output <- data_reshape_ccmpp_output(ccmpp_output = ccmpp_output)
 
   # compute age-specific mortality rates from age-specific deaths and exposures
   mx_b <- cbind(death_count_age_b[, 1:4],
-                value = death_count_age_b$value / exposure_count_age_b$value)
+                value = death_count_age_b$value / max(exposure_count_age_b$value, 0.00000001)) # don't allow division by zero
   # compute all life table columns from single year mx
   life_table_age_b <- lt_complete_loop_over_time(mx = mx_b, sex="both")
 
@@ -200,6 +200,11 @@ ccmpp_output <- data_reshape_ccmpp_output(ccmpp_output = ccmpp_output)
                           mig_net_count_tot_sex      = mig_net_count_tot_sex,
                           mig_assumption             = ccmpp_input$mig_parameter[which(ccmpp_input$mig_parameter$indicator == "mig_assumption"),]
   )
+  
+# inherit attributes from input file
+  atr                              <- attributes(wpp_input)
+  attr(ccmppWPP_output, "locid")   <- atr$locid
+  attr(ccmppWPP_output, "variant") <- atr$variant
 
   return(ccmppWPP_output)
 

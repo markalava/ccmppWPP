@@ -26,7 +26,6 @@ get_all_allowed_attributes <- function() {
 get_all_allowed_dimensions <- function() {
     ## The name component is a label for internal indexing. The data
     ## component is the actual name of the dimension.
-    ## !! NAME AND ELEMENT MUST BE THE SAME !!
     ## !! ORDER MATTERS !! Determines the order of sorting!
     c("indicator", "time", "sex", "age")
 }
@@ -69,6 +68,10 @@ get_master_df_dimensions_w_span_colnames_coltypes <- function() {
     data.frame(dimension = get_all_dimensions_w_spans(),
                colname = paste0(dim_names, "_span"),
                type = c("numeric"))
+}
+
+get_as_function_for_class <- function(class) {
+    paste("as", class, sep = "_")
 }
 
 ###-----------------------------------------------------------------------------

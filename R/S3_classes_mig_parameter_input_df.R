@@ -1,8 +1,16 @@
 ###-----------------------------------------------------------------------------
 ### * Helpers
 
+get_allowed_mig_assumptions_mig_parameter <- function() {
+    c("end", "even")
+}
+
+get_allowed_mig_types_mig_parameter <- function() {
+    c("counts", "rates")
+
 get_allowed_value_categories_mig_parameter <- function() {
-    c("counts", "rates", "end", "even")
+    c(get_allowed_mig_types_mig_parameter(),
+      get_allowed_mig_assumptions_mig_parameter())
 }
 
 get_required_indicator_categories_mig_parameter <- function() {
@@ -80,6 +88,9 @@ mig_parameter <-
     }
 
 
+###-----------------------------------------------------------------------------
+### * Coercion
+
 #' Coerce to a \code{mig_parameter}
 #'
 #' These functions coerce an object to a
@@ -136,12 +147,63 @@ is_mig_parameter <- function(x) {
 }
 
 
-
+###-----------------------------------------------------------------------------
+### * Subset
 
 #' @rdname subset_demog_change_component_df
 #' @export
 subset_time.mig_parameter <- function(x, times, drop = FALSE) {
-
     x <- NextMethod()
     return(mig_parameter(x))
 }
+
+#' @rdname subset_demog_change_component_df
+#' @export
+subset_indicator.mig_parameter <- function(x, times, drop = FALSE) {
+    x <- NextMethod()
+    return(mig_parameter(x))
+}
+
+
+###-----------------------------------------------------------------------------
+### * Extraction
+
+#' Extract or set the migration assumption
+#'
+#' Returns or sets the migration assumption for a
+#' \code{\link{mig_parameter}} object. Migration assumption is stored
+#' in the \value{column} in rows where \code{indicator} =
+#' \dQuote{mig_assumption}.
+#'
+#' @param x An object inheriting from \code{\link{mig_parameter}}.
+#' @return A character string with the assumption for the extraction
+#'     function, or \code{x} (invisibly) with the assumption set to
+#'     \code{value} for the replacement function.
+#' @author Mark Wheldon
+#' @name mig_assumption_extract_and_set
+#' @export
+mig_assumption <- function(x) {
+    UseMethod("mig_assumption")
+}
+
+#' @rdname mig_assumption_extract_and_set
+#' @export
+mig_assumption.mig_parameter <- function(x) {
+    unique(x[x$indicator == "mig_assumption", "value"])
+}
+
+#' @rdname mig_assumption_extract_and_set
+#' @export
+`mig_assumption<-` <- function(x, value) {
+    UseMethod("mig_assumption<-")
+}
+
+#' @rdname mig_assumption_extract_and_set
+#' @export
+`mig_assumption<-.mig_parameter` <- function(x, value) {
+    stopifnot(value %in% get_allowed_mig_assumptions_mig_parameter())
+    x[x$indicator == "mig_assumption", "value"] <- value
+    as_mig_parameter(x)
+}
+
+

@@ -12,7 +12,7 @@
   quote = FALSE,
   right = TRUE,
   row.names = FALSE,
-  max = NULL,
+  na.print = ".",
   print_what = c("info", "table")
 )
 }
@@ -37,9 +37,9 @@ that function for valid values and associated behaviours.}
 \item{row.names}{logical (or character vector), indicating whether (or
     what) row names should be printed.}
 
-\item{max}{numeric or \code{NULL}, specifying the maximal number of
-    entries to be printed.  By default, when \code{NULL},
-    \code{\link[base]{getOption}("max.print")} used.}
+\item{na.print}{character string (or \code{NULL}) indicating
+    \code{\link[base]{NA}} values in printed output, see
+    \code{\link[base]{print.default}}.}
 
 \item{print_what}{What should be printed?}
 }

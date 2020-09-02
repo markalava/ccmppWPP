@@ -84,4 +84,13 @@ test_that("age * time matrices can be coerced to ccmpp_input_df", {
     expect_is(y, "matrix")
     expect_s3_class(z, "ccmpp_input_df")
     expect_identical(x$value, z$value)
-    })
+})
+
+
+test_that("age * time matrix lists are produced", {
+    x <- ccmpp_input_df_time_age_sex
+    y <- as_age_time_matrix_list(x)
+    expect_is(y, "list")
+    expect_is(y[[1]], "matrix")
+    expect_is(y[[2]], "matrix")
+})

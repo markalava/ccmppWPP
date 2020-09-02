@@ -47,8 +47,6 @@ test_that("subsetting returns valid objects", {
 
 
 test_that("common set of times is enforced", {
-
-
     x <- ccmpp_input_list_example
     y <- x
     ty <- times(y[["fert_rate_age_f"]])
@@ -88,4 +86,54 @@ test_that("non-zero fert ages can be changed", {
                            as.double(non_zero_fert_ages(x))))
     expect_identical(as.double(20:30),
                      as.double(non_zero_fert_ages(x)))
-    })
+})
+
+
+test_that("'pop_count_age_sex_base' component can be changed", {
+    x <- pop_count_base_component(ccmpp_input_list_example)
+    expect_s3_class(x, "pop_count_age_sex_base")
+
+    values(x) <- 1
+    expect_s3_class(x, "pop_count_age_sex_base")
+
+    expect_equal(values(x), rep(1, nrow(x)))
+})
+
+
+test_that("survival ratio component can be changed", {
+    x <- survival_ratio_input_df_time_age_sex
+    values(x) <- 1
+
+    y <- life_table_component(ccmpp_input_list_example)
+    expect_false(isTRUE(
+        all.equal(values(survival_ratio_component(y)),
+                  rep(1, nrow(survival_ratio_component(y))))))
+
+    survival_ratio_component(y) <- x
+    expect_equal(values(survival_ratio_component(y)),
+                 rep(1, nrow(survival_ratio_component(y))))
+
+    z <- ccmpp_input_list_example
+    expect_false(isTRUE(
+        all.equal(values(survival_ratio_component(z)),
+                  rep(1, nrow(survival_ratio_component(z))))))
+    survival_ratio_component(z) <- x
+    expect_equal(values(survival_ratio_component(z)),
+                 rep(1, nrow(survival_ratio_component(z))))
+})
+
+
+test_that("mig assumption can be changed", {
+    expect_error(mig_assumption(ccmpp_input_list_example) <- "test",
+                 "is not TRUE")
+
+    y <- mig_parameter_component(ccmpp_input_list_example)
+    z <- mig_assumption(y)
+    mig_assumption(y) <-
+        switch(z, end = "even", even = "end")
+    expect_false(identical(z, mig_assumption(y)))
+
+    x <- ccmpp_input_list_example
+    mig_assumption(x) <-
+        switch(mig_assumption(x), end = "even", even = "end")
+})

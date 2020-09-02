@@ -38,6 +38,7 @@
 \alias{subset_age.mig_net_rate_age_sex}
 \alias{subset_sex.mig_net_rate_age_sex}
 \alias{subset_time.mig_parameter}
+\alias{subset_indicator.mig_parameter}
 \alias{subset_time.pop_count_age_sex_base}
 \alias{subset_age.pop_count_age_sex_base}
 \alias{subset_sex.pop_count_age_sex_base}
@@ -104,6 +105,8 @@ subset_indicator(x, indicators, ...)
 \method{subset_sex}{mig_net_rate_age_sex}(x, sexes, drop = FALSE)
 
 \method{subset_time}{mig_parameter}(x, times, drop = FALSE)
+
+\method{subset_indicator}{mig_parameter}(x, times, drop = FALSE)
 
 \method{subset_time}{pop_count_age_sex_base}(x, times, drop = FALSE)
 

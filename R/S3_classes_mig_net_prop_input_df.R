@@ -22,7 +22,7 @@ new_mig_net_prop_age_sex <-
              time_span = double(),
              dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_net_prop_age_sex"),
              value_type = get_value_types_for_ccmpp_input_classes("mig_net_prop_age_sex"),
-             value_scale = double(),
+             value_scale = NA,
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
                            age_span = age_span,
@@ -63,12 +63,11 @@ new_mig_net_prop_age_sex <-
 #'   \item{\code{mig_net_count_age_sex}}{A \code{\link{mig_net_count_age_sex}} object}}
 #'
 #' @param pop_count_age_sex For the \code{mig_net_count_age_sex}
-#'     method, an object that will be coreced to a
-#'     \code{\link{ccmpp_input_df}} object, holding population counts
-#'     from which to calculate the migration proportions. The
-#'     \code{value_scale} must be \dQuote{count}. If necessary, values
-#'     will be rescaled (via \code{\link{rescale_value}}) so that they
-#'     match the \code{value_scale(x)}.
+#'     method, an object that can be coreced to a
+#'     \code{\link{ccmpp_input_df}} object (e.g., a
+#'     \code{data.frame}), holding population counts from which to
+#'     calculate the migration proportions. The \code{value_type} must
+#'     be \dQuote{count} and the \code{value_scale}s must match.
 #'
 #' @inheritParams demog_change_component_df
 #'
@@ -84,20 +83,18 @@ mig_net_prop_age_sex <- function(x, ...) {
 #' @rdname mig_net_prop_age_sex
 #' @export
 mig_net_prop_age_sex.data.frame <-
-    function(x,
-             value_scale = attr(x, "value_scale"), ...) {
+    function(x, ...) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
                             dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_net_prop_age_sex"),
                             value_type = get_value_types_for_ccmpp_input_classes("mig_net_prop_age_sex"),
-                            value_scale = value_scale)
+                            value_scale = NA)
 
         ## Create/Validate
         validate_ccmpp_object(
             new_mig_net_prop_age_sex(li$df,
                                age_span = li$age_span,
-                               time_span = li$time_span,
-                               value_scale = li$value_scale)
+                               time_span = li$time_span)
         )
     }
 

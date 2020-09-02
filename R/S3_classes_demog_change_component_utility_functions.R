@@ -210,3 +210,48 @@ make_value_ratio <- function(num, denom,
     x <- x[, -which(names(x) %in% c("value.num", "value.denom"))]
     return(x)
 }
+
+
+#' Calculate the product of values in two data frames
+#'
+#' The product of the \dQuote{value} columns in data frames \code{x}
+#' and \code{y} is calculated and returned. \code{x} and
+#' \code{y} are first merged on columns named \code{by_vars_names}
+#' and these columns are in the output, which is also a data frame.
+#'
+#' @param x,y Data frames with columns \dQuote{\code{by_vars_names}}
+#'     and \dQuote{value}.
+#' @param by_vars_names Character vector of names of columns to merge
+#'     by. By default, all columns except \dQuote{value}.
+#' @inheritParams base::merge
+#' @return A data frame with columns \dQuote{\code{by_vars_names}} and
+#'     \dQuote{value}, where the latter holds the product of
+#'     \dQuote{value}s in \code{x} and \code{y}.
+#' @author Mark Wheldon
+#' @export
+make_value_product <- function(x, y,
+                             by_vars_names = NULL,
+                             all.x = TRUE, all.y = FALSE) {
+    num <- as.data.frame(x)
+    y <- as.data.frame(y)
+    if (is.null(by_vars_names)) {
+        by_vars_names <- intersect(names(x), names(y))
+        by_vars_names <- by_vars_names[!by_vars_names == "value"]
+    }
+    if (!length(by_vars_names))
+        stop("'No 'by_vars' variables in common.")
+
+    if (!is.null(attr(x, "value_scale")) && !is.na(attr(x, "value_scale")) &&
+        !is.null(attr(y, "value_scale")) && !is.na(attr(y, "value_scale"))) {
+        if (!identical(as.numeric(value_scale(x)),
+                       as.numeric(value_scale(y))))
+            stop("'value_scale's are different for 'x' and 'y'.")
+    }
+
+    x <- base::merge(x, y, by = by_vars_names,
+                     all.x = all.x, all.y = all.y,
+                     sort = FALSE, suffixes = c(".x", ".y"))
+    x$value <- x$value.x * x$value.y
+    x <- x[, -which(names(x) %in% c("value.x", "value.y"))]
+    return(x)
+}

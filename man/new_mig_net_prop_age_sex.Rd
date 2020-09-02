@@ -10,7 +10,7 @@ new_mig_net_prop_age_sex(
   time_span = double(),
   dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_net_prop_age_sex"),
   value_type = get_value_types_for_ccmpp_input_classes("mig_net_prop_age_sex"),
-  value_scale = double(),
+  value_scale = NA,
   ...,
   class = character()
 )

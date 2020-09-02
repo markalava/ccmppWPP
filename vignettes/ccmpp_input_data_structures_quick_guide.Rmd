@@ -45,6 +45,8 @@ STYLE CONVENTIONS
 library(ccmppWPP)
 ```
 
+You can access this vignette via `vignette("CCMPP Input Data Structures Quick Guide", package = "ccmppWPP")`.
+
 
 # Introduction
 
@@ -67,7 +69,7 @@ A single line is added to `ccmppWPP_workflow_one_country_variant` to enact the v
 ```{r, eval = FALSE}
 ccmppWPP_workflow_one_country_variant <- function(wpp_input) {
 
-    wpp_input <- as_ccmpp_input_list(wpp_input) #<<<<<<<< ADDED: VALIDATE INPUTS
+    wpp_input <- as_ccmpp_input_list(wpp_input)
 
     # extract objects needed for ccmpp
     ccmpp_input <- data_parse_ccmpp_input(indata = wpp_input)
@@ -103,7 +105,7 @@ The elements of a `ccmpp_input_list` object are in Table \@ref(tab:ccmpp-input-s
   - sex
   - value
   
-Each data frame is also given an S3 class with the same name as its element. The element `fert_rate_age_f` is a data frame with class `fert_rate_age_f`, and so on. These data frames have *attributes* (meta-data), including "dimension", "value_type", and "value_scale". The "dimension" attribute indicates the demographic breakdown of the data. Use the function `demog_change_component_dimensions()` on an object to extract them. Allowed dimensions are 
+Each data frame is also given an S3 class with the same name as its element. The element `fert_rate_age_f` is a data frame with class `fert_rate_age_f`, and so on. These data frames have *attributes* (meta-data), including "dimension", "value_type", and "value_scale". The "dimension" attribute indicates the demographic breakdown of the data. Use the function `demog_change_component_dims()` on an object to extract them. Allowed dimensions are 
 
   - indicator
   - time

@@ -250,7 +250,7 @@ print.demog_change_component_df <-
 
             cat_msg <- paste0("# A '", class(x)[1], "' object with ", format(nrow(x), big.mark = ","),
                               " rows.",
-                              "\n# dimensions = '", paste(demog_change_component_dimensions(x), collapse = ", "), "'.",
+                              "\n# dimensions = '", paste(demog_change_component_dims(x), collapse = ", "), "'.",
                               "\n# ", attr_msgs,
                               ".\n")
             if (inherits(x, "fert_rate_age_f"))
@@ -347,7 +347,7 @@ summary.demog_change_component_df <-
         ## Stats
         table <- NextMethod()
 
-        return(structure(list(dimensions = demog_change_component_dimensions(object),
+        return(structure(list(dimensions = demog_change_component_dims(object),
                               time = time, age = age, sex = sex, indicator = indicator,
                               value_type = value_type(object), values = values,
                               value_scale = value_scale(object), table = table),
@@ -458,4 +458,104 @@ print.summary_demog_change_component_df <-
         }
 
         return(invisible(x))
+    }
+
+
+###-----------------------------------------------------------------------------
+### * Plot
+
+#' Plot \code{demog_change_component_df} objects
+#'
+#' This is the S3 method for the generic \code{\link{plot}} function.
+#'
+#' @param x An object of class \code{demog_change_component_df}.
+#' @param type The type of plot to produce, e.g., \dQuote{line}.
+#' @param ... When \code{type} is \dQuote{ggplot2} (default) passed on
+#'     to \code{\link[ggplot2]{ggplot}}. Otherwise passed on to \code{\link{plot}}.
+#' @param framework Plotting framework to use; either \dQuote{ggplot2}
+#'     or \dQuote{base}. Use the former (default) for better results.
+#' @param plot Should the plot be printed?
+#' @return When \code{framework} is \dQuote{ggplot2}, a plot
+#'     object. Otherwise nothing. The function is mainly called for
+#'     the side effect of producing a plot.
+#' @author Mark Wheldon
+#' @export
+plot.demog_change_component_df <-
+    function(x, type = c("point", "line", "both"), ...
+             ## , ask = TRUE
+           , framework = c("ggplot2", "base"),
+             plot = TRUE
+             ) {
+        ## framework <- match.arg(framework)
+        type <- match.arg(type)
+        dcc_dims_x <- demog_change_component_dims(x)
+
+        if (identical(framework, "base") || !requireNamespace("ggplot2")) {
+            stop("'base' plots not implemented; install ggplot2.")
+            ## if (!identical(framework, "base"))
+            ##     S3_class_message("Install 'ggplot2' for enhanced plots.")
+
+            ## if (identical(sort(c("time", "sex", "age")), sort(dcc_dims_x))) {
+            ##     times_x <- times(x)
+            ##     par(ask = TRUE)
+            ##     for (y in seq_along(times(x))) {
+            ##         ty <- times_x[y]
+            ##         df <- x[x$time_start == ty,]
+
+            ##         plot(x = df$age_start, y = df$value, type = "n",
+            ##              xlab = "age_start", ylab = "value",
+            ##              main = ty)
+            ##         legend(
+
+            ##         for (sex %in% sexes(x)) {
+            ##             df_sex <- df[df$sex == sex, ]
+            ##             lines(x = df_sex$age_start, y = df_sex$value, col = y, type = "b")
+            ##         }
+        } else {
+
+            if (identical("age", dcc_dims_x)) {
+                gp <- ggplot2::ggplot(data = x, ggplot2::aes(x = age_start, y = value),
+                                      ...)
+
+            } else if (identical("time", dcc_dims_x)) {
+                gp <- ggplot2::ggplot(data = x, ggplot2::aes(x = time_start, y = value),
+                                      ...)
+
+            } else if (identical("sex", dcc_dims_x)) {
+                gp <- ggplot2::ggplot(data = x, ggplot2::aes(x = sex, y = value),
+                                      ...)
+
+            } else if (identical(sort(c("age", "sex")), sort(dcc_dims_x))) {
+                gp <- ggplot2::ggplot(data = x, ggplot2::aes(x = age_start, y = value, col = sex),
+                                      ...)
+
+            } else if (identical(sort(c("time", "sex")), sort(dcc_dims_x))) {
+                gp <- ggplot2::ggplot(data = x, ggplot2::aes(x = time_start, y = value, col = sex),
+                                      ...)
+
+            } else if (identical(sort(c("time", "age")), sort(dcc_dims_x))) {
+                gp <- ggplot2::ggplot(data = x, ggplot2::aes(x = age_start, y = value),
+                                      ...) +
+                    ggplot2::facet_wrap(~ time_start)
+
+            } else if (identical(sort(c("time", "sex", "age")), sort(dcc_dims_x))) {
+                gp <- ggplot2::ggplot(data = x, ggplot2::aes(x = age_start, y = value, col = sex),
+                                      ...) +
+                    ggplot2::facet_wrap(~ time_start)
+            } else stop("These dimensions not yet implemented.")
+
+            if (!identical("sex", dcc_dims_x)) {
+                if (identical(type, "line"))
+                    gp <- gp + ggplot2::geom_line()
+                else if (identical(type, "point"))
+                    gp <- gp + ggplot2::geom_point()
+                else if (identical(type, "both"))
+                    gp <- gp + ggplot2::geom_point() + ggplot2::geom_line()
+            } else {
+                gp <- gp + ggplot2::geom_bar()
+            }
+
+            if (plot) print(gp)
+            return(invisible(gp))
+        }
     }

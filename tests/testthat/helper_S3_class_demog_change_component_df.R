@@ -1,3 +1,6 @@
+op <- options()
+options(ccmppWPP.suppress_S3_class_messages = TRUE)
+
 load(system.file("testdata", "S3_demog_change_component_time_age_sex_test_df.rda", package = "ccmppWPP"))
 load(system.file("testdata", "S3_demog_change_component_time_age_test_df.rda", package = "ccmppWPP"))
 load(system.file("testdata", "S3_demog_change_component_time_sex_test_df.rda", package = "ccmppWPP"))
@@ -62,3 +65,6 @@ ccmpp_input_list_example <-
                      mig_net_rate_age_sex = wpp_input_example$mig_net_rate_age_sex,
                      mig_net_count_tot_b = wpp_input_example$mig_net_count_tot_b,
                      mig_parameter = wpp_input_example$mig_parameter)
+
+
+options(op)

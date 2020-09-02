@@ -90,8 +90,9 @@ prepare_df_for_demog_change_component_df <- function(x,
     if (!is.data.frame(x))
         stop("'x' is not a data.frame.")
 
-    if (is_demog_change_component_df(x))
-        x <- as.data.frame(x)
+    ## Coerce so things classes like tibbles are dropped. These cause
+    ## problems later on.
+    x <- as.data.frame(x)
 
     coln_x <- colnames(x)
 

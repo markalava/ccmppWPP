@@ -9,7 +9,7 @@
 \usage{
 mig_net_prop_age_sex(x, ...)
 
-\method{mig_net_prop_age_sex}{data.frame}(x, value_scale = attr(x, "value_scale"), ...)
+\method{mig_net_prop_age_sex}{data.frame}(x, ...)
 
 \method{mig_net_prop_age_sex}{ccmpp_input_list}(x, ...)
 
@@ -24,16 +24,12 @@ mig_net_prop_age_sex(x, ...)
 
 \item{...}{Passed to the low-level constructor.}
 
-\item{value_scale}{\emph{Numeric} scalar indicating the value_scale of the
-counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
-
 \item{pop_count_age_sex}{For the \code{mig_net_count_age_sex}
-method, an object that will be coreced to a
-\code{\link{ccmpp_input_df}} object, holding population counts
-from which to calculate the migration proportions. The
-\code{value_scale} must be \dQuote{count}. If necessary, values
-will be rescaled (via \code{\link{rescale_value}}) so that they
-match the \code{value_scale(x)}.}
+method, an object that can be coreced to a
+\code{\link{ccmpp_input_df}} object (e.g., a
+\code{data.frame}), holding population counts from which to
+calculate the migration proportions. The \code{value_type} must
+be \dQuote{count} and the \code{value_scale}s must match.}
 }
 \value{
 An object of class \code{mig_net_prop_age_sex} with the

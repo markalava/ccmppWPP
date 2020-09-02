@@ -28,5 +28,10 @@ test_that("Value categories enforced", {
     x[x$value == "counts", "value"] <- "foo"
     expect_error(mig_parameter(x),
                  "only values allowed in the 'value' column")
+
+    x <- mig_parameter_input_df_indicator_time
+    x[x$value == "counts", "value"] <- "even"
+    expect_s3_class(mig_parameter(x), "mig_parameter")
+
 })
 

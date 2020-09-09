@@ -9,25 +9,11 @@ pasfr_global_model <- function() {
     #    2 - INTERMEDIATE MODEL c(0.12,0.31,0.31,0.16,0.08,0.02,0.00)
     #    3 - LATE MODEL c(0.04,0.22,0.40,0.22,0.10,0.02,0.00)
     
-    # for now I have just divided the 5-year pasfr by five to graduate to single year of age
+    # for now I have just divided the 5-year intermediate pasfr by five to graduate to single year of age
     # ultimately these need to be replaced with a 1x model
     
-    early <- data.frame(age_start = seq(0,100,1),
+    pasfr_global_model <- data.frame(age_start = seq(0,100,1),
                         age_span = rep(1,101),
-                        model     = rep("early", 101),
-                        value     = c(rep(0,15),
-                                      rep(0.2/5,5),
-                                      rep(0.4/5,5),
-                                      rep(0.25/5,5),
-                                      rep(0.1/5,5),
-                                      rep(0.04/5,5),
-                                      rep(0.01/5,5),
-                                      rep(0.0/5,5),
-                                      rep(0, 51)))
-
-    intermediate <- data.frame(age_start = seq(0,100,1),
-                        age_span = rep(1,101),
-                        model     = rep("intermediate", 101),
                         value     = c(rep(0,15),
                                       rep(0.12/5,5),
                                       rep(0.31/5,5),
@@ -38,21 +24,6 @@ pasfr_global_model <- function() {
                                       rep(0.0/5,5),
                                       rep(0, 51)))
 
-    late <- data.frame(age_start = seq(0,100,1),
-                        age_span = rep(1,101),
-                        model     = rep("late", 101),
-                        value     = c(rep(0,15),
-                                      rep(0.04/5,5),
-                                      rep(0.22/5,5),
-                                      rep(0.40/5,5),
-                                      rep(0.22/5,5),
-                                      rep(0.10/5,5),
-                                      rep(0.02/5,5),
-                                      rep(0.0/5,5),
-                                      rep(0, 51)))
-
-    pasfr_global_model <- rbind(early, intermediate, late)
-    
     return(pasfr_global_model)
     
 }

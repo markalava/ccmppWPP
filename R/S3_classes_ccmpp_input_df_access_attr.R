@@ -1,3 +1,34 @@
+#' Return the \dQuote{span} of a \code{ccmpp_input_df}
+#'
+#' Returns the common \dQuote{age_span} and \dQuote{time_span} of
+#' objects inheriting from \code{ccmpp_input_df}. To be a valid member
+#' of this class, these two spans must be equal. This function
+#' provides both a convenient check for this equality and a more
+#' logical way of accessing the common span. To change the span, see
+#' \code{\link{span<-}}.
+#'
+#' @param x An object inheriting from \code{ccmpp_input_df}.
+#' @param ...
+#' @return The span of \code{x}.
+#' @author Mark Wheldon
+#' @seealso \code{\link{extract_demog_change_component_attributes}},
+#'     the assignment version for changing the span
+#'     \code{\link{span<-}}
+#' @name extract_ccmpp_input_df_span
+#' @export
+span <- function(x, ...) {
+    UseMethod("span")
+}
+
+#' @rdname extract_ccmpp_input_df_span
+#' @export
+span.ccmpp_input_df <- function(x, ...) {
+    if (!identical(age_span(x), time_span(x)))
+        stop("'age_span' and 'time_span' of 'x' are different. This is not a valid 'ccmpp_input_df' object.")
+    return(age_span(x))
+}
+
+
 
 #' @rdname extract_demog_change_component_attributes
 #' @export
@@ -27,6 +58,8 @@ time_span.ccmpp_input_df <- function(x) {
     attr(x, "time_span")
 }
 
+
+
 #' @rdname extract_demog_change_component_attributes
 #' @export
 `value_type<-.ccmpp_input_df` <- function(x, value, ...) {
@@ -39,9 +72,6 @@ time_span.ccmpp_input_df <- function(x) {
              "'.")
     as_ccmpp_input_df(NextMethod())
 }
-
-
-
 
 
 ## Value_Scale

@@ -10,9 +10,8 @@
 #'
 #' @param wpp_input list of input objects required for one country-variant
 #'
-#' @details This function will accept any width of age group and projection horizon as long as those are equal
-#' e.g., use z=1 for a 1x1 projection of population by single year of age and 1 year projection horizon
-#' or use z=5 for a 5x5 projection of population by 5-year age groups and 5-year projection horizon
+#' @details This function calls all of the various functions required to complete the WPP workflow.  It currently
+#' works only for a 1x1 population projection and returns outputs summarised by 1-year and 5-year age groups.
 #'
 #' @return a list of objects including projected population, deaths, exposures, life tables, births, fertility
 #' rates and proportions, and net migrant counts
@@ -169,7 +168,31 @@ ccmpp_output <- data_reshape_ccmpp_output(ccmpp_output = ccmpp_output)
   fert_mean_age_f          <- fert_mac(fert_data_age = ccmpp_input$fert_rate_age_f,
                                        byvar         = c("time_start", "time_span"))
 
-
+# compile warning messages to be communicated to analysts
+  # migration counts modified from inputs to avoid non-negative population
+  
+  # vector of time_start for which input mig_type == "counts"
+  mig_count_times <- ccmpp_input$mig_parameter$time_start[which(ccmpp_input$mig_parameter$indicator == "mig_type" & 
+                                                                   ccmpp_input$mig_parameter$value == "counts")]
+  # for time_start %in% mig_counts_times, does input mig_net_count_age_sex == output mig_net_count_age_sex
+  mig_net_count_age_sex_compare <- ccmpp_input$mig_net_count_age_sex[ccmpp_input$mig_net_count_age_sex$time_start %in% mig_count_times,]
+  mig_net_count_age_sex_compare <- merge(mig_net_count_age_sex_compare, 
+                                          ccmpp_output$mig_net_count_age_sex[, c("time_start", "age_start", "sex", "value")],
+                                          by = c("time_start", "age_start",  "sex"),
+                                          all.x = TRUE, all.y = FALSE)
+  mig_net_count_age_sex_override <- mig_net_count_age_sex_compare[mig_net_count_age_sex_compare$value.x != 
+                                                                      mig_net_count_age_sex_compare$value.y,]
+  names(mig_net_count_age_sex_override)[c(6,7)] <- c("value.input", "value.output")
+  
+  if (nrow(mig_net_count_age_sex_override) > 0) {
+    attr(mig_net_count_age_sex_override, "warning") <- paste0("Warning: input net migrant count has been overridden for ", 
+                                                      nrow(mig_net_count_age_sex_override), " time-age-sex combinations in order to avoid negative population.")
+    
+  } else if (nrow(mig_net_count_age_sex_override) == 0) {
+    mig_net_count_age_sex_override <- NULL
+  }
+ 
+ 
 # compile output list and return
   # assemble all estimates to send to Eagle
   ccmppWPP_output <- list(pop_count_age_sex_1x1      = pop_count_age_sex,
@@ -198,11 +221,13 @@ ccmpp_output <- data_reshape_ccmpp_output(ccmpp_output = ccmpp_output)
                           mig_net_count_age_sex_1x1  = ccmpp_output$mig_net_count_age_sex,
                           mig_net_count_age_sex_5x1  = mig_net_count_age_sex_5x1,
                           mig_net_count_tot_sex      = mig_net_count_tot_sex,
-                          mig_assumption             = ccmpp_input$mig_parameter[which(ccmpp_input$mig_parameter$indicator == "mig_assumption"),]
+                          mig_parameter              = ccmpp_input$mig_parameter,
+                          mig_net_count_age_sex_override = mig_net_count_age_sex_override
   )
   
 # inherit attributes from input file
   atr                              <- attributes(wpp_input)
+  attr(ccmppWPP_output, "revision") <- atr$revision
   attr(ccmppWPP_output, "locid")   <- atr$locid
   attr(ccmppWPP_output, "variant") <- atr$variant
 

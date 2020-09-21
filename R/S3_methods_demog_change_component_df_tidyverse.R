@@ -1,3 +1,7 @@
+###
+### Methods for *existing* generics. See '..._utility_functions.R' for new generics and methods.
+###
+
 ###-----------------------------------------------------------------------------
 ### * dplyr
 

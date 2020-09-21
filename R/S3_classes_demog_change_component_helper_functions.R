@@ -35,6 +35,8 @@ get_all_dimensions_w_spans <- function() {
     c("time", "age")
 }
 
+## NOTE: See subsequent functions for convenient subsets of this
+## master list.
 get_master_df_of_dimensions_colnames_coltypes <- function() {
     dims <- get_all_allowed_dimensions()
     dims_w_spans <- get_all_dimensions_w_spans()

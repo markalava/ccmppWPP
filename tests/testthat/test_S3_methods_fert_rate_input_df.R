@@ -50,7 +50,9 @@ test_that("printing returns an object of class 'fert_rate_age_f'", {
 test_that("printing works if there are no non-zero fertility rate ages", {
     y <- fert_rate_input_df_time_age
     non_zero_fert_ages(y) <- numeric(0)
-    expect_s3_class(print(y), "fert_rate_age_f")
+    capture.output(y <- print(y),
+                   file = OS_null_file_string)
+    expect_s3_class(y, "fert_rate_age_f")
     })
 
 

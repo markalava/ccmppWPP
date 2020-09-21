@@ -615,5 +615,18 @@ validate_ccmpp_object.ccmpp_input_list <- function(x, ...) {
         print(time_levels_not_pop_count_base)
         stop("All elements except \"pop_count_age_sex_base\" that have a \"time\" dimension must have the same unique times ('time_start'). Actual unique times by element are printed above.")
     }
+
+    ## Check that mig_count_age_sex and mig_count_tot_b are consistent with each other
+    mig_tot_agg <- aggregate(x$mig_net_count_age_sex, by = "time")
+    mig_check <- base::merge(x$mig_net_count_tot_b,
+                             mig_tot_agg,
+                             by = "time_start",
+                             all = FALSE)
+    all_eq <- all.equal(mig_check$value.x, mig_check$value.y, tolerance = 1)
+    if (!isTRUE(all_eq))
+        warning("'mig_net_count_tot_b' is not consistent with totals calculated from 'mig_net_count_tot_b':\n",
+                paste(all_eq, collapse = "\n"))
+
+    ## FINISH
     return(x)
 }

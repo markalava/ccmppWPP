@@ -41,6 +41,9 @@ subset_sex.ccmpp_input_df <- function(x, sexes, drop = FALSE) {
 ###-----------------------------------------------------------------------------
 ### * Transform
 
+###-----------------------------------------------------------------------------
+### ** Re-span
+
 #' Change the span of a \code{ccmpp_input_df} object
 #'
 #' This is a generic function with methods for the various sub-classes
@@ -66,4 +69,3 @@ subset_sex.ccmpp_input_df <- function(x, sexes, drop = FALSE) {
 `span<-.ccmpp_input_df` <- function(x, value, ...) {
     stop("Not yet implemented")
 }
-

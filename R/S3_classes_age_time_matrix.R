@@ -76,7 +76,7 @@ as_age_time_matrix.fert_rate_age_f <- function(x, drop_zero_fert_ages = FALSE, .
     nzfa <- non_zero_fert_ages(x)
     x <- NextMethod()
     if (drop_zero_fert_ages)
-        x <- x[dimnames(x)$age %in% nzfa, ]
+        x <- x[dimnames(x)$age %in% nzfa, , drop = FALSE]
     return(x)
     }
 

@@ -237,4 +237,40 @@ non_zero_fert_ages.fert_rate_age_f <- function(x) {
 #' @export
 `non_zero_fert_ages<-.fert_rate_age_f` <- function(x, value, ...) {
     fert_rate_age_f(x, non_zero_fert_ages = value)
-    }
+}
+
+
+###-----------------------------------------------------------------------------
+### * Transformations
+
+#' Calculate total fertility rates
+#'
+#' This generic function returns total fertility rates from an object
+#' with information on fertility.
+#'
+#' \code{tfr} is an alias for this function.
+#'
+#' @param x An object with information on fertility; typically
+#'     inheriting from \code{\link{fert_rate_age_f}} or
+#'     \code{\link{ccmpp_input_list}}.
+#' @param ... Passed to specific methods
+#' @return An object of class \code{\link{demog_change_component_df}}
+#' @author Mark Wheldon
+#' @name fert_rate_tot_f
+#' @export
+fert_rate_tot_f <- function(x, ...) {
+    UseMethod("fert_rate_tot_f")
+}
+
+#' @rdname fert_rate_tot_f
+#' @export
+tfr <- fert_rate_tot_f
+
+#' @rdname fert_rate_tot_f
+#' @export
+fert_rate_tot_f.fert_rate_age_f <- function(x) {
+    wtd_value <- data.frame(value = x$value * x$age_span)
+    out <- aggregate(wtd_value, by = list(time_start = x$time_start),
+                     FUN = "sum")
+    return(demog_change_component_df(out))
+}

@@ -30,20 +30,25 @@ A data frame with the column \dQuote{value} after
 \description{
 This is a simple method for the generic
 \code{\link[stats]{aggregate}} function in the \pkg{stats} package
-for \code{demog_change_component_df} objects. The \dQuote{value}
-column is aggregated using function \code{FUN}; you cannot
-aggregate any other columns of \code{x} with this method. Note that
-argument \code{by} is a character vector, not a list (see
-\dQuote{Details} for more information). The \code{by} variables are
-the ones that will appear in the output, not the ones that are
-collapsed.
+for objects inheriting from \code{demog_change_component_df}. The
+\dQuote{value} column is aggregated using function \code{FUN}; you
+cannot aggregate any other columns of \code{x} with this
+method. Note that argument \code{by} is a character vector, not a
+list (see \dQuote{Details} for more information). The \code{by}
+variables are the ones that will appear in the output, not the ones
+that are collapsed.
 }
 \details{
 Argument \code{by} is a character vector (unlike the default
 method) and can be any of the allowed \dQuote{dimensions} (default)
 \emph{or} column names of \code{x}. You must specify \code{by_type
-= "columns"} if you are supplying column names. The object returned
-is a \code{\link{data.frame}}.
+= "columns"} if you are supplying column names.
+
+The function will try to return an object of class
+\code{demog_change_component_df} (regardless of the class of
+\code{x}). If a valid object of this class cannot be created from
+the result, a \code{\link{data.frame}} is returned (and with a
+warning in interactive sessions).
 
 This method is a rather simple wrapper for conveniently aggregating
 \code{demog_change_component_df} objects by their dimensions (or

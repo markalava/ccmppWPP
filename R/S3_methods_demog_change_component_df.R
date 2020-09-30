@@ -481,8 +481,7 @@ print.summary_demog_change_component_df <-
 plot.demog_change_component_df <-
     function(x, type = c("point", "line", "both"), ...
              ## , ask = TRUE
-           , framework = c("ggplot2", "base"),
-             plot = TRUE
+           , framework = c("ggplot2", "base")
              ) {
         ## framework <- match.arg(framework)
         type <- match.arg(type)
@@ -553,7 +552,6 @@ plot.demog_change_component_df <-
                 gp <- gp + ggplot2::geom_bar()
             }
 
-            if (plot) print(gp)
             return(invisible(gp))
         }
     }

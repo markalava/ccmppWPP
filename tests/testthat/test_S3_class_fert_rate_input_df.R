@@ -163,3 +163,13 @@ test_that("non-zero fertility rate ages can be changed", {
                      as.double(seq(from = 30, to = 40, by = 1)))
 })
 
+
+test_that("zero fertility rate ages are set to zero (value column)", {
+    test <- fert_rate_age_f(expand.grid(age_start = 0:3,
+                                        time_start = 1950:1951, value = 1),
+                            non_zero_fert_ages = 2)
+    zero_fert_rows <- !test$age_start %in% non_zero_fert_ages(test)
+    expect_identical(as.double(test[zero_fert_rows, "value"]),
+                     rep(as.double(0), sum(zero_fert_rows)))
+    })
+

@@ -34,6 +34,15 @@ print_non_zero_fert_ages <- function(nzfa, width = 30) {
                  nchar(nzfa_paste))))
 }
 
+## Not for export; overwrite elements of 'value' column with exact zeros.
+set_zero_fert_ages_to_zero <- function(x, non_zero_fert_ages) {
+    zero_fert_ages_idx <- !(x$age_start %in% non_zero_fert_ages)
+    if (sum(zero_fert_ages_idx) > 0)
+        x[zero_fert_ages_idx,]$value <- as.double(0)
+    return(x)
+    }
+
+
 ###-----------------------------------------------------------------------------
 ### * Constructors, etc.
 
@@ -86,6 +95,11 @@ new_fert_rate_age_f <-
 #'   \code{age_start} values.}}
 #' An attempt will be made to guess \code{non_zero_fert_ages} if not supplied.
 #'
+#' @section Non-zero fert ages:
+#' Elements of the \code{value} column corresponding to ages not
+#' listed in \code{non_zero_fert_ages} will be overwritten with zeros
+#' (specifically \code{as.double(0)}s).
+#'
 #' @family ccmpp_input_objects
 #' @seealso \code{\link{validate_ccmpp_object}} for object validation,
 #'     \code{\link{ccmpp_input_df}} for the class from which this one
@@ -97,7 +111,7 @@ new_fert_rate_age_f <-
 #'
 #' @inheritParams demog_change_component_df
 #' @param non_zero_fert_ages Numeric vector of unique ages indicating
-#'     the reproductive age range.
+#'     the reproductive age range. See Section \dQuote{Non-zero fert ages}.
 #' @return An object of class \code{fert_rate_age_f}.
 #' @author Mark Wheldon
 #' @export
@@ -123,6 +137,9 @@ fert_rate_age_f <-
             S3_class_message("'non_zero_fert_ages' set to '",
                     print_non_zero_fert_ages(non_zero_fert_ages, width = 30))
         }
+
+        li$df <- set_zero_fert_ages_to_zero(li$df, non_zero_fert_ages)
+
 
         ## Create/Validate
         validate_ccmpp_object(
@@ -238,7 +255,6 @@ non_zero_fert_ages.fert_rate_age_f <- function(x) {
 `non_zero_fert_ages<-.fert_rate_age_f` <- function(x, value, ...) {
     fert_rate_age_f(x, non_zero_fert_ages = value)
 }
-
 
 ###-----------------------------------------------------------------------------
 ### * Transformations

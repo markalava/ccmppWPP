@@ -16,7 +16,7 @@ columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
 \dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.}
 
 \item{non_zero_fert_ages}{Numeric vector of unique ages indicating
-the reproductive age range.}
+the reproductive age range. See Section \dQuote{Non-zero fert ages}.}
 
 \item{value_scale}{\emph{Numeric} scalar indicating the value_scale of the
 counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
@@ -37,6 +37,11 @@ An object of class \code{fert_rate_age_f}.
 An attempt will be made to guess \code{non_zero_fert_ages} if not supplied.
 }
 \section{Non-zero fert ages}{
+
+Elements of the \code{value} column corresponding to ages not
+listed in \code{non_zero_fert_ages} will be overwritten with zeros
+(specifically \code{as.double(0)}s).
+
 
 \code{non_zero_fert_ages} must be a subset of \code{ages(x)} and
 equally spaced, with spacing equal to \code{age_span(x)}.

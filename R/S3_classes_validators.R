@@ -298,6 +298,11 @@ validate_ccmpp_object.fert_rate_age_f <- function(x, ...) {
     ## Base checks
     x <- NextMethod()
 
+    ## 'value's all non-negative
+    if (any(x$value < 0))
+        stop(not_a_valid_object_msg("fert_rate_age_f",
+                                    "'value' column has negative elements."))
+
     ## value_type
     val_type <- get_value_types_for_ccmpp_input_classes("fert_rate_age_f")
     if (!identical(value_type(x), val_type))
@@ -335,6 +340,11 @@ validate_ccmpp_object.survival_ratio_age_sex <- function(x, ...) {
     ## Base checks
     x <- NextMethod()
 
+    ## 'value's all between 0 and 1
+    if (any(x$value < 0 | x$value > 1))
+        stop(not_a_valid_object_msg("survial_ratio_age_sex",
+                                    "'value' column has elements < 0 or > 1."))
+
     ## value_type
     val_type <- get_value_types_for_ccmpp_input_classes("survival_ratio_age_sex")
     if (!identical(value_type(x), val_type))
@@ -359,6 +369,11 @@ validate_ccmpp_object.pop_count_age_sex_base <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
+
+    ## 'value's all non-negative
+    if (any(x$value < 0))
+        stop(not_a_valid_object_msg("pop_count_age_sex_base",
+                                    "'value' column has negative elements."))
 
     ## value_type
     val_type <- get_value_types_for_ccmpp_input_classes("pop_count_age_sex_base")
@@ -391,6 +406,11 @@ validate_ccmpp_object.srb <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
+
+    ## 'value's all non-negative
+    if (any(x$value < 0))
+        stop(not_a_valid_object_msg("srb",
+                                    "'value' column has negative elements."))
 
     ## value_type
     val_type <- get_value_types_for_ccmpp_input_classes("srb")
@@ -527,6 +547,11 @@ validate_ccmpp_object.life_table_age_sex <- function(x, ...) {
     ## Base checks
     x <- NextMethod()
 
+    ## 'value's all non-negative
+    if (any(x$value < 0))
+        stop(not_a_valid_object_msg("life_table_age_sex",
+                                    "'value' column has negative elements."))
+
     ## value_type
     val_type <- get_value_types_for_ccmpp_input_classes("life_table_age_sex")
     if (!identical(value_type(x), val_type))
@@ -550,6 +575,11 @@ validate_ccmpp_object.life_table_age_sex <- function(x, ...) {
     if (!all(c("male", "female") %in% sexes(x)))
         stop(not_a_valid_object_msg("life_table_age_sex",
                                     "'x' must have data on both 'male' and 'female'."))
+
+    ## Check survival ratio sub-table
+    check <- survival_ratio_component(x) # will run validation for
+                                         # survival ratio via
+                                         # 'as_survival_ratio_age_sex'
 
     return(x)
 }

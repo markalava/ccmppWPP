@@ -31,3 +31,13 @@ test_that("Value categories enforced", {
     expect_error(life_table_age_sex(x),
                  "'indicator' column must contain all of the following")
 })
+
+
+test_that("Invalid 'value's are caught", {
+    x <- life_table_input_df_indicator_time_age_sex
+    x[1, "value"]  <- -1
+    expect_error(life_table_age_sex(x,
+                                    value_scale = value_scale(
+                                        life_table_input_df_indicator_time_age_sex)),
+                 "'value' column has negative elements")
+    })

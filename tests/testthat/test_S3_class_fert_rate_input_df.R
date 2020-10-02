@@ -37,27 +37,14 @@ test_that("invalid data objects are caught", {
 
     expect_error(fert_rate_age_f(data.matrix(x)),
                  "not a data.frame")
-
-    y <- expand.grid(age_start = 0:5, time_start = 1950:1952,
-                    age_span = 1, time_span = 1,
-                    value = 1)
-    y <- new_fert_rate_age_f(y,
-             age_span = 1,
-             time_span = 1,
-             dimensions = get_req_dimensions_for_ccmpp_input_classes("fert_rate_age_f"),
-             value_type = get_value_types_for_ccmpp_input_classes("fert_rate_age_f"),
-             value_scale = 1,
-             non_zero_fert_ages = 0:5)
-    expect_s3_class(validate_ccmpp_object(y), "fert_rate_age_f")
-    y <- new_fert_rate_age_f(y,
-             age_span = 1,
-             time_span = 1,
-             dimensions = get_req_dimensions_for_ccmpp_input_classes("fert_rate_age_f"),
-             value_type = get_value_types_for_ccmpp_input_classes("fert_rate_age_f"),
-             value_scale = 1,
-             non_zero_fert_ages = 2)
-    expect_error(validate_ccmpp_object(y), "have non-zero 'value' for at least some 'time_start's")
 })
+
+
+test_that("invalid 'value' column values are caught", {
+    x <- fert_rate_input_df_time_age
+    x[1, "value"] <- -1
+    expect_error(fert_rate_age_f(x), "'value' column has negative elements")
+    })
 
 
 test_that("missing columns are caught", {
@@ -191,5 +178,28 @@ test_that("zero fertility rate ages are set to zero (value column)", {
     zero_fert_rows <- !test$age_start %in% non_zero_fert_ages(test)
     expect_identical(as.double(test[zero_fert_rows, "value"]),
                      rep(as.double(0), sum(zero_fert_rows)))
+})
+
+
+test_that("zero fertility rate ages that are non-zero are caught", {
+    y <- expand.grid(age_start = 0:5, time_start = 1950:1952,
+                    age_span = 1, time_span = 1,
+                    value = 1)
+    y <- new_fert_rate_age_f(y,
+             age_span = 1,
+             time_span = 1,
+             dimensions = get_req_dimensions_for_ccmpp_input_classes("fert_rate_age_f"),
+             value_type = get_value_types_for_ccmpp_input_classes("fert_rate_age_f"),
+             value_scale = 1,
+             non_zero_fert_ages = 0:5)
+    expect_s3_class(validate_ccmpp_object(y), "fert_rate_age_f")
+    y <- new_fert_rate_age_f(y,
+             age_span = 1,
+             time_span = 1,
+             dimensions = get_req_dimensions_for_ccmpp_input_classes("fert_rate_age_f"),
+             value_type = get_value_types_for_ccmpp_input_classes("fert_rate_age_f"),
+             value_scale = 1,
+             non_zero_fert_ages = 2)
+    expect_error(validate_ccmpp_object(y), "have non-zero 'value' for at least some 'time_start's")
     })
 

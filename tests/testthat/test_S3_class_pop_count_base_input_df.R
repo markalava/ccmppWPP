@@ -28,3 +28,11 @@ test_that("More than one time period detected", {
     expect_error(validate_ccmpp_object(z),
                  "has more than one unique value")
     })
+
+
+test_that("Invalid 'value's are caught", {
+    x <- pop_count_base_input_df_time_age_sex
+    x[1, "value"]  <- -1
+    expect_error(pop_count_age_sex_base(x),
+                 "'value' column has negative elements")
+    })

@@ -88,17 +88,24 @@ new_fert_rate_age_f <-
 #' Constructor for class \code{fert_rate_age_f}
 #'
 #' \code{fert_rate_age_f} is a subclass of
-#' \code{\link{ccmpp_input_df}}. It imposes three additional conditions:
+#' \code{\link{ccmpp_input_df}}. It imposes four additional conditions:
 #' \enumerate{
-#'   \item{\code{Value_type} attribute equals \dQuote{rate}.}
+#'   \item{The \code{value_type} attribute is \dQuote{rate}.}
+#'   \item{All elements of the \dQuote{value} column must be non-negative.}
 #'   \item{There can be no 'sex' dimension; all fertility rate inputs
 #'   must be female fertility rates.}
-#'   \item{The additional attribute \code{non_zero_fert_ages}
-#'   represents the reproductive age range as a vector of
-#'   \code{age_start} values.}}
-#' An attempt will be made to guess \code{non_zero_fert_ages} if not supplied.
+#'   \item{An additional attribute \code{non_zero_fert_ages}, which
+#'   specifies the reproductive age range as a vector of
+#'   \code{age_start} values (see \dQuote{Details}).}}
 #'
-#' @section Non-zero fert ages:
+#' An attempt will be made to guess \code{non_zero_fert_ages} if they
+#' are not explicitly specified using the \code{non_zero_fert_ages}
+#' argument.
+#'
+#' If \code{non_zero_fert_ages} are specified, they must be a subset
+#' of \code{ages(x)} and be equally spaced with spacing equal to
+#' \code{age_span(x)}.
+#'
 #' Elements of the \code{value} column corresponding to ages not
 #' listed in \code{non_zero_fert_ages} will be overwritten with zeros
 #' (specifically \code{as.double(0)}s).
@@ -108,13 +115,9 @@ new_fert_rate_age_f <-
 #'     \code{\link{ccmpp_input_df}} for the class from which this one
 #'     inherits.
 #'
-#' @section Non-zero fert ages:
-#' \code{non_zero_fert_ages} must be a subset of \code{ages(x)} and
-#' equally spaced, with spacing equal to \code{age_span(x)}.
-#'
 #' @inheritParams demog_change_component_df
 #' @param non_zero_fert_ages Numeric vector of unique ages indicating
-#'     the reproductive age range. See Section \dQuote{Non-zero fert ages}.
+#'     the reproductive age range. See the \dQuote{Details} section.
 #' @return An object of class \code{fert_rate_age_f}.
 #' @author Mark Wheldon
 #' @export

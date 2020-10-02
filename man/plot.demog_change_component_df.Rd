@@ -8,7 +8,8 @@
   x,
   type = c("point", "line", "both"),
   ...,
-  framework = c("ggplot2", "base")
+  framework = c("ggplot2", "base"),
+  plot = TRUE
 )
 }
 \arguments{

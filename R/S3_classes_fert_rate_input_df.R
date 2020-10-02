@@ -1,6 +1,8 @@
 ###-----------------------------------------------------------------------------
 ### * Helpers
 
+get_non_zero_fert_ages_tolerance_digits <- function() return(9)
+
 ## Not for export
 validate_non_zero_fert_ages <- function(x, ages, age_span = NULL) {
     if (is.null(age_span)) age_span <- attr(x, "age_span")
@@ -12,7 +14,8 @@ validate_non_zero_fert_ages <- function(x, ages, age_span = NULL) {
 }
 
 ## Not for export; returns 'FALSE' if fails, rather than an error.
-guess_non_zero_fert_ages <- function(x, digits = 9, age_span = attr(x, "age_span")) {
+guess_non_zero_fert_ages <- function(x, digits = get_non_zero_fert_ages_tolerance_digits(),
+                                     age_span = attr(x, "age_span")) {
     ages <- x$age_start[!(round(x$value, digits = digits) == 0)]
     ages <- try(validate_non_zero_fert_ages(x, ages, age_span = age_span), silent = TRUE)
     if (inherits(ages, "try-error")) return(FALSE)
@@ -253,6 +256,12 @@ non_zero_fert_ages.fert_rate_age_f <- function(x) {
 #' @rdname extract_demog_change_component_attributes
 #' @export
 `non_zero_fert_ages<-.fert_rate_age_f` <- function(x, value, ...) {
+    value <- validate_non_zero_fert_ages(x, value)
+    age_diff <- setdiff(value, non_zero_fert_ages(x))
+    if (length(age_diff))
+        S3_class_warning("The non-zero fertility age range is being expanded beyond the previous range. Ages ",
+                         print_non_zero_fert_ages(age_diff),
+                         " will have fertility rates of zero.")
     fert_rate_age_f(x, non_zero_fert_ages = value)
 }
 

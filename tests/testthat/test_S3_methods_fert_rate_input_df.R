@@ -58,7 +58,8 @@ test_that("printing works if there are no non-zero fertility rate ages", {
 
 test_that("printing works if there are no zero fertility rate ages", {
     y <- fert_rate_input_df_time_age
-    non_zero_fert_ages(y) <- ages(y)
+    expect_warning(non_zero_fert_ages(y) <- ages(y),
+                   "The non-zero fertility age range is being expanded beyond the previous range")
 
     capture.output(x <- print(y), file = OS_null_file_string)
     expect_s3_class(x, "fert_rate_age_f")

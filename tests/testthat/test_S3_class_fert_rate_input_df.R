@@ -37,6 +37,26 @@ test_that("invalid data objects are caught", {
 
     expect_error(fert_rate_age_f(data.matrix(x)),
                  "not a data.frame")
+
+    y <- expand.grid(age_start = 0:5, time_start = 1950:1952,
+                    age_span = 1, time_span = 1,
+                    value = 1)
+    y <- new_fert_rate_age_f(y,
+             age_span = 1,
+             time_span = 1,
+             dimensions = get_req_dimensions_for_ccmpp_input_classes("fert_rate_age_f"),
+             value_type = get_value_types_for_ccmpp_input_classes("fert_rate_age_f"),
+             value_scale = 1,
+             non_zero_fert_ages = 0:5)
+    expect_s3_class(validate_ccmpp_object(y), "fert_rate_age_f")
+    y <- new_fert_rate_age_f(y,
+             age_span = 1,
+             time_span = 1,
+             dimensions = get_req_dimensions_for_ccmpp_input_classes("fert_rate_age_f"),
+             value_type = get_value_types_for_ccmpp_input_classes("fert_rate_age_f"),
+             value_scale = 1,
+             non_zero_fert_ages = 2)
+    expect_error(validate_ccmpp_object(y), "have non-zero 'value' for at least some 'time_start's")
 })
 
 

@@ -4,13 +4,7 @@
 \alias{plot.demog_change_component_df}
 \title{Plot \code{demog_change_component_df} objects}
 \usage{
-\method{plot}{demog_change_component_df}(
-  x,
-  type = c("point", "line", "both"),
-  ...,
-  framework = c("ggplot2", "base"),
-  plot = TRUE
-)
+\method{plot}{demog_change_component_df}(x, type = c("point", "line", "both"), ..., plot = TRUE)
 }
 \arguments{
 \item{x}{An object of class \code{demog_change_component_df}.}
@@ -20,9 +14,6 @@
 \item{...}{When \code{type} is \dQuote{ggplot2} (default) passed on
 to \code{\link[ggplot2]{ggplot}}. Otherwise passed on to \code{\link{plot}}.}
 
-\item{framework}{Plotting framework to use; either \dQuote{ggplot2}
-or \dQuote{base}. Use the former (default) for better results.}
-
 \item{plot}{Should the plot be printed?}
 }
 \value{
@@ -31,7 +22,8 @@ When \code{framework} is \dQuote{ggplot2}, a plot
     the side effect of producing a plot.
 }
 \description{
-This is the S3 method for the generic \code{\link{plot}} function.
+This is the S3 method for the generic \code{\link{plot}}
+function. It requires \pkg{ggplot2}.
 }
 \author{
 Mark Wheldon

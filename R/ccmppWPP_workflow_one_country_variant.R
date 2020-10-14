@@ -310,11 +310,12 @@ ccmppWPP_workflow_one_country_variant <- function(wpp_input) {
                           mig_parameter              = ccmpp_input$mig_parameter,
                           mig_net_count_age_sex_override = mig_net_count_age_sex_override
   )
-  
+
 # inherit attributes from input file
   atr                              <- attributes(wpp_input)
   attr(ccmppWPP_output, "revision") <- atr$revision
   attr(ccmppWPP_output, "locid")   <- atr$locid
+  attr(ccmppWPP_output, "locname")<- Locations$LocName[Locations$LocID == atr$locid]
   attr(ccmppWPP_output, "variant") <- atr$variant
 
   return(ccmppWPP_output)

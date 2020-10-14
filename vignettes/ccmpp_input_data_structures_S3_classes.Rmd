@@ -279,7 +279,7 @@ The class `fert_rate_age_f` gets the additional attribute:
 
 "non_zero_fert_ages"
 
-:  A list of the values of `age_start` marking the reproductive age groups. Functions can take advantage of this attribute to set fertility to zero in all other age groups regardless of the actual values in the `value` column. 
+:  A list of the values of `age_start` marking the reproductive age groups. Elements of the `value` column for ages outside this range are identically zero. 
 
 Table: (\#tab:ccmpp-input-subclass-restrictions) Additional attributes and pre-specified dimensions and values types of subclasses of `ccmpp_input_df`.
 
@@ -378,6 +378,8 @@ fert_rate_input_example_df <-
     fert_rate_age_f(x = wpp_input_example$fert_rate_age_f,
                        non_zero_fert_ages = 15:45)
 ```
+
+Note that when the function `fert_rate_age_f()` is used to create an object of class `fert_rate_age_f` and the argument `non_zero_fert_ages` is passed, `value`s for all other ages will be overwritten with zeros. 
 
 To make a `ccmpp_input_list` that binds together all the inputs needed for a projection, pass all the constituent parts as arguments to the constructor:
 
@@ -484,13 +486,19 @@ Objects of class `ccmpp_input_df` must have a common value for `age_span` and `t
 ccmpp_input_example_df
 ```
 
-The `print` method for objects of class `fert_rate_age_f` attempts to emphasize the "non_zero_fert_ages" attribute: 
+Note that the special formatting is only for vizualization; the actual values for `age_span` and `time_span` are not altered in the data components. 
+
+```{r}
+fert_rate_input_example_df$age_span[1:10]
+```
+
+The `print` method for objects of class `fert_rate_age_f` attempts to emphasize the "non_zero_fert_ages" attribute by printing the string "`[zero]`" in the `value` column for ages outside the reproductive age range: 
 
 ```{r}
 fert_rate_input_example_df
 ```
 
-Note that the special formatting is only for vizualization; the actual values for `age_span`, `time_span` and `value` are not altered in the data components. 
+These zero values are real; when the function `fert_rate_age_f()` is used to create an object of class `fert_rate_age_f` and the argument `non_zero_fert_ages` is passed, `value`s for all other ages will be overwritten with zeros. 
 
 ```{r}
 fert_rate_input_example_df$value[1:10]

@@ -2,6 +2,10 @@
 ## is to ensure that the correct validation method is called according
 ## to the class of the object.
 
+not_a_valid_object_msg <- function(class, ...) {
+    paste0("Not a valid '", class, "' object:\n", ...)
+}
+
 #' Validate objects of class \code{demog_change_component_df}.
 #'
 #' @description
@@ -41,7 +45,8 @@ validate_ccmpp_object.demog_change_component_df <-
     function(x, ...) {
 
         if (!inherits(x, "data.frame"))
-            stop("'x' does not inherit from 'data.frame'.")
+            stop(not_a_valid_object_msg("demog_change_component_df",
+                                        "'x' does not inherit from 'data.frame'."))
 
         ## ATTRIBUTES:
         ## 1. The "dimensions" attribute must be formed correctly.
@@ -53,38 +58,44 @@ validate_ccmpp_object.demog_change_component_df <-
         if (is.na(demog_change_component_dims_x) || !is.character(demog_change_component_dims_x) ||
             length(demog_change_component_dims_x) < 1 ||
             !all(demog_change_component_dims_x %in% get_all_allowed_dimensions()))
-            stop("'dimensions' attribute of 'x' is not valid. 'dimensions' must be in '",
+            stop(not_a_valid_object_msg("demog_change_component_df",
+                                        "'dimensions' attribute of 'x' is not valid. 'dimensions' must be in '",
                  paste(get_all_allowed_dimensions(), collapse = ", "),
-                 "' and cannot be missing or duplicated. See ?demog_change_component_df for class definition.")
+                 "' and cannot be missing or duplicated. See ?demog_change_component_df for class definition."))
 
         req_attr <- get_req_attr_names_for_dimensions(demog_change_component_dims_x)
         if (!all(req_attr %in% names(attributes(x))))
-            stop("'x' must have attributes '",
+            stop(not_a_valid_object_msg("demog_change_component_df",
+                                        "'x' must have attributes '",
                  paste(req_attr, collapse = "', '"),
-                 "'; some are missing.")
+                 "'; some are missing."))
 
         value_type <- attr(x, "value_type")
         if (!identical(length(value_type), 1L) || !is.character(value_type)) {
-            stop("'value_type' must be a single character string.")
+            stop(not_a_valid_object_msg("demog_change_component_df",
+                                        "'value_type' must be a single character string."))
         }
         allowed_value_types <- get_all_allowed_value_types()
         if (!(value_type %in% allowed_value_types))
-            stop("'value_type' must be one of '",
+            stop(not_a_valid_object_msg("demog_change_component_df",
+                                        "'value_type' must be one of '",
                  paste(allowed_value_types, collapse = "', '"),
-                 "'.")
+                 "'."))
 
         value_scale <- attr(x, "value_scale")
         if (!identical(length(value_scale), 1L) ||
             !(is.numeric(value_scale) || is.na(value_scale))
         ) {
-            stop("'value_scale' must be a numeric scalar or 'NA'.")
+            stop(not_a_valid_object_msg("demog_change_component_df",
+                                        "'value_scale' must be a numeric scalar or 'NA'."))
         }
         vt_nonNA_value_scale <- get_value_types_w_non_NA_value_scale()
         if (!is.na(value_scale) && !value_type %in% vt_nonNA_value_scale)
-            stop("'value_type' is '", value_type, "' but 'value_scale' is '",
+            stop(not_a_valid_object_msg("demog_change_component_df",
+                                        "'value_type' is '", value_type, "' but 'value_scale' is '",
                  value_scale, "'. Only value types ",
                  toString(vt_nonNA_value_scale),
-                 " can have non-NA 'value_scale'.")
+                 " can have non-NA 'value_scale'."))
 
         ## VALUE COLUMN
         ## 1. The value column must conform to the stated "value_type"
@@ -101,17 +112,19 @@ validate_ccmpp_object.demog_change_component_df <-
             get_all_req_col_names_for_dimensions(dimensions = demog_change_component_dims_x)
 
         if (!all(req_cols %in% coln_x))
-            stop("'x' must have columns '",
+            stop(not_a_valid_object_msg("demog_change_component_df",
+                                        "'x' must have columns '",
                  paste0(req_cols, collapse = "', '"),
-                 "'; some or all are missing.")
+                 "'; some or all are missing."))
 
         if (!all(coln_x %in% req_cols)) {
                                 # the converse has already been verified so this is a
                                 # test for set equality
             superf_cols <- coln_x[!(coln_x %in% req_cols)]
-            stop("'x' has superfluous columns. The following are not permitted: '",
+            stop(not_a_valid_object_msg("demog_change_component_df",
+                                        "'x' has superfluous columns. The following are not permitted: '",
                     paste0(superf_cols, collapse = "', '"),
-                    "'.")
+                    "'."))
         }
 
         ## COLUMN TYPES:
@@ -126,11 +139,13 @@ validate_ccmpp_object.demog_change_component_df <-
         char_cols <- which(req_cols_out_types == "character")
         for (j in num_cols) {
             if (!is.numeric(x[, req_cols[j]]))
-                stop("'", req_cols[j], "' must be numeric.")
+                stop(not_a_valid_object_msg("demog_change_component_df",
+                                            "'", req_cols[j], "' must be numeric."))
         }
         for (j in char_cols) {
             if (!is.character(x[, req_cols[j]]))
-                stop("'", req_cols[j], "' must be character.")
+                stop(not_a_valid_object_msg("demog_change_component_df",
+                                            "'", req_cols[j], "' must be character."))
         }
 
         ## attr_w_span_names <- get_all_dimensions_w_spans()
@@ -158,9 +173,10 @@ validate_ccmpp_object.demog_change_component_df <-
         if (is_by_sex(x)) {
             allowed_sexes <- get_all_allowed_sexes()
             if (!all(x$sex %in% c("female", "male", "both")))
-                stop("Not all 'x$sex' are in '",
+                stop(not_a_valid_object_msg("demog_change_component_df",
+                                            "Not all 'x$sex' are in '",
                      paste0(allowed_sexes, collapse = "', '"),
-                     "'; values other than these are not supported.")
+                     "'; values other than these are not supported."))
         }
 
         ## CHECK SQUARENESS
@@ -168,7 +184,8 @@ validate_ccmpp_object.demog_change_component_df <-
 
         x_tbl <- tabulate_demog_change_component_df(x)
         if (!identical(as.double(sum(x_tbl != 1)), 0))
-            stop("'x' does not have exactly one 'value' per 'age' * 'sex' * 'time' * 'indicator' combination (see ?demog_change_component_df for class definition).")
+            stop(not_a_valid_object_msg("demog_change_component_df",
+                                        "'x' does not have exactly one 'value' per 'age' * 'sex' * 'time' * 'indicator' combination (see ?demog_change_component_df for class definition)."))
 
     return(x)
 }
@@ -193,9 +210,10 @@ validate_ccmpp_object.ccmpp_input_df <- function(x, ...) {
     req_attr <-
         get_req_attr_names_for_ccmpp_input_dfs_for_dimensions(demog_change_component_dims(x))
     if (!all(req_attr %in% names(attributes(x))))
-        stop("'x' must have attributes '",
+        stop(not_a_valid_object_msg("ccmpp_input_df",
+                                    "'x' must have attributes '",
              paste(req_attr, collapse = "', '"),
-             "'; some are missing.")
+             "'; some are missing."))
 
     ## MUST BE SORTED:
     ## If not sorted, at least by age and sex within time, the
@@ -208,7 +226,8 @@ validate_ccmpp_object.ccmpp_input_df <- function(x, ...) {
         subset_master_df_of_dimensions_colnames_coltypes(dimensions = demog_change_component_dims_x)$colname
     if (!identical(x[, order_cols],
                    sort_demog_change_component_df(x)[, order_cols]))
-        stop("'x' must be sorted by indicator, time, rev(sex), age_start (see ?ccmpp_input_df for class definition).")
+        stop(not_a_valid_object_msg("ccmpp_input_df",
+                                    "'x' must be sorted by indicator, time, rev(sex), age_start (see ?ccmpp_input_df for class definition)."))
 
     ## SPANS:
     ## 1. Span attributes must be of length 1
@@ -235,23 +254,26 @@ validate_ccmpp_object.ccmpp_input_df <- function(x, ...) {
 
         ## Check length of attribute
         if (!identical(length(span_attr), 1L))
-            stop("'", span_name, "' is not of length 1.")
+            stop(not_a_valid_object_msg("ccmpp_input_df",
+                                        "'", span_name, "' is not of length 1."))
 
         ## Diffs of unique values
         start_1st_diff <-
             diff(sort(unique(start_col)), differences = 1)
         if (!identical(as.double(sum(start_1st_diff != span_attr)), 0))
-            stop("Spacings between each 'x$", start_name,
-                 "' do not equal 'attr(x, \"", span_name, "\")'.")
+            stop(not_a_valid_object_msg("ccmpp_input_df",
+                                        "Spacings between each 'x$", start_name,
+                 "' do not equal 'attr(x, \"", span_name, "\")'."))
 
         ## Record span values
         span_values <- c(span_values,
                          c(span_name = span_attr))
     }
     if (!identical(length(unique(span_values)), 1L))
-        stop("Spans must all be equal; instead they are '",
+        stop(not_a_valid_object_msg("ccmpp_input_df",
+                                    "Spans must all be equal; instead they are '",
              paste0(span_values, collapse = "', '"),
-             "'.")
+             "'."))
 
     ## AGE:
     ## 1. Must start at age 0 within indicator * time * sex
@@ -259,7 +281,8 @@ validate_ccmpp_object.ccmpp_input_df <- function(x, ...) {
     if (is_by_age(x)) {
         min_age_start <- get_min_age_in_dims_in_df(x)
         if (!all(min_age_start == 0))
-            stop("'age_start' does not start at '0' for each time * sex combination.")
+            stop(not_a_valid_object_msg("ccmpp_input_df",
+                                        "'age_start' does not start at '0' for each time * sex combination."))
     }
 
     ## -------* Return
@@ -275,15 +298,33 @@ validate_ccmpp_object.fert_rate_age_f <- function(x, ...) {
     ## Base checks
     x <- NextMethod()
 
+    ## 'value's all non-negative
+    if (any(x$value < 0))
+        stop(not_a_valid_object_msg("fert_rate_age_f",
+                                    "'value' column has negative elements."))
+
     ## value_type
     val_type <- get_value_types_for_ccmpp_input_classes("fert_rate_age_f")
     if (!identical(value_type(x), val_type))
-        stop("'value_type' must be \"", val_type, "\".")
+        stop(not_a_valid_object_msg("fert_rate_age_f",
+                                    "'value_type' must be \"", val_type, "\"."))
 
     ## non_zero_fert_ages are valid
     if (is_by_age(x)) {
         nzf_ages <- validate_non_zero_fert_ages(x, non_zero_fert_ages(x))
     }
+
+    ## Make sure zero-fert-rate ages actually have zero values
+    zero_fert_ages_idx <- !x$age_start %in% nzf_ages
+    zero_fert_values <- x[zero_fert_ages_idx, "value"]
+    not_zero_idx <-
+        round(zero_fert_values, get_non_zero_fert_ages_tolerance_digits()) != 0
+    if (sum(not_zero_idx))
+        stop(not_a_valid_object_msg("fert_rate_age_f",
+             print_non_zero_fert_ages(unique(x$age_start[zero_fert_ages_idx][not_zero_idx])),
+             "' have non-zero 'value' for at least some 'time_start's but are not in the reproductive age range '" ,
+             print_non_zero_fert_ages(nzf_ages),
+             "'."))
 
     ## Check dimensions
     check_dimensions_for_ccmpp_input_df(x)
@@ -299,17 +340,24 @@ validate_ccmpp_object.survival_ratio_age_sex <- function(x, ...) {
     ## Base checks
     x <- NextMethod()
 
+    ## 'value's all between 0 and 1
+    if (any(x$value < 0 | x$value > 1))
+        stop(not_a_valid_object_msg("survial_ratio_age_sex",
+                                    "'value' column has elements < 0 or > 1."))
+
     ## value_type
     val_type <- get_value_types_for_ccmpp_input_classes("survival_ratio_age_sex")
     if (!identical(value_type(x), val_type))
-        stop("'value_type' must be \"", val_type, "\".")
+        stop(not_a_valid_object_msg("survival_ratio_age_sex",
+                                    "'value_type' must be \"", val_type, "\"."))
 
     ## Check dimensions
     check_dimensions_for_ccmpp_input_df(x)
 
     ## Must have 'male' and 'female'
     if (!all(c("male", "female") %in% sexes(x)))
-        stop("'x' must have data on both 'male' and 'female'.")
+        stop(not_a_valid_object_msg("survival_ratio_age_sex",
+                                    "'x' must have data on both 'male' and 'female'."))
 
     return(x)
 }
@@ -322,10 +370,16 @@ validate_ccmpp_object.pop_count_age_sex_base <- function(x, ...) {
     ## Base checks
     x <- NextMethod()
 
+    ## 'value's all non-negative
+    if (any(x$value < 0))
+        stop(not_a_valid_object_msg("pop_count_age_sex_base",
+                                    "'value' column has negative elements."))
+
     ## value_type
     val_type <- get_value_types_for_ccmpp_input_classes("pop_count_age_sex_base")
     if (!identical(value_type(x), val_type))
-        stop("'value_type' must be \"", val_type, "\".")
+        stop(not_a_valid_object_msg("pop_count_age_sex_base",
+                                    "'value_type' must be \"", val_type, "\"."))
 
     ## Check dimensions
     check_dimensions_for_ccmpp_input_df(x)
@@ -333,12 +387,14 @@ validate_ccmpp_object.pop_count_age_sex_base <- function(x, ...) {
     ## no time dimension
     if (is_by_time(x)) {
     if (!identical(length(unique(x$time_start)), 1L))
-        stop("'x$time_start' has more than one unique value; 'pop_count_age_sex_base' objects can only refer to a single time period.")
+        stop(not_a_valid_object_msg("pop_count_age_sex_base",
+                                    "'x$time_start' has more than one unique value; 'pop_count_age_sex_base' objects can only refer to a single time period."))
     }
 
     ## Must have 'male' and 'female'
     if (!all(c("male", "female") %in% sexes(x)))
-        stop("'x' must have data on both 'male' and 'female'.")
+        stop(not_a_valid_object_msg("pop_count_age_sex_base",
+                                    "'x' must have data on both 'male' and 'female'."))
 
     return(x)
 }
@@ -351,10 +407,16 @@ validate_ccmpp_object.srb <- function(x, ...) {
     ## Base checks
     x <- NextMethod()
 
+    ## 'value's all non-negative
+    if (any(x$value < 0))
+        stop(not_a_valid_object_msg("srb",
+                                    "'value' column has negative elements."))
+
     ## value_type
     val_type <- get_value_types_for_ccmpp_input_classes("srb")
     if (!identical(value_type(x), val_type))
-        stop("'value_type' must be \"", val_type, "\".")
+        stop(not_a_valid_object_msg("srb",
+                                    "'value_type' must be \"", val_type, "\"."))
 
     ## Check dimensions
     check_dimensions_for_ccmpp_input_df(x)
@@ -373,14 +435,16 @@ validate_ccmpp_object.mig_net_rate_age_sex <- function(x, ...) {
     ## value_type
     val_type <- get_value_types_for_ccmpp_input_classes("mig_net_rate_age_sex")
     if (!identical(value_type(x), val_type))
-        stop("'value_type' must be \"", val_type, "\".")
+        stop(not_a_valid_object_msg("mig_net_rate_age_sex",
+                                    "'value_type' must be \"", val_type, "\"."))
 
      ## Check dimensions
     check_dimensions_for_ccmpp_input_df(x)
 
     ## Must have 'male' and 'female'
     if (!all(c("male", "female") %in% sexes(x)))
-        stop("'x' must have data on both 'male' and 'female'.")
+        stop(not_a_valid_object_msg("mig_net_rate_age_sex",
+                                    "'x' must have data on both 'male' and 'female'."))
 
     return(x)
 }
@@ -396,14 +460,16 @@ validate_ccmpp_object.mig_net_count_age_sex <- function(x, ...) {
     ## value_type
     val_type <- get_value_types_for_ccmpp_input_classes("mig_net_count_age_sex")
     if (!identical(value_type(x), val_type))
-        stop("'value_type' must be \"", val_type, "\".")
+        stop(not_a_valid_object_msg("mig_net_count_age_sex",
+                                    "'value_type' must be \"", val_type, "\"."))
 
      ## Check dimensions
     check_dimensions_for_ccmpp_input_df(x)
 
     ## Must have 'male' and 'female'
     if (!all(c("male", "female") %in% sexes(x)))
-        stop("'x' must have data on both 'male' and 'female'.")
+        stop(not_a_valid_object_msg("mig_net_count_age_sex",
+                                    "'x' must have data on both 'male' and 'female'."))
 
     return(x)
 }
@@ -419,7 +485,8 @@ validate_ccmpp_object.mig_net_count_tot_b <- function(x, ...) {
     ## value_type
     val_type <- get_value_types_for_ccmpp_input_classes("mig_net_count_tot_b")
     if (!identical(value_type(x), val_type))
-        stop("'value_type' must be \"", val_type, "\".")
+        stop(not_a_valid_object_msg("mig_net_count_tot_b",
+                                    "'value_type' must be \"", val_type, "\"."))
 
      ## Check dimensions
     check_dimensions_for_ccmpp_input_df(x)
@@ -427,7 +494,8 @@ validate_ccmpp_object.mig_net_count_tot_b <- function(x, ...) {
     ## Check 'sex'
     if (is_by_sex(x)) {
         if (!identical("both", sexes(x)))
-            stop("'x' must have data only on 'both' sexes.")
+            stop(not_a_valid_object_msg("mig_net_count_tot_b",
+                                        "'x' must have data only on 'both' sexes."))
     }
 
     return(x)
@@ -444,26 +512,29 @@ validate_ccmpp_object.mig_parameter <- function(x, ...) {
     ## value_type
     val_type <- get_value_types_for_ccmpp_input_classes("mig_parameter")
     if (!identical(value_type(x), val_type))
-        stop("'value_type' must be \"", val_type, "\".")
+        stop(not_a_valid_object_msg("mig_parameter",
+                                    "'value_type' must be \"", val_type, "\"."))
 
      ## Check dimensions
     check_dimensions_for_ccmpp_input_df(x)
 
     ## Allowed indicator and value categories
     if (!all(get_required_indicator_categories_mig_parameter() %in% unique(indicators(x))))
-        stop("The 'indicator' column must contain all of the following (and no more): '",
+        stop(not_a_valid_object_msg("mig_parameter",
+                                    "The 'indicator' column must contain all of the following (and no more): '",
              paste(get_required_indicator_categories_mig_parameter(),
                    collapse = ", "),
              "'. 'x' has '",
              toString(unique(x$indicator), 240),
-             "'.")
+             "'."))
     if (!all(values(x) %in% get_allowed_value_categories_mig_parameter()))
-        stop("The only values allowed in the 'value' column are: '",
+        stop(not_a_valid_object_msg("mig_parameter",
+                                    "The only values allowed in the 'value' column are: '",
              paste(get_allowed_value_categories_mig_parameter(),
                    collapse = ", "),
              "'. 'x' has '",
              toString(unique(x$value), 240),
-             "'.")
+             "'."))
 
     return(x)
 }
@@ -476,26 +547,39 @@ validate_ccmpp_object.life_table_age_sex <- function(x, ...) {
     ## Base checks
     x <- NextMethod()
 
+    ## 'value's all non-negative
+    if (any(x$value < 0))
+        stop(not_a_valid_object_msg("life_table_age_sex",
+                                    "'value' column has negative elements."))
+
     ## value_type
     val_type <- get_value_types_for_ccmpp_input_classes("life_table_age_sex")
     if (!identical(value_type(x), val_type))
-        stop("'value_type' must be \"", val_type, "\".")
+        stop(not_a_valid_object_msg("life_table_age_sex",
+                                    "'value_type' must be \"", val_type, "\"."))
 
      ## Check dimensions
     check_dimensions_for_ccmpp_input_df(x)
 
     ## Allowed indicator and value categories
     if (!all(get_required_indicator_categories_life_table() %in% unique(indicators(x))))
-        stop("The 'indicator' column must contain all of the following (and no more): '",
+        stop(not_a_valid_object_msg("life_table_age_sex",
+                                    "The 'indicator' column must contain all of the following (and no more): '",
              paste(get_required_indicator_categories_life_table(),
                    collapse = ", "),
              "'. 'x' has '",
              toString(unique(x$indicator), 240),
-             "'.")
+             "'."))
 
     ## Must have 'male' and 'female'
     if (!all(c("male", "female") %in% sexes(x)))
-        stop("'x' must have data on both 'male' and 'female'.")
+        stop(not_a_valid_object_msg("life_table_age_sex",
+                                    "'x' must have data on both 'male' and 'female'."))
+
+    ## Check survival ratio sub-table
+    check <- survival_ratio_component(x) # will run validation for
+                                         # survival ratio via
+                                         # 'as_survival_ratio_age_sex'
 
     return(x)
 }
@@ -510,22 +594,24 @@ validate_ccmpp_object.ccmpp_input_list <- function(x, ...) {
 
     if (!identical(sort(names(x)),
                    sort(req_el_names)))
-        stop("'x' must have these elements (no more):\n\t'",
+        stop(not_a_valid_object_msg("ccmpp_input_list",
+                                    "'x' must have these elements (no more):\n\t'",
              paste(req_el_names,
                    collapse = "', '"),
              ".\n",
              "Actual names are:\n\t'",
              paste(names(x), collapse = "', '"),
-             "'.")
+             "'."))
 
     x_classes <-
         unname(sapply(x, function(z) oldClass(z)[1], USE.NAMES = FALSE))
     if (!identical(sort(x_classes), sort(req_el_classes)))
-        stop("Elements of 'x' must have the following classes:\n\t'",
+        stop(not_a_valid_object_msg("ccmpp_input_list",
+                                    "Elements of 'x' must have the following classes:\n\t'",
              paste(req_el_classes, collapse = "', '"),
              ".\n",
              "Actual classes are:\n\t'",
-             paste(x_classes, collapse = "', '"), "'.")
+             paste(x_classes, collapse = "', '"), "'."))
 
     ## Check elements
     age_span_attrs <- c()
@@ -539,7 +625,8 @@ validate_ccmpp_object.ccmpp_input_list <- function(x, ...) {
         ## Validate objects
         test <- tryCatch(validate_ccmpp_object(x[[df_nm]]))
         if (identical(class(test), "try-error"))
-            stop(df_nm, ":\n", strsplit(c(test), " : ")[[1]][2])
+            stop(not_a_valid_object_msg("ccmpp_input_list",
+                                        df_nm, ":\n", strsplit(c(test), " : ")[[1]][2]))
 
         ## Store 'spans' time and age levels, and value_scales
         if (is_by_age(x[[df_nm]])) {
@@ -563,29 +650,33 @@ validate_ccmpp_object.ccmpp_input_list <- function(x, ...) {
     value_scale_attrs_not_lt <- value_scale_attrs[!grepl("life_table", names(value_scale_attrs))]
     if (!identical(1L, length(unique(value_scale_attrs_not_lt)))) {
         print(value_scale_attrs_not_lt)
-        stop("All 'value_scales' must be equal among elements of 'x' (except the life table element). Actual 'value_scale's are printed above.")
+        stop(not_a_valid_object_msg("ccmpp_input_list",
+                                    "All 'value_scales' must be equal among elements of 'x' (except the life table element). Actual 'value_scale's are printed above."))
     }
     if (!identical(as.double(1e+05),
                    as.double(value_scale_attrs[grepl("life_table", names(value_scale_attrs))])))
-        stop("The life table element must have value_scale ",
+        stop(not_a_valid_object_msg("ccmpp_input_list",
+                                    "The life table element must have value_scale ",
              1e+05,
              "; actual value_scale is '",
              value_scale_attrs[grepl("life_table", names(value_scale_attrs))],
-             "'.")
+             "'."))
 
     ## Check age and time spans are identical and scalar
     if (!identical(length(unique(age_span_attrs)), 1L)) {
         print(age_spans_df)
-        stop("All 'age_span's must be equal among elements of 'x'. Actual 'age_span's are printed above.")
+        stop(not_a_valid_object_msg("ccmpp_input_list",
+                                    "All 'age_span's must be equal among elements of 'x'. Actual 'age_span's are printed above."))
     }
     if (!identical(length(unique(time_span_attrs)), 1L)) {
         print(time_spans_df)
-        stop("All 'time_span's must be equal among elements of 'x'. Actual 'time_span's are printed above.")
+        stop(not_a_valid_object_msg("ccmpp_input_list","All 'time_span's must be equal among elements of 'x'. Actual 'time_span's are printed above."))
     }
     if (!identical(time_span_attrs[1], age_span_attrs[1])) {
         print(time_spans_df)
         print(age_spans_df)
-        stop("'time_span' must equal 'age_span'. Actual 'time_span' and 'age_span' are printed above.")
+        stop(not_a_valid_object_msg("ccmpp_input_list",
+                                    "'time_span' must equal 'age_span'. Actual 'time_span' and 'age_span' are printed above."))
     }
 
     ## Check that all have the same ages
@@ -593,11 +684,13 @@ validate_ccmpp_object.ccmpp_input_list <- function(x, ...) {
     common_length <- unique(age_lengths)
     if (!identical(length(common_length), 1L)) {
         print(age_lengths)
-        stop("All elements that have an \"age\" dimension must have the same number of age groups. Actual number of ages by element are printed above.")
+        stop(not_a_valid_object_msg("ccmpp_input_list",
+                                    "All elements that have an \"age\" dimension must have the same number of age groups. Actual number of ages by element are printed above."))
     }
     if (!all(sapply(age_levels[-1], function(z) identical(z, age_levels[[1]])))) {
         print(age_levels)
-        stop("All elements that have an \"age\" dimension must have the same age groups ('age_start'). Actual age groups by element are printed above.")
+        stop(not_a_valid_object_msg("ccmpp_input_list",
+                                    "All elements that have an \"age\" dimension must have the same age groups ('age_start'). Actual age groups by element are printed above."))
     }
 
     ## Check that all have the same times
@@ -608,12 +701,27 @@ validate_ccmpp_object.ccmpp_input_list <- function(x, ...) {
     common_length <- unique(time_lengths)
     if (!identical(length(common_length), 1L)) {
         ptl <- print(time_lengths)
-        stop("All elements except \"pop_count_age_sex_base\" that have a \"time\" dimension must have the same number of unique times. Actual number of unique times by element are printed above.", ptl)
+        stop(not_a_valid_object_msg("ccmpp_input_list",
+                                    "All elements except \"pop_count_age_sex_base\" that have a \"time\" dimension must have the same number of unique times. Actual number of unique times by element are printed above.", ptl))
     }
     if (!all(sapply(time_levels_not_pop_count_base[-1],
                     function(z) identical(z, time_levels_not_pop_count_base[[1]])))) {
         print(time_levels_not_pop_count_base)
-        stop("All elements except \"pop_count_age_sex_base\" that have a \"time\" dimension must have the same unique times ('time_start'). Actual unique times by element are printed above.")
+        stop(not_a_valid_object_msg("ccmpp_input_list",
+                                    "All elements except \"pop_count_age_sex_base\" that have a \"time\" dimension must have the same unique times ('time_start'). Actual unique times by element are printed above."))
     }
+
+    ## Check that mig_count_age_sex and mig_count_tot_b are consistent with each other
+    mig_tot_agg <- aggregate(x$mig_net_count_age_sex, by = "time")
+    mig_check <- base::merge(x$mig_net_count_tot_b,
+                             mig_tot_agg,
+                             by = "time_start",
+                             all = FALSE)
+    all_eq <- all.equal(mig_check$value.x, mig_check$value.y, tolerance = 1)
+    if (!isTRUE(all_eq))
+        warning("'mig_net_count_tot_b' is not consistent with totals calculated from 'mig_net_count_tot_b':\n",
+                paste(all_eq, collapse = "\n"))
+
+    ## FINISH
     return(x)
 }

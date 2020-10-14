@@ -1,6 +1,8 @@
 ###-----------------------------------------------------------------------------
 ### * Helpers
 
+get_non_zero_fert_ages_tolerance_digits <- function() return(9)
+
 ## Not for export
 validate_non_zero_fert_ages <- function(x, ages, age_span = NULL) {
     if (is.null(age_span)) age_span <- attr(x, "age_span")
@@ -12,7 +14,8 @@ validate_non_zero_fert_ages <- function(x, ages, age_span = NULL) {
 }
 
 ## Not for export; returns 'FALSE' if fails, rather than an error.
-guess_non_zero_fert_ages <- function(x, digits = 9, age_span = attr(x, "age_span")) {
+guess_non_zero_fert_ages <- function(x, digits = get_non_zero_fert_ages_tolerance_digits(),
+                                     age_span = attr(x, "age_span")) {
     ages <- x$age_start[!(round(x$value, digits = digits) == 0)]
     ages <- try(validate_non_zero_fert_ages(x, ages, age_span = age_span), silent = TRUE)
     if (inherits(ages, "try-error")) return(FALSE)
@@ -33,6 +36,15 @@ print_non_zero_fert_ages <- function(nzfa, width = 30) {
           substr(nzfa_paste, nchar(nzfa_paste) - avail_width_hlf_len + 1,
                  nchar(nzfa_paste))))
 }
+
+## Not for export; overwrite elements of 'value' column with exact zeros.
+set_zero_fert_ages_to_zero <- function(x, non_zero_fert_ages) {
+    zero_fert_ages_idx <- !(x$age_start %in% non_zero_fert_ages)
+    if (sum(zero_fert_ages_idx) > 0)
+        x[zero_fert_ages_idx,]$value <- as.double(0)
+    return(x)
+    }
+
 
 ###-----------------------------------------------------------------------------
 ### * Constructors, etc.
@@ -76,28 +88,36 @@ new_fert_rate_age_f <-
 #' Constructor for class \code{fert_rate_age_f}
 #'
 #' \code{fert_rate_age_f} is a subclass of
-#' \code{\link{ccmpp_input_df}}. It imposes three additional conditions:
+#' \code{\link{ccmpp_input_df}}. It imposes four additional conditions:
 #' \enumerate{
-#'   \item{\code{Value_type} attribute equals \dQuote{rate}.}
+#'   \item{The \code{value_type} attribute is \dQuote{rate}.}
+#'   \item{All elements of the \dQuote{value} column must be non-negative.}
 #'   \item{There can be no 'sex' dimension; all fertility rate inputs
 #'   must be female fertility rates.}
-#'   \item{The additional attribute \code{non_zero_fert_ages}
-#'   represents the reproductive age range as a vector of
-#'   \code{age_start} values.}}
-#' An attempt will be made to guess \code{non_zero_fert_ages} if not supplied.
+#'   \item{An additional attribute \code{non_zero_fert_ages}, which
+#'   specifies the reproductive age range as a vector of
+#'   \code{age_start} values (see \dQuote{Details}).}}
+#'
+#' An attempt will be made to guess \code{non_zero_fert_ages} if they
+#' are not explicitly specified using the \code{non_zero_fert_ages}
+#' argument.
+#'
+#' If \code{non_zero_fert_ages} are specified, they must be a subset
+#' of \code{ages(x)} and be equally spaced with spacing equal to
+#' \code{age_span(x)}.
+#'
+#' Elements of the \code{value} column corresponding to ages not
+#' listed in \code{non_zero_fert_ages} will be overwritten with zeros
+#' (specifically \code{as.double(0)}s).
 #'
 #' @family ccmpp_input_objects
 #' @seealso \code{\link{validate_ccmpp_object}} for object validation,
 #'     \code{\link{ccmpp_input_df}} for the class from which this one
 #'     inherits.
 #'
-#' @section Non-zero fert ages:
-#' \code{non_zero_fert_ages} must be a subset of \code{ages(x)} and
-#' equally spaced, with spacing equal to \code{age_span(x)}.
-#'
 #' @inheritParams demog_change_component_df
 #' @param non_zero_fert_ages Numeric vector of unique ages indicating
-#'     the reproductive age range.
+#'     the reproductive age range. See the \dQuote{Details} section.
 #' @return An object of class \code{fert_rate_age_f}.
 #' @author Mark Wheldon
 #' @export
@@ -123,6 +143,9 @@ fert_rate_age_f <-
             S3_class_message("'non_zero_fert_ages' set to '",
                     print_non_zero_fert_ages(non_zero_fert_ages, width = 30))
         }
+
+        li$df <- set_zero_fert_ages_to_zero(li$df, non_zero_fert_ages)
+
 
         ## Create/Validate
         validate_ccmpp_object(
@@ -236,5 +259,48 @@ non_zero_fert_ages.fert_rate_age_f <- function(x) {
 #' @rdname extract_demog_change_component_attributes
 #' @export
 `non_zero_fert_ages<-.fert_rate_age_f` <- function(x, value, ...) {
+    value <- validate_non_zero_fert_ages(x, value)
+    age_diff <- setdiff(value, non_zero_fert_ages(x))
+    if (length(age_diff))
+        S3_class_warning("The non-zero fertility age range is being expanded beyond the previous range. Ages ",
+                         print_non_zero_fert_ages(age_diff),
+                         " will have fertility rates of zero.")
     fert_rate_age_f(x, non_zero_fert_ages = value)
-    }
+}
+
+###-----------------------------------------------------------------------------
+### * Transformations
+
+#' Calculate total fertility rates
+#'
+#' This generic function returns total fertility rates from an object
+#' with information on fertility.
+#'
+#' \code{tfr} is an alias for this function.
+#'
+#' @param x An object with information on fertility; typically
+#'     inheriting from \code{\link{fert_rate_age_f}} or
+#'     \code{\link{ccmpp_input_list}}.
+#' @param ... Passed to specific methods
+#' @return An object of class \code{\link{demog_change_component_df}}
+#' @author Mark Wheldon
+#' @name fert_rate_tot_f
+#' @export
+fert_rate_tot_f <- function(x, ...) {
+    UseMethod("fert_rate_tot_f")
+}
+
+#' @rdname fert_rate_tot_f
+#' @export
+tfr <- fert_rate_tot_f
+
+#' @rdname fert_rate_tot_f
+#' @export
+fert_rate_tot_f.fert_rate_age_f <- function(x) {
+    wtd_value <-
+        data.frame(value = x$age_start %in% non_zero_fert_ages(x) *
+                       x$value * x$age_span)
+    out <- aggregate(wtd_value, by = list(time_start = x$time_start),
+                     FUN = "sum")
+    return(demog_change_component_df(out))
+}

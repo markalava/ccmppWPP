@@ -31,3 +31,12 @@ test_that("Required dimensions enforced", {
                                             -c(time_span, time_start))),
                  "must have columns")
 })
+
+
+test_that("Invalid 'value's are caught", {
+    x <- survival_ratio_input_df_time_age_sex
+    x[1, "value"]  <- -1
+    expect_error(survival_ratio_age_sex(x),
+                 "'value_type' is 'proportion' but values")
+    })
+

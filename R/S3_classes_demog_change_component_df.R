@@ -136,17 +136,19 @@ prepare_df_for_demog_change_component_df <- function(x,
     num_cols <- intersect(req_cols[req_cols_types == "numeric"],
                           coln_x)
     for (j in num_cols) {
-        if (!is.numeric(x[, j])) {
-            if (is.factor(x[, j]))
-                x[, j] <- as.numeric(levels(x[, j])[x[, j]])
+        if (!is.double(x[, j])) {
+            if (is.numeric(x[, j]))
+                x[, j] <- as.double(x[, j])
+            else if (is.factor(x[, j]))
+                x[, j] <- as.double(levels(x[, j])[x[, j]])
             else if (is.character(x[, j]))
-                x[, j] <- as.numeric(x[, j])
+                x[, j] <- as.double(x[, j])
             else
-                stop("Cannot coerce column '", j, "' to 'numeric'.")
+                stop("Cannot coerce column '", j, "' to 'double'.")
         }
-        if (!identical(length(as.numeric(na.omit(x[, j]))),
+        if (!identical(length(as.double(as.numeric(na.omit(x[, j])))),
                        nrow(x)))
-            stop("Coercing column '", j, "' to 'numeric' resulted in 'NA's.")
+            stop("Coercing column '", j, "' to 'double' resulted in 'NA's.")
     }
 
     ## -------* Set-up _span columns

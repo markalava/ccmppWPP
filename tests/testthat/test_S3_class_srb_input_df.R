@@ -26,8 +26,6 @@ test_that("age columns removed", {
 })
 
 
-
-
 test_that("attribute replacement functions work", {
 
     expect_error(value_scale(srb_time) <- 10,
@@ -36,3 +34,11 @@ test_that("attribute replacement functions work", {
     expect_error(value_type(srb_time) <- "real",
                  "'value_type' of 'x' cannot be changed")
 })
+
+
+test_that("Invalid 'value's are caught", {
+    x <- srb_time
+    x[1, "value"]  <- -1
+    expect_error(srb(x),
+                 "'value' column has negative elements")
+    })

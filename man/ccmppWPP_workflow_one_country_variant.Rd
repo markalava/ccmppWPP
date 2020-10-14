@@ -18,9 +18,8 @@ This function takes the wpp input list of objects for a given country and varian
 and walks through the entire ccmppWPP workflow to produce all of the outputs published in the WPP.
 }
 \details{
-This function will accept any width of age group and projection horizon as long as those are equal
-e.g., use z=1 for a 1x1 projection of population by single year of age and 1 year projection horizon
-or use z=5 for a 5x5 projection of population by 5-year age groups and 5-year projection horizon
+This function calls all of the various functions required to complete the WPP workflow.  It currently
+works only for a 1x1 population projection and returns outputs summarised by 1-year and 5-year age groups.
 }
 \author{
 Sara Hertog

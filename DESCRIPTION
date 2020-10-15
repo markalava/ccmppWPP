@@ -18,5 +18,18 @@ License: What license it uses
 Encoding: UTF-8
 LazyData: true
 Suggests: 
-    testthat
-RoxygenNote: 7.0.2
+    testthat,
+    ggplot2,
+    knitr,
+    rmarkdown,
+    DiagrammeR
+RoxygenNote: 7.1.1
+LinkingTo: 
+    Rcpp
+Imports: 
+    Rcpp,
+    stringr,
+    DemoTools
+Depends: 
+    R (>= 2.10)
+VignetteBuilder: knitr

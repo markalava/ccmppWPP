@@ -13,6 +13,8 @@
 
 # Output files from R CMD build
 /*.tar.gz
+src-i386/*
+src-x64/*
 
 # Output files from R CMD check
 /*.Rcheck/
@@ -29,8 +31,10 @@ vignettes/*.log
 vignettes/*.run.xml
 vignettes/*.tex
 vignettes/auto/*
+vignettes/*.md
 
 # produced vignettes
+vignettes/*.docx
 vignettes/*.html
 vignettes/*.pdf
 
@@ -50,3 +54,6 @@ vignettes/*.pdf
 
 # pkgdown site
 docs/
+
+# Local files
+_no_install/

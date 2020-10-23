@@ -56,21 +56,21 @@
 
 \method{subset_sex}{ccmpp_input_df}(x, sexes, drop = FALSE)
 
-subset_time(x, times, ...)
+subset_time(x, times, include = TRUE, ...)
 
-\method{subset_time}{demog_change_component_df}(x, times, drop = FALSE)
+\method{subset_time}{demog_change_component_df}(x, times, include = TRUE, drop = FALSE)
 
-subset_age(x, ages, ...)
+subset_age(x, ages, include = TRUE, ...)
 
-\method{subset_age}{demog_change_component_df}(x, ages, drop = FALSE)
+\method{subset_age}{demog_change_component_df}(x, ages, include = TRUE, drop = FALSE)
 
-subset_sex(x, sexes, ...)
+subset_sex(x, sexes, include = TRUE, ...)
 
-\method{subset_sex}{demog_change_component_df}(x, sexes = get_all_allowed_sexes(), drop = FALSE)
+\method{subset_sex}{demog_change_component_df}(x, sexes = get_all_allowed_sexes(), include = TRUE, drop = FALSE)
 
-subset_indicator(x, indicators, ...)
+subset_indicator(x, indicators, include = TRUE, ...)
 
-\method{subset_indicator}{demog_change_component_df}(x, indicators, drop = FALSE)
+\method{subset_indicator}{demog_change_component_df}(x, indicators, include = TRUE, drop = FALSE)
 
 \method{subset_time}{fert_rate_age_f}(x, times, drop = FALSE)
 
@@ -125,11 +125,16 @@ subset_indicator(x, indicators, ...)
 \arguments{
 \item{x}{An object to subset.}
 
-\item{indicators, times, ages, sexs}{Vectors indicating the levels of
-time, age, or sex to retain.}
+\item{indicators, times, ages, sexes}{Vectors indicating the levels of
+time, age, or sex to retain (\code{include = TRUE}) or exclude
+(\code{include = FALSE}).}
 
 \item{drop}{Logical; should demographic change component dimensions
 with only one level be dropped?}
+
+\item{include}{Logical; should the rows corresponding to the values
+supplied in the previous argument be those that are kept or
+discarded?}
 }
 \value{
 The object after subsetting if a valid member of the class;
@@ -141,13 +146,17 @@ These functions subset objects inheriting from
 indicator, age, time, or sex, and retain the class if valid (see
 \dQuote{Details}). Subsetting such that only one level of the
 subset dimension is retained will drop the dimension if \code{drop
-= TRUE}, otherwise it is retained (default).
-}
-\details{
-If the object returned after subsetting is a valid member of the
-original class it will be returned (valid according to
+= TRUE}, otherwise it is retained (default). If the object returned
+after subsetting is a valid member of the original class it will be
+returned (valid according to
 \code{\link{validate_ccmpp_object}}). If it is not valid an error
 will be signalled and nothing is returned.
+}
+\details{
+For \code{subset_times} and \code{subset_ages} rows can be excluded
+by supplying negative \code{times} or \code{ages}. In
+that case, all values must be negative and \code{include} must be
+\code{TRUE} (the default). Violations will result in an error.
 }
 \section{Note}{
 

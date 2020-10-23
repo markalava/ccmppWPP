@@ -10,13 +10,14 @@ lt_long(life_table_df)
 \item{life_table_df}{data frame. life table output by the lt_abridged or lt_single_mx functions of DemoTools.}
 }
 \value{
-a long data frame with columns "indicator" containing the life table column label, "age", and "value"
+a long data frame with columns "indicator" containing the life table column label, "age_start" and 
+"age_span", and "value"
 containing the numeric value associated with the life table indicator
 }
 \description{
 This function reshapes the wide life table data frame returned by the DemoTools functions 
-lt_abridged() or lt_single_mx() and retuns a long data frame with the "indicator", "age", "value" columns
-used for WPP.
+lt_abridged() or lt_single_mx() and retuns a long data frame with the "indicator", "age_start", "age_span", 
+and value" columns used for WPP.
 }
 \details{
 #' Take life tables output from lt functions in DemoTools and reshape to long data frame

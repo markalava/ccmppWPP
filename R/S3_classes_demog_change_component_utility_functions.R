@@ -8,12 +8,16 @@
 #' indicator, age, time, or sex, and retain the class if valid (see
 #' \dQuote{Details}). Subsetting such that only one level of the
 #' subset dimension is retained will drop the dimension if \code{drop
-#' = TRUE}, otherwise it is retained (default).
-#'
-#' If the object returned after subsetting is a valid member of the
-#' original class it will be returned (valid according to
+#' = TRUE}, otherwise it is retained (default). If the object returned
+#' after subsetting is a valid member of the original class it will be
+#' returned (valid according to
 #' \code{\link{validate_ccmpp_object}}). If it is not valid an error
 #' will be signalled and nothing is returned.
+#'
+#' For \code{subset_times} and \code{subset_ages} rows can be excluded
+#' by supplying negative \code{times} or \code{ages}. In
+#' that case, all values must be negative and \code{include} must be
+#' \code{TRUE} (the default). Violations will result in an error.
 #'
 #' @section Note:
 #' These functions are not particularly efficient. For repeated
@@ -22,8 +26,12 @@
 #' result as a classed object at the end if desired.
 #'
 #' @param x An object to subset.
-#' @param indicators,times,ages,sexs Vectors indicating the levels of
-#'     time, age, or sex to retain.
+#' @param indicators,times,ages,sexes Vectors indicating the levels of
+#'     time, age, or sex to retain (\code{include = TRUE}) or exclude
+#'     (\code{include = FALSE}).
+#' @param include Logical; should the rows corresponding to the values
+#'     supplied in the previous argument be those that are kept or
+#'     discarded?
 #' @param drop Logical; should demographic change component dimensions
 #'     with only one level be dropped?
 #' @return The object after subsetting if a valid member of the class;
@@ -35,22 +43,39 @@ NULL
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_time <- function(x, times, ...) {
+subset_time <- function(x, times, include = TRUE, ...) {
     UseMethod("subset_time")
 }
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_time.demog_change_component_df <- function(x, times, drop = FALSE) {
+subset_time.demog_change_component_df <- function(x, times, include = TRUE, drop = FALSE) {
     stopifnot(is_by_time(x))
     stopifnot(is.finite(as.numeric(times)))
 
-    value_type_x <- value_type(x)
+    if (!identical(abs(sum(sign(times))) + sum(times == 0), as.double(length(times))))
+        stop("Either supply all positive or all negative values for 'times'.")
+    if (any(times < 0)) {
+        if (!include)
+            stop("Negative 'times' can only be used with 'include = TRUE'.")
+        else {
+            include <- FALSE
+            times  <- -times
+        }
+    }
 
+    value_type_x <- value_type(x)
     time_col_name <- get_df_col_names_for_dimensions(dimensions = "time", spans = FALSE)
-    time_x <- x[[time_col_name]] %in% times
-    if (identical(sum(time_x), 0L))
-        stop("'x' does not have any entries with 'time' %in% '", times, "'.")
+
+    if (include) {
+        time_x <- x[[time_col_name]] %in% times
+        if (identical(sum(time_x), 0L))
+            stop("'x' does not have any entries with 'time' %in% '", times, "'. ")
+    } else {
+        time_x <- !x[[time_col_name]] %in% times
+        if (identical(sum(time_x), 0L))
+            stop("'x' does not have any entries; you have excluded all rows.")
+    }
 
     x <- x[time_x, ]
     if (identical(length(times), 1L) && drop) {
@@ -65,22 +90,39 @@ subset_time.demog_change_component_df <- function(x, times, drop = FALSE) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_age <- function(x, ages, ...) {
+subset_age <- function(x, ages, include = TRUE, ...) {
     UseMethod("subset_age")
 }
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_age.demog_change_component_df <- function(x, ages, drop = FALSE) {
+subset_age.demog_change_component_df <- function(x, ages, include = TRUE, drop = FALSE) {
     stopifnot(is_by_age(x))
     stopifnot(is.finite(as.numeric(ages)))
 
-    value_type_x <- value_type(x)
+    if (!identical(abs(sum(sign(ages))) + sum(ages == 0), as.double(length(ages))))
+        stop("Either supply all positive or all negative values for 'ages'.")
+    if (any(ages < 0)) {
+        if (!include)
+            stop("Negative 'ages' can only be used with 'include = TRUE'.")
+        else {
+            include <- FALSE
+            ages  <- -ages
+        }
+    }
 
+    value_type_x <- value_type(x)
     age_col_name <- get_df_col_names_for_dimensions(dimensions = "age", spans = FALSE)
+
+    if (include) {
     age_x <- x[[age_col_name]] %in% ages
     if (identical(sum(age_x), 0L))
         stop("'x' does not have any entries with 'age' %in% '", ages, "'.")
+    } else {
+    age_x <- !x[[age_col_name]] %in% ages
+    if (identical(sum(age_x), 0L))
+        stop("'x' does not have any entries; you have excluded all rows.")
+    }
 
     x <- x[age_x, ]
     if (identical(length(ages), 1L) && drop) {
@@ -95,23 +137,29 @@ subset_age.demog_change_component_df <- function(x, ages, drop = FALSE) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_sex <- function(x, sexes, ...) {
+subset_sex <- function(x, sexes, include = TRUE, ...) {
     UseMethod("subset_sex")
 }
 
 #' @rdname subset_demog_change_component_df
 #' @export
 subset_sex.demog_change_component_df <-
-    function(x, sexes = get_all_allowed_sexes(), drop = FALSE) {
+    function(x, sexes = get_all_allowed_sexes(), include = TRUE, drop = FALSE) {
         stopifnot(is_by_sex(x))
         sexes <- match.arg(sexes, several.ok = TRUE)
 
-    value_type_x <- value_type(x)
-
+        value_type_x <- value_type(x)
         sex_col_name <- get_df_col_names_for_dimensions(dimensions = "sex", spans = FALSE)
-        sex_x <- x[[sex_col_name]] %in% sexes
-        if (identical(sum(sex_x), 0L))
-            stop("'x' does not have any entries with 'sex' %in% '", sexes, "'.")
+
+        if (include) {
+            sex_x <- x[[sex_col_name]] %in% sexes
+            if (identical(sum(sex_x), 0L))
+                stop("'x' does not have any entries with 'sex' %in% '", sexes, "'.")
+        } else {
+            sex_x <- !x[[sex_col_name]] %in% sexes
+            if (identical(sum(sex_x), 0L))
+                stop("'x' does not have any entries; you have excluded all rows.")
+        }
 
         x <- x[sex_x, ]
         if (identical(length(sexes), 1L) && drop) {
@@ -126,22 +174,28 @@ subset_sex.demog_change_component_df <-
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_indicator <- function(x, indicators, ...) {
+subset_indicator <- function(x, indicators, include = TRUE, ...) {
     UseMethod("subset_indicator")
 }
 
 #' @rdname subset_demog_change_component_df
 #' @export
 subset_indicator.demog_change_component_df <-
-    function(x, indicators, drop = FALSE) {
+    function(x, indicators, include = TRUE, drop = FALSE) {
         stopifnot(is_by_indicator(x))
 
     value_type_x <- value_type(x)
-
         indicator_col_name <- get_df_col_names_for_dimensions(dimensions = "indicator", spans = FALSE)
-        indicator_x <- x[[indicator_col_name]] %in% indicators
-        if (identical(sum(indicator_x), 0L))
-            stop("'x' does not have any entries with 'indicator' %in% '", indicators, "'.")
+
+        if (include) {
+            indicator_x <- x[[indicator_col_name]] %in% indicators
+            if (identical(sum(indicator_x), 0L))
+                stop("'x' does not have any entries with 'indicator' %in% '", indicators, "'.")
+        } else {
+            indicator_x <- !x[[indicator_col_name]] %in% indicators
+            if (identical(sum(indicator_x), 0L))
+                stop("'x' does not have any entries; you have excluded all rows.")
+        }
 
         x <- x[indicator_x, ]
         if (identical(length(indicators), 1L) && drop) {

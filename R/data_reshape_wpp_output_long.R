@@ -26,12 +26,22 @@ data_reshape_wpp_output_long <- function(wpp_output) {
     nm <- names(df)
     if ("indicator" %in% nm) {
       names(df)[names(df) == "indicator"] <- "subindicator"
+      df$subindicator <- ifelse(substr(df$subindicator,1,3) == "lt_", 
+                                substr(df$subindicator,4,nchar(df$subindicator)),
+                                df$subindicator)
     } else if (!("indicator" %in% nm)) {
       df$subindicator <- ""
     }
     
     df$indicator <- names(wpp_output)[i]
+    df$subindicator[substr(df$indicator, nchar(df$indicator) - 3, nchar(df$indicator)) == "_1x1"] <- "1x1"
+    df$subindicator[substr(df$indicator, nchar(df$indicator) - 3, nchar(df$indicator)) == "_5x1"] <- "5x1"
+    df$indicator[substr(df$indicator, nchar(df$indicator) - 3, nchar(df$indicator)) %in% c("_1x1", "_5x1")] <- 
+      substr(df$indicator[substr(df$indicator, nchar(df$indicator) - 3, nchar(df$indicator)) %in% c("_1x1", "_5x1")],
+             1,
+             nchar(df$indicator[substr(df$indicator, nchar(df$indicator) - 3, nchar(df$indicator)) %in% c("_1x1", "_5x1")])-4)
     
+                           
     if (!("sex" %in% nm)) {
       df$sex <- "both"
     }

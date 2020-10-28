@@ -225,8 +225,8 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
 
   mx_f <- mx[mx$sex == "female",]
   lt_f <- NULL
-  for (i in unique(mx_m$time_start)) {
-    lt <- lt_single_mx(nMx = mx_m$value[mx_m$time_start==i], Age = mx_m$age_start[mx_m$time_start==i], OAnew = max(pop_count_age_sex_base$age_start), Sex = "f") %>% 
+  for (i in unique(mx_f$time_start)) {
+    lt <- lt_single_mx(nMx = mx_f$value[mx_f$time_start==i], Age = mx_f$age_start[mx_f$time_start==i], OAnew = max(pop_count_age_sex_base$age_start), Sex = "f") %>% 
       mutate(time_start = i,
              time_span = 1,
              age_span = 1)
@@ -240,7 +240,6 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
            age_start = as.numeric(Age),
            age_span = 1) %>% 
     select(indicator, time_start, time_span, sex, age_start, age_span, value)
-
 
 # restrict input data series to min of max years from HMD and HFD
   last_year <- min(max(lt$time_start), max(fert_rate_age_f$time_start))

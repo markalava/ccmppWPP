@@ -1,9 +1,34 @@
 context("Test S3 class 'ccmpp_input_list'")
 
 test_that("valid member created", {
-    expect_s3_class(ccmpp_input_list_example,
+    expect_s3_class(ccmpp_input_list(
+        pop_count_age_sex_base = wpp_input_example$pop_count_age_sex_base,
+                     life_table_age_sex = wpp_input_example$life_table_age_sex,
+                     fert_rate_age_f = wpp_input_example$fert_rate_age_f,
+                     srb = wpp_input_example$srb,
+                     mig_net_count_age_sex = wpp_input_example$mig_net_count_age_sex,
+                     mig_net_rate_age_sex = wpp_input_example$mig_net_rate_age_sex,
+                     mig_net_count_tot_b = wpp_input_example$mig_net_count_tot_b,
+                     mig_parameter = wpp_input_example$mig_parameter),
                     "ccmpp_input_list")
 })
+
+
+################################################################################
+
+### Make objects available to subsequent tests
+
+ccmpp_input_list_example <-
+    ccmpp_input_list(pop_count_age_sex_base = wpp_input_example$pop_count_age_sex_base,
+                     life_table_age_sex = wpp_input_example$life_table_age_sex,
+                     fert_rate_age_f = wpp_input_example$fert_rate_age_f,
+                     srb = wpp_input_example$srb,
+                     mig_net_count_age_sex = wpp_input_example$mig_net_count_age_sex,
+                     mig_net_rate_age_sex = wpp_input_example$mig_net_rate_age_sex,
+                     mig_net_count_tot_b = wpp_input_example$mig_net_count_tot_b,
+                     mig_parameter = wpp_input_example$mig_parameter)
+
+################################################################################
 
 
 test_that("all elements required", {
@@ -141,3 +166,6 @@ test_that("mig assumption can be changed", {
         switch(mig_assumption(x), end = "even", even = "end")
     })
 })
+
+
+

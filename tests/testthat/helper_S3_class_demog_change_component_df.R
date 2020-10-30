@@ -18,17 +18,7 @@ expect_not_s3_class <- function(object, class, exact = FALSE) {
                                      exact = exact))
     }
 
-
-dcc_df_time_age_sex <-
-    demog_change_component_df(S3_demog_change_component_time_age_sex_test_df,
-                              dimensions = c("time", "age", "sex"))
-
-ccmpp_input_df_time_age_sex <-
-    ccmpp_input_df(S3_demog_change_component_time_age_sex_test_df,
-                   dimensions = c("time", "age", "sex"))
-
-fert_rate_input_df_time_age <-
-    fert_rate_age_f(S3_fert_rate_time_age_df)
+######### !!!!! MOVE THE REST OF THESE TO THE APPROPRIATE 'test_' files.
 
 life_table_input_df_indicator_time_age_sex <-
     life_table_age_sex(wpp_input_example$life_table_age_sex)
@@ -56,15 +46,7 @@ survival_ratio_input_df_time_age_sex <-
 survival_ratio_input_df_time_age_sex <-
     survival_ratio_age_sex(survival_ratio_input_df_time_age_sex)
 
-ccmpp_input_list_example <-
-    ccmpp_input_list(pop_count_age_sex_base = wpp_input_example$pop_count_age_sex_base,
-                     life_table_age_sex = wpp_input_example$life_table_age_sex,
-                     fert_rate_age_f = wpp_input_example$fert_rate_age_f,
-                     srb = wpp_input_example$srb,
-                     mig_net_count_age_sex = wpp_input_example$mig_net_count_age_sex,
-                     mig_net_rate_age_sex = wpp_input_example$mig_net_rate_age_sex,
-                     mig_net_count_tot_b = wpp_input_example$mig_net_count_tot_b,
-                     mig_parameter = wpp_input_example$mig_parameter)
+
 
 
 options(op)

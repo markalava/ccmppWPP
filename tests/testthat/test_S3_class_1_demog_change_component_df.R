@@ -226,7 +226,8 @@ test_that("'NA's are allowed", {
 
 
 test_that("'subset_times' works as expected", {
-    x <- dcc_df_time_age_sex
+    x <- demog_change_component_df(S3_demog_change_component_time_age_sex_test_df,
+                              dimensions = c("time", "age", "sex"))
 
     expect_equal(times(subset_time(x, 1950:1960)),
                  1950:1960)
@@ -242,7 +243,8 @@ test_that("'subset_times' works as expected", {
 
 
 test_that("'subset_ages' works as expected", {
-    x <- dcc_df_time_age_sex
+    x <- demog_change_component_df(S3_demog_change_component_time_age_sex_test_df,
+                              dimensions = c("time", "age", "sex"))
 
     expect_equal(ages(subset_age(x, 0:11)),
                  0:11)
@@ -258,7 +260,8 @@ test_that("'subset_ages' works as expected", {
 
 
 test_that("'subset_sexes' works as expected", {
-    x <- dcc_df_time_age_sex
+    x <- demog_change_component_df(S3_demog_change_component_time_age_sex_test_df,
+                              dimensions = c("time", "age", "sex"))
 
     expect_equal(sexes(subset_sex(x, "male")), "male")
     expect_equal(sexes(subset_sex(x, "male", include = FALSE)), "female")
@@ -269,11 +272,14 @@ test_that("'subset_sexes' works as expected", {
 
 test_that("'subset_indicators' works as expected", {
     x <- demog_change_component_df(rbind(
-        data.frame(dcc_df_time_age_sex, indicator = "test_1"),
-        data.frame(dcc_df_time_age_sex, indicator = "test_2")))
+        data.frame(demog_change_component_df(S3_demog_change_component_time_age_sex_test_df,
+                              dimensions = c("time", "age", "sex")), indicator = "test_1"),
+        data.frame(demog_change_component_df(S3_demog_change_component_time_age_sex_test_df,
+                              dimensions = c("time", "age", "sex")), indicator = "test_2")))
 
     expect_equal(indicators(subset_indicator(x, "test_1")), "test_1")
     expect_equal(indicators(subset_indicator(x, "test_1", include = FALSE)), "test_2")
     expect_error(subset_indicator(x, c("test_1", "test_2"), include = FALSE),
                  "'x' does not have any entries; you have excluded all rows.")
     })
+

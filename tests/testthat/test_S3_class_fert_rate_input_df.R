@@ -25,6 +25,12 @@ test_that("objects are created properly", {
 })
 
 
+### MAKE OBJECT AVAILABLE TO REMAINDER OF TESTS
+
+fert_rate_input_df_time_age <-
+    fert_rate_age_f(S3_fert_rate_time_age_df)
+
+
 test_that("invalid data objects are caught", {
 
     x <- fert_rate_input_df_time_age

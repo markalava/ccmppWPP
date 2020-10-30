@@ -1,5 +1,12 @@
 context("Test methods for S3 class 'fert_rate_age_f'")
 
+### MAKE OBJECT AVAILABLE TO REMAINDER OF TESTS (already tested)
+
+fert_rate_input_df_time_age <-
+    fert_rate_age_f(S3_fert_rate_time_age_df)
+
+
+
 test_that("valid member created", {
     expect_s3_class(fert_rate_input_df_time_age,
                     "fert_rate_age_f")

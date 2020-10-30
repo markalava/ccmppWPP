@@ -142,7 +142,7 @@ is_pop_count_age_sex_base <- function(x) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_time.pop_count_age_sex_base <- function(x, times, drop = FALSE) {
+subset_time.pop_count_age_sex_base <- function(x, times, include = TRUE) {
 
     x <- NextMethod()
     return(pop_count_age_sex_base(x))
@@ -150,7 +150,7 @@ subset_time.pop_count_age_sex_base <- function(x, times, drop = FALSE) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_age.pop_count_age_sex_base <- function(x, ages, drop = FALSE) {
+subset_age.pop_count_age_sex_base <- function(x, ages, include = TRUE) {
 
     x <- NextMethod()
     return(pop_count_age_sex_base(x))
@@ -158,7 +158,7 @@ subset_age.pop_count_age_sex_base <- function(x, ages, drop = FALSE) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_sex.pop_count_age_sex_base <- function(x, sexes, drop = FALSE) {
+subset_sex.pop_count_age_sex_base <- function(x, sexes, include = TRUE) {
 
     x <- NextMethod()
     return(pop_count_age_sex_base(x))

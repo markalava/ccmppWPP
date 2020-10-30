@@ -27,9 +27,9 @@ validate_ccmpp_object(x, ...)
 
 \method{validate_ccmpp_object}{fert_rate_age_f}(x, ...)
 
-\method{validate_ccmpp_object}{survival_ratio_age_sex}(x, ...)
+\method{validate_ccmpp_object}{survival_ratio_age_sex}(x, check_sex_equality_by_time = FALSE, ...)
 
-\method{validate_ccmpp_object}{pop_count_age_sex_base}(x, ...)
+\method{validate_ccmpp_object}{pop_count_age_sex_base}(x, check_sex_equality_by_time = FALSE, ...)
 
 \method{validate_ccmpp_object}{srb}(x, ...)
 
@@ -41,12 +41,17 @@ validate_ccmpp_object(x, ...)
 
 \method{validate_ccmpp_object}{mig_parameter}(x, ...)
 
-\method{validate_ccmpp_object}{life_table_age_sex}(x, ...)
+\method{validate_ccmpp_object}{life_table_age_sex}(x, check_sex_equality_by_time, ...)
 
 \method{validate_ccmpp_object}{ccmpp_input_list}(x, ...)
 }
 \arguments{
 \item{x}{An object to be validated.}
+
+\item{check_sex_equality_by_time}{Logical; for
+\code{survival_ratio_age_sex}, \code{pop_count_age_sex_base},
+and \code{life_table_age_sex} objects only. See
+\dQuote{Details}.}
 }
 \value{
 Either an error or the object \code{x}.
@@ -54,6 +59,16 @@ Either an error or the object \code{x}.
 \description{
 Checks that an object with \code{class} attribute
 \code{demog_change_component_df} is a valid object of this type.
+}
+\details{
+An additional check for near equality of values for sexes is done
+for \code{survival_ratio_age_sex}, \code{pop_count_age_sex_base},
+and \code{life_table_age_sex} objects. This is done by applying
+\code{\link{all.equal}} to all values (by \dQuote{indicator} for
+\code{life_table_age_sex} objects). This can be done separately by
+\dQuote{time} for a more precise check but it is very
+time-consuming so is switched off by default. Set
+\code{check_sex_equality_by_time} to \code{TRUE} to turn it on.
 }
 \seealso{
 \code{\link{demog_change_component_df}} and the other

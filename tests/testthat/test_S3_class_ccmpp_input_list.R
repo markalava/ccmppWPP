@@ -93,7 +93,7 @@ test_that("'pop_count_age_sex_base' component can be changed", {
     x <- pop_count_base_component(ccmpp_input_list_example)
     expect_s3_class(x, "pop_count_age_sex_base")
 
-    values(x) <- 1
+    suppressWarnings({values(x) <- 1})
     expect_s3_class(x, "pop_count_age_sex_base")
 
     expect_equal(values(x), rep(1, nrow(x)))
@@ -101,6 +101,7 @@ test_that("'pop_count_age_sex_base' component can be changed", {
 
 
 test_that("survival ratio component can be changed", {
+    suppressWarnings({
     x <- survival_ratio_input_df_time_age_sex
     values(x) <- 1
 
@@ -120,10 +121,12 @@ test_that("survival ratio component can be changed", {
     survival_ratio_component(z) <- x
     expect_equal(values(survival_ratio_component(z)),
                  rep(1, nrow(survival_ratio_component(z))))
+    })
 })
 
 
 test_that("mig assumption can be changed", {
+    suppressWarnings({
     expect_error(mig_assumption(ccmpp_input_list_example) <- "test",
                  "is not TRUE")
 
@@ -136,4 +139,5 @@ test_that("mig assumption can be changed", {
     x <- ccmpp_input_list_example
     mig_assumption(x) <-
         switch(mig_assumption(x), end = "even", even = "end")
+    })
 })

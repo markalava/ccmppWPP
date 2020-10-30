@@ -19,7 +19,14 @@
 #' that case, all values must be negative and \code{include} must be
 #' \code{TRUE} (the default). Violations will result in an error.
 #'
-#' @section Note:
+#' Argument \code{drop} is not available in the methods for objects
+#' inheriting from \code{ccmpp_input_df} because these objects must
+#' have (and keep) the set of dimensions specified in their class
+#' definition. E.g., \code{fert_rate_input} objects may be subset by
+#' time, but the time dimension cannot be dropped because objects of
+#' this class must always have a time dimension.
+#'
+#' @section Note on efficiency:
 #' These functions are not particularly efficient. For repeated
 #' subsetting within, e.g., a for loop, it is better to use standard
 #' subsetting operations on the data frame component and re-cast the
@@ -33,7 +40,8 @@
 #'     supplied in the previous argument be those that are kept or
 #'     discarded?
 #' @param drop Logical; should demographic change component dimensions
-#'     with only one level be dropped?
+#'     with only one level be dropped? Not available in all methods;
+#'     see \dQuote{Details}.
 #' @return The object after subsetting if a valid member of the class;
 #'     otherwise an error.
 #' @author Mark Wheldon
@@ -184,7 +192,7 @@ subset_indicator.demog_change_component_df <-
     function(x, indicators, include = TRUE, drop = FALSE) {
         stopifnot(is_by_indicator(x))
 
-    value_type_x <- value_type(x)
+        value_type_x <- value_type(x)
         indicator_col_name <- get_df_col_names_for_dimensions(dimensions = "indicator", spans = FALSE)
 
         if (include) {
@@ -201,7 +209,7 @@ subset_indicator.demog_change_component_df <-
         if (identical(length(indicators), 1L) && drop) {
             x <- x[, -which(colnames(x) == get_df_col_names_for_dimensions(dimensions = "indicator", spans = FALSE))]
             attr(x, "dimensions") <- attr(x, "dimensions")[attr(x, "dimensions") != "indicator"]
-            }
+        }
 
         return(suppressMessages(demog_change_component_df(x,
                                                           dimensions = NULL,

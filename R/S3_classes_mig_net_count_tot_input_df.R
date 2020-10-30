@@ -128,7 +128,7 @@ is_mig_net_count_tot_b <- function(x) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_time.mig_net_count_tot_b <- function(x, times, drop = FALSE) {
+subset_time.mig_net_count_tot_b <- function(x, times, include = TRUE) {
 
     x <- NextMethod()
     return(mig_net_count_tot_b(x))

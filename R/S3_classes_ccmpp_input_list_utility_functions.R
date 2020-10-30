@@ -42,25 +42,25 @@ NULL
 
 #' @rdname subset_ccmpp_input_list
 #' @export
-subset_time.ccmpp_input_list <- function(x, times, drop = FALSE) {
+subset_time.ccmpp_input_list <- function(x, times, include = TRUE) {
 
     for (df_nm in names(x)) {
         if (is_by_time(x[[df_nm]]))
-            x[[df_nm]] <- subset_time(x[[df_nm]], times = times, drop = drop)
+            x[[df_nm]] <- subset_time(x[[df_nm]], times = times, include = include)
     }
     return(as_ccmpp_input_list(as.list(x)))
 }
 
 #' @rdname subset_ccmpp_input_list
 #' @export
-subset_age.ccmpp_input_list <- function(x, ages, drop = FALSE) {
+subset_age.ccmpp_input_list <- function(x, ages, include = TRUE) {
 
     if (isFALSE(0 %in% ages))
         stop("'0' must be in 'ages' for the result to be a valid 'ccmpp_input_list'.")
 
     for (df_nm in names(x)) {
         if (is_by_age(x[[df_nm]]))
-            x[[df_nm]] <- subset_age(x[[df_nm]], ages = ages, drop = drop)
+            x[[df_nm]] <- subset_age(x[[df_nm]], ages = ages, include = include)
     }
     return(as_ccmpp_input_list(as.list(x)))
 }

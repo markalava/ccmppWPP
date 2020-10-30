@@ -184,7 +184,7 @@ is_mig_net_prop_age_sex <- function(x) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_time.mig_net_prop_age_sex <- function(x, times, drop = FALSE) {
+subset_time.mig_net_prop_age_sex <- function(x, times, include = TRUE) {
 
     x <- NextMethod()
     return(mig_net_prop_age_sex(x))
@@ -192,7 +192,7 @@ subset_time.mig_net_prop_age_sex <- function(x, times, drop = FALSE) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_age.mig_net_prop_age_sex <- function(x, ages, drop = FALSE) {
+subset_age.mig_net_prop_age_sex <- function(x, ages, include = TRUE) {
 
     x <- NextMethod()
     return(mig_net_prop_age_sex(x))
@@ -200,7 +200,7 @@ subset_age.mig_net_prop_age_sex <- function(x, ages, drop = FALSE) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_sex.mig_net_prop_age_sex <- function(x, sexes, drop = FALSE) {
+subset_sex.mig_net_prop_age_sex <- function(x, sexes, include = TRUE) {
 
     x <- NextMethod()
     return(mig_net_prop_age_sex(x))

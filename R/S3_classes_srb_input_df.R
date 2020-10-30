@@ -127,7 +127,7 @@ is_srb <- function(x) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_time.srb <- function(x, times, drop = FALSE) {
+subset_time.srb <- function(x, times, include = TRUE) {
 
     x <- NextMethod()
     return(srb(x))

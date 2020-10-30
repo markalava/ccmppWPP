@@ -48,13 +48,13 @@
 \alias{subset_sex.survival_ratio_age_sex}
 \title{Subset by time, age, or sex}
 \usage{
-\method{subset_indicator}{ccmpp_input_df}(x, indicators, drop = FALSE)
+\method{subset_indicator}{ccmpp_input_df}(x, indicators, include = TRUE)
 
-\method{subset_time}{ccmpp_input_df}(x, times, drop = FALSE)
+\method{subset_time}{ccmpp_input_df}(x, times, include = TRUE)
 
-\method{subset_age}{ccmpp_input_df}(x, ages, drop = FALSE)
+\method{subset_age}{ccmpp_input_df}(x, ages, include = TRUE)
 
-\method{subset_sex}{ccmpp_input_df}(x, sexes, drop = FALSE)
+\method{subset_sex}{ccmpp_input_df}(x, sexes, include = TRUE)
 
 subset_time(x, times, include = TRUE, ...)
 
@@ -72,55 +72,55 @@ subset_indicator(x, indicators, include = TRUE, ...)
 
 \method{subset_indicator}{demog_change_component_df}(x, indicators, include = TRUE, drop = FALSE)
 
-\method{subset_time}{fert_rate_age_f}(x, times, drop = FALSE)
+\method{subset_time}{fert_rate_age_f}(x, times, include = TRUE)
 
-\method{subset_age}{fert_rate_age_f}(x, ages, drop = FALSE)
+\method{subset_age}{fert_rate_age_f}(x, ages, include = TRUE)
 
-\method{subset_indicator}{life_table_age_sex}(x, indicators, drop = FALSE)
+\method{subset_indicator}{life_table_age_sex}(x, indicators, include = TRUE)
 
-\method{subset_time}{life_table_age_sex}(x, times, drop = FALSE)
+\method{subset_time}{life_table_age_sex}(x, times, include = TRUE)
 
-\method{subset_age}{life_table_age_sex}(x, ages, drop = FALSE)
+\method{subset_age}{life_table_age_sex}(x, ages, include = TRUE)
 
-\method{subset_sex}{life_table_age_sex}(x, sexes, drop = FALSE)
+\method{subset_sex}{life_table_age_sex}(x, sexes, include = TRUE)
 
-\method{subset_time}{mig_net_count_age_sex}(x, times, drop = FALSE)
+\method{subset_time}{mig_net_count_age_sex}(x, times, include = TRUE)
 
-\method{subset_age}{mig_net_count_age_sex}(x, ages, drop = FALSE)
+\method{subset_age}{mig_net_count_age_sex}(x, ages, include = TRUE)
 
-\method{subset_sex}{mig_net_count_age_sex}(x, sexes, drop = FALSE)
+\method{subset_sex}{mig_net_count_age_sex}(x, sexes, include = TRUE)
 
-\method{subset_time}{mig_net_count_tot_b}(x, times, drop = FALSE)
+\method{subset_time}{mig_net_count_tot_b}(x, times, include = TRUE)
 
-\method{subset_time}{mig_net_prop_age_sex}(x, times, drop = FALSE)
+\method{subset_time}{mig_net_prop_age_sex}(x, times, include = TRUE)
 
-\method{subset_age}{mig_net_prop_age_sex}(x, ages, drop = FALSE)
+\method{subset_age}{mig_net_prop_age_sex}(x, ages, include = TRUE)
 
-\method{subset_sex}{mig_net_prop_age_sex}(x, sexes, drop = FALSE)
+\method{subset_sex}{mig_net_prop_age_sex}(x, sexes, include = TRUE)
 
-\method{subset_time}{mig_net_rate_age_sex}(x, times, drop = FALSE)
+\method{subset_time}{mig_net_rate_age_sex}(x, times, include = TRUE)
 
-\method{subset_age}{mig_net_rate_age_sex}(x, ages, drop = FALSE)
+\method{subset_age}{mig_net_rate_age_sex}(x, ages, include = TRUE)
 
-\method{subset_sex}{mig_net_rate_age_sex}(x, sexes, drop = FALSE)
+\method{subset_sex}{mig_net_rate_age_sex}(x, sexes, include = TRUE)
 
-\method{subset_time}{mig_parameter}(x, times, drop = FALSE)
+\method{subset_time}{mig_parameter}(x, times, include = TRUE)
 
-\method{subset_indicator}{mig_parameter}(x, times, drop = FALSE)
+\method{subset_indicator}{mig_parameter}(x, times, include = TRUE)
 
-\method{subset_time}{pop_count_age_sex_base}(x, times, drop = FALSE)
+\method{subset_time}{pop_count_age_sex_base}(x, times, include = TRUE)
 
-\method{subset_age}{pop_count_age_sex_base}(x, ages, drop = FALSE)
+\method{subset_age}{pop_count_age_sex_base}(x, ages, include = TRUE)
 
-\method{subset_sex}{pop_count_age_sex_base}(x, sexes, drop = FALSE)
+\method{subset_sex}{pop_count_age_sex_base}(x, sexes, include = TRUE)
 
-\method{subset_time}{srb}(x, times, drop = FALSE)
+\method{subset_time}{srb}(x, times, include = TRUE)
 
-\method{subset_time}{survival_ratio_age_sex}(x, times, drop = FALSE)
+\method{subset_time}{survival_ratio_age_sex}(x, times, include = TRUE)
 
-\method{subset_age}{survival_ratio_age_sex}(x, ages, drop = FALSE)
+\method{subset_age}{survival_ratio_age_sex}(x, ages, include = TRUE)
 
-\method{subset_sex}{survival_ratio_age_sex}(x, sexes, drop = FALSE)
+\method{subset_sex}{survival_ratio_age_sex}(x, sexes, include = TRUE)
 }
 \arguments{
 \item{x}{An object to subset.}
@@ -129,12 +129,13 @@ subset_indicator(x, indicators, include = TRUE, ...)
 time, age, or sex to retain (\code{include = TRUE}) or exclude
 (\code{include = FALSE}).}
 
-\item{drop}{Logical; should demographic change component dimensions
-with only one level be dropped?}
-
 \item{include}{Logical; should the rows corresponding to the values
 supplied in the previous argument be those that are kept or
 discarded?}
+
+\item{drop}{Logical; should demographic change component dimensions
+with only one level be dropped? Not available in all methods;
+see \dQuote{Details}.}
 }
 \value{
 The object after subsetting if a valid member of the class;
@@ -157,8 +158,15 @@ For \code{subset_times} and \code{subset_ages} rows can be excluded
 by supplying negative \code{times} or \code{ages}. In
 that case, all values must be negative and \code{include} must be
 \code{TRUE} (the default). Violations will result in an error.
+
+Argument \code{drop} is not available in the methods for objects
+inheriting from \code{ccmpp_input_df} because these objects must
+have (and keep) the set of dimensions specified in their class
+definition. E.g., \code{fert_rate_input} objects may be subset by
+time, but the time dimension cannot be dropped because objects of
+this class must always have a time dimension.
 }
-\section{Note}{
+\section{Note on efficiency}{
 
 These functions are not particularly efficient. For repeated
 subsetting within, e.g., a for loop, it is better to use standard

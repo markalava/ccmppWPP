@@ -6,17 +6,122 @@ not_a_valid_object_msg <- function(class, ...) {
     paste0("Not a valid '", class, "' object:\n", ...)
 }
 
+## Error checking: Report on near equality of sexes
+#' @noRd
+sexes_unequal <- function(x, x_name = "x", tolerance = 1e-6, scale = NULL,
+                          check_by_time = FALSE #<-- with 'FALSE'
+                                                #almost doubles time
+                                                #for validation; with
+                                                #'TRUE' quadruples it
+                          ) {
+    if (is_by_indicator(x)) {
+        indicators_x <- indicators(x)
+        msg <- lapply(setNames(indicators_x, indicators_x),
+                      FUN = function(this_indicator) {
+            y <- subset_indicator.demog_change_component_df(x, indicators = this_indicator,
+                                                            include = TRUE, drop = TRUE) #'drop' so that loop over time activates
+            sexes_unequal(y, x_name = x_name, tolerance = tolerance, scale = scale)
+        })
+    } else if (is_by_time(x) && check_by_time) {
+        times_x <- times(x)
+        msg <- lapply(setNames(times_x, times_x),
+                      FUN = function(this_time) {
+            ## save time..subset manually
+            ## y <- subset_time.demog_change_component_df(x, times = this_time,
+            ##                  include = TRUE, drop = TRUE)
+            y <- x[x$time_start == this_time,
+                   colnames(x)[!colnames(x) %in% get_df_col_names_for_dimensions(dimensions = "time")]]
+            sexes_unequal(y, x_name = x_name, tolerance = tolerance, scale = scale)
+        })
+    } else {
+        target <- x[x$sex == "female", "value"]
+        current <- x[x$sex == "male", "value"]
+        test <- all.equal(target = target, current = current, scale = scale, tolerance = tolerance,
+                          countEQ = TRUE)
+        if (!isTRUE(test)) return(TRUE)
+        else {
+            ## If equal, want to know what comparison 'all.equal' actually did.
+            ## From 'all.equal.numeric'..
+            out <- is.na(target)
+            out <- out | target == current
+            if (all(out))
+                return(paste0("Female and male ",
+                              x_name,
+                              " are identical."))
+            else {
+                if (!is.null(scale)) what <- "absolute"
+                else {
+                    N <- length(out)
+                    sabst0 <- sum(abs(target[out]))
+                    target <- target[!out]
+                    current <- current[!out]
+                    if (is.integer(target) && is.integer(current))
+                        target <- as.double(target)
+                    xy <- sum(abs(target - current))/N
+                    what <- {
+                        xn <- (sabst0 + sum(abs(target)))/N
+                        if (is.finite(xn) && xn > tolerance) {
+                            xy <- xy/xn
+                            "relative"
+                        }
+                        else "absolute"
+                    }
+                }
+            }
+            return(paste0("Female and male ",
+                          x_name,
+                          " are very similar; mean ",
+                          what,
+                          " difference less than ",
+                          tolerance, "."))
+        }
+    }
+    if (is.list(msg)) {
+        if (suppressWarnings(isTRUE(all(unlist(msg))))) return(TRUE)
+        else {
+            ## Discard the 'TRUE' elements
+            msg <- rapply(msg, function(z) if (isTRUE(z)) { NULL } else { z })
+            ## Format: summarize duplicates
+            list_to_txt <- function(w) {
+                w <- w[!is.na(w)]
+                fmtd_txt <- character(0)
+                for (uw in unique(w)) {
+                    fmtd_txt <- paste0(fmtd_txt,
+                                       toString(names(w == uw), width = getOption("width")),
+                                       "\n",
+                                       "    ",
+                                       uw)
+                }
+                return(paste0(fmtd_txt, "\n"))
+            }
+            return(list_to_txt(msg))
+        }
+    } else return(msg) #not a list.. not sure what would trigger this but cover the possibility
+}
+
 #' Validate objects of class \code{demog_change_component_df}.
 #'
-#' @description
 #' Checks that an object with \code{class} attribute
 #' \code{demog_change_component_df} is a valid object of this type.
+#'
+#' An additional check for near equality of values for sexes is done
+#' for \code{survival_ratio_age_sex}, \code{pop_count_age_sex_base},
+#' and \code{life_table_age_sex} objects. This is done by applying
+#' \code{\link{all.equal}} to all values (by \dQuote{indicator} for
+#' \code{life_table_age_sex} objects). This can be done separately by
+#' \dQuote{time} for a more precise check but it is very
+#' time-consuming so is switched off by default. Set
+#' \code{check_sex_equality_by_time} to \code{TRUE} to turn it on.
 #'
 #' @seealso \code{\link{demog_change_component_df}} and the other
 #'     creator functions (e.g., \code{\link{ccmpp_input_df}},
 #'     \code{link{fert_rate_age_f}}, etc.)
 #'
 #' @param x An object to be validated.
+#' @param check_sex_equality_by_time Logical; for
+#'     \code{survival_ratio_age_sex}, \code{pop_count_age_sex_base},
+#'     and \code{life_table_age_sex} objects only. See
+#'     \dQuote{Details}.
 #' @return Either an error or the object \code{x}.
 #' @author Mark Wheldon
 #' @name validate_ccmpp_object
@@ -289,7 +394,7 @@ validate_ccmpp_object.ccmpp_input_df <- function(x, ...) {
 
     return(x)
 }
-
+
 
 #' @rdname validate_ccmpp_object
 #' @export
@@ -335,7 +440,7 @@ validate_ccmpp_object.fert_rate_age_f <- function(x, ...) {
 
 #' @rdname validate_ccmpp_object
 #' @export
-validate_ccmpp_object.survival_ratio_age_sex <- function(x, ...) {
+validate_ccmpp_object.survival_ratio_age_sex <- function(x, check_sex_equality_by_time = FALSE, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -359,13 +464,18 @@ validate_ccmpp_object.survival_ratio_age_sex <- function(x, ...) {
         stop(not_a_valid_object_msg("survival_ratio_age_sex",
                                     "'x' must have data on both 'male' and 'female'."))
 
+    ## Check that male and female are not near-identical
+    test <- sexes_unequal(x, x_name = "survival ratios", tol = 1e-4, scale = 1,
+                          check_by_time = check_sex_equality_by_time)
+    if(!isTRUE(test)) warning(test)
+
     return(x)
 }
 
 
 #' @rdname validate_ccmpp_object
 #' @export
-validate_ccmpp_object.pop_count_age_sex_base <- function(x, ...) {
+validate_ccmpp_object.pop_count_age_sex_base <- function(x, check_sex_equality_by_time = FALSE, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -395,6 +505,12 @@ validate_ccmpp_object.pop_count_age_sex_base <- function(x, ...) {
     if (!all(c("male", "female") %in% sexes(x)))
         stop(not_a_valid_object_msg("pop_count_age_sex_base",
                                     "'x' must have data on both 'male' and 'female'."))
+
+    ## Check that male and female are not near-identical
+    test_tol <- 0.5 / 100
+    test <- sexes_unequal(x, x_name = "baseline population counts", tolerance = test_tol,
+                          check_by_time = check_sex_equality_by_time)
+    if(!isTRUE(test)) warning(test)
 
     return(x)
 }
@@ -542,7 +658,7 @@ validate_ccmpp_object.mig_parameter <- function(x, ...) {
 
 #' @rdname validate_ccmpp_object
 #' @export
-validate_ccmpp_object.life_table_age_sex <- function(x, ...) {
+validate_ccmpp_object.life_table_age_sex <- function(x, check_sex_equality_by_time, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -575,6 +691,27 @@ validate_ccmpp_object.life_table_age_sex <- function(x, ...) {
     if (!all(c("male", "female") %in% sexes(x)))
         stop(not_a_valid_object_msg("life_table_age_sex",
                                     "'x' must have data on both 'male' and 'female'."))
+
+    ## Check that male and female are not near-identical. Do by type
+    ## of indicator (counts, probabilities/proportions, etc)
+    ##
+    ## 'count' based columns (years, people, person-years)
+    test <-
+        sexes_unequal(
+            subset_indicator.demog_change_component_df(
+                x, c("lt_ex", "lt_lx", "lt_ndx", "lt_nLx", "lt_Tx")),
+            x_name = "life table quantities", tol = 0.5/100,
+                          check_by_time = check_sex_equality_by_time)
+    if(!isTRUE(test)) warning(test)
+    ##
+    ## 'rate/probability' based columns (survival ratios done below)
+    test <-
+        sexes_unequal(
+            subset_indicator.demog_change_component_df(
+                x, c("lt_nMx", "lt_nqx")),
+            x_name = "life table quantities", tol = 1e-4, scale = 1,
+                          check_by_time = check_sex_equality_by_time)
+    if(!isTRUE(test)) warning(test)
 
     ## Check survival ratio sub-table
     check <- survival_ratio_component(x) # will run validation for

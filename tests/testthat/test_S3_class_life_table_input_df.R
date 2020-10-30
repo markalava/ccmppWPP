@@ -40,4 +40,18 @@ test_that("Invalid 'value's are caught", {
                                     value_scale = value_scale(
                                         life_table_input_df_indicator_time_age_sex)),
                  "'value' column has negative elements")
+})
+
+
+test_that("Equal sex values are detected", {
+    x <- life_table_input_df_indicator_time_age_sex
+    y <- x
+    y[y$sex == "male", "value"] <- y[y$sex == "female", "value"]
+    expect_warning(life_table_age_sex(y),
+                   "Female and male life table quantities are identical")
+
+    y <- x
+    y[y$sex == "male", "value"] <- y[y$sex == "female", "value"] + 1e-5
+    expect_warning(life_table_age_sex(y),
+                   "Female and male life table quantities are very similar")
     })

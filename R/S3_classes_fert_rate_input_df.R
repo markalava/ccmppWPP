@@ -222,14 +222,14 @@ is_fert_rate_age_f <- function(x) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_time.fert_rate_age_f <- function(x, times, drop = FALSE) {
+subset_time.fert_rate_age_f <- function(x, times, include = TRUE) {
     x <- NextMethod()
     return(fert_rate_age_f(x))
 }
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_age.fert_rate_age_f <- function(x, ages, drop = FALSE) {
+subset_age.fert_rate_age_f <- function(x, ages, include = TRUE) {
     x <- NextMethod()
     return(fert_rate_age_f(x))
 }

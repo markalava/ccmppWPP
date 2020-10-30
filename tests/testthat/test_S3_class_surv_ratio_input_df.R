@@ -38,5 +38,22 @@ test_that("Invalid 'value's are caught", {
     x[1, "value"]  <- -1
     expect_error(survival_ratio_age_sex(x),
                  "'value_type' is 'proportion' but values")
-    })
+})
 
+
+test_that("Equal sex values are detected", {
+    x <- survival_ratio_input_df_time_age_sex
+
+    y <- x
+    y[y$sex == "male", "value"] <- y[y$sex == "female", "value"]
+    expect_warning(survival_ratio_age_sex(y),
+                   "Female and male survival ratios are identical")
+
+    y <- x
+    y[y$sex == "male", "value"] <-
+        y[y$sex == "female", "value"] + runif(n = nrow(y[y$sex == "female",]),
+                                              min = 1e-6, max = 1e-5)
+    expect_warning(survival_ratio_age_sex(y),
+                   "Female and male survival ratios are very similar")
+
+    })

@@ -6,18 +6,18 @@
 \alias{subset_age.ccmpp_input_list}
 \title{Subset by time, age, or sex}
 \usage{
-\method{subset_time}{ccmpp_input_list}(x, times, drop = FALSE)
+\method{subset_time}{ccmpp_input_list}(x, times, include = TRUE)
 
-\method{subset_age}{ccmpp_input_list}(x, ages, drop = FALSE)
+\method{subset_age}{ccmpp_input_list}(x, ages, include = TRUE)
 }
 \arguments{
 \item{x}{An object to subset.}
 
-\item{drop}{Logical; should demographic change component dimensions
-with only one level be dropped?}
-
 \item{time, age}{Vectors indicating the levels of
 time, age, or sex to retain.}
+
+\item{drop}{Logical; should demographic change component dimensions
+with only one level be dropped?}
 }
 \value{
 The object after subsetting if a valid member of the class;

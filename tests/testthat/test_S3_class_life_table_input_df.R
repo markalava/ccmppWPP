@@ -1,9 +1,15 @@
 context("Test methods for S3 class 'life_table_age_sex'")
 
 test_that("valid member created", {
-    expect_s3_class(life_table_input_df_indicator_time_age_sex,
+    expect_s3_class(life_table_age_sex(wpp_input_example$life_table_age_sex),
                     "life_table_age_sex")
     })
+
+### MAKE OBJECT AVAILABLE TO REMAINDER OF TESTS (already tested)
+
+life_table_input_df_indicator_time_age_sex <-
+    life_table_age_sex(wpp_input_example$life_table_age_sex)
+
 
 
 test_that("Non-zero age detected", {

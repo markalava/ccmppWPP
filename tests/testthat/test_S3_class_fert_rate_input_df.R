@@ -2,9 +2,12 @@ context("Test construction and validation of S3 class 'fert_rate_age_f'")
 
 test_that("objects are created properly", {
 
+    expect_s3_class(fert_rate_input_df_time_age <-
+                        fert_rate_age_f(S3_fert_rate_time_age_df),
+                    "fert_rate_age_f")
+
     ## Time, Age
-    x <- fert_rate_input_df_time_age
-    z <- fert_rate_age_f(x)
+    z <- fert_rate_age_f(fert_rate_input_df_time_age)
     expect_s3_class(z, "fert_rate_age_f")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dims(z), c("time", "age")))
@@ -71,8 +74,7 @@ test_that("missing columns are caught", {
 
 test_that("superfluous columns are caught", {
 
-    x <- fert_rate_input_df_time_age
-    z <- data.frame(x, source = "census")
+    z <- data.frame(fert_rate_input_df_time_age, source = "census")
 
     expect_true(## No fail: Automatically removes column
         !("source" %in%
@@ -144,8 +146,7 @@ test_that("erroneous sex dimension detected", {
 
 
 test_that("sex column removed", {
-    y <- fert_rate_input_df_time_age
-    z <- cbind(y, sex = "female")
+    z <- cbind(fert_rate_input_df_time_age, sex = "female")
     z <- fert_rate_age_f(z)
     expect_false("sex" %in% colnames(z))
 })

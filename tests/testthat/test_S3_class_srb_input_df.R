@@ -1,9 +1,15 @@
 context("Test methods for S3 class 'srb'")
 
+
 test_that("valid member created", {
-    expect_s3_class(srb_time,
+    expect_s3_class(srb(wpp_input_example$srb),
                     "srb")
-    })
+})
+
+
+### MAKE OBJECT AVAILABLE TO REMAINDER OF TESTS
+
+srb_time <- srb(wpp_input_example$srb)
 
 
 test_that("age dimension detected", {

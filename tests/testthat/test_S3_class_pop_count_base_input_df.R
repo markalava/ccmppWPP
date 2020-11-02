@@ -1,9 +1,15 @@
 context("Test methods for S3 class 'pop_count_age_sex_base'")
 
 test_that("valid member created", {
-    expect_s3_class(pop_count_base_input_df_time_age_sex,
+    expect_s3_class(pop_count_age_sex_base(wpp_input_example$pop_count_age_sex_base),
                     "pop_count_age_sex_base")
-    })
+})
+
+
+### MAKE OBJECT AVAILABLE TO REMAINDER OF TESTS
+
+pop_count_base_input_df_time_age_sex <-
+    pop_count_age_sex_base(wpp_input_example$pop_count_age_sex_base)
 
 
 test_that("Non-zero age detected", {

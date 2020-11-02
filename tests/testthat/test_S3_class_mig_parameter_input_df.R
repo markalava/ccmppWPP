@@ -1,9 +1,15 @@
 context("Test methods for S3 class 'mig_parameter'")
 
 test_that("valid member created", {
-    expect_s3_class(mig_parameter_input_df_indicator_time,
+    expect_s3_class(mig_parameter(wpp_input_example$mig_parameter),
                     "mig_parameter")
-    })
+})
+
+
+### MAKE OBJECT AVAILABLE TO REMAINDER OF TESTS
+
+mig_parameter_input_df_indicator_time <-
+    mig_parameter(wpp_input_example$mig_parameter)
 
 
 test_that("Required dimensions enforced", {

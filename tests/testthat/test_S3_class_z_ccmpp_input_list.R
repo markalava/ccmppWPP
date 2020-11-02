@@ -28,6 +28,10 @@ ccmpp_input_list_example <-
                      mig_net_count_tot_b = wpp_input_example$mig_net_count_tot_b,
                      mig_parameter = wpp_input_example$mig_parameter)
 
+survival_ratio_input_df_time_age_sex <-
+    survival_ratio_age_sex(subset(wpp_input_example$life_table_age_sex,
+           indicator == "lt_Sx", select = -indicator))
+
 ################################################################################
 
 

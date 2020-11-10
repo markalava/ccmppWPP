@@ -49,7 +49,11 @@ This function is generic with methods for \code{data.frame},
 \code{ccmpp_input_list} and \code{mig_net_count_age_sex}. The
 latter two methods will compute the proportions from counts of
 migration and a baseline population by simple division of migration
-counts by population counts, matched by age, sex, and time.
+counts by population counts, matched by age, sex, and
+time. Population counts are supplied as a data frame via argument
+\code{pop_count_age_sex}. The method for \code{ccmpp_input_list}s
+uses \code{\link{project_ccmpp_loop_over_time}} to generate the
+population counts from the inputs supplied via argument \code{x}.
 }
 \seealso{
 \code{\link{validate_ccmpp_object}} for object validation,

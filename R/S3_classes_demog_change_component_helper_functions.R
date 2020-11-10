@@ -24,8 +24,6 @@ get_all_allowed_attributes <- function() {
 
 ## Define allowed dimensions
 get_all_allowed_dimensions <- function() {
-    ## The name component is a label for internal indexing. The data
-    ## component is the actual name of the dimension.
     ## !! ORDER MATTERS !! Determines the order of sorting!
     c("indicator", "time", "sex", "age")
 }

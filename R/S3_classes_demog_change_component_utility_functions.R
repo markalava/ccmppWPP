@@ -1,7 +1,7 @@
 ###-----------------------------------------------------------------------------
 ### * Subset by time, age, or sex
 
-#' Subset by time, age, or sex
+#' Subset by time, age, sex, or indicator
 #'
 #' These functions subset objects inheriting from
 #' \code{demog_change_component_df} by one of the four dimensions,
@@ -35,7 +35,8 @@
 #' @param x An object to subset.
 #' @param indicators,times,ages,sexes Vectors indicating the levels of
 #'     time, age, or sex to retain (\code{include = TRUE}) or exclude
-#'     (\code{include = FALSE}).
+#'     (\code{include = FALSE}). \code{ages} and \code{times} are
+#'     coerced to numeric via \code{\link{as.numeric}}.
 #' @param include Logical; should the rows corresponding to the values
 #'     supplied in the previous argument be those that are kept or
 #'     discarded?
@@ -59,7 +60,8 @@ subset_time <- function(x, times, include = TRUE, ...) {
 #' @export
 subset_time.demog_change_component_df <- function(x, times, include = TRUE, drop = FALSE) {
     stopifnot(is_by_time(x))
-    stopifnot(is.finite(as.numeric(times)))
+    times <- as.numeric(times)
+    stopifnot(is.finite(times))
 
     if (!identical(abs(sum(sign(times))) + sum(times == 0), as.double(length(times))))
         stop("Either supply all positive or all negative values for 'times'.")
@@ -106,7 +108,8 @@ subset_age <- function(x, ages, include = TRUE, ...) {
 #' @export
 subset_age.demog_change_component_df <- function(x, ages, include = TRUE, drop = FALSE) {
     stopifnot(is_by_age(x))
-    stopifnot(is.finite(as.numeric(ages)))
+    ages <- as.numeric(ages)
+    stopifnot(is.finite(ages))
 
     if (!identical(abs(sum(sign(ages))) + sum(ages == 0), as.double(length(ages))))
         stop("Either supply all positive or all negative values for 'ages'.")

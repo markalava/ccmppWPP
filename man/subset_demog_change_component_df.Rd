@@ -46,7 +46,7 @@
 \alias{subset_time.survival_ratio_age_sex}
 \alias{subset_age.survival_ratio_age_sex}
 \alias{subset_sex.survival_ratio_age_sex}
-\title{Subset by time, age, or sex}
+\title{Subset by time, age, sex, or indicator}
 \usage{
 \method{subset_indicator}{ccmpp_input_df}(x, indicators, include = TRUE)
 
@@ -127,7 +127,8 @@ subset_indicator(x, indicators, include = TRUE, ...)
 
 \item{indicators, times, ages, sexes}{Vectors indicating the levels of
 time, age, or sex to retain (\code{include = TRUE}) or exclude
-(\code{include = FALSE}).}
+(\code{include = FALSE}). \code{ages} and \code{times} are
+coerced to numeric via \code{\link{as.numeric}}.}
 
 \item{include}{Logical; should the rows corresponding to the values
 supplied in the previous argument be those that are kept or

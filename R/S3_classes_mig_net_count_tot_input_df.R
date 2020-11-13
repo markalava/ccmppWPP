@@ -52,7 +52,6 @@ new_mig_net_count_tot_b <-
 #' @export
 mig_net_count_tot_b <-
     function(x,
-             time_span = attr(x, "time_span"),
              value_scale = attr(x, "value_scale")) {
 
         li <- prepare_df_for_ccmpp_input_df(x,

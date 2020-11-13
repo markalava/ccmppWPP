@@ -4,11 +4,7 @@
 \alias{mig_net_count_tot_b}
 \title{Constructor for class \code{mig_net_count_tot_b}}
 \usage{
-mig_net_count_tot_b(
-  x,
-  time_span = attr(x, "time_span"),
-  value_scale = attr(x, "value_scale")
-)
+mig_net_count_tot_b(x, value_scale = attr(x, "value_scale"))
 }
 \arguments{
 \item{x}{For \code{demog_change_component_df}: A data frame with

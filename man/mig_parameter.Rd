@@ -4,7 +4,7 @@
 \alias{mig_parameter}
 \title{Constructor for class \code{mig_parameter}}
 \usage{
-mig_parameter(x, time_span = attr(x, "time_span"))
+mig_parameter(x)
 }
 \arguments{
 \item{x}{For \code{demog_change_component_df}: A data frame with
@@ -16,10 +16,7 @@ An object of class \code{mig_parameter}.
 }
 \description{
 \code{mig_parameter} is a subclass of
-\code{\link{ccmpp_input_df}}. It imposes two additional conditions:
-\enumerate{
-  \item{\code{Value_type} attribute equals \dQuote{rate}.}
-  \item{Within year and sex, age must start at 0.}}
+\code{\link{ccmpp_input_df}}. It contains
 }
 \seealso{
 \code{\link{validate_ccmpp_object}} for object validation,

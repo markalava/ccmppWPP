@@ -6,7 +6,6 @@
 \usage{
 new_mig_parameter(
   x,
-  age_span = double(),
   time_span = double(),
   dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_parameter"),
   value_type = get_value_types_for_ccmpp_input_classes("mig_parameter"),
@@ -16,8 +15,6 @@ new_mig_parameter(
 )
 }
 \arguments{
-\item{age_span}{Scalar indicating the span of the age groups.}
-
 \item{time_span}{Scalar indicating the span of the time periods.}
 
 \item{dimensions}{Character vector listing the dimensions such as

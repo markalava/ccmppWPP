@@ -153,31 +153,63 @@ prepare_df_for_demog_change_component_df <- function(x,
 
     ## -------* Set-up _span columns
 
-    if ("time" %in% dimensions && !"time_span" %in% coln_x) {
-        diff_x <- diff(unique(x$time_start))[1]
-        if (!(is.numeric(diff_x) & is.finite(diff_x))) {
-            stop("'time_span' is not a column in 'x' and cannot determine it from 'x$time_span'.")
-        } else {
-            S3_class_message("'time_span' is not a column in 'x'; setting 'x$time_span' to '",
-                    diff_x,
-                    "'.")
-            x$time_span <- diff_x
-            ##time_span <- diff_x
-        }
-    } ##else time_span <- unique(x$time_span)
+    time_span_undefined <- TRUE
+    age_span_undefined <- TRUE
 
-    if ("age" %in% dimensions && !"age_span" %in% coln_x) {
-        diff_x <- diff(unique(x$age_start))[1]
-        if (!(is.numeric(diff_x) & is.finite(diff_x))) {
-            stop("'age_span' is not a column in 'x' and cannot determine it from 'x$age_span'.")
-        } else {
-            S3_class_message("'age_span' is not a column in 'x'; setting 'x$age_span' to '",
-                    diff_x,
-                    "'.")
-            x$age_span <- diff_x
-            ##age_span <- diff_x
+    if ("time" %in% dimensions) {
+        if ("time_span" %in% coln_x) time_span_undefined <- FALSE
+        else {
+            diff_x <- diff(unique(x$time_start))[1]
+            if (!(is.numeric(diff_x) & is.finite(diff_x))) {
+                time_span_undefined <- TRUE
+            } else {
+                S3_class_message("'time_span' is not a column in 'x'; setting 'x$time_span' to '",
+                                 diff_x,
+                                 "'.")
+                x$time_span <- diff_x
+                time_span_undefined <- FALSE
+            }
         }
-    } ##else age_span <- unique(x$age_span)
+    }
+
+    if ("age" %in% dimensions) {
+        if ("age_span" %in% coln_x) age_span_undefined <- FALSE
+        else {
+            diff_x <- diff(unique(x$age_start))[1]
+            if (!(is.numeric(diff_x) & is.finite(diff_x))) {
+                age_span_undefined <- TRUE
+            } else {
+                S3_class_message("'age_span' is not a column in 'x'; setting 'x$age_span' to '",
+                                 diff_x,
+                                 "'.")
+                x$age_span <- diff_x
+                age_span_undefined <- FALSE
+            }
+        }
+    }
+
+    ## If only one of age or time span undeterimined, set it equal to
+    ## the other.
+    if ("age" %in% dimensions && "time" %in% dimensions) {
+        if (identical(time_span_undefined + age_span_undefined, 2L))
+            stop("'time_span' is not a column in 'x' and cannot determine it from 'x$time_span'.",
+                 "\n",
+                 "'age_span' is not a column in 'x' and cannot determine it from 'x$age_span'.")
+        else if (identical(time_span_undefined + age_span_undefined, 1L)) {
+            if (time_span_undefined) {
+                x$time_span <- x$age_span
+                S3_class_message("'time_span' is not a column in 'x'; setting 'x$time_span' to 'age_span', which is '",
+                                 diff_x,
+                                 "'.")
+            } else if (age_span_undefined) {
+                x$age_span <- x$time_span
+                S3_class_message("'age_span' is not a column in 'x'; setting 'x$age_span' to 'time_span', which is '",
+                                 diff_x,
+                                 "'.")
+            }
+        }
+    }
+
 ### !!!!!!!!!! TEMPORARY !!!!!!!!!!!!
     ## Replace '1000' in x$age_span
     if ("age" %in% dimensions && !is.null(x$age_span) && !is.null(age_span)) {

@@ -45,7 +45,7 @@ new_pop_count_age_sex_base <-
 #' Constructor for class \code{pop_count_age_sex_base}
 #'
 #' \code{pop_count_age_sex_base} is a subclass of
-#' \code{\link{ccmpp_input_df}}. It imposes three additional conditions:
+#' \code{\link{ccmpp_input_df}}. It imposes two additional conditions:
 #' \enumerate{
 #'   \item{\code{Value_type} attribute equals \dQuote{count}.}
 #'   \item{Within year and sex, age must start at 0.}

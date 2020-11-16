@@ -22,7 +22,7 @@ new_pop_count_age_sex <-
              value_type = get_value_types_for_ccmpp_in_out_classes("pop_count_age_sex"),
              value_scale = double(),
              ..., class = character()) {
-        new_ccmpp_input_df(x = x,
+        new_ccmpp_output_df(x = x,
                            age_span = age_span,
                            time_span = time_span,
                            dimensions = dimensions,
@@ -36,42 +36,24 @@ new_pop_count_age_sex <-
 #' Constructor for class \code{pop_count_age_sex}
 #'
 #' \code{pop_count_age_sex} is a subclass of
-#' \code{\link{ccmpp_input_df}}. It imposes two additional conditions:
+#' \code{\link{ccmpp_output_df}}. It imposes two additional conditions:
 #' \enumerate{
-#'   \item{\code{Value_type} attribute equals \dQuote{rate}.}
+#'   \item{\code{Value_type} attribute equals \dQuote{count}.}
 #'   \item{Within year and sex, age must start at 0.}}
+#' It is intended as a class that can be used for the population
+#' counts produced by the CCMPP. There are methods for
+#' \code{\link{base::data.frame}}s and \code{link{ccmpp_input_list}}s.
 #'
-#' This function is generic with methods for \code{data.frame}, and
-#' \code{mig_net_prop_age_sex}. The latter method will compute the
-#' counts from migration proportions and a baseline population by
-#' simple multiplication of migration proportions by population
-#' counts, matched by age, sex, and time. Unlike
-#' \code{link{mig_net_prop_age_sex}} there is no
-#' \code{ccmpp_input_list} method because migration proportions are not a
-#' valid element of \code{ccmpp_input_list}s.
-#'
-#' @family ccmpp_input_objects
+#' @family ccmpp_output_objects
 #' @seealso \code{\link{validate_ccmpp_object}} for object validation,
-#'     \code{\link{ccmpp_input_df}} for the class from which this one
+#'     \code{\link{ccmpp_output_df}} for the class from which this one
 #'     inherits.
 #'
-#' @param x Depending on the method
-#' \describe{
-#'   \item{\code{data.frame}}{A \code{\link{base::data.frame}} object}
-#'   \item{\code{mig_net_prop_age_sex}}{A \code{\link{mig_net_prop_age_sex}} object}}
-#'
-#' @param pop_count_age_sex For the \code{mig_net_prop_age_sex}
-#'     method, an object that can be coreced to a
-#'     \code{\link{ccmpp_input_df}} object (e.g., a
-#'     \code{data.frame}), holding population counts from which to
-#'     calculate the migration counts. The \code{value_type} must be
-#'     \dQuote{count} and the \code{value_scale}s must match.
-#'
-#' @param value_scale_pop_count The scale of the \code{value} column
-#'     in \code{pop_count_age_sex}. If unspecified, defaults to the
-#'     \dQuote{value_scale} attribute of \code{pop_count_age_sex} if
-#'     non-\code{NULL}, otherwise \code{1}.
-#'
+#' @param x A \code{\link{base::data.frame}} or
+#'     \code{link{ccmpp_input_list}} object.
+#' @param keep_baseline Logical, \code{link{ccmpp_input_list}} method:
+#'     should the baseline population counts be included in the
+#'     output?
 #' @inheritParams demog_change_component_df
 #' @return An object of class \code{pop_count_age_sex}.
 #' @author Mark Wheldon
@@ -87,7 +69,7 @@ pop_count_age_sex.data.frame <-
     function(x,
              value_scale = attr(x, "value_scale"), ...) {
 
-        li <- prepare_df_for_ccmpp_input_df(x,
+        li <- prepare_df_for_ccmpp_output_df(x,
                             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("pop_count_age_sex"),
                             value_type = get_value_types_for_ccmpp_in_out_classes("pop_count_age_sex"),
                             value_scale = value_scale)
@@ -101,6 +83,34 @@ pop_count_age_sex.data.frame <-
         )
     }
 
+#' @rdname
+#' @export
+pop_count_age_sex.ccmpp_input_list <-
+    function(x, keep_baseline = TRUE, ...) {
+
+        val_scale_x <-
+            as.numeric(value_scale(pop_count_base_component(x)))
+
+        pop_out <- data_reshape_ccmpp_output(
+            project_ccmpp_loop_over_time(indata = x))$pop_count_age_sex
+        pop_out <- pop_out[pop_out$sex %in% c("male", "female"), ]
+        if (keep_baseline)
+            pop_out <- rbind(x$pop_count_age_sex_base, pop_out)
+
+        pop_out <- prepare_df_for_ccmpp_output_df(pop_out,
+                            dimensions = get_req_dimensions_for_ccmpp_in_out_classes("pop_count_age_sex"),
+                            value_type = get_value_types_for_ccmpp_in_out_classes("pop_count_age_sex"),
+                            value_scale = val_scale_x)
+
+        ## Create/Validate
+        validate_ccmpp_object(
+            new_pop_count_age_sex(pop_out$df,
+                               age_span = pop_out$age_span,
+                               time_span = pop_out$time_span,
+                               value_scale = pop_out$value_scale)
+        )
+    }
+
 
 #' Coerce to a \code{pop_count_age_sex}
 #'
@@ -108,7 +118,7 @@ pop_count_age_sex.data.frame <-
 #' \code{pop_count_age_sex} if possible, or check if it is
 #' one.
 #'
-#' @family ccmpp_input_objects
+#' @family ccmpp_output_objects
 #' @seealso \code{\link{coerce_demog_change_component_df}}
 #'
 #' @inheritParams coerce_demog_change_component_df

@@ -12,6 +12,7 @@ get_req_attr_names_for_ccmpp_in_out_dfs_for_dimensions <- function(dimensions) {
 
 get_dimensions_info_for_ccmpp_in_out_classes <-
     function(classes = get_all_demog_change_component_df_class_names()) {
+    ## NOTE: Make sure anything added here is also added to 'get_all_demog_change_component_df_class_names()'
         db <- list(pop_count_age_sex_base =
                        ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
                    fert_rate_age_f =
@@ -32,8 +33,10 @@ get_dimensions_info_for_ccmpp_in_out_classes <-
                        ensure_these_dimensions_correctly_ordered(c("indicator", "time")),
                    life_table_age_sex =
                        ensure_these_dimensions_correctly_ordered(
-                           c("indicator", "time", "sex", "age")
-                       ))
+                           c("indicator", "time", "sex", "age")),
+                   pop_count_age_sex =
+                       ensure_these_dimensions_correctly_ordered(c("time", "sex", "age"))
+                   )
         if (identical(length(classes), 1L))
             return(db[[classes]])
         else return(db[names(db) %in% classes])
@@ -107,7 +110,9 @@ get_value_type_info_for_ccmpp_in_out_classes <- function(class = get_all_demog_c
                      c(class = "mig_parameter",
                        value_type = "categorical"),
                      c(class = "life_table_age_sex",
-                       value_type = "real")
+                       value_type = "real"),
+                     c(class = "pop_count_age_sex",
+                       value_type = "count")
                      ), stringsAsFactors = FALSE)
     return(db[db$class %in% class,])
 }
@@ -142,7 +147,9 @@ get_value_scale_annotations_info_for_ccmpp_in_out_classes <- function(class = ge
                      c(class = "mig_parameter",
                        annotation = NA),
                      c(class = "life_table_age_sex",
-                       annotation = "radix")
+                       annotation = "radix"),
+                     c(class = "pop_count_age_sex",
+                       annotation = NA)
         ), stringsAsFactors = FALSE)
     return(db[db$class %in% class,])
 }

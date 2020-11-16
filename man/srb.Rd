@@ -41,7 +41,6 @@ Other ccmpp_input_objects:
 \code{\link{coerce_mig_net_rate_age_sex}},
 \code{\link{coerce_mig_parameter}},
 \code{\link{coerce_pop_count_age_sex_base}},
-\code{\link{coerce_pop_count_age_sex}},
 \code{\link{coerce_srb}},
 \code{\link{coerce_survival_ratio_age_sex}},
 \code{\link{fert_rate_age_f}()},
@@ -52,7 +51,6 @@ Other ccmpp_input_objects:
 \code{\link{mig_net_rate_age_sex}()},
 \code{\link{mig_parameter}()},
 \code{\link{pop_count_age_sex_base}()},
-\code{\link{pop_count_age_sex}()},
 \code{\link{survival_ratio_age_sex}()}
 }
 \author{

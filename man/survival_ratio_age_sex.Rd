@@ -4,11 +4,7 @@
 \alias{survival_ratio_age_sex}
 \title{Constructor for class \code{survival_ratio_age_sex}}
 \usage{
-survival_ratio_age_sex(
-  x,
-  age_span = attr(x, "age_span"),
-  time_span = attr(x, "time_span")
-)
+survival_ratio_age_sex(x)
 }
 \arguments{
 \item{x}{For \code{demog_change_component_df}: A data frame with

@@ -53,9 +53,7 @@ new_survival_ratio_age_sex <-
 #' @author Mark Wheldon
 #' @export
 survival_ratio_age_sex <-
-    function(x,
-             age_span = attr(x, "age_span"),
-             time_span = attr(x, "time_span")) {
+    function(x) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
                            dimensions = get_req_dimensions_for_ccmpp_input_classes("survival_ratio_age_sex"),

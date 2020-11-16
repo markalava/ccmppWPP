@@ -5,8 +5,10 @@
 %   R/S3_classes_mig_net_count_input_df.R,
 %   R/S3_classes_mig_net_count_tot_input_df.R,
 %   R/S3_classes_mig_net_prop_input_df.R, R/S3_classes_mig_net_rate_input_df.R,
-%   R/S3_classes_mig_parameter_input_df.R, R/S3_classes_pop_count_base_input.R,
-%   R/S3_classes_srb_input_df.R, R/S3_classes_survival_ratio_input_df.R
+%   R/S3_classes_mig_parameter_input_df.R,
+%   R/S3_classes_pop_count_age_sex_output_df.R,
+%   R/S3_classes_pop_count_base_input.R, R/S3_classes_srb_input_df.R,
+%   R/S3_classes_survival_ratio_input_df.R
 \name{subset_indicator.ccmpp_input_df}
 \alias{subset_indicator.ccmpp_input_df}
 \alias{subset_time.ccmpp_input_df}
@@ -39,6 +41,9 @@
 \alias{subset_sex.mig_net_rate_age_sex}
 \alias{subset_time.mig_parameter}
 \alias{subset_indicator.mig_parameter}
+\alias{subset_time.pop_count_age_sex}
+\alias{subset_age.pop_count_age_sex}
+\alias{subset_sex.pop_count_age_sex}
 \alias{subset_time.pop_count_age_sex_base}
 \alias{subset_age.pop_count_age_sex_base}
 \alias{subset_sex.pop_count_age_sex_base}
@@ -107,6 +112,12 @@ subset_indicator(x, indicators, include = TRUE, ...)
 \method{subset_time}{mig_parameter}(x, times, include = TRUE)
 
 \method{subset_indicator}{mig_parameter}(x, times, include = TRUE)
+
+\method{subset_time}{pop_count_age_sex}(x, times, include = TRUE)
+
+\method{subset_age}{pop_count_age_sex}(x, ages, include = TRUE)
+
+\method{subset_sex}{pop_count_age_sex}(x, sexes, include = TRUE)
 
 \method{subset_time}{pop_count_age_sex_base}(x, times, include = TRUE)
 

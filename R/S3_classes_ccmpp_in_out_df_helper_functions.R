@@ -1,7 +1,7 @@
 ###-----------------------------------------------------------------------------
 ### * dimensions
 
-get_req_attr_names_for_ccmpp_input_dfs_for_dimensions <- function(dimensions) {
+get_req_attr_names_for_ccmpp_in_out_dfs_for_dimensions <- function(dimensions) {
     out <- get_req_attr_names_for_dimensions(dimensions)
     for (dim_w_span in get_all_dimensions_w_spans()) {
         if (dim_w_span %in% dimensions)
@@ -10,7 +10,7 @@ get_req_attr_names_for_ccmpp_input_dfs_for_dimensions <- function(dimensions) {
     return(out)
 }
 
-get_dimensions_info_for_ccmpp_input_classes <-
+get_dimensions_info_for_ccmpp_in_out_classes <-
     function(classes = get_all_demog_change_component_df_class_names()) {
         db <- list(pop_count_age_sex_base =
                        ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
@@ -39,12 +39,12 @@ get_dimensions_info_for_ccmpp_input_classes <-
         else return(db[names(db) %in% classes])
 }
 
-get_req_dimensions_for_ccmpp_input_classes <- function(classes) {
-    get_dimensions_info_for_ccmpp_input_classes(classes)
+get_req_dimensions_for_ccmpp_in_out_classes <- function(classes) {
+    get_dimensions_info_for_ccmpp_in_out_classes(classes)
 }
 
-check_dimensions_for_ccmpp_input_class <- function(class, dimensions) {
-    req_dims <- get_req_dimensions_for_ccmpp_input_classes(class)
+check_dimensions_for_ccmpp_in_out_class <- function(class, dimensions) {
+    req_dims <- get_req_dimensions_for_ccmpp_in_out_classes(class)
     if (!setequal(dimensions, req_dims))
         stop("'", class, "' objects must have dimensions 'c(\"",
              paste(req_dims, collapse = "\", \""), "\")'. This object has dimensions 'c(\"",
@@ -53,13 +53,13 @@ check_dimensions_for_ccmpp_input_class <- function(class, dimensions) {
         return(invisible(dimensions))
 }
 
-check_dimensions_for_ccmpp_input_df <- function(x) {
+check_dimensions_for_ccmpp_in_out_df <- function(x) {
     class_x <- oldClass(x)[1]
     dims_x <-
-        check_dimensions_for_ccmpp_input_class(class = class_x,
+        check_dimensions_for_ccmpp_in_out_class(class = class_x,
                                            dimensions =
                                                demog_change_component_dims(x))
-    req_dims <- get_req_dimensions_for_ccmpp_input_classes(class_x)
+    req_dims <- get_req_dimensions_for_ccmpp_in_out_classes(class_x)
     dims_from_cols <- guess_dimensions_from_df_cols(x)
     if (!setequal(dims_x, dims_from_cols)) {
         offending_col_names <-
@@ -77,7 +77,7 @@ check_dimensions_for_ccmpp_input_df <- function(x) {
 ### * Values
 
 ## Check value type
-check_value_type_of_value_in_ccmpp_input_df <- function(value) {
+check_value_type_of_value_in_ccmpp_in_out_df <- function(value) {
     if (any(is.na(value)))
         stop("'value' column has missing entries; these are not permitted in 'ccmpp_input_df' objects.")
     return(invisible())
@@ -86,7 +86,7 @@ check_value_type_of_value_in_ccmpp_input_df <- function(value) {
 ###-----------------------------------------------------------------------------
 ### * 'value_type' attribute
 
-get_value_type_info_for_ccmpp_input_classes <- function(class = get_all_demog_change_component_df_class_names()) {
+get_value_type_info_for_ccmpp_in_out_classes <- function(class = get_all_demog_change_component_df_class_names()) {
     ## NOTE: Make sure anything added here is also added to 'get_all_demog_change_component_df_class_names()'
     db <- data.frame(rbind(c(class = "fert_rate_age_f",
                        value_type = "rate"),
@@ -112,8 +112,8 @@ get_value_type_info_for_ccmpp_input_classes <- function(class = get_all_demog_ch
     return(db[db$class %in% class,])
 }
 
-get_value_types_for_ccmpp_input_classes <- function(classes) {
-    tb <- get_value_type_info_for_ccmpp_input_classes()
+get_value_types_for_ccmpp_in_out_classes <- function(classes) {
+    tb <- get_value_type_info_for_ccmpp_in_out_classes()
     out <- tb[tb$class %in% classes, "value_type"]
     if (!length(out)) out <- NA
     return(out)
@@ -122,7 +122,7 @@ get_value_types_for_ccmpp_input_classes <- function(classes) {
 ###-----------------------------------------------------------------------------
 ### * 'value_scale' attribute
 
-get_value_scale_annotations_info_for_ccmpp_input_classes <- function(class = get_all_demog_change_component_df_class_names()) {
+get_value_scale_annotations_info_for_ccmpp_in_out_classes <- function(class = get_all_demog_change_component_df_class_names()) {
     db <- data.frame(rbind(c(class = "ccmpp_input_df",
                              annotation = NA),
                            c(class = "fert_rate_age_f",
@@ -147,8 +147,8 @@ get_value_scale_annotations_info_for_ccmpp_input_classes <- function(class = get
     return(db[db$class %in% class,])
 }
 
-get_value_scale_annotations_for_ccmpp_input_classes <- function(classes) {
-    tb <- get_value_scale_annotations_info_for_ccmpp_input_classes()
+get_value_scale_annotations_for_ccmpp_in_out_classes <- function(classes) {
+    tb <- get_value_scale_annotations_info_for_ccmpp_in_out_classes()
     out <- tb[tb$class %in% classes, "annotation"]
     if (!length(out)) out <- NA
     return(out)

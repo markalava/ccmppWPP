@@ -6,6 +6,11 @@ not_a_valid_object_msg <- function(class, ...) {
     paste0("Not a valid '", class, "' object:\n", ...)
 }
 
+## Unusual values
+get_mig_net_prop_value_warning_threshold <- function() {
+    0.5
+}
+
 ## Error checking: Report on near equality of sexes
 #' @noRd
 sexes_unequal <- function(x, x_name = "x", tolerance = 1e-6, scale = NULL,
@@ -307,13 +312,13 @@ validate_ccmpp_object.ccmpp_input_df <- function(x, ...) {
 
     ## VALUES:
     ## 1. Cannot be 'NA':
-    check_value_type_of_value_in_ccmpp_input_df(x$value)
+    check_value_type_of_value_in_ccmpp_in_out_df(x$value)
 
     ## ATTRIBUTES:
     ## 1. Extra attributes required
 
     req_attr <-
-        get_req_attr_names_for_ccmpp_input_dfs_for_dimensions(demog_change_component_dims(x))
+        get_req_attr_names_for_ccmpp_in_out_dfs_for_dimensions(demog_change_component_dims(x))
     if (!all(req_attr %in% names(attributes(x))))
         stop(not_a_valid_object_msg("ccmpp_input_df",
                                     "'x' must have attributes '",
@@ -409,7 +414,7 @@ validate_ccmpp_object.fert_rate_age_f <- function(x, ...) {
                                     "'value' column has negative elements."))
 
     ## value_type
-    val_type <- get_value_types_for_ccmpp_input_classes("fert_rate_age_f")
+    val_type <- get_value_types_for_ccmpp_in_out_classes("fert_rate_age_f")
     if (!identical(value_type(x), val_type))
         stop(not_a_valid_object_msg("fert_rate_age_f",
                                     "'value_type' must be \"", val_type, "\"."))
@@ -432,7 +437,7 @@ validate_ccmpp_object.fert_rate_age_f <- function(x, ...) {
              "'."))
 
     ## Check dimensions
-    check_dimensions_for_ccmpp_input_df(x)
+    check_dimensions_for_ccmpp_in_out_df(x)
 
     return(x)
 }
@@ -451,13 +456,13 @@ validate_ccmpp_object.survival_ratio_age_sex <- function(x, check_sex_equality_b
                                     "'value' column has elements < 0 or > 1."))
 
     ## value_type
-    val_type <- get_value_types_for_ccmpp_input_classes("survival_ratio_age_sex")
+    val_type <- get_value_types_for_ccmpp_in_out_classes("survival_ratio_age_sex")
     if (!identical(value_type(x), val_type))
         stop(not_a_valid_object_msg("survival_ratio_age_sex",
                                     "'value_type' must be \"", val_type, "\"."))
 
     ## Check dimensions
-    check_dimensions_for_ccmpp_input_df(x)
+    check_dimensions_for_ccmpp_in_out_df(x)
 
     ## Must have 'male' and 'female'
     if (!all(c("male", "female") %in% sexes(x)))
@@ -486,13 +491,13 @@ validate_ccmpp_object.pop_count_age_sex_base <- function(x, check_sex_equality_b
                                     "'value' column has negative elements."))
 
     ## value_type
-    val_type <- get_value_types_for_ccmpp_input_classes("pop_count_age_sex_base")
+    val_type <- get_value_types_for_ccmpp_in_out_classes("pop_count_age_sex_base")
     if (!identical(value_type(x), val_type))
         stop(not_a_valid_object_msg("pop_count_age_sex_base",
                                     "'value_type' must be \"", val_type, "\"."))
 
     ## Check dimensions
-    check_dimensions_for_ccmpp_input_df(x)
+    check_dimensions_for_ccmpp_in_out_df(x)
 
     ## no time dimension
     if (is_by_time(x)) {
@@ -529,13 +534,13 @@ validate_ccmpp_object.srb <- function(x, ...) {
                                     "'value' column has negative elements."))
 
     ## value_type
-    val_type <- get_value_types_for_ccmpp_input_classes("srb")
+    val_type <- get_value_types_for_ccmpp_in_out_classes("srb")
     if (!identical(value_type(x), val_type))
         stop(not_a_valid_object_msg("srb",
                                     "'value_type' must be \"", val_type, "\"."))
 
     ## Check dimensions
-    check_dimensions_for_ccmpp_input_df(x)
+    check_dimensions_for_ccmpp_in_out_df(x)
 
     return(x)
 }
@@ -549,13 +554,13 @@ validate_ccmpp_object.mig_net_rate_age_sex <- function(x, ...) {
     x <- NextMethod()
 
     ## value_type
-    val_type <- get_value_types_for_ccmpp_input_classes("mig_net_rate_age_sex")
+    val_type <- get_value_types_for_ccmpp_in_out_classes("mig_net_rate_age_sex")
     if (!identical(value_type(x), val_type))
         stop(not_a_valid_object_msg("mig_net_rate_age_sex",
                                     "'value_type' must be \"", val_type, "\"."))
 
      ## Check dimensions
-    check_dimensions_for_ccmpp_input_df(x)
+    check_dimensions_for_ccmpp_in_out_df(x)
 
     ## Must have 'male' and 'female'
     if (!all(c("male", "female") %in% sexes(x)))
@@ -574,13 +579,13 @@ validate_ccmpp_object.mig_net_count_age_sex <- function(x, ...) {
     x <- NextMethod()
 
     ## value_type
-    val_type <- get_value_types_for_ccmpp_input_classes("mig_net_count_age_sex")
+    val_type <- get_value_types_for_ccmpp_in_out_classes("mig_net_count_age_sex")
     if (!identical(value_type(x), val_type))
         stop(not_a_valid_object_msg("mig_net_count_age_sex",
                                     "'value_type' must be \"", val_type, "\"."))
 
      ## Check dimensions
-    check_dimensions_for_ccmpp_input_df(x)
+    check_dimensions_for_ccmpp_in_out_df(x)
 
     ## Must have 'male' and 'female'
     if (!all(c("male", "female") %in% sexes(x)))
@@ -599,13 +604,13 @@ validate_ccmpp_object.mig_net_count_tot_b <- function(x, ...) {
     x <- NextMethod()
 
     ## value_type
-    val_type <- get_value_types_for_ccmpp_input_classes("mig_net_count_tot_b")
+    val_type <- get_value_types_for_ccmpp_in_out_classes("mig_net_count_tot_b")
     if (!identical(value_type(x), val_type))
         stop(not_a_valid_object_msg("mig_net_count_tot_b",
                                     "'value_type' must be \"", val_type, "\"."))
 
      ## Check dimensions
-    check_dimensions_for_ccmpp_input_df(x)
+    check_dimensions_for_ccmpp_in_out_df(x)
 
     ## Check 'sex'
     if (is_by_sex(x)) {
@@ -620,19 +625,50 @@ validate_ccmpp_object.mig_net_count_tot_b <- function(x, ...) {
 
 #' @rdname validate_ccmpp_object
 #' @export
+validate_ccmpp_object.mig_net_prop_age_sex <- function(x, ...) {
+
+    ## Base checks
+    x <- NextMethod()
+
+    ## value_type
+    val_type <- get_value_types_for_ccmpp_in_out_classes("mig_net_prop_age_sex")
+    if (!identical(value_type(x), val_type))
+        stop(not_a_valid_object_msg("mig_net_prop_age_sex",
+                                    "'value_type' must be \"", val_type, "\"."))
+
+     ## Check dimensions
+    check_dimensions_for_ccmpp_in_out_df(x)
+
+    ## Must have 'male' and 'female'
+    if (!all(c("male", "female") %in% sexes(x)))
+        stop(not_a_valid_object_msg("mig_net_prop_age_sex",
+                                    "'x' must have data on both 'male' and 'female'."))
+
+    ## Sanity check magnitudes
+    large_vals <- abs(x$value) > get_mig_net_prop_value_warning_threshold()
+    if (sum(large_vals))
+        warning("'x' has unusually large values for a net migration proportions; absolute values are larger than 0.5 in rows:\n\t",
+                toString(which(large_vals), width = 40)
+                )
+    return(x)
+}
+
+
+#' @rdname validate_ccmpp_object
+#' @export
 validate_ccmpp_object.mig_parameter <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
 
     ## value_type
-    val_type <- get_value_types_for_ccmpp_input_classes("mig_parameter")
+    val_type <- get_value_types_for_ccmpp_in_out_classes("mig_parameter")
     if (!identical(value_type(x), val_type))
         stop(not_a_valid_object_msg("mig_parameter",
                                     "'value_type' must be \"", val_type, "\"."))
 
      ## Check dimensions
-    check_dimensions_for_ccmpp_input_df(x)
+    check_dimensions_for_ccmpp_in_out_df(x)
 
     ## Allowed indicator and value categories
     if (!all(get_required_indicator_categories_mig_parameter() %in% unique(indicators(x))))
@@ -669,13 +705,13 @@ validate_ccmpp_object.life_table_age_sex <- function(x, check_sex_equality_by_ti
                                     "'value' column has negative elements."))
 
     ## value_type
-    val_type <- get_value_types_for_ccmpp_input_classes("life_table_age_sex")
+    val_type <- get_value_types_for_ccmpp_in_out_classes("life_table_age_sex")
     if (!identical(value_type(x), val_type))
         stop(not_a_valid_object_msg("life_table_age_sex",
                                     "'value_type' must be \"", val_type, "\"."))
 
      ## Check dimensions
-    check_dimensions_for_ccmpp_input_df(x)
+    check_dimensions_for_ccmpp_in_out_df(x)
 
     ## Allowed indicator and value categories
     if (!all(get_required_indicator_categories_life_table() %in% unique(indicators(x))))
@@ -858,6 +894,9 @@ validate_ccmpp_object.ccmpp_input_list <- function(x, ...) {
     if (!isTRUE(all_eq))
         warning("'mig_net_count_tot_b' is not consistent with totals calculated from 'mig_net_count_tot_b':\n",
                 paste(all_eq, collapse = "\n"))
+
+    ## Check migration proportions are not too big
+    mig_prop <- mig_net_prop_age_sex
 
     ## FINISH
     return(x)

@@ -12,6 +12,7 @@
 \alias{validate_ccmpp_object.mig_net_rate_age_sex}
 \alias{validate_ccmpp_object.mig_net_count_age_sex}
 \alias{validate_ccmpp_object.mig_net_count_tot_b}
+\alias{validate_ccmpp_object.mig_net_prop_age_sex}
 \alias{validate_ccmpp_object.mig_parameter}
 \alias{validate_ccmpp_object.life_table_age_sex}
 \alias{validate_ccmpp_object.ccmpp_input_list}
@@ -38,6 +39,8 @@ validate_ccmpp_object(x, ...)
 \method{validate_ccmpp_object}{mig_net_count_age_sex}(x, ...)
 
 \method{validate_ccmpp_object}{mig_net_count_tot_b}(x, ...)
+
+\method{validate_ccmpp_object}{mig_net_prop_age_sex}(x, ...)
 
 \method{validate_ccmpp_object}{mig_parameter}(x, ...)
 

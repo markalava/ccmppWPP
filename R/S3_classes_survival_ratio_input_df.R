@@ -20,8 +20,8 @@ new_survival_ratio_age_sex <-
              age_span = double(),
              time_span = double(),
              non_zero_fert_ages = double(),
-             dimensions = get_req_dimensions_for_ccmpp_input_classes("survival_ratio_age_sex"),
-             value_type = get_value_types_for_ccmpp_input_classes("survival_ratio_age_sex"),
+             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("survival_ratio_age_sex"),
+             value_type = get_value_types_for_ccmpp_in_out_classes("survival_ratio_age_sex"),
              value_scale = NA,
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
@@ -56,8 +56,8 @@ survival_ratio_age_sex <-
     function(x) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
-                           dimensions = get_req_dimensions_for_ccmpp_input_classes("survival_ratio_age_sex"),
-                           value_type = get_value_types_for_ccmpp_input_classes("survival_ratio_age_sex"),
+                           dimensions = get_req_dimensions_for_ccmpp_in_out_classes("survival_ratio_age_sex"),
+                           value_type = get_value_types_for_ccmpp_in_out_classes("survival_ratio_age_sex"),
                            value_scale = NA)
 
         ## Create/Validate

@@ -22,8 +22,27 @@ test_that("subsetting works", {
     x <- ccmpp_input_list_example
     x <- mig_net_prop_age_sex(x)
 
-    y <- subset_sex(x, "female")
+    y <- subset_age(x, 0:10)
     expect_s3_class(y, "mig_net_prop_age_sex")
     expect_identical(demog_change_component_dims(y),
                      c("time", "sex", "age"))
-    })
+    expect_identical(as.numeric(unique(y$age_start)), as.numeric(0:10))
+})
+
+
+test_that("unusual values trigger warning", {
+    x <- data.frame(expand.grid(age_start = 0:4, time_start = 1950:1954,
+                                sex = c("male", "female")),
+                    value = 0.01)
+    x[c(2,5), "value"] <- ccmppWPP:::get_mig_net_prop_value_warning_threshold() * 2
+    expect_warning(mig_net_prop_age_sex(x),
+                   "2, 5")
+
+    ## pop_count_age_sex <-
+    ##         rbind(ccmpp_input_list_example$pop_count_age_sex_base,
+    ##               data_reshape_ccmpp_output(
+    ##                   project_ccmpp_loop_over_time(
+    ##                       indata = ccmpp_input_list_example))$pop_count_age_sex)
+
+    ## mig_net_count_component(ccmpp_input_list_example)
+})

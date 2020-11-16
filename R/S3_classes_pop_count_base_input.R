@@ -27,8 +27,8 @@ new_pop_count_age_sex_base <-
     function(x,
              age_span = double(),
              time_span = double(),
-             dimensions =  get_req_dimensions_for_ccmpp_input_classes("pop_count_age_sex_base"),
-             value_type = get_value_types_for_ccmpp_input_classes("pop_count_age_sex_base"),
+             dimensions =  get_req_dimensions_for_ccmpp_in_out_classes("pop_count_age_sex_base"),
+             value_type = get_value_types_for_ccmpp_in_out_classes("pop_count_age_sex_base"),
              value_scale = double(),
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
@@ -69,8 +69,8 @@ pop_count_age_sex_base <-
         else if (!is.numeric(value_scale)) stop("'value_scale' must be numeric.")
 
         li <- prepare_df_for_ccmpp_input_df(x,
-                            dimensions =  get_req_dimensions_for_ccmpp_input_classes("pop_count_age_sex_base"),
-                            value_type = get_value_types_for_ccmpp_input_classes("pop_count_age_sex_base"),
+                            dimensions =  get_req_dimensions_for_ccmpp_in_out_classes("pop_count_age_sex_base"),
+                            value_type = get_value_types_for_ccmpp_in_out_classes("pop_count_age_sex_base"),
                             value_scale = value_scale)
 
         ## Create/Validate

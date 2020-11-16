@@ -108,15 +108,19 @@ ccmppWPP_workflow_one_country_variant <- function(wpp_input) {
     lt_summary            <- lt_summary(lt_data = lt_abridged_age_sex,
                                              byvar = c("time_start","time_span", "sex"))
 
+  # add sex field to births data frame
+    birth_count_age_1x1        <- ccmpp_output$birth_count_age_b
+    birth_count_age_1x1$sex    <- "both"
+    
   # sum to five-year age groups
     # population
     pop_count_age_sex_5x1      <- sum_five_year_age_groups(indata = pop_count_age_sex,
                                                            byvar = c("time_start","time_span","sex"))
   
     # births
-    birth_count_age_b_5x1      <- sum_five_year_age_groups(indata = ccmpp_output$birth_count_age_b,
-                                                           byvar = c("time_start","time_span"))
-  
+    birth_count_age_5x1        <- sum_five_year_age_groups(indata = birth_count_age_1x1,
+                                                           byvar = c("time_start","time_span","sex"))
+
     # exposures
     exposure_count_age_sex_5x1 <- sum_five_year_age_groups(indata = exposure_count_age_sex,
                                                            byvar = c("time_start","time_span","sex"))
@@ -209,37 +213,37 @@ ccmppWPP_workflow_one_country_variant <- function(wpp_input) {
 
 # compute some fertility indicators
   # fertility rates by 5-year age group of mother
-  fert_rate_age_f_5x1      <- data.frame(time_start  = birth_count_age_b_5x1$time_start,
-                                         time_span   = birth_count_age_b_5x1$time_span,
-                                         age_start   = birth_count_age_b_5x1$age_start,
-                                         age_span    = birth_count_age_b_5x1$age_span,
-                                         value = birth_count_age_b_5x1$value/
+  fert_rate_age_5x1      <- data.frame(time_start  = birth_count_age_5x1$time_start,
+                                         time_span   = birth_count_age_5x1$time_span,
+                                         age_start   = birth_count_age_5x1$age_start,
+                                         age_span    = birth_count_age_5x1$age_span,
+                                         value = birth_count_age_5x1$value/
                                            exposure_count_age_sex_5x1$value[which(exposure_count_age_sex_5x1$sex == "female")])
   # total fertility rate
-  fert_rate_tot_f          <- sum_last_column(ccmpp_input$fert_rate_age_f[, c("time_start", "time_span", "value")])
+  fert_rate_tot          <- sum_last_column(ccmpp_input$fert_rate_age_f[, c("time_start", "time_span", "value")])
 
   # gross reproduction rate
-  fert_rate_gross_f        <- fert_gross(fert_data_age = ccmpp_input$fert_rate_age_f,
+  fert_rate_gross        <- fert_gross(fert_data_age = ccmpp_input$fert_rate_age_f,
                                          srb           = ccmpp_input$srb,
                                          byvar         = c("time_start", "time_span"))
   
   # net reproduction rate
-  fert_rate_net_f          <- fert_net(fert_data_age = ccmpp_input$fert_rate_age_f,
+  fert_rate_net          <- fert_net(fert_data_age = ccmpp_input$fert_rate_age_f,
                                          srb           = ccmpp_input$srb,
                                          nLx           = ccmpp_input$life_table_age_sex[ccmpp_input$life_table_age_sex$sex == "female" &
                                                                                           ccmpp_input$life_table_age_sex$indicator == "lt_nLx",],
                                          byvar         = c("time_start", "time_span"))
   
   # percentage age-specific fertility rates
-  fert_pct_age_f_1x1       <- fert_pasfr(fert_data_age = ccmpp_input$fert_rate_age_f,
+  fert_pct_age_1x1       <- fert_pasfr(fert_data_age = ccmpp_input$fert_rate_age_f,
                                          byvar         = c("time_start", "time_span"))
 
 
-  fert_pct_age_f_5x1       <- fert_pasfr(fert_data_age = fert_rate_age_f_5x1,
+  fert_pct_age_5x1       <- fert_pasfr(fert_data_age = fert_rate_age_5x1,
                                          byvar         = c("time_start", "time_span"))
 
   # mean age of childbearing
-  fert_mean_age_f          <- fert_mac(fert_data_age = ccmpp_input$fert_rate_age_f,
+  fert_mean_age          <- fert_mac(fert_data_age = ccmpp_input$fert_rate_age_f,
                                        byvar         = c("time_start", "time_span"))
 
 # compile warning messages to be communicated to analysts
@@ -279,18 +283,18 @@ ccmppWPP_workflow_one_country_variant <- function(wpp_input) {
                           pop_sex_ratio              = pop_sex_ratio,
                           pop_sex_ratio_age_1x1      = pop_sex_ratio_age_1x1,
                           pop_sex_ratio_age_5x1      = pop_sex_ratio_age_5x1,
-                          birth_count_age_b_1x1      = ccmpp_output$birth_count_age_b,
-                          birth_count_age_b_5x1      = birth_count_age_b_5x1,
+                          birth_count_age_1x1        = birth_count_age_1x1,
+                          birth_count_age_5x1        = birth_count_age_5x1,
                           birth_count_tot_sex        = ccmpp_output$birth_count_tot_sex,
                           birth_rate_crude           = birth_rate_crude,
-                          fert_rate_age_f_1x1        = ccmpp_input$fert_rate_age_f,
-                          fert_rate_age_f_5x1        = fert_rate_age_f_5x1,
-                          fert_pct_age_f_1x1         = fert_pct_age_f_1x1,
-                          fert_pct_age_f_5x1         = fert_pct_age_f_5x1,
-                          fert_rate_tot_f            = fert_rate_tot_f,
-                          fert_rate_gross_f          = fert_rate_gross_f,
-                          fert_rate_net_f            = fert_rate_net_f,
-                          fert_mean_age_f            = fert_mean_age_f,
+                          fert_rate_age_1x1          = ccmpp_input$fert_rate_age_f,
+                          fert_rate_age_5x1          = fert_rate_age_5x1,
+                          fert_pct_age_1x1           = fert_pct_age_1x1,
+                          fert_pct_age_5x1           = fert_pct_age_5x1,
+                          fert_rate_tot              = fert_rate_tot,
+                          fert_rate_gross            = fert_rate_gross,
+                          fert_rate_net              = fert_rate_net,
+                          fert_mean_age              = fert_mean_age,
                           srb                        = ccmpp_input$srb,
                           death_count_age_sex_1x1    = death_count_age_sex,
                           death_count_age_sex_5x1    = death_count_age_sex_5x1,

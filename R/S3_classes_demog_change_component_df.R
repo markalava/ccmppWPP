@@ -189,8 +189,16 @@ prepare_df_for_demog_change_component_df <- function(x,
     ## -------* Values
 
     if (is.null(value_type)) {
-        S3_class_message("Argument 'value_type' is 'NULL'; setting 'value_type' to 'real'.")
-        value_type <- "real"
+        if (all(is.na(x$value))) {
+            S3_class_message("Argument 'value_type' is 'NULL' and all 'value' column entries are 'NA'; setting 'value_type' to 'real'.")
+            value_type <- "real"
+        } else if (is.numeric(x$value)) {
+            S3_class_message("Argument 'value_type' is 'NULL'; setting 'value_type' to 'real'.")
+            value_type <- "real"
+        } else if (is.character(x$value)) {
+            S3_class_message("Argument 'value_type' is 'NULL'; setting 'value_type' to 'categorical'.")
+            value_type <- "categorical"
+        }
     }
 
     ## -------* Value_Scale

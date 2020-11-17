@@ -592,9 +592,6 @@ validate_ccmpp_object.ccmpp_input_list <- function(x, ...) {
         warning("'mig_net_count_tot_b' is not consistent with totals calculated from 'mig_net_count_tot_b':\n",
                 paste(all_eq, collapse = "\n"))
 
-    ## Check migration proportions are not too big
-    mig_prop <- mig_net_prop_age_sex
-
     ## FINISH
     return(x)
 }

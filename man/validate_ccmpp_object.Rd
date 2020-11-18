@@ -50,7 +50,7 @@ validate_ccmpp_object(x, ...)
 
 \method{validate_ccmpp_object}{life_table_age_sex}(x, check_sex_equality_by_time, ...)
 
-\method{validate_ccmpp_object}{ccmpp_input_list}(x, ...)
+\method{validate_ccmpp_object}{ccmpp_input_list}(x, .validate_elements = TRUE, ...)
 
 \method{validate_ccmpp_object}{ccmpp_output_df}(x, ...)
 
@@ -63,6 +63,10 @@ validate_ccmpp_object(x, ...)
 \code{survival_ratio_age_sex}, \code{pop_count_age_sex_base},
 and \code{life_table_age_sex} objects only. See
 \dQuote{Details}.}
+
+\item{.validate_elements}{For \dQuote{\code{_list}} objects, should
+the individual elements also be validated? Unless you are
+\emph{sure}, always leave \code{TRUE} (default).}
 }
 \value{
 Either an error or the object \code{x}.

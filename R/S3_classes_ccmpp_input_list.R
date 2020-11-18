@@ -116,11 +116,15 @@ ccmpp_input_list <-
         non_zero_fert_ages <- suppressMessages(non_zero_fert_ages(obj$fert_rate_age_f))
 
         ## Create/Validate
+
+        ## Individual elements are all validated by
+        ## 'as_...' functions so don't redo that part.
         validate_ccmpp_object(
             new_ccmpp_input_list(obj,
                                age_span = age_span,
                                time_span = time_span,
-                               non_zero_fert_ages = non_zero_fert_ages)
+                               non_zero_fert_ages = non_zero_fert_ages),
+            .validate_elements = FALSE
         )
     }
 

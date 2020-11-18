@@ -22,6 +22,9 @@
 #'     \code{survival_ratio_age_sex}, \code{pop_count_age_sex_base},
 #'     and \code{life_table_age_sex} objects only. See
 #'     \dQuote{Details}.
+#' @param .validate_elements For \dQuote{\code{_list}} objects, should
+#'     the individual elements also be validated? Unless you are
+#'     \emph{sure}, always leave \code{TRUE} (default).
 #' @return Either an error or the object \code{x}.
 #' @author Mark Wheldon
 #' @name validate_ccmpp_object

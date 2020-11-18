@@ -457,7 +457,7 @@ validate_ccmpp_object.life_table_age_sex <- function(x, check_sex_equality_by_ti
 
 #' @rdname validate_ccmpp_object
 #' @export
-validate_ccmpp_object.ccmpp_input_list <- function(x, ...) {
+validate_ccmpp_object.ccmpp_input_list <- function(x, .validate_elements = TRUE, ...) {
 
     req_el_names <- get_all_required_ccmpp_input_list_element_names()
     req_el_classes <- get_all_required_ccmpp_input_list_element_classes()
@@ -493,10 +493,12 @@ validate_ccmpp_object.ccmpp_input_list <- function(x, ...) {
     for (df_nm in req_el_names) {
 
         ## Validate objects
-        test <- tryCatch(validate_ccmpp_object(x[[df_nm]]))
-        if (identical(class(test), "try-error"))
-            stop(not_a_valid_object_msg("ccmpp_input_list",
-                                        df_nm, ":\n", strsplit(c(test), " : ")[[1]][2]))
+        if (.validate_elements) {
+            test <- tryCatch(validate_ccmpp_object(x[[df_nm]]))
+            if (identical(class(test), "try-error"))
+                stop(not_a_valid_object_msg("ccmpp_input_list",
+                                            df_nm, ":\n", strsplit(c(test), " : ")[[1]][2]))
+        }
 
         ## Store 'spans' time and age levels, and value_scales
         if (is_by_age(x[[df_nm]])) {

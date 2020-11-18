@@ -199,12 +199,12 @@ prepare_df_for_demog_change_component_df <- function(x,
             if (time_span_undefined) {
                 x$time_span <- x$age_span
                 S3_class_message("'time_span' is not a column in 'x'; setting 'x$time_span' to 'age_span', which is '",
-                                 diff_x,
+                                 unique(x$age_span)[1],
                                  "'.")
             } else if (age_span_undefined) {
                 x$age_span <- x$time_span
                 S3_class_message("'age_span' is not a column in 'x'; setting 'x$age_span' to 'time_span', which is '",
-                                 diff_x,
+                                 unique(x$time_span)[1],
                                  "'.")
             }
         }

@@ -65,9 +65,12 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
                            locAreaTypeIds = 2,
                            subGroupIds = 2)
   
+  # use the latest upload of the data
+  DSYear <- max(pop_est$DataSourceYear[pop_est$DataSourceShortName == data_source_base])
+  
   pop_count_age_sex_reference <- pop_est %>% 
     # restrict to latest import of HMD, males and females, removing total pop
-    filter(DataSourceShortName == "HMD" & DataSourceYear == 2018 & SexID %in% c(1,2) &
+    filter(DataSourceShortName == "HMD" & DataSourceYear == DSYear & SexID %in% c(1,2) &
              !(AgeStart == 0 & AgeSpan == -1)) %>%
     mutate(data_source = DataSourceShortName,
            time_reference = TimeStart,
@@ -167,8 +170,11 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
                          locAreaTypeIds = 2,
                          subGroupIds = 2)
   
+  # use the latest upload of the data
+  DSYear <- max(fert_est$DataSourceYear[fert_est$DataSourceShortName == "HFD"])
+  
   fert_rate_age_f <- fert_est %>% 
-    filter(DataSourceShortName == "HFD") %>% 
+    filter(DataSourceShortName == "HFD" & DataSourceYear == DSYear) %>% 
     mutate(time_start = floor(TimeMid),
            time_span = 1,
            age_start = AgeStart,
@@ -199,10 +205,12 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
                                endYear = times[length(times)] +1,
                                locAreaTypeIds = 2,
                                subGroupIds = 2)
-
+    
+    # use the latest upload of the data
+    DSYear <- max(mort_est$DataSourceYear[mort_est$DataSourceShortName == "HMD"])
 
     mx <- mort_est %>% 
-      filter(DataSourceShortName == "HMD" & SexID %in% c(1,2)) %>% 
+      filter(DataSourceShortName == "HMD" & DataSourceYear == DSYear & SexID %in% c(1,2)) %>% 
       mutate(sex = ifelse(SexID == 1, "male", "female"),
              time_start = floor(TimeMid),
              time_span = 1,

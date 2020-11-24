@@ -52,8 +52,10 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
   library(DDSQLtools)
   library(DemoTools)
   
-  ## development server for UNPD testing (paperspace) DemoData api
-  options(unpd_server = "http://74.82.31.177/DemoData/api/")
+  ## Valencia server
+  options(unpd_server = "https://popdiv.dfs.un.org/DemoData/api/")
+  ## Paperspace server
+  # options(unpd_server = "http://74.82.31.177/DemoData/api/")
   
 # extract population by single year of age and sex from HMD
 

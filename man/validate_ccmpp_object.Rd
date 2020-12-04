@@ -9,6 +9,9 @@
 \alias{validate_ccmpp_object.ccmpp_input_df}
 \alias{validate_ccmpp_object.fert_rate_age_f}
 \alias{validate_ccmpp_object.survival_ratio_age_sex}
+\alias{validate_ccmpp_object.mortality_rate_age_sex}
+\alias{validate_ccmpp_object.death_probability_age_sex}
+\alias{validate_ccmpp_object.death_count_age_sex}
 \alias{validate_ccmpp_object.pop_count_age_sex_base}
 \alias{validate_ccmpp_object.srb}
 \alias{validate_ccmpp_object.mig_net_rate_age_sex}
@@ -33,6 +36,12 @@ validate_ccmpp_object(x, ...)
 \method{validate_ccmpp_object}{fert_rate_age_f}(x, ...)
 
 \method{validate_ccmpp_object}{survival_ratio_age_sex}(x, check_sex_equality_by_time = FALSE, ...)
+
+\method{validate_ccmpp_object}{mortality_rate_age_sex}(x, check_sex_equality_by_time = FALSE, ...)
+
+\method{validate_ccmpp_object}{death_probability_age_sex}(x, check_sex_equality_by_time = FALSE, ...)
+
+\method{validate_ccmpp_object}{death_count_age_sex}(x, check_sex_equality_by_time = FALSE, ...)
 
 \method{validate_ccmpp_object}{pop_count_age_sex_base}(x, check_sex_equality_by_time = FALSE, ...)
 

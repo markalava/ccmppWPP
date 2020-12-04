@@ -207,6 +207,126 @@ survival_ratio_component.ccmpp_input_list <- function(x) {
 }
 
 ###-----------------------------------------------------------------------------
+### ** Mortality rate
+
+#' @rdname ccmpp_list_access_elements
+#' @export
+mortality_rate_component <- function(x) {
+    UseMethod("mortality_rate_component")
+}
+#' @rdname ccmpp_list_access_elements
+#' @export
+mortality_rate_component.life_table_age_sex <- function(x) {
+    as_mortality_rate_age_sex(x[x$indicator == "lt_nMx",
+                                c("time_start", "time_span", "sex",
+                                  "age_start", "age_span", "value")])
+    }
+#' @rdname ccmpp_list_access_elements
+#' @export
+mortality_rate_component.ccmpp_input_list <- function(x) {
+    mortality_rate_component(life_table_component(x))
+}
+
+#' @rdname ccmpp_list_access_elements
+#' @export
+`mortality_rate_component<-` <- function(x, value) {
+    UseMethod("mortality_rate_component<-")
+}
+#' @rdname ccmpp_list_access_elements
+#' @export
+`mortality_rate_component<-.life_table_age_sex` <- function(x, value) {
+    value <- as_mortality_rate_age_sex(value)
+    x[x$indicator == "lt_nMx", colnames(value)] <- value
+    as_life_table_age_sex(x)
+    }
+#' @rdname ccmpp_list_access_elements
+#' @export
+`mortality_rate_component<-.ccmpp_input_list` <- function(x, value) {
+    mortality_rate_component(life_table_component(x)) <- value
+    as_ccmpp_input_list(x)
+}
+
+###-----------------------------------------------------------------------------
+### ** Mortality probability
+
+#' @rdname ccmpp_list_access_elements
+#' @export
+death_probability_component <- function(x) {
+    UseMethod("death_probability_component")
+}
+#' @rdname ccmpp_list_access_elements
+#' @export
+death_probability_component.life_table_age_sex <- function(x) {
+    as_death_probability_age_sex(x[x$indicator == "lt_nqx",
+                                c("time_start", "time_span", "sex",
+                                  "age_start", "age_span", "value")])
+    }
+#' @rdname ccmpp_list_access_elements
+#' @export
+death_probability_component.ccmpp_input_list <- function(x) {
+    death_probability_component(life_table_component(x))
+}
+
+#' @rdname ccmpp_list_access_elements
+#' @export
+`death_probability_component<-` <- function(x, value) {
+    UseMethod("death_probability_component<-")
+}
+#' @rdname ccmpp_list_access_elements
+#' @export
+`death_probability_component<-.life_table_age_sex` <- function(x, value) {
+    value <- as_death_probability_age_sex(value)
+    x[x$indicator == "lt_nqx", colnames(value)] <- value
+    as_life_table_age_sex(x)
+    }
+#' @rdname ccmpp_list_access_elements
+#' @export
+`death_probability_component<-.ccmpp_input_list` <- function(x, value) {
+    death_probability_component(life_table_component(x)) <- value
+    as_ccmpp_input_list(x)
+}
+
+###-----------------------------------------------------------------------------
+### ** Death count
+
+#' @rdname ccmpp_list_access_elements
+#' @export
+death_count_component <- function(x) {
+    UseMethod("death_count_component")
+}
+#' @rdname ccmpp_list_access_elements
+#' @export
+death_count_component.life_table_age_sex <- function(x) {
+    as_death_count_age_sex(x[x$indicator == "lt_ndx",
+                                c("time_start", "time_span", "sex",
+                                  "age_start", "age_span", "value")])
+    }
+#' @rdname ccmpp_list_access_elements
+#' @export
+death_count_component.ccmpp_input_list <- function(x) {
+    death_count_component(life_table_component(x))
+}
+
+#' @rdname ccmpp_list_access_elements
+#' @export
+`death_count_component<-` <- function(x, value) {
+    UseMethod("death_count_component<-")
+}
+#' @rdname ccmpp_list_access_elements
+#' @export
+`death_count_component<-.life_table_age_sex` <- function(x, value) {
+    value <- as_death_count_age_sex(value)
+    x[x$indicator == "lt_ndx", colnames(value)] <- value
+    as_life_table_age_sex(x)
+    }
+#' @rdname ccmpp_list_access_elements
+#' @export
+`death_count_component<-.ccmpp_input_list` <- function(x, value) {
+    death_count_component(life_table_component(x)) <- value
+    as_ccmpp_input_list(x)
+}
+
+###-----------------------------------------------------------------------------
 ### ** fert rate
 
 #' @rdname ccmpp_list_access_elements

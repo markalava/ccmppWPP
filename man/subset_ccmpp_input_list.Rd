@@ -54,7 +54,7 @@ result as a classed object at the end if desired.
     \code{demog_change_component_df}.
 
 Other subset_by_demographic_dimension: 
-\code{\link{subset_indicator.ccmpp_input_df}()}
+\code{\link{subset_time.death_count_age_sex}()}
 }
 \author{
 Mark Wheldon

@@ -19,6 +19,12 @@ get_dimensions_info_for_ccmpp_in_out_classes <-
                        ensure_these_dimensions_correctly_ordered(c("time", "age")),
                    survival_ratio_age_sex =
                        ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
+                   mortality_rate_age_sex =
+                       ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
+                   death_probability_age_sex =
+                       ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
+                   death_count_age_sex =
+                       ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
                    srb =
                        ensure_these_dimensions_correctly_ordered(c("time")),
                    mig_net_count_age_sex =
@@ -95,6 +101,12 @@ get_value_type_info_for_ccmpp_in_out_classes <- function(class = get_all_demog_c
                        value_type = "rate"),
                      c(class = "survival_ratio_age_sex",
                        value_type = "proportion"), #proportion!
+                     c(class = "mortality_rate_age_sex",
+                       value_type = "rate"),
+                     c(class = "death_probability_age_sex",
+                       value_type = "proportion"),  #proportion!
+                     c(class = "death_count_age_sex",
+                       value_type = "count"),
                      c(class = "pop_count_age_sex_base",
                        value_type = "count"),
                      c(class = "srb",
@@ -133,6 +145,12 @@ get_value_scale_annotations_info_for_ccmpp_in_out_classes <- function(class = ge
                            c(class = "fert_rate_age_f",
                        annotation = NA),
                      c(class = "survival_ratio_age_sex",
+                       annotation = NA),
+                     c(class = "mortality_rate_age_sex",
+                       annotation = NA),
+                     c(class = "death_probability_age_sex",
+                       annotation = NA),
+                     c(class = "death_count_age_sex",
                        annotation = NA),
                      c(class = "pop_count_age_sex_base",
                        annotation = NA),

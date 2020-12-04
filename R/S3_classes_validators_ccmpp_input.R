@@ -177,6 +177,111 @@ validate_ccmpp_object.survival_ratio_age_sex <- function(x, check_sex_equality_b
 
 #' @rdname validate_ccmpp_object
 #' @export
+validate_ccmpp_object.mortality_rate_age_sex <- function(x, check_sex_equality_by_time = FALSE, ...) {
+
+    ## Base checks
+    x <- NextMethod()
+
+    ## 'value's all non-negative
+    if (any(x$value < 0))
+        stop(not_a_valid_object_msg("mortality_rate_age_sex",
+                                    "'value' column has elements < 0."))
+
+    ## value_type
+    val_type <- get_value_types_for_ccmpp_in_out_classes("mortality_rate_age_sex")
+    if (!identical(value_type(x), val_type))
+        stop(not_a_valid_object_msg("mortality_rate_age_sex",
+                                    "'value_type' must be \"", val_type, "\"."))
+
+    ## Check dimensions
+    check_dimensions_for_ccmpp_in_out_df(x)
+
+    ## Must have 'male' and 'female'
+    if (!all(c("male", "female") %in% sexes(x)))
+        stop(not_a_valid_object_msg("mortality_rate_age_sex",
+                                    "'x' must have data on both 'male' and 'female'."))
+
+    ## Check that male and female are not near-identical
+    test <- sexes_unequal(x, x_name = "mortality rates", tol = 1e-4, scale = 1,
+                          check_by_time = check_sex_equality_by_time)
+    if(!isTRUE(test)) warning(test)
+
+    return(x)
+}
+
+
+#' @rdname validate_ccmpp_object
+#' @export
+validate_ccmpp_object.death_probability_age_sex <- function(x, check_sex_equality_by_time = FALSE, ...) {
+
+    ## Base checks
+    x <- NextMethod()
+
+    ## 'value's all between 0 and 1
+    if (any(x$value < 0 | x$value > 1))
+        stop(not_a_valid_object_msg("death_probability_age_sex",
+                                    "'value' column has elements < 0 or > 1."))
+
+    ## value_type
+    val_type <- get_value_types_for_ccmpp_in_out_classes("death_probability_age_sex")
+    if (!identical(value_type(x), val_type))
+        stop(not_a_valid_object_msg("death_probability_age_sex",
+                                    "'value_type' must be \"", val_type, "\"."))
+
+    ## Check dimensions
+    check_dimensions_for_ccmpp_in_out_df(x)
+
+    ## Must have 'male' and 'female'
+    if (!all(c("male", "female") %in% sexes(x)))
+        stop(not_a_valid_object_msg("death_probability_age_sex",
+                                    "'x' must have data on both 'male' and 'female'."))
+
+    ## Check that male and female are not near-identical
+    test <- sexes_unequal(x, x_name = "mortality probabilities", tol = 1e-4, scale = 1,
+                          check_by_time = check_sex_equality_by_time)
+    if(!isTRUE(test)) warning(test)
+
+    return(x)
+}
+
+
+#' @rdname validate_ccmpp_object
+#' @export
+validate_ccmpp_object.death_count_age_sex <- function(x, check_sex_equality_by_time = FALSE, ...) {
+
+    ## Base checks
+    x <- NextMethod()
+
+    ## 'value's all non-negative
+    if (any(x$value < 0))
+        stop(not_a_valid_object_msg("death_count_age_sex",
+                                    "'value' column has elements < 0."))
+
+    ## value_type
+    val_type <- get_value_types_for_ccmpp_in_out_classes("death_count_age_sex")
+    if (!identical(value_type(x), val_type))
+        stop(not_a_valid_object_msg("death_count_age_sex",
+                                    "'value_type' must be \"", val_type, "\"."))
+
+    ## Check dimensions
+    check_dimensions_for_ccmpp_in_out_df(x)
+
+    ## Must have 'male' and 'female'
+    if (!all(c("male", "female") %in% sexes(x)))
+        stop(not_a_valid_object_msg("death_count_age_sex",
+                                    "'x' must have data on both 'male' and 'female'."))
+
+    ## Check that male and female are not near-identical
+    test <- sexes_unequal(x, x_name = "death counts", tol = 1e-4, scale = 1,
+                          check_by_time = check_sex_equality_by_time)
+    if(!isTRUE(test)) warning(test)
+
+    return(x)
+}
+
+
+#' @rdname validate_ccmpp_object
+#' @export
 validate_ccmpp_object.pop_count_age_sex_base <- function(x, check_sex_equality_by_time = FALSE, ...) {
 
     ## Base checks

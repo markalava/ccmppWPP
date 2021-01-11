@@ -32,35 +32,6 @@ lt_long <- function(life_table_df) {
   
 }
 
-#' Compute an abridged life table from a complete life table
-#'
-#' @description This function computes an abridged life table from the lx column of a complete life table (single 
-#' year of age).
-#'
-#' @author Sara Hertog
-#'
-#' @param age_complete numeric. a vector of single-year ages from the complete life table.
-#' @param lx_complete numeric. a vector of lx (life table survivors) values from the complete life table.
-#' @param sex character. sex associated to the life table, can be "female", "male", "both", or "f", "m", "b"
-#'
-#' @return a long data frame with columns "indicator" containing the life table column label, "age" containing
-#' the starting age of abridged life table age groups, and "value" containing the numeric value associated with 
-#' the life table indicator
-#' @export
-lt_abridged_from_complete <- function(age_complete, lx_complete, sex) {
-  
-  lx     <- lx_complete[which(age_complete %in% c(0,1,seq(5,150,5)))]
-  age    <- c(0,1,seq(5,150,5))[1:length(lx)]
-  lt_abr <- DemoTools::lt_abridged(Age = age, 
-                                   lx=lx, 
-                                   sex=substr(sex,1,1))
-  lt_abr <- lt_long(lt_abr)
-  
-  return(lt_abr)
-  
-}
-
-
 
 #' Compute summary life table values
 #'
@@ -171,21 +142,23 @@ lt_complete_loop_over_time <- function(mx, sex) {
   
 }
 
-lt_abridged_from_complete_loop_over_time <- function(lx, sex) {
+
+lt_single2abridged_loop_over_time <- function(lx_single, nLx_single, ex_single, sex) {
   
   # initialize output list
   lt_output_list <- list()
   n <- 0
   
-  times                  <- unique(lx$time_start)
+  times                  <- unique(lx_single$time_start)
   time_span              <- diff(times)
 
   for (time in times) {
 
     n   <- n+1
-    lt <- lt_abridged_from_complete(age_complete = lx[which(lx$time_start == time & lx$sex == sex), "age_start"],
-                                    lx_complete = lx[which(lx$time_start == time & lx$sex == sex), "value"],
-                                    sex = substr(sex,1,1))
+    lt <- lt_single2abridged(lx = lx_single[which(lx_single$time_start == time & lx_single$sex == sex), "value"],
+                             nLx = nLx_single[which(nLx_single$time_start == time & nLx_single$sex == sex), "value"],
+                             ex = ex_single[which(ex_single$time_start == time & ex_single$sex == sex), "value"])
+    lt <- lt_long(lt)
     lt$time_start <- time
     lt$time_span  <- 1
     lt$sex        <- sex

@@ -3,8 +3,8 @@
 #'
 #' @description This function extracts from the DemoData SQL database population counts by
 #' age and sex, annual births by sex to compute sex ratio at birth, 1x1 age specific 
-#' fertility rates from the Human Fertility Database and mortality rates from the Human 
-#' Mortality Database.  It compiles those data into the input file required by ccmppWPP.  It 
+#' fertility rates from the Human Fertility Database and EuroStat and mortality rates from the Human 
+#' Mortality Database and EuroStat.  It compiles those data into the input file required by ccmppWPP.  It 
 #' also compiles a refernce dataset of population counts by age and sex for various reference
 #' periods
 #'
@@ -12,12 +12,21 @@
 #'
 #' @param LocID numeric. Location id of country.
 #' @param times numeric. Vector of years for which data should be extracted
-#' @param time_reference_base character. Reference date of the base year for population.
-#' @param data_source_base character. DataSourceShortName of the data source for base year population.
+#' @param times_censored_common logical.  If true, the time period covered by each series is censored
+#' such that ouput times are only those for which population counts, asfr and mortality rates are all available.
+#' If false, then all available data are output, but additional processing may be required (e.g., interpolation)
+#' to harmonize the times across indicators before ccmppWPP workflow can be executed successfully.
+#' @param data_source_pop character. Vector of data sources for population counts (HMD and/or EuroStat)
+#' @param data_source_fert character. Vector of data sources for age-specific fertility rates (HFD and/or EuroStat)
+#' @param data_source_mort character. Vector of data sources for age-specific mortality rates (HMD and/or EuroStat)
+#' @param data_source_year_hmd numeric. DataSourceYear for the HMD series to use.
+#' @param data_source_year_hfd numeric. DataSourceYear for the HFD series to use.
+#' @param data_source_year_eurostat numeric. DataSourceYear for the EuroStat series to use.
 #' @param revision character. Revision attribute for output ccmppWPP_inputs list.
 #' @param variant character. Variant attribute for output ccmppWPP_inputs list.
 #'
-#' @details currently extracts from paperspace development server.
+#' @details currently extracts from Valencia server. Data source name vectors should be in order of preference.
+#' For example data_source_mort = c("HMD", "EuroStat") will prioritize HMD, but fill in any missing years with EuroStat
 #'
 #' @return a list of two objects. 1) the ccmppWPP_inputs list required to run the population projection; and
 #' 2) a pop_counts_age_sex_reference data frame for reconciliation
@@ -26,25 +35,66 @@
 
 
 # Examples:
+
+# italy_test <- DDextract_ccmppWPPinputs_tier1(LocID = 380,
+#                                               times = 1950:2020,
+#                                               times_censored_common = TRUE,
+#                                               data_source_pop = c("HMD", "EuroStat"),
+#                                               data_source_mort = c("HMD", "EuroStat"),
+#                                               data_source_fert = c("HFD", "EuroStat"),
+#                                               data_source_year_hmd = 2020,
+#                                               data_source_year_hfd = 2020,
+#                                               data_source_year_eurostat = 2020)
+# 
+# ireland_test <- DDextract_ccmppWPPinputs_tier1(LocID = 372,
+#                                              times = 1950:2020,
+#                                              times_censored_common = TRUE,
+#                                              data_source_pop = c("HMD", "EuroStat"),
+#                                              data_source_mort = c("HMD", "EuroStat"),
+#                                              data_source_fert = c("HFD", "EuroStat"),
+#                                              data_source_year_hmd = 2020,
+#                                              data_source_year_hfd = 2020,
+#                                              data_source_year_eurostat = 2020)
+# 
 # canada_test <- DDextract_ccmppWPPinputs_tier1(LocID = 124,
-#                                           times = 1950:2020,
-#                                           time_reference_base = "01/01/1950",
-#                                           data_source_base = "HMD")
+#                                               times = 1950:2020,
+#                                               times_censored_common = TRUE,
+#                                               data_source_pop = c("HMD"),
+#                                               data_source_mort = c("HMD"),
+#                                               data_source_fert = c("HFD"),
+#                                               data_source_year_hmd = 2020,
+#                                               data_source_year_hfd = 2020,
+#                                               data_source_year_eurostat = NA)
 # 
 # usa_test <- DDextract_ccmppWPPinputs_tier1(LocID = 840,
-#                                               times = 1950:2020,
-#                                               time_reference_base = "01/01/1950",
-#                                               data_source_base = "HMD")
+#                                            times = 1950:2020,
+#                                            times_censored_common = TRUE,
+#                                            data_source_pop = c("HMD"),
+#                                            data_source_mort = c("HMD"),
+#                                            data_source_fert = c("HFD"),
+#                                            data_source_year_hmd = 2020,
+#                                            data_source_year_hfd = 2020,
+#                                            data_source_year_eurostat = NA)
 # 
 # sweden_test <- DDextract_ccmppWPPinputs_tier1(LocID = 752,
-#                                            times = 1950:2020,
-#                                            time_reference_base = "01/01/1950",
-#                                            data_source_base = "HMD")
+#                                             times = 1950:2020,
+#                                             times_censored_common = TRUE,
+#                                             data_source_pop = c("HMD", "EuroStat"),
+#                                             data_source_mort = c("HMD", "EuroStat"),
+#                                             data_source_fert = c("HFD", "EuroStat"),
+#                                             data_source_year_hmd = 2020,
+#                                             data_source_year_hfd = 2020,
+#                                             data_source_year_eurostat = 2020)
 
 DDextract_ccmppWPPinputs_tier1 <- function(LocID, 
                                            times = 1950:2020, 
-                                           time_reference_base = "01/01/1950",
-                                           data_source_base = "HMD",
+                                           times_censored_common = TRUE,
+                                           data_source_pop = c("HMD", "EuroStat"),
+                                           data_source_mort = c("HMD", "EuroStat"),
+                                           data_source_fert = c("HFD", "EuroStat"),
+                                           data_source_year_hmd = 2020,
+                                           data_source_year_hfd = 2020,
+                                           data_source_year_eurostat = 2020,
                                            revision = "test",
                                            variant = "estimates") {
 
@@ -52,53 +102,126 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
   library(DDSQLtools)
   library(DemoTools)
   
-  ## development server for UNPD testing (paperspace) DemoData api
-  options(unpd_server = "http://74.82.31.177/DemoData/api/")
+  ## Valencia server
+  options(unpd_server = "https://popdiv.dfs.un.org/DemoData/api/")
+  ## Paperspace server
+  # options(unpd_server = "http://74.82.31.177/DemoData/api/")
   
 # extract population by single year of age and sex from HMD
 
-  pop_est <- get_recorddata(locIds = LocID,
-                           dataProcessIds = 6, # Estimates
-                           indicatorIds = 60, # Population by single year of age and sex
-                           startYear = times[1],
-                           endYear = times[length(times)] + 1,
-                           locAreaTypeIds = 2,
-                           subGroupIds = 2)
-  
-  pop_count_age_sex_reference <- pop_est %>% 
-    # restrict to latest import of HMD, males and females, removing total pop
-    filter(DataSourceShortName == "HMD" & DataSourceYear == 2018 & SexID %in% c(1,2) &
-             !(AgeStart == 0 & AgeSpan == -1)) %>%
-    mutate(data_source = DataSourceShortName,
-           time_reference = TimeStart,
-           time_start = floor(TimeMid),
-           time_span = 1,
-           age_start = AgeStart,
-           age_span = AgeSpan,
-           sex = ifelse(SexID == 1, "male", "female"),
-           value = DataValue) %>% 
-    select(data_source, time_reference, time_start, time_span, age_start, age_span, sex, value) %>% 
-    arrange(data_source, time_start, time_reference, sex, age_start)
-  
-  # sum ages 100-110 to create open age group 100+
-  pop100 <- pop_count_age_sex_reference %>% 
-    filter(age_start >= 100) %>% 
-    group_by(data_source, time_start, time_span, time_reference, sex) %>% 
-    summarise(value = sum(value)) %>% 
-    mutate(age_start = 100,
-           age_span = 1)
-  
-  # append open age group 100+ to single year of age from 0-99
-  pop_count_age_sex_reference <- pop_count_age_sex_reference %>% 
-    filter(age_start < 100) %>% 
-    bind_rows(pop100) %>% 
-    arrange(data_source, time_start, time_reference, sex, age_start)
+  if ("HMD" %in% data_source_pop) {
 
-# 1 January 1950 population as base
+    tryCatch({
+      
+    pop_hmd <- get_recorddata(locIds = LocID,
+                             dataProcessIds = 6, # Estimates 
+                             indicatorIds = 60, # Population by single year of age and sex
+                             startYear = times[1],
+                             endYear = times[length(times)] + 1,
+                             locAreaTypeIds = 2,
+                             subGroupIds = 2,
+                             dataSourceShortNames = "HMD",
+                             dataSourceYears = data_source_year_hmd)
+    
+    }, error=function(e){cat("Error in file", conditionMessage(e), "\n")})
+
+  }
+  
+  if (exists('pop_hmd')) {
+    
+    pop_hmd <- pop_hmd %>% 
+      filter(SexID %in% c(1,2) & !(AgeStart == 0 & AgeSpan == -1)) %>%
+      mutate(data_source = DataSourceShortName,
+             time_reference = TimeStart,
+             time_start = floor(TimeMid),
+             time_span = 1,
+             age_start = AgeStart,
+             age_span = AgeSpan,
+             sex = ifelse(SexID == 1, "male", "female"),
+             value = DataValue) %>% 
+      select(data_source, time_reference, time_start, time_span, age_start, age_span, sex, value) %>% 
+      arrange(data_source, time_start, time_reference, sex, age_start)
+      
+    # sum ages 100-110 to create open age group 100+
+    pop100 <- pop_hmd %>% 
+      filter(age_start >= 100) %>% 
+      group_by(data_source, time_start, time_span, time_reference, sex) %>% 
+      summarise(value = sum(value)) %>% 
+      mutate(age_start = 100,
+             age_span = 1)
+    
+    # append open age group 100+ to single year of age from 0-99
+    pop_hmd <- pop_hmd %>% 
+      filter(age_start < 100) %>% 
+      bind_rows(pop100) %>% 
+      arrange(data_source, time_start, time_reference, sex, age_start)
+  } else {
+    
+    pop_hmd <- NULL
+    print("No HMD population by single year of age and sex available for selected times and data source year.")
+  
+  }
+  
+# extract population by single year of age and sex from EuroStat
+  
+  if ("EuroStat" %in% data_source_pop) {
+    
+    tryCatch({
+    
+    pop_eur <- get_recorddata(locIds = LocID,
+                              dataProcessIds = c(6,10), # Estimates and registers
+                              indicatorIds = 60, # Population by single year of age and sex
+                              startYear = times[1],
+                              endYear = times[length(times)] + 1,
+                              locAreaTypeIds = 2,
+                              subGroupIds = 2,
+                              dataSourceShortNames = "EuroStat",
+                              dataSourceYears = data_source_year_eurostat)
+    
+    }, error=function(e){cat("Error in file", conditionMessage(e), "\n")})
+    
+  }
+
+  if (exists('pop_eur')) {
+    
+    # keep only series with open age group 100+
+    pop_eur <- pop_eur %>% 
+      filter(SexID %in% c(1,2) & !(AgeStart == 0 & AgeSpan == -1) & AgeStart != -2) %>%
+      group_by(TimeStart) %>% 
+      mutate(oag100 = "100+" %in% AgeLabel) %>% 
+      ungroup() %>% 
+      filter(oag100 == TRUE) %>% 
+      mutate(data_source = DataSourceShortName,
+             time_reference = TimeStart,
+             time_start = floor(TimeMid),
+             time_span = 1,
+             age_start = AgeStart,
+             age_span = AgeSpan,
+             sex = ifelse(SexID == 1, "male", "female"),
+             value = DataValue) %>% 
+      select(data_source, time_reference, time_start, time_span, age_start, age_span, sex, value) %>% 
+      arrange(data_source, time_start, time_reference, sex, age_start) 
+    
+  } else {
+    
+    pop_eur <- NULL
+    print("No EuroStat population by single year of age and sex available for selected times and data source year.")
+  
+  } 
+  
+  pop_count_age_sex_reference <- rbind(pop_hmd, pop_eur) %>% 
+    mutate(prefer = ifelse(data_source == data_source_pop[1], 1, 2)) %>% 
+    group_by(time_start) %>% 
+    mutate(prefer_min = min(prefer)) %>% 
+    ungroup() %>% 
+    filter(prefer == prefer_min) %>% 
+    select(-prefer, -prefer_min)
+
+# population as base for projection, earliest in times
   pop_count_age_sex_base <- pop_count_age_sex_reference %>% 
-    filter(time_reference == time_reference_base & data_source == data_source_base) %>% 
+    filter(time_start == min(pop_count_age_sex_reference$time_start)) %>% 
     select(-data_source, -time_reference)
-
+    
 # extract total births by sex from DemoData
   
   birth_reg <- get_recorddata(locIds = LocID,
@@ -153,65 +276,218 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
            value = replace(value,
                            is.na(value) & time_start > latest_obs,
                            srb$value[time_start == latest_obs]))
-  srb <- unique(srb)
+ # if still more than one record per year, take the average
+   srb <- unique(srb) %>% 
+    group_by(time_start, time_span) %>% 
+    summarise(value = mean(value))
   
 
   
-# extract ferility rates by single year of age (extract one year at a time as this seems to work faster)
+# extract ferility rates by single year of age from HFD
+  
+  if ("HFD" %in% data_source_fert) {
+    
+    tryCatch({
+      
+      fert_hfd <- get_recorddata(locIds = LocID,
+                                dataProcessIds = 6, # Estimates 
+                                indicatorIds = 362, #  Age specific fertility rate (complete)
+                                startYear = times[1],
+                                endYear = times[length(times)] + 1,
+                                locAreaTypeIds = 2,
+                                subGroupIds = 2,
+                                dataSourceShortNames = "HFD",
+                                dataSourceYears = data_source_year_hfd)
+      
+    }, error=function(e){cat("Error in file", conditionMessage(e), "\n")})
+    
+  }
 
-  fert_est <- get_recorddata(locIds = LocID,
-                         dataProcessIds = 6, # Estimate
-                         indicatorIds = 362, #  Age specific fertility rate (complete)
-                         startYear = times[1],
-                         endYear = times[length(times)] +1,
-                         locAreaTypeIds = 2,
-                         subGroupIds = 2)
+ if (exists('fert_hfd')) {
+   
+   fert_hfd <- fert_hfd %>% 
+     mutate(data_source = DataSourceShortName,
+            time_start = floor(TimeMid),
+            time_span = 1,
+            age_start = AgeStart,
+            age_span = 1,
+            value = DataValue/1000) %>% 
+     select(data_source, time_start, time_span, age_start, age_span, value) %>% 
+     arrange(data_source, time_start, age_start)
+   
+   # add zero fertility rate for ages outside range
+   yrage <- data.frame(time_start = rep(unique(fert_hfd$time_start), length(pop_count_age_sex_base$age_start[which(pop_count_age_sex_base$sex=="female")])),
+                       age_start = rep(seq(0,max(pop_count_age_sex_base$age_start),1),length(unique(fert_hfd$time_start)))) %>% 
+     arrange(time_start, age_start) %>% 
+     filter(!(age_start %in% fert_hfd$age_start)) %>% 
+     mutate(value = 0.0,
+            time_span = 1,
+            age_span = 1,
+            data_source = fert_hfd$data_source[1])
+   
+   fert_hfd <- fert_hfd %>% 
+     bind_rows(yrage) %>%
+     arrange(time_start, age_start) 
+    
+  } else {
+    
+    fert_hfd <- NULL
+    print("No HFD fertility rates by single year of age available for selected times and data source year.")
+    
+  }
   
-  fert_rate_age_f <- fert_est %>% 
-    filter(DataSourceShortName == "HFD") %>% 
-    mutate(time_start = floor(TimeMid),
-           time_span = 1,
-           age_start = AgeStart,
-           age_span = 1,
-           value = DataValue/1000) %>% 
-    select(time_start, time_span, age_start, age_span, value) %>% 
-    arrange(time_start, age_start)
   
-  # add zero fertility rate for ages outside range
-  yrage <- data.frame(time_start = rep(unique(fert_rate_age_f$time_start), length(pop_count_age_sex_base$age_start[which(pop_count_age_sex_base$sex=="female")])),
-                      age_start = rep(seq(0,max(pop_count_age_sex_base$age_start),1),length(unique(fert_rate_age_f$time_start)))) %>% 
-    arrange(time_start, age_start) %>% 
-    filter(!(age_start %in% fert_rate_age_f$age_start)) %>% 
-    mutate(value = 0.0,
-           time_span = 1,
-           age_span = 1)
+  # extract ferility rates by single year of age from EuroStat
   
-  fert_rate_age_f <- fert_rate_age_f %>% 
-    bind_rows(yrage) %>%
-    arrange(time_start, age_start) 
+  if ("EuroStat" %in% data_source_fert) {
+    
+    tryCatch({
+      
+      fert_eur <- get_recorddata(locIds = LocID,
+                                 dataProcessTypeIds = c(6,9), # Estimates and registers 
+                                 indicatorIds = 362, #  Age specific fertility rate (complete)
+                                 startYear = times[1],
+                                 endYear = times[length(times)] + 1,
+                                 locAreaTypeIds = 2,
+                                 subGroupIds = 2,
+                                 dataSourceShortNames = "EuroStat",
+                                 dataSourceYears = data_source_year_eurostat)
+      
+    }, error=function(e){cat("Error in file", conditionMessage(e), "\n")})
+    
+  }
   
-
+  if (exists('fert_eur')) {
+    
+    fert_eur <- fert_eur %>% 
+      mutate(data_source = DataSourceShortName,
+             time_start = floor(TimeMid),
+             time_span = 1,
+             age_start = AgeStart,
+             age_span = 1,
+             value = DataValue/1000) %>% 
+      select(data_source, time_start, time_span, age_start, age_span, value) %>% 
+      arrange(data_source, time_start, age_start)
+    
+    # add zero fertility rate for ages outside range
+    yrage <- data.frame(time_start = rep(unique(fert_eur$time_start), length(pop_count_age_sex_base$age_start[which(pop_count_age_sex_base$sex=="female")])),
+                        age_start = rep(seq(0,max(pop_count_age_sex_base$age_start),1),length(unique(fert_eur$time_start)))) %>% 
+      arrange(time_start, age_start) %>% 
+      filter(!(age_start %in% fert_eur$age_start)) %>% 
+      mutate(value = 0.0,
+             time_span = 1,
+             age_span = 1,
+             data_source = fert_eur$data_source[1])
+    
+    fert_eur <- fert_eur %>% 
+      bind_rows(yrage) %>%
+      arrange(time_start, age_start) 
+    
+  } else {
+    
+    fert_eur <- NULL
+    print("No EuroStat fertility rates by single year of age available for selected times and data source year.")
+    
+  }
+  
+  fert_rate_age_f <- rbind(fert_hfd, fert_eur) %>% 
+    mutate(prefer = ifelse(data_source == data_source_fert[1], 1, 2)) %>% 
+    group_by(time_start) %>% 
+    mutate(prefer_min = min(prefer)) %>% 
+    ungroup() %>% 
+    filter(prefer == prefer_min) %>% 
+    select(-prefer, -prefer_min, -data_source)
+  
+  
+ 
 # extract HMD nmx mortality rates by single year of age 
-    mort_est <- get_recorddata(locIds = LocID,
+  
+  if ("HMD" %in% data_source_mort) {
+    
+    tryCatch({
+      
+    mort_hmd <- get_recorddata(locIds = LocID,
                                dataProcessIds = 6, # Estimate
                                indicatorIds = 246, # m(x,n) - complete
                                startYear = times[1],
                                endYear = times[length(times)] +1,
                                locAreaTypeIds = 2,
-                               subGroupIds = 2)
-
-
-    mx <- mort_est %>% 
-      filter(DataSourceShortName == "HMD" & SexID %in% c(1,2)) %>% 
-      mutate(sex = ifelse(SexID == 1, "male", "female"),
+                               subGroupIds = 2,
+                               dataSourceShortNames = "HMD",
+                               dataSourceYears = data_source_year_hmd)
+    
+    }, error=function(e){cat("Error in file", conditionMessage(e), "\n")})
+  }
+    
+  if (exists('mort_hmd')) {
+    
+    mort_hmd <- mort_hmd %>% 
+      filter(SexID %in% c(1,2)) %>% 
+      mutate(data_source = DataSourceShortName,
+             sex = ifelse(SexID == 1, "male", "female"),
              time_start = floor(TimeMid),
              time_span = 1,
              age_start = AgeStart,
              age_span = 1,
              value = DataValue) %>% 
-      select(time_start, time_span, age_start, age_span, sex, value) %>% 
-      arrange(time_start, sex, age_start)
-
+      select(data_source, time_start, time_span, age_start, age_span, sex, value) %>% 
+      arrange(data_source, time_start, sex, age_start)
+    
+  } else {
+    
+    mort_hmd <- NULL
+    print("No HMD mortality rates by single year of age available for selected times and data source year.")
+    
+  }
+  
+  # extract EuroStat nmx mortality rates by single year of age 
+  
+  if ("EuroStat" %in% data_source_mort) {
+    
+    tryCatch({
+      
+      mort_eur <- get_recorddata(locIds = LocID,
+                                 dataProcessTypeIds = c(6,9), # Estimate and registers
+                                 indicatorIds = 246, # m(x,n) - complete
+                                 startYear = times[1],
+                                 endYear = times[length(times)] +1,
+                                 locAreaTypeIds = 2,
+                                 subGroupIds = 2,
+                                 dataSourceShortNames = "EuroStat",
+                                 dataSourceYears = data_source_year_eurostat)
+      
+    }, error=function(e){cat("Error in file", conditionMessage(e), "\n")})
+  }
+  
+  if (exists('mort_eur')) {
+    
+    mort_eur <- mort_eur %>% 
+      filter(SexID %in% c(1,2)) %>% 
+      mutate(data_source = DataSourceShortName,
+             sex = ifelse(SexID == 1, "male", "female"),
+             time_start = floor(TimeMid),
+             time_span = 1,
+             age_start = AgeStart,
+             age_span = 1,
+             value = DataValue) %>% 
+      select(data_source, time_start, time_span, age_start, age_span, sex, value) %>% 
+      arrange(data_source, time_start, sex, age_start)
+    
+  } else {
+    
+    mort_eur <- NULL
+    print("No EuroStat mortality rates by single year of age available for selected times and data source year.")
+    
+  }
+  
+  mx <- rbind(mort_hmd, mort_eur) %>% 
+    mutate(prefer = ifelse(data_source == data_source_mort[1], 1, 2)) %>% 
+    group_by(time_start) %>% 
+    mutate(prefer_min = min(prefer)) %>% 
+    ungroup() %>% 
+    filter(prefer == prefer_min) %>% 
+    select(-prefer, -prefer_min)
+    
   mx_m <- mx[mx$sex == "male",]
   lt_m <- NULL
   for (i in unique(mx_m$time_start)) {
@@ -241,12 +517,23 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
            age_span = 1) %>% 
     select(indicator, time_start, time_span, sex, age_start, age_span, value)
 
-# restrict input data series to min of max years from HMD and HFD
+if (times_censored_common == TRUE) {
+
+  
+  # identify earliest and latest years within times for which all indicators are available
+  first_year <- max(min(lt$time_start), min(fert_rate_age_f$time_start))
   last_year <- min(max(lt$time_start), max(fert_rate_age_f$time_start))
   
-  lt <- lt[lt$time_start <= last_year,]
-  fert_rate_age_f <- fert_rate_age_f[fert_rate_age_f$time_start <= last_year,]
-  srb <- srb[srb$time_start <= last_year,]
+  # replace base pop with pop counts for earliest year
+  pop_count_age_sex_base <- pop_count_age_sex_reference %>% 
+    filter(time_start == first_year) %>% 
+    select(-data_source, -time_reference)
+  
+  lt <- lt[lt$time_start >= first_year & lt$time_start <= last_year,]
+  fert_rate_age_f <- fert_rate_age_f[fert_rate_age_f$time_start >= first_year & fert_rate_age_f$time_start <= last_year,]
+  srb <- srb[srb$time_start >= first_year & srb$time_start <= last_year,]
+  
+}
 
 
 # create dummy inputs for migration -- right now all migration inputs = 0
@@ -263,10 +550,12 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
 
     mig_net_count_tot_b <- as.data.frame(mig_net_count_tot_b)
 
-    mig_parameter <- data.frame(indicator = c(rep("mig_type", length(c(1950:last_year))),rep("mig_assumption", length(c(1950:last_year)))),
-                                time_start = as.numeric(c(1950:last_year)),
+    first_year <- min(mig_net_count_age_sex$time_start)
+    last_year <- max(mig_net_count_age_sex$time_start)
+    mig_parameter <- data.frame(indicator = c(rep("mig_type", length(c(first_year:last_year))),rep("mig_assumption", length(c(first_year:last_year)))),
+                                time_start = as.numeric(c(first_year:last_year)),
                                 time_span  = as.numeric(1),
-                                value = c(rep("counts", length(c(1950:last_year))), rep("end", length(c(1950:last_year)))))
+                                value = c(rep("counts", length(c(first_year:last_year))), rep("end", length(c(first_year:last_year)))))
 
 
 ccmppWPP_inputs <- list(pop_count_age_sex_base = pop_count_age_sex_base,

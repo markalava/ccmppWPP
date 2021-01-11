@@ -91,15 +91,27 @@ ccmppWPP_workflow_one_country_variant <- function(wpp_input) {
     lt_complete_age_sex   <- rbind(wpp_input$life_table_age_sex, life_table_age_b)
 
   # compute abridged life tables
-    lt_abridged_age_f   <- lt_abridged_from_complete_loop_over_time(lx = lt_complete_age_sex[which(lt_complete_age_sex$indicator == "lt_lx" &
+    lt_abridged_age_f   <- lt_single2abridged_loop_over_time(lx_single = lt_complete_age_sex[which(lt_complete_age_sex$indicator == "lt_lx" &
                                                                                                      lt_complete_age_sex$sex == "female"),],
-                                                                    sex = "female")
-    lt_abridged_age_m   <- lt_abridged_from_complete_loop_over_time(lx = lt_complete_age_sex[which(lt_complete_age_sex$indicator == "lt_lx" &
+                                                             nLx_single = lt_complete_age_sex[which(lt_complete_age_sex$indicator == "lt_nLx" &
+                                                                                                     lt_complete_age_sex$sex == "female"),],
+                                                             ex_single = lt_complete_age_sex[which(lt_complete_age_sex$indicator == "lt_ex" &
+                                                                                                      lt_complete_age_sex$sex == "female"),],
+                                                             sex = "female")
+    lt_abridged_age_m   <- lt_single2abridged_loop_over_time(lx_single = lt_complete_age_sex[which(lt_complete_age_sex$indicator == "lt_lx" &
                                                                                                      lt_complete_age_sex$sex == "male"),],
-                                                                    sex = "male")
-    lt_abridged_age_b   <- lt_abridged_from_complete_loop_over_time(lx = lt_complete_age_sex[which(lt_complete_age_sex$indicator == "lt_lx" &
+                                                             nLx_single = lt_complete_age_sex[which(lt_complete_age_sex$indicator == "lt_nLx" &
+                                                                                                      lt_complete_age_sex$sex == "male"),],
+                                                             ex_single = lt_complete_age_sex[which(lt_complete_age_sex$indicator == "lt_ex" &
+                                                                                                     lt_complete_age_sex$sex == "male"),],
+                                                             sex = "male")
+    lt_abridged_age_b   <- lt_single2abridged_loop_over_time(lx_single = lt_complete_age_sex[which(lt_complete_age_sex$indicator == "lt_lx" &
                                                                                                      lt_complete_age_sex$sex == "both"),],
-                                                                    sex = "both")
+                                                             nLx_single = lt_complete_age_sex[which(lt_complete_age_sex$indicator == "lt_nLx" &
+                                                                                                      lt_complete_age_sex$sex == "both"),],
+                                                             ex_single = lt_complete_age_sex[which(lt_complete_age_sex$indicator == "lt_ex" &
+                                                                                                     lt_complete_age_sex$sex == "both"),],
+                                                             sex = "both")
     lt_abridged_age_sex <- rbind(lt_abridged_age_b, lt_abridged_age_f, lt_abridged_age_m)
   
     rm(lt_abridged_age_b, lt_abridged_age_f, lt_abridged_age_m)

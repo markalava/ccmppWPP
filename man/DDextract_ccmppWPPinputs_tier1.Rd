@@ -7,8 +7,13 @@
 DDextract_ccmppWPPinputs_tier1(
   LocID,
   times = 1950:2020,
-  time_reference_base = "01/01/1950",
-  data_source_base = "HMD",
+  times_censored_common = TRUE,
+  data_source_pop = c("HMD", "EuroStat"),
+  data_source_mort = c("HMD", "EuroStat"),
+  data_source_fert = c("HFD", "EuroStat"),
+  data_source_year_hmd = 2020,
+  data_source_year_hfd = 2020,
+  data_source_year_eurostat = 2020,
   revision = "test",
   variant = "estimates"
 )
@@ -18,9 +23,22 @@ DDextract_ccmppWPPinputs_tier1(
 
 \item{times}{numeric. Vector of years for which data should be extracted}
 
-\item{time_reference_base}{character. Reference date of the base year for population.}
+\item{times_censored_common}{logical.  If true, the time period covered by each series is censored
+such that ouput times are only those for which population counts, asfr and mortality rates are all available.
+If false, then all available data are output, but additional processing may be required (e.g., interpolation)
+to harmonize the times across indicators before ccmppWPP workflow can be executed successfully.}
 
-\item{data_source_base}{character. DataSourceShortName of the data source for base year population.}
+\item{data_source_pop}{character. Vector of data sources for population counts (HMD and/or EuroStat)}
+
+\item{data_source_mort}{character. Vector of data sources for age-specific mortality rates (HMD and/or EuroStat)}
+
+\item{data_source_fert}{character. Vector of data sources for age-specific fertility rates (HFD and/or EuroStat)}
+
+\item{data_source_year_hmd}{numeric. DataSourceYear for the HMD series to use.}
+
+\item{data_source_year_hfd}{numeric. DataSourceYear for the HFD series to use.}
+
+\item{data_source_year_eurostat}{numeric. DataSourceYear for the EuroStat series to use.}
 
 \item{revision}{character. Revision attribute for output ccmppWPP_inputs list.}
 
@@ -33,13 +51,14 @@ a list of two objects. 1) the ccmppWPP_inputs list required to run the populatio
 \description{
 This function extracts from the DemoData SQL database population counts by
 age and sex, annual births by sex to compute sex ratio at birth, 1x1 age specific 
-fertility rates from the Human Fertility Database and mortality rates from the Human 
-Mortality Database.  It compiles those data into the input file required by ccmppWPP.  It 
+fertility rates from the Human Fertility Database and EuroStat and mortality rates from the Human 
+Mortality Database and EuroStat.  It compiles those data into the input file required by ccmppWPP.  It 
 also compiles a refernce dataset of population counts by age and sex for various reference
 periods
 }
 \details{
-currently extracts from paperspace development server.
+currently extracts from Valencia server. Data source name vectors should be in order of preference.
+For example data_source_mort = c("HMD", "EuroStat") will prioritize HMD, but fill in any missing years with EuroStat
 }
 \author{
 Sara Hertog

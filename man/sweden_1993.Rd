@@ -4,7 +4,8 @@
 \name{sweden_1993}
 \alias{sweden_1993}
 \title{Example life table and population of Sweden, 1993}
-\format{A list with elements
+\format{
+A list with elements
 \describe{
 \item{P0F}{Female population by five-year age group in 1993.}
 \item{P0M}{Male population by five-year age group in 1993.}
@@ -20,7 +21,8 @@
 \item{n}{Width of the age intervals, in this case it is 5.}
 \item{PzF}{Projected female population by five-year age group in 1998.}
 \item{PzM}{Projected male population by five-year age group in 1998.}
-}}
+}
+}
 \source{
 Preston, S. H., Heuveline, P., and Guillot, M. (2001), \emph{Demography: Measuring and Modeling Population Processes}, Malden, Massachusetts: Blackwell.
 }

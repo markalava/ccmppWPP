@@ -155,7 +155,7 @@ lt_single2abridged_loop_over_time <- function(lx_single, nLx_single, ex_single, 
   for (time in times) {
 
     n   <- n+1
-    lt <- lt_single2abridged(lx = lx_single[which(lx_single$time_start == time & lx_single$sex == sex), "value"],
+    lt <- DemoTools::lt_single2abridged(lx = lx_single[which(lx_single$time_start == time & lx_single$sex == sex), "value"],
                              nLx = nLx_single[which(nLx_single$time_start == time & nLx_single$sex == sex), "value"],
                              ex = ex_single[which(ex_single$time_start == time & ex_single$sex == sex), "value"])
     lt <- lt_long(lt)

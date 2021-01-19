@@ -6,13 +6,13 @@ test_that("objects are created properly", {
     ## Specify dimensions
     y <- ccmpp_input_df(S3_demog_change_component_time_age_sex_test_df,
                        dimensions = c("time", "age", "sex"))
-    expect_s3_class(y, "demog_change_component_df")
+    expect_s3_class(y, "ccmpp_input_df")
     expect_s3_class(y, "data.frame")
     expect_true(setequal(demog_change_component_dims(y), c("time", "age", "sex")))
 
     ## Guess dimensions
     y <- ccmpp_input_df(S3_demog_change_component_time_age_sex_test_df)
-    expect_s3_class(y, "demog_change_component_df")
+    expect_s3_class(y, "ccmpp_input_df")
     expect_s3_class(y, "data.frame")
     expect_true(setequal(demog_change_component_dims(y), c("time", "age", "sex")))
 
@@ -20,9 +20,13 @@ test_that("objects are created properly", {
     y <- ccmpp_input_df(
         subset(S3_demog_change_component_time_age_sex_test_df,
                select = -c(time_span, age_span)))
-    expect_s3_class(y, "demog_change_component_df")
+    expect_s3_class(y, "ccmpp_input_df")
     expect_s3_class(y, "data.frame")
     expect_true(setequal(demog_change_component_dims(y), c("time", "age", "sex")))
+
+    ## CHARACTER values
+    y <- as_ccmpp_input_df(wpp_input_example$mig_parameter)
+    expect_s3_class(y, "ccmpp_input_df")
 
 ### Time, Age
     ## Specify dimensions
@@ -31,14 +35,14 @@ test_that("objects are created properly", {
                                                         "value")]
     z <- ccmpp_input_df(x,
                        dimensions = c("time", "age"))
-    expect_s3_class(z, "demog_change_component_df")
+    expect_s3_class(z, "ccmpp_input_df")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dims(z), c("time", "age")))
 
     ## Guess dimensions and spans
     x <- S3_demog_change_component_time_age_test_df[, c("time_start", "age_start", "value")]
     z <- ccmpp_input_df(x)
-    expect_s3_class(z, "demog_change_component_df")
+    expect_s3_class(z, "ccmpp_input_df")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dims(z), c("time", "age")))
 
@@ -47,7 +51,7 @@ test_that("objects are created properly", {
     x <- S3_demog_change_component_time_sex_test_df[, c("time_start",
                                                         "time_span", "sex", "value")]
     z <- ccmpp_input_df(x, dimensions = c("time", "sex"))
-    expect_s3_class(z, "demog_change_component_df")
+    expect_s3_class(z, "ccmpp_input_df")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dims(z), c("time", "sex")))
 
@@ -55,7 +59,7 @@ test_that("objects are created properly", {
     x <- S3_demog_change_component_time_sex_test_df[,
                              c("time_start", "time_span", "sex", "value")]
     z <- ccmpp_input_df(x)
-    expect_s3_class(z, "demog_change_component_df")
+    expect_s3_class(z, "ccmpp_input_df")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dims(z), c("time", "sex")))
 
@@ -63,13 +67,13 @@ test_that("objects are created properly", {
     ## Specify dimensions
     x <- S3_demog_change_component_time_test_df[, c("time_start", "time_span", "value")]
     z <- ccmpp_input_df(x, dimensions = "time")
-    expect_s3_class(z, "demog_change_component_df")
+    expect_s3_class(z, "ccmpp_input_df")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dims(z), "time"))
 
     x <- S3_demog_change_component_time_test_df[, c("time_start", "time_span", "value")]
     z <- ccmpp_input_df(x)
-    expect_s3_class(z, "demog_change_component_df")
+    expect_s3_class(z, "ccmpp_input_df")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dims(z), "time"))
 })
@@ -188,7 +192,8 @@ test_that("'value_type' is checked properly", {
 
 
 test_that("'value_type' is set properly", {
-    x <- ccmpp_input_df_time_age_sex
+    x <- ccmpp_input_df(S3_demog_change_component_time_age_sex_test_df,
+                   dimensions = c("time", "age", "sex"))
     value_type(x) <- "real"
     expect_identical(value_type(x), "real")
     value_type(x) <- "ratio"

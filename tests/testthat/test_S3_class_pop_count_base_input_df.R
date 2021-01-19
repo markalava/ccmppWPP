@@ -1,9 +1,15 @@
 context("Test methods for S3 class 'pop_count_age_sex_base'")
 
 test_that("valid member created", {
-    expect_s3_class(pop_count_base_input_df_time_age_sex,
+    expect_s3_class(pop_count_age_sex_base(wpp_input_example$pop_count_age_sex_base),
                     "pop_count_age_sex_base")
-    })
+})
+
+
+### MAKE OBJECT AVAILABLE TO REMAINDER OF TESTS
+
+pop_count_base_input_df_time_age_sex <-
+    pop_count_age_sex_base(wpp_input_example$pop_count_age_sex_base)
 
 
 test_that("Non-zero age detected", {
@@ -35,4 +41,22 @@ test_that("Invalid 'value's are caught", {
     x[1, "value"]  <- -1
     expect_error(pop_count_age_sex_base(x),
                  "'value' column has negative elements")
+})
+
+test_that("Equal sex values are detected", {
+    x <- pop_count_base_input_df_time_age_sex
+
+    y <- x
+    y[y$sex == "male", "value"] <- y[y$sex == "female", "value"]
+    expect_warning(pop_count_age_sex_base(y),
+                   "Female and male baseline population counts are ")
+
+    y <- x
+    tol <- 0.5 / 100 * mean(y[y$sex == "female", "value"])
+    y[y$sex == "male", "value"] <-
+        y[y$sex == "female", "value"] + runif(n = nrow(y[y$sex == "female",]),
+                                              min = 1, max = 0.9 * tol)
+    expect_warning(pop_count_age_sex_base(y),
+                   "Female and male baseline population counts are ")
+
     })

@@ -17,8 +17,8 @@ new_srb <-
     function(x,
              age_span = double(),
              time_span = double(),
-             dimensions =  get_req_dimensions_for_ccmpp_input_classes("srb"),
-             value_type = get_value_types_for_ccmpp_input_classes("srb"),
+             dimensions =  get_req_dimensions_for_ccmpp_in_out_classes("srb"),
+             value_type = get_value_types_for_ccmpp_in_out_classes("srb"),
              value_scale = NA,
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
@@ -55,8 +55,8 @@ srb <-
              time_span = attr(x, "time_span")) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
-                            dimensions = get_req_dimensions_for_ccmpp_input_classes("srb"),
-                            value_type = get_value_types_for_ccmpp_input_classes("srb"),
+                            dimensions = get_req_dimensions_for_ccmpp_in_out_classes("srb"),
+                            value_type = get_value_types_for_ccmpp_in_out_classes("srb"),
                             value_scale = NA)
 
         ## Create/Validate
@@ -127,7 +127,7 @@ is_srb <- function(x) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_time.srb <- function(x, times, drop = FALSE) {
+subset_time.srb <- function(x, times, include = TRUE) {
 
     x <- NextMethod()
     return(srb(x))

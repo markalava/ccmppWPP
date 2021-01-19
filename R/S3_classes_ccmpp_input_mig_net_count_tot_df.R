@@ -18,8 +18,8 @@ new_mig_net_count_tot_b <-
     function(x,
              age_span = double(),
              time_span = double(),
-             dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_net_count_tot_b"),
-             value_type = get_value_types_for_ccmpp_input_classes("mig_net_count_tot_b"),
+             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("mig_net_count_tot_b"),
+             value_type = get_value_types_for_ccmpp_in_out_classes("mig_net_count_tot_b"),
              value_scale = double(),
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
@@ -52,12 +52,11 @@ new_mig_net_count_tot_b <-
 #' @export
 mig_net_count_tot_b <-
     function(x,
-             time_span = attr(x, "time_span"),
              value_scale = attr(x, "value_scale")) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
-                            dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_net_count_tot_b"),
-                            value_type = get_value_types_for_ccmpp_input_classes("mig_net_count_tot_b"),
+                            dimensions = get_req_dimensions_for_ccmpp_in_out_classes("mig_net_count_tot_b"),
+                            value_type = get_value_types_for_ccmpp_in_out_classes("mig_net_count_tot_b"),
                             value_scale = value_scale)
         ## Create/Validate
         validate_ccmpp_object(
@@ -128,7 +127,7 @@ is_mig_net_count_tot_b <- function(x) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_time.mig_net_count_tot_b <- function(x, times, drop = FALSE) {
+subset_time.mig_net_count_tot_b <- function(x, times, include = TRUE) {
 
     x <- NextMethod()
     return(mig_net_count_tot_b(x))

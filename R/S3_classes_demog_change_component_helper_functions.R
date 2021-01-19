@@ -13,8 +13,15 @@ get_all_demog_change_component_df_class_names <- function() {
       "mig_net_count_tot_b", "mig_net_count_age_sex",
       "mig_net_rate_age_sex", "mig_net_prop_age_sex",
       "srb", "pop_count_age_sex_base",
-      "survival_ratio_age_sex", "fert_rate_age_f",
-      "ccmpp_input_df", "demog_change_component_df")
+      "survival_ratio_age_sex",
+      "mortality_rate_age_sex",
+      "death_probability_age_sex",
+      "death_count_age_sex",
+      "fert_rate_age_f",
+      "ccmpp_input_df",
+      "pop_count_age_sex",
+      "ccmpp_output_df",
+      "demog_change_component_df")
 }
 
 get_all_allowed_attributes <- function() {
@@ -24,8 +31,6 @@ get_all_allowed_attributes <- function() {
 
 ## Define allowed dimensions
 get_all_allowed_dimensions <- function() {
-    ## The name component is a label for internal indexing. The data
-    ## component is the actual name of the dimension.
     ## !! ORDER MATTERS !! Determines the order of sorting!
     c("indicator", "time", "sex", "age")
 }

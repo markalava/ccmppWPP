@@ -7,19 +7,20 @@
 fert_mac(fert_data_age, byvar)
 }
 \arguments{
-\item{fert_data_age}{data frame. column "age" is age group of mother and "value" is age-specific fertility rates in births per woman.}
+\item{fert_data_age}{data frame. columns "age_start" and "age_span" describe age group of mother 
+and "value" is age-specific fertility rates in births per woman.}
 
-\item{byvar}{character. string of column names in fert_data_age by which pasfr will be computed.}
+\item{byvar}{character. string of column names in fert_data_age by which mac will be computed.}
 }
 \value{
-a data frame with mean age at childbearing in the "value" field, computed by byvar columns and age.
+a data frame with mean age at childbearing in the "value" field, computed by byvar columns.
 }
 \description{
 This function computes the mean age at childbearing from the age-specific fertility rates 
 of a given period.
 }
 \details{
-age/period can be 1x1 or 5x5.
+accomodates any width of age interval (age_span) so long as it is constant over age.
 }
 \author{
 Sara Hertog

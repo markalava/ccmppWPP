@@ -68,8 +68,8 @@ new_fert_rate_age_f <-
     function(x,
              age_span = double(),
              time_span = double(),
-             dimensions = get_req_dimensions_for_ccmpp_input_classes("fert_rate_age_f"),
-             value_type = get_value_types_for_ccmpp_input_classes("fert_rate_age_f"),
+             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("fert_rate_age_f"),
+             value_type = get_value_types_for_ccmpp_in_out_classes("fert_rate_age_f"),
              value_scale = double(),
              non_zero_fert_ages = double(),
              ..., class = character()) {
@@ -127,8 +127,8 @@ fert_rate_age_f <-
              value_scale = attr(x, "value_scale")) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
-                            dimensions = get_req_dimensions_for_ccmpp_input_classes("fert_rate_age_f"),
-                            value_type = get_value_types_for_ccmpp_input_classes("fert_rate_age_f"),
+                            dimensions = get_req_dimensions_for_ccmpp_in_out_classes("fert_rate_age_f"),
+                            value_type = get_value_types_for_ccmpp_in_out_classes("fert_rate_age_f"),
                             value_scale = value_scale)
 
         if (is.null(non_zero_fert_ages)) {
@@ -222,14 +222,14 @@ is_fert_rate_age_f <- function(x) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_time.fert_rate_age_f <- function(x, times, drop = FALSE) {
+subset_time.fert_rate_age_f <- function(x, times, include = TRUE) {
     x <- NextMethod()
     return(fert_rate_age_f(x))
 }
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_age.fert_rate_age_f <- function(x, ages, drop = FALSE) {
+subset_age.fert_rate_age_f <- function(x, ages, include = TRUE) {
     x <- NextMethod()
     return(fert_rate_age_f(x))
 }

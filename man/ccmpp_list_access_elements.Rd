@@ -16,6 +16,24 @@
 \alias{survival_ratio_component<-}
 \alias{survival_ratio_component<-.life_table_age_sex}
 \alias{survival_ratio_component<-.ccmpp_input_list}
+\alias{mortality_rate_component}
+\alias{mortality_rate_component.life_table_age_sex}
+\alias{mortality_rate_component.ccmpp_input_list}
+\alias{mortality_rate_component<-}
+\alias{mortality_rate_component<-.life_table_age_sex}
+\alias{mortality_rate_component<-.ccmpp_input_list}
+\alias{death_probability_component}
+\alias{death_probability_component.life_table_age_sex}
+\alias{death_probability_component.ccmpp_input_list}
+\alias{death_probability_component<-}
+\alias{death_probability_component<-.life_table_age_sex}
+\alias{death_probability_component<-.ccmpp_input_list}
+\alias{death_count_component}
+\alias{death_count_component.life_table_age_sex}
+\alias{death_count_component.ccmpp_input_list}
+\alias{death_count_component<-}
+\alias{death_count_component<-.life_table_age_sex}
+\alias{death_count_component<-.ccmpp_input_list}
 \alias{fert_rate_component}
 \alias{fert_rate_component.ccmpp_input_list}
 \alias{fert_rate_component<-}
@@ -69,6 +87,42 @@ survival_ratio_component(x) <- value
 \method{survival_ratio_component}{life_table_age_sex}(x) <- value
 
 \method{survival_ratio_component}{ccmpp_input_list}(x) <- value
+
+mortality_rate_component(x)
+
+\method{mortality_rate_component}{life_table_age_sex}(x)
+
+\method{mortality_rate_component}{ccmpp_input_list}(x)
+
+mortality_rate_component(x) <- value
+
+\method{mortality_rate_component}{life_table_age_sex}(x) <- value
+
+\method{mortality_rate_component}{ccmpp_input_list}(x) <- value
+
+death_probability_component(x)
+
+\method{death_probability_component}{life_table_age_sex}(x)
+
+\method{death_probability_component}{ccmpp_input_list}(x)
+
+death_probability_component(x) <- value
+
+\method{death_probability_component}{life_table_age_sex}(x) <- value
+
+\method{death_probability_component}{ccmpp_input_list}(x) <- value
+
+death_count_component(x)
+
+\method{death_count_component}{life_table_age_sex}(x)
+
+\method{death_count_component}{ccmpp_input_list}(x)
+
+death_count_component(x) <- value
+
+\method{death_count_component}{life_table_age_sex}(x) <- value
+
+\method{death_count_component}{ccmpp_input_list}(x) <- value
 
 fert_rate_component(x)
 

@@ -20,8 +20,8 @@ new_mig_net_prop_age_sex <-
     function(x,
              age_span = double(),
              time_span = double(),
-             dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_net_prop_age_sex"),
-             value_type = get_value_types_for_ccmpp_input_classes("mig_net_prop_age_sex"),
+             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("mig_net_prop_age_sex"),
+             value_type = get_value_types_for_ccmpp_in_out_classes("mig_net_prop_age_sex"),
              value_scale = NA,
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
@@ -49,7 +49,11 @@ new_mig_net_prop_age_sex <-
 #' \code{ccmpp_input_list} and \code{mig_net_count_age_sex}. The
 #' latter two methods will compute the proportions from counts of
 #' migration and a baseline population by simple division of migration
-#' counts by population counts, matched by age, sex, and time.
+#' counts by population counts, matched by age, sex, and
+#' time. Population counts are supplied as a data frame via argument
+#' \code{pop_count_age_sex}. The method for \code{ccmpp_input_list}s
+#' uses \code{\link{project_ccmpp_loop_over_time}} to generate the
+#' population counts from the inputs supplied via argument \code{x}.
 #'
 #' @family ccmpp_input_objects
 #' @seealso \code{\link{validate_ccmpp_object}} for object validation,
@@ -86,8 +90,8 @@ mig_net_prop_age_sex.data.frame <-
     function(x, ...) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
-                            dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_net_prop_age_sex"),
-                            value_type = get_value_types_for_ccmpp_input_classes("mig_net_prop_age_sex"),
+                            dimensions = get_req_dimensions_for_ccmpp_in_out_classes("mig_net_prop_age_sex"),
+                            value_type = get_value_types_for_ccmpp_in_out_classes("mig_net_prop_age_sex"),
                             value_scale = NA)
 
         ## Create/Validate
@@ -184,7 +188,7 @@ is_mig_net_prop_age_sex <- function(x) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_time.mig_net_prop_age_sex <- function(x, times, drop = FALSE) {
+subset_time.mig_net_prop_age_sex <- function(x, times, include = TRUE) {
 
     x <- NextMethod()
     return(mig_net_prop_age_sex(x))
@@ -192,7 +196,7 @@ subset_time.mig_net_prop_age_sex <- function(x, times, drop = FALSE) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_age.mig_net_prop_age_sex <- function(x, ages, drop = FALSE) {
+subset_age.mig_net_prop_age_sex <- function(x, ages, include = TRUE) {
 
     x <- NextMethod()
     return(mig_net_prop_age_sex(x))
@@ -200,7 +204,7 @@ subset_age.mig_net_prop_age_sex <- function(x, ages, drop = FALSE) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_sex.mig_net_prop_age_sex <- function(x, sexes, drop = FALSE) {
+subset_sex.mig_net_prop_age_sex <- function(x, sexes, include = TRUE) {
 
     x <- NextMethod()
     return(mig_net_prop_age_sex(x))

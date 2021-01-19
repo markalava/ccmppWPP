@@ -27,8 +27,8 @@ new_pop_count_age_sex_base <-
     function(x,
              age_span = double(),
              time_span = double(),
-             dimensions =  get_req_dimensions_for_ccmpp_input_classes("pop_count_age_sex_base"),
-             value_type = get_value_types_for_ccmpp_input_classes("pop_count_age_sex_base"),
+             dimensions =  get_req_dimensions_for_ccmpp_in_out_classes("pop_count_age_sex_base"),
+             value_type = get_value_types_for_ccmpp_in_out_classes("pop_count_age_sex_base"),
              value_scale = double(),
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
@@ -45,7 +45,7 @@ new_pop_count_age_sex_base <-
 #' Constructor for class \code{pop_count_age_sex_base}
 #'
 #' \code{pop_count_age_sex_base} is a subclass of
-#' \code{\link{ccmpp_input_df}}. It imposes three additional conditions:
+#' \code{\link{ccmpp_input_df}}. It imposes two additional conditions:
 #' \enumerate{
 #'   \item{\code{Value_type} attribute equals \dQuote{count}.}
 #'   \item{Within year and sex, age must start at 0.}
@@ -69,8 +69,8 @@ pop_count_age_sex_base <-
         else if (!is.numeric(value_scale)) stop("'value_scale' must be numeric.")
 
         li <- prepare_df_for_ccmpp_input_df(x,
-                            dimensions =  get_req_dimensions_for_ccmpp_input_classes("pop_count_age_sex_base"),
-                            value_type = get_value_types_for_ccmpp_input_classes("pop_count_age_sex_base"),
+                            dimensions =  get_req_dimensions_for_ccmpp_in_out_classes("pop_count_age_sex_base"),
+                            value_type = get_value_types_for_ccmpp_in_out_classes("pop_count_age_sex_base"),
                             value_scale = value_scale)
 
         ## Create/Validate
@@ -142,7 +142,7 @@ is_pop_count_age_sex_base <- function(x) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_time.pop_count_age_sex_base <- function(x, times, drop = FALSE) {
+subset_time.pop_count_age_sex_base <- function(x, times, include = TRUE) {
 
     x <- NextMethod()
     return(pop_count_age_sex_base(x))
@@ -150,7 +150,7 @@ subset_time.pop_count_age_sex_base <- function(x, times, drop = FALSE) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_age.pop_count_age_sex_base <- function(x, ages, drop = FALSE) {
+subset_age.pop_count_age_sex_base <- function(x, ages, include = TRUE) {
 
     x <- NextMethod()
     return(pop_count_age_sex_base(x))
@@ -158,7 +158,7 @@ subset_age.pop_count_age_sex_base <- function(x, ages, drop = FALSE) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_sex.pop_count_age_sex_base <- function(x, sexes, drop = FALSE) {
+subset_sex.pop_count_age_sex_base <- function(x, sexes, include = TRUE) {
 
     x <- NextMethod()
     return(pop_count_age_sex_base(x))

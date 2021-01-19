@@ -11,7 +11,7 @@ ccmppWPP_workflow_one_country_variant(wpp_input)
 }
 \value{
 a list of objects including projected population, deaths, exposures, life tables, births, fertility
-rates and proportions, and net migrant counts
+rates and proportions, and net migrant counts, needed for Eagle display
 }
 \description{
 This function takes the wpp input list of objects for a given country and variant

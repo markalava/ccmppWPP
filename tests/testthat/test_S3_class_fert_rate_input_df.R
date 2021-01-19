@@ -2,9 +2,12 @@ context("Test construction and validation of S3 class 'fert_rate_age_f'")
 
 test_that("objects are created properly", {
 
+    expect_s3_class(fert_rate_input_df_time_age <-
+                        fert_rate_age_f(S3_fert_rate_time_age_df),
+                    "fert_rate_age_f")
+
     ## Time, Age
-    x <- fert_rate_input_df_time_age
-    z <- fert_rate_age_f(x)
+    z <- fert_rate_age_f(fert_rate_input_df_time_age)
     expect_s3_class(z, "fert_rate_age_f")
     expect_s3_class(z, "data.frame")
     expect_true(setequal(demog_change_component_dims(z), c("time", "age")))
@@ -23,6 +26,12 @@ test_that("objects are created properly", {
     z <- fert_rate_age_f(x, non_zero_fert_ages = 20:25)
     expect_equal(non_zero_fert_ages(z), 20:25)
 })
+
+
+### MAKE OBJECT AVAILABLE TO REMAINDER OF TESTS
+
+fert_rate_input_df_time_age <-
+    fert_rate_age_f(S3_fert_rate_time_age_df)
 
 
 test_that("invalid data objects are caught", {
@@ -65,8 +74,7 @@ test_that("missing columns are caught", {
 
 test_that("superfluous columns are caught", {
 
-    x <- fert_rate_input_df_time_age
-    z <- data.frame(x, source = "census")
+    z <- data.frame(fert_rate_input_df_time_age, source = "census")
 
     expect_true(## No fail: Automatically removes column
         !("source" %in%
@@ -126,7 +134,7 @@ test_that("erroneous sex dimension detected", {
     z <- cbind(y, sex = "female")
     z <- ccmppWPP:::new_fert_rate_age_f(z, non_zero_fert_ages = non_zero_fert_ages(y),
                                 time_span = 1, age_span = 1, value_scale = 1)
-    expect_error(check_dimensions_for_ccmpp_input_df(z),
+    expect_error(check_dimensions_for_ccmpp_in_out_df(z),
                  "that correspond to dimensions")
 
     attr(z, "dimensions") <- unique(c(attr(z, "dimensions"), "sex"))
@@ -138,8 +146,7 @@ test_that("erroneous sex dimension detected", {
 
 
 test_that("sex column removed", {
-    y <- fert_rate_input_df_time_age
-    z <- cbind(y, sex = "female")
+    z <- cbind(fert_rate_input_df_time_age, sex = "female")
     z <- fert_rate_age_f(z)
     expect_false("sex" %in% colnames(z))
 })
@@ -188,16 +195,16 @@ test_that("zero fertility rate ages that are non-zero are caught", {
     y <- new_fert_rate_age_f(y,
              age_span = 1,
              time_span = 1,
-             dimensions = get_req_dimensions_for_ccmpp_input_classes("fert_rate_age_f"),
-             value_type = get_value_types_for_ccmpp_input_classes("fert_rate_age_f"),
+             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("fert_rate_age_f"),
+             value_type = get_value_types_for_ccmpp_in_out_classes("fert_rate_age_f"),
              value_scale = 1,
              non_zero_fert_ages = 0:5)
     expect_s3_class(validate_ccmpp_object(y), "fert_rate_age_f")
     y <- new_fert_rate_age_f(y,
              age_span = 1,
              time_span = 1,
-             dimensions = get_req_dimensions_for_ccmpp_input_classes("fert_rate_age_f"),
-             value_type = get_value_types_for_ccmpp_input_classes("fert_rate_age_f"),
+             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("fert_rate_age_f"),
+             value_type = get_value_types_for_ccmpp_in_out_classes("fert_rate_age_f"),
              value_scale = 1,
              non_zero_fert_ages = 2)
     expect_error(validate_ccmpp_object(y), "have non-zero 'value' for at least some 'time_start's")

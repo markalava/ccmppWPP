@@ -38,14 +38,12 @@ get_required_indicator_categories_mig_parameter <- function() {
 #' @author Mark Wheldon
 new_mig_parameter <-
     function(x,
-             age_span = double(),
              time_span = double(),
-             dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_parameter"),
-             value_type = get_value_types_for_ccmpp_input_classes("mig_parameter"),
+             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("mig_parameter"),
+             value_type = get_value_types_for_ccmpp_in_out_classes("mig_parameter"),
              value_scale = NA,
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
-                           age_span = age_span,
                            time_span = time_span,
                            dimensions = dimensions,
                            value_type = value_type,
@@ -58,10 +56,7 @@ new_mig_parameter <-
 #' Constructor for class \code{mig_parameter}
 #'
 #' \code{mig_parameter} is a subclass of
-#' \code{\link{ccmpp_input_df}}. It imposes two additional conditions:
-#' \enumerate{
-#'   \item{\code{Value_type} attribute equals \dQuote{rate}.}
-#'   \item{Within year and sex, age must start at 0.}}
+#' \code{\link{ccmpp_input_df}}. It contains
 #'
 #' @family ccmpp_input_objects
 #' @seealso \code{\link{validate_ccmpp_object}} for object validation,
@@ -73,12 +68,11 @@ new_mig_parameter <-
 #' @author Mark Wheldon
 #' @export
 mig_parameter <-
-    function(x,
-             time_span = attr(x, "time_span")) {
+    function(x) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
-                            dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_parameter"),
-                            value_type = get_value_types_for_ccmpp_input_classes("mig_parameter"),
+                            dimensions = get_req_dimensions_for_ccmpp_in_out_classes("mig_parameter"),
+                            value_type = get_value_types_for_ccmpp_in_out_classes("mig_parameter"),
                             value_scale = NA)
         ## Create/Validate
         validate_ccmpp_object(
@@ -153,14 +147,14 @@ is_mig_parameter <- function(x) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_time.mig_parameter <- function(x, times, drop = FALSE) {
+subset_time.mig_parameter <- function(x, times, include = TRUE) {
     x <- NextMethod()
     return(mig_parameter(x))
 }
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_indicator.mig_parameter <- function(x, times, drop = FALSE) {
+subset_indicator.mig_parameter <- function(x, times, include = TRUE) {
     x <- NextMethod()
     return(mig_parameter(x))
 }

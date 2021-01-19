@@ -464,14 +464,13 @@ print.summary_demog_change_component_df <-
 
 #' Plot \code{demog_change_component_df} objects
 #'
-#' This is the S3 method for the generic \code{\link{plot}} function.
+#' This is the S3 method for the generic \code{\link{plot}}
+#' function. It requires \pkg{ggplot2}.
 #'
 #' @param x An object of class \code{demog_change_component_df}.
 #' @param type The type of plot to produce, e.g., \dQuote{line}.
 #' @param ... When \code{type} is \dQuote{ggplot2} (default) passed on
 #'     to \code{\link[ggplot2]{ggplot}}. Otherwise passed on to \code{\link{plot}}.
-#' @param framework Plotting framework to use; either \dQuote{ggplot2}
-#'     or \dQuote{base}. Use the former (default) for better results.
 #' @param plot Should the plot be printed?
 #' @return When \code{framework} is \dQuote{ggplot2}, a plot
 #'     object. Otherwise nothing. The function is mainly called for
@@ -479,82 +478,84 @@ print.summary_demog_change_component_df <-
 #' @author Mark Wheldon
 #' @export
 plot.demog_change_component_df <-
-    function(x, type = c("point", "line", "both"), ...
-             ## , ask = TRUE
-           , framework = c("ggplot2", "base"),
+    function(x, type = c("point", "line", "both"), ...,
              plot = TRUE
              ) {
-        ## framework <- match.arg(framework)
         type <- match.arg(type)
         dcc_dims_x <- demog_change_component_dims(x)
 
-        if (identical(framework, "base") || !requireNamespace("ggplot2")) {
-            stop("'base' plots not implemented; install ggplot2.")
-            ## if (!identical(framework, "base"))
-            ##     S3_class_message("Install 'ggplot2' for enhanced plots.")
+        if ("non_zero_fert_ages" %in% names(attributes(x))) {
+            nzf_ages_present <- TRUE
+                    x$fert_rate_ages <-
+                        factor(x$age_start %in% non_zero_fert_ages(x),
+                               levels = c(TRUE, FALSE),
+                               labels = c("Non-zero fertility", "Zero fertility"))
+        } else nzf_ages_present <- FALSE
 
-            ## if (identical(sort(c("time", "sex", "age")), sort(dcc_dims_x))) {
-            ##     times_x <- times(x)
-            ##     par(ask = TRUE)
-            ##     for (y in seq_along(times(x))) {
-            ##         ty <- times_x[y]
-            ##         df <- x[x$time_start == ty,]
+        if (identical("age", dcc_dims_x)) {
+            gp <- ggplot2::ggplot(data = x, ggplot2::aes(x = age_start, y = value),
+                                  ...)
 
-            ##         plot(x = df$age_start, y = df$value, type = "n",
-            ##              xlab = "age_start", ylab = "value",
-            ##              main = ty)
-            ##         legend(
+        } else if (identical("time", dcc_dims_x)) {
+            gp <- ggplot2::ggplot(data = x, ggplot2::aes(x = time_start, y = value),
+                                  ...)
 
-            ##         for (sex %in% sexes(x)) {
-            ##             df_sex <- df[df$sex == sex, ]
-            ##             lines(x = df_sex$age_start, y = df_sex$value, col = y, type = "b")
-            ##         }
-        } else {
+        } else if (identical("sex", dcc_dims_x)) {
+            gp <- ggplot2::ggplot(data = x, ggplot2::aes(x = sex, y = value),
+                                  ...)
 
-            if (identical("age", dcc_dims_x)) {
-                gp <- ggplot2::ggplot(data = x, ggplot2::aes(x = age_start, y = value),
-                                      ...)
+        } else if (identical(sort(c("age", "sex")), sort(dcc_dims_x))) {
+            gp <- ggplot2::ggplot(data = x, ggplot2::aes(x = age_start, y = value, col = sex),
+                                  ...)
 
-            } else if (identical("time", dcc_dims_x)) {
-                gp <- ggplot2::ggplot(data = x, ggplot2::aes(x = time_start, y = value),
-                                      ...)
+        } else if (identical(sort(c("time", "sex")), sort(dcc_dims_x))) {
+            gp <- ggplot2::ggplot(data = x, ggplot2::aes(x = time_start, y = value, col = sex),
+                                  ...)
 
-            } else if (identical("sex", dcc_dims_x)) {
-                gp <- ggplot2::ggplot(data = x, ggplot2::aes(x = sex, y = value),
-                                      ...)
+        } else if (identical(sort(c("time", "age")), sort(dcc_dims_x))) {
+            gp <- ggplot2::ggplot(data = x, ggplot2::aes(x = age_start, y = value),
+                                  ...) +
+                ggplot2::facet_wrap(~ time_start)
 
-            } else if (identical(sort(c("age", "sex")), sort(dcc_dims_x))) {
-                gp <- ggplot2::ggplot(data = x, ggplot2::aes(x = age_start, y = value, col = sex),
-                                      ...)
+        } else if (identical(sort(c("time", "sex", "age")), sort(dcc_dims_x))) {
+            gp <- ggplot2::ggplot(data = x, ggplot2::aes(x = age_start, y = value, col = sex),
+                                  ...) +
+                ggplot2::facet_wrap(~ time_start)
+        } else stop("These dimensions not yet implemented.")
 
-            } else if (identical(sort(c("time", "sex")), sort(dcc_dims_x))) {
-                gp <- ggplot2::ggplot(data = x, ggplot2::aes(x = time_start, y = value, col = sex),
-                                      ...)
-
-            } else if (identical(sort(c("time", "age")), sort(dcc_dims_x))) {
-                gp <- ggplot2::ggplot(data = x, ggplot2::aes(x = age_start, y = value),
-                                      ...) +
-                    ggplot2::facet_wrap(~ time_start)
-
-            } else if (identical(sort(c("time", "sex", "age")), sort(dcc_dims_x))) {
-                gp <- ggplot2::ggplot(data = x, ggplot2::aes(x = age_start, y = value, col = sex),
-                                      ...) +
-                    ggplot2::facet_wrap(~ time_start)
-            } else stop("These dimensions not yet implemented.")
-
-            if (!identical("sex", dcc_dims_x)) {
-                if (identical(type, "line"))
-                    gp <- gp + ggplot2::geom_line()
-                else if (identical(type, "point"))
+        if (!identical("sex", dcc_dims_x)) {
+            if (identical(type, "line"))
+                gp <- gp + ggplot2::geom_line()
+            else if (identical(type, "point")) {
+                if (nzf_ages_present) {
+                    gp <- gp + ggplot2::geom_point(aes(shape = fert_rate_ages, col = fert_rate_ages)) +
+                        ggplot2::scale_shape_manual(name = "Reproductive\nage range",
+                                                    values = c("Non-zero fertility" = 19,
+                                                               "Zero fertility" = 1)) +
+                        ggplot2::scale_colour_manual(name = "Reproductive\nage range",
+                                                    values = c("Non-zero fertility" = "black",
+                                                               "Zero fertility" = "grey"))
+                } else {
                     gp <- gp + ggplot2::geom_point()
-                else if (identical(type, "both"))
+                }
+            } else if (identical(type, "both"))
+                if (nzf_ages_present) {
+                    gp <- gp + ggplot2::geom_point(aes(shape = fert_rate_ages, col = fert_rate_ages)) +
+                        ggplot2::geom_line(aes(col = fert_rate_ages)) +
+                        ggplot2::scale_shape_manual(name = "Reproductive age range",
+                                                    values = c("Non-zero fertility" = 19,
+                                                               "Zero fertility" = 1)) +
+                        ggplot2::scale_colour_manual(name = "Reproductive\nage range",
+                                                    values = c("Non-zero fertility" = "black",
+                                                               "Zero fertility" = "grey"))
+                } else {
                     gp <- gp + ggplot2::geom_point() + ggplot2::geom_line()
-            } else {
-                gp <- gp + ggplot2::geom_bar()
-            }
-            if (plot) print(gp)
-            return(invisible(gp))
+                }
+        } else {
+            gp <- gp + ggplot2::geom_bar()
         }
+        if (plot) print(gp)
+        return(invisible(gp))
     }
 
 

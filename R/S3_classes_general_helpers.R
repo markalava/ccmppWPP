@@ -6,6 +6,6 @@ S3_class_message <- function(...) {
 
 S3_class_warning <- function(...) {
     if (!getOption("ccmppWPP.suppress_S3_class_warnings", default = FALSE))
-        warning(...)
+        warning(..., call. = FALSE)
     invisible()
     }

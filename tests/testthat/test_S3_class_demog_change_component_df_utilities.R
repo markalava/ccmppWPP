@@ -1,5 +1,12 @@
 context("Test S3 class 'demog_change_component_df' utility functions")
 
+### OBJECTS NEEDED (tested already)
+
+dcc_df_time_age_sex <-
+    demog_change_component_df(S3_demog_change_component_time_age_sex_test_df,
+                              dimensions = c("time", "age", "sex"))
+
+
 test_that("subsetting works properly", {
 
     z <- subset_time(dcc_df_time_age_sex, times = 1950, drop = TRUE)

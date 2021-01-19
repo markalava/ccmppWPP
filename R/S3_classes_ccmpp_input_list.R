@@ -11,7 +11,15 @@ strip_ccmpp_input_list_classes_attribute <- function(class_att) {
     class_att[!(class_att %in% get_all_ccmpp_list_class_names())]
 }
 
-## Required element names
+#' List the names of required elements of \code{ccmpp_input_list} objects
+#'
+#' The function simply returns a character vector naming all the
+#' elements required for an object to be a valid
+#' \code{ccmpp_input_list}.
+#'
+#' @return Character vector naming required elements.
+#' @author Mark Wheldon
+#' @export
 get_all_required_ccmpp_input_list_element_names <- function() {
     c("pop_count_age_sex_base", "life_table_age_sex",
       "fert_rate_age_f",
@@ -108,11 +116,15 @@ ccmpp_input_list <-
         non_zero_fert_ages <- suppressMessages(non_zero_fert_ages(obj$fert_rate_age_f))
 
         ## Create/Validate
+
+        ## Individual elements are all validated by
+        ## 'as_...' functions so don't redo that part.
         validate_ccmpp_object(
             new_ccmpp_input_list(obj,
                                age_span = age_span,
                                time_span = time_span,
-                               non_zero_fert_ages = non_zero_fert_ages)
+                               non_zero_fert_ages = non_zero_fert_ages),
+            .validate_elements = FALSE
         )
     }
 

@@ -20,8 +20,8 @@ new_survival_ratio_age_sex <-
              age_span = double(),
              time_span = double(),
              non_zero_fert_ages = double(),
-             dimensions = get_req_dimensions_for_ccmpp_input_classes("survival_ratio_age_sex"),
-             value_type = get_value_types_for_ccmpp_input_classes("survival_ratio_age_sex"),
+             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("survival_ratio_age_sex"),
+             value_type = get_value_types_for_ccmpp_in_out_classes("survival_ratio_age_sex"),
              value_scale = NA,
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
@@ -53,13 +53,11 @@ new_survival_ratio_age_sex <-
 #' @author Mark Wheldon
 #' @export
 survival_ratio_age_sex <-
-    function(x,
-             age_span = attr(x, "age_span"),
-             time_span = attr(x, "time_span")) {
+    function(x) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
-                           dimensions = get_req_dimensions_for_ccmpp_input_classes("survival_ratio_age_sex"),
-                           value_type = get_value_types_for_ccmpp_input_classes("survival_ratio_age_sex"),
+                           dimensions = get_req_dimensions_for_ccmpp_in_out_classes("survival_ratio_age_sex"),
+                           value_type = get_value_types_for_ccmpp_in_out_classes("survival_ratio_age_sex"),
                            value_scale = NA)
 
         ## Create/Validate
@@ -131,7 +129,7 @@ is_survival_ratio_age_sex <- function(x) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_time.survival_ratio_age_sex <- function(x, times, drop = FALSE) {
+subset_time.survival_ratio_age_sex <- function(x, times, include = TRUE) {
 
     x <- NextMethod()
     return(survival_ratio_age_sex(x))
@@ -139,7 +137,7 @@ subset_time.survival_ratio_age_sex <- function(x, times, drop = FALSE) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_age.survival_ratio_age_sex <- function(x, ages, drop = FALSE) {
+subset_age.survival_ratio_age_sex <- function(x, ages, include = TRUE) {
 
     x <- NextMethod()
     return(survival_ratio_age_sex(x))
@@ -147,7 +145,7 @@ subset_age.survival_ratio_age_sex <- function(x, ages, drop = FALSE) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_sex.survival_ratio_age_sex <- function(x, sexes, drop = FALSE) {
+subset_sex.survival_ratio_age_sex <- function(x, sexes, include = TRUE) {
 
     x <- NextMethod()
     return(survival_ratio_age_sex(x))

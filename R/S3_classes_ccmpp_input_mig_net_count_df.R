@@ -18,8 +18,8 @@ new_mig_net_count_age_sex <-
     function(x,
              age_span = double(),
              time_span = double(),
-             dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_net_count_age_sex"),
-             value_type = get_value_types_for_ccmpp_input_classes("mig_net_count_age_sex"),
+             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("mig_net_count_age_sex"),
+             value_type = get_value_types_for_ccmpp_in_out_classes("mig_net_count_age_sex"),
              value_scale = double(),
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
@@ -88,8 +88,8 @@ mig_net_count_age_sex.data.frame <-
              value_scale = attr(x, "value_scale"), ...) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
-                            dimensions = get_req_dimensions_for_ccmpp_input_classes("mig_net_count_age_sex"),
-                            value_type = get_value_types_for_ccmpp_input_classes("mig_net_count_age_sex"),
+                            dimensions = get_req_dimensions_for_ccmpp_in_out_classes("mig_net_count_age_sex"),
+                            value_type = get_value_types_for_ccmpp_in_out_classes("mig_net_count_age_sex"),
                             value_scale = value_scale)
 
         ## Create/Validate
@@ -175,7 +175,7 @@ is_mig_net_count_age_sex <- function(x) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_time.mig_net_count_age_sex <- function(x, times, drop = FALSE) {
+subset_time.mig_net_count_age_sex <- function(x, times, include = TRUE) {
 
     x <- NextMethod()
     return(mig_net_count_age_sex(x))
@@ -183,7 +183,7 @@ subset_time.mig_net_count_age_sex <- function(x, times, drop = FALSE) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_age.mig_net_count_age_sex <- function(x, ages, drop = FALSE) {
+subset_age.mig_net_count_age_sex <- function(x, ages, include = TRUE) {
 
     x <- NextMethod()
     return(mig_net_count_age_sex(x))
@@ -191,7 +191,7 @@ subset_age.mig_net_count_age_sex <- function(x, ages, drop = FALSE) {
 
 #' @rdname subset_demog_change_component_df
 #' @export
-subset_sex.mig_net_count_age_sex <- function(x, sexes, drop = FALSE) {
+subset_sex.mig_net_count_age_sex <- function(x, sexes, include = TRUE) {
 
     x <- NextMethod()
     return(mig_net_count_age_sex(x))

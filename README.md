@@ -22,13 +22,13 @@ Below are basic instructions to download and install the package on your system.
 	
 	If this is the first time running `install.packages` for this version of *R* on your system you may be asked to select a *CRAN* mirror. You can choose any mirror; the choice does affect the functioning of the package.
 	
-5. Once installation is complete, to use package functions issue the command
+5. Once installation is complete, issue the following command to use package functions:
 
     ```
 	library(ccmppWPP)
 	```
 	
-    Vignettes that explain the package structure and functions can be read via
+    Vignettes that explain the package structure and functions can be read by issuing the commands:
 	
 	```
 	vignette("CCMPP Input Data Structures Quick Guide", package = "ccmppWPP")

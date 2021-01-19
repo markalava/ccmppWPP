@@ -9,20 +9,23 @@ Below are basic instructions to download and install the package on your system.
 
 1. Ensure the version of *R* your have installed is 4.0.2 or higher. See [here](https://www.r-project.org/) for installation instructions.
 2. If you are using *R Studio* (optional), ensure it is version 1.1.1073 or higher. See [here](https://rstudio.com/) for installation instructions. 
-3. If you are using Microsoft's *Windows* operating system install *Rtools40* by following the instructions [here](https://cran.r-project.org/bin/windows/Rtools/ "link to install Rtools40"). 
-4. Launch *R* (with or without *R Studio*) and issue the following commands. 
+3. If you are using Microsoft's *Windows* operating system install *Rtools40* by following the instructions [here](https://cran.r-project.org/bin/windows/Rtools/ "link to install Rtools40").
+4. Generate a *Github* *personal access token* [here](https://github.com/settings/tokens). You will paste this in to the `install_github` command below.
+5. Launch *R* (with or without *R Studio*) and issue the following commands (paste in your personal access token as indicated):
 
     ```
     install.packages("remotes", dependencies = TRUE) #only do once per user/workstation
 	
-    remotes::install_github(https://github.com/markalava/ccmppWPP, ref = "master", build_vignettes = TRUE, dependencies = TRUE)
+    remotes::install_github(https://github.com/markalava/ccmppWPP, 
+	                        ref = "master", build_vignettes = TRUE, dependencies = TRUE,
+							auth_token = [your-auth-token-here])
     ```
 	
 	You can change `ref = "master"` to `ref = "develop/mark"` or `ref = "develop/sara"` to install from different branches. 
 	
 	If this is the first time running `install.packages` for this version of *R* on your system you may be asked to select a *CRAN* mirror. You can choose any mirror; the choice does affect the functioning of the package.
 	
-5. Once installation is complete, issue the following command to use package functions:
+6. Once installation is complete, issue the following command to use package functions:
 
     ```
 	library(ccmppWPP)

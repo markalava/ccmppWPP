@@ -12,7 +12,7 @@ Below are basic instructions to download and install the package on your system.
 3. If you are using Microsoft's *Windows* operating system install *Rtools40* by following the instructions [here](https://cran.r-project.org/bin/windows/Rtools/ "link to install Rtools40").
 4. Ensure you have a *TeX* distribution installed; see section "PDF Help Files via LaTeX" below.
 5. Unless you have done this previously, generate a *Github* *personal access token* [here](https://github.com/settings/tokens). You can either
-    1. Save this to the `GITHUB_PAT` environment variable on your system (recommended); or
+    1. Save this to the "GITHUB_PAT" [environment variable](https://en.wikipedia.org/wiki/Environment_variable) on your system (recommended); or
 	2. Paste it in to the `install_github` command below.
 6. Launch *R* (with or without *R Studio*) and issue the following commands (paste in your personal access token as indicated):
 
@@ -22,7 +22,7 @@ Below are basic instructions to download and install the package on your system.
     remotes::install_github(https://github.com/markalava/ccmppWPP, 
 	                        ref = "master", build_vignettes = TRUE, dependencies = TRUE,
 	                        auth_token = [your-auth-token-here]) 
-                            # If you saved your token to the GITHUB_PAT environment variable you can omit the last argument.
+                            # If you saved your token to your system's "GITHUB_PAT" environment variable you can omit the last argument.
     ```
 	
 	You can change `ref = "master"` to `ref = "develop/mark"` or `ref = "develop/sara"` to install from different branches. 
@@ -94,9 +94,17 @@ Here is a grab bag of various issues that may come up in no particular order. Pl
 	
 2. **Cannot switch to a different *Git* branch.**
 
-  If you see a message to the effect that "changes to local files would be overwritten", you can either delete the files listed if you don't want them or commit your changes to your local branch, then try again. 
+  If you see a message to the effect that "changes to local files would be overwritten", you can either delete the files listed if you don't want them or commit your changes to your local branch, then try again.
   
-3. **The vignettes do not load.**
+3. **Error messages like "`'add_column' not found`" or "`'column_to_rownames' not found`" (etc.)**
+
+  Try adding `library(tidyverse)` before using the package functions. This should be fixed in future releases.
+  
+4. **Error messages like "`'lt_abridged_from_complete'` not found`" (etc.)**
+
+  Try issuing the command `library(DemoTools)` before using the package functions. This should be fixed in future releases.
+  
+5. **The vignettes do not load.**
 
   You may see this message if you are working with the source code and have loaded it with, for example, `devtools::load_all()` or the equivalent via *R Studio*'s menus. To read the vignettes they need to have been 'built'. You will need to use `R CMD build` from your operating system's terminal / command line interface (e.g., `cmd.exe` in Windows), or use `devtools::install(pkg = ".", build = TRUE, build_vignettes = TRUE)` from within *R*. In both cases you will first need to set the working directory of the terminal or *R* to the package directory (which contains the package's 'DESCRIPTION' file). If you're trying this from within *R* (or *R Studio*) you may need to quit and restart before and/or after trying the install. If you restart after the install, remember to `library(ccmppWPP)` or `devtools::load_all()` again once *R* has restarted. 
   

@@ -22,6 +22,7 @@
 #' @param data_source_year_hmd numeric. DataSourceYear for the HMD series to use.
 #' @param data_source_year_hfd numeric. DataSourceYear for the HFD series to use.
 #' @param data_source_year_eurostat numeric. DataSourceYear for the EuroStat series to use.
+#' @param data_source_year_hfc numeric. DataSourceYear for the HFC series to use.
 #' @param revision character. Revision attribute for output ccmppWPP_inputs list.
 #' @param variant character. Variant attribute for output ccmppWPP_inputs list.
 #'
@@ -36,65 +37,94 @@
 
 # Examples:
 
+# australia_test <- DDextract_ccmppWPPinputs_tier1(LocID = 36,
+#                                                  times = 1950:2020,
+#                                                  times_censored_common = FALSE,
+#                                                  data_source_pop = c("HMD", "EuroStat"),
+#                                                  data_source_mort = c("HMD", "EuroStat"),
+#                                                  data_source_fert = c("HFD", "EuroStat","HFC-STAT"),
+#                                                  data_source_year_hmd = 2020,
+#                                                  data_source_year_hfd = 2020,
+#                                                  data_source_year_eurostat = 2020,
+#                                                  data_source_year_hfc = c(2012,2014,2015),
+#                                                  revision = "test",
+#                                                  variant = "estimates")
+# 
 # italy_test <- DDextract_ccmppWPPinputs_tier1(LocID = 380,
 #                                               times = 1950:2020,
-#                                               times_censored_common = TRUE,
+#                                               times_censored_common = FALSE,
 #                                               data_source_pop = c("HMD", "EuroStat"),
 #                                               data_source_mort = c("HMD", "EuroStat"),
-#                                               data_source_fert = c("HFD", "EuroStat"),
+#                                               data_source_fert = c("HFD", "EuroStat","HFC-STAT"),
 #                                               data_source_year_hmd = 2020,
 #                                               data_source_year_hfd = 2020,
-#                                               data_source_year_eurostat = 2020)
+#                                               data_source_year_eurostat = 2020,
+#                                               data_source_year_hfc = c(2012,2014,2015),
+#                                               revision = "test",
+#                                               variant = "estimates")
 # 
 # ireland_test <- DDextract_ccmppWPPinputs_tier1(LocID = 372,
 #                                              times = 1950:2020,
 #                                              times_censored_common = TRUE,
 #                                              data_source_pop = c("HMD", "EuroStat"),
 #                                              data_source_mort = c("HMD", "EuroStat"),
-#                                              data_source_fert = c("HFD", "EuroStat"),
+#                                              data_source_fert = c("HFD", "EuroStat","HFC-STAT"),
 #                                              data_source_year_hmd = 2020,
 #                                              data_source_year_hfd = 2020,
-#                                              data_source_year_eurostat = 2020)
+#                                              data_source_year_eurostat = 2020,
+#                                              data_source_year_hfc = c(2012,2014,2015),
+#                                              revision = "test",
+#                                              variant = "estimates")
 # 
 # canada_test <- DDextract_ccmppWPPinputs_tier1(LocID = 124,
 #                                               times = 1950:2020,
 #                                               times_censored_common = TRUE,
 #                                               data_source_pop = c("HMD"),
 #                                               data_source_mort = c("HMD"),
-#                                               data_source_fert = c("HFD"),
+#                                               data_source_fert = c("HFD","HFC-STAT"),
 #                                               data_source_year_hmd = 2020,
 #                                               data_source_year_hfd = 2020,
-#                                               data_source_year_eurostat = NA)
+#                                               data_source_year_eurostat = NA,
+#                                               data_source_year_hfc = c(2012,2014,2015),
+#                                               revision = "test",
+#                                               variant = "estimates")
 # 
 # usa_test <- DDextract_ccmppWPPinputs_tier1(LocID = 840,
 #                                            times = 1950:2020,
 #                                            times_censored_common = TRUE,
 #                                            data_source_pop = c("HMD"),
 #                                            data_source_mort = c("HMD"),
-#                                            data_source_fert = c("HFD"),
+#                                            data_source_fert = c("HFD","HFC-STAT"),
 #                                            data_source_year_hmd = 2020,
 #                                            data_source_year_hfd = 2020,
-#                                            data_source_year_eurostat = NA)
+#                                            data_source_year_eurostat = NA,
+#                                            data_source_year_hfc = c(2012,2014,2015),
+#                                            revision = "test",
+#                                            variant = "estimates")
 # 
 # sweden_test <- DDextract_ccmppWPPinputs_tier1(LocID = 752,
 #                                             times = 1950:2020,
 #                                             times_censored_common = TRUE,
 #                                             data_source_pop = c("HMD", "EuroStat"),
 #                                             data_source_mort = c("HMD", "EuroStat"),
-#                                             data_source_fert = c("HFD", "EuroStat"),
+#                                             data_source_fert = c("HFD", "EuroStat","HFC-STAT"),
 #                                             data_source_year_hmd = 2020,
 #                                             data_source_year_hfd = 2020,
-#                                             data_source_year_eurostat = 2020)
+#                                             data_source_year_eurostat = 2020,
+#                                             data_source_year_hfc = c(2012,2014,2015),
+#                                             revision = "test",
+#                                             variant = "estimates")
 
 DDextract_ccmppWPPinputs_tier1 <- function(LocID, 
                                            times = 1950:2020, 
-                                           times_censored_common = TRUE,
+                                           times_censored_common = FALSE,
                                            data_source_pop = c("HMD", "EuroStat"),
                                            data_source_mort = c("HMD", "EuroStat"),
-                                           data_source_fert = c("HFD", "EuroStat"),
+                                           data_source_fert = c("HFD", "EuroStat", "HFC-STAT"),
                                            data_source_year_hmd = 2020,
                                            data_source_year_hfd = 2020,
                                            data_source_year_eurostat = 2020,
+                                           data_source_year_hfc = c(2012,2014,2015),
                                            revision = "test",
                                            variant = "estimates") {
 
@@ -105,7 +135,7 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
   ## Valencia server
   options(unpd_server = "https://popdiv.dfs.un.org/DemoData/api/")
   ## Paperspace server
-  # options(unpd_server = "http://74.82.31.177/DemoData/api/")
+   #options(unpd_server = "http://74.82.31.177/DemoData/api/")
   
 # extract population by single year of age and sex from HMD
 
@@ -125,8 +155,6 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
     
     }, error=function(e){cat("Error in file", conditionMessage(e), "\n")})
 
-  }
-  
   if (exists('pop_hmd')) {
     
     pop_hmd <- pop_hmd %>% 
@@ -161,6 +189,7 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
     print("No HMD population by single year of age and sex available for selected times and data source year.")
   
   }
+  } else { pop_hmd <- NULL }
   
 # extract population by single year of age and sex from EuroStat
   
@@ -179,8 +208,6 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
                               dataSourceYears = data_source_year_eurostat)
     
     }, error=function(e){cat("Error in file", conditionMessage(e), "\n")})
-    
-  }
 
   if (exists('pop_eur')) {
     
@@ -208,6 +235,7 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
     print("No EuroStat population by single year of age and sex available for selected times and data source year.")
   
   } 
+  } else { pop_eur <- NULL }
   
   pop_count_age_sex_reference <- rbind(pop_hmd, pop_eur) %>% 
     mutate(prefer = ifelse(data_source == data_source_pop[1], 1, 2)) %>% 
@@ -300,8 +328,6 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
                                 dataSourceYears = data_source_year_hfd)
       
     }, error=function(e){cat("Error in file", conditionMessage(e), "\n")})
-    
-  }
 
  if (exists('fert_hfd')) {
    
@@ -331,10 +357,11 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
     
   } else {
     
-    fert_hfd <- NULL
     print("No HFD fertility rates by single year of age available for selected times and data source year.")
-    
+    fert_hfd <- NULL
   }
+
+  } else { fert_hfd <- NULL }
   
   
   # extract ferility rates by single year of age from EuroStat
@@ -355,8 +382,6 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
       
     }, error=function(e){cat("Error in file", conditionMessage(e), "\n")})
     
-  }
-  
   if (exists('fert_eur')) {
     
     fert_eur <- fert_eur %>% 
@@ -383,20 +408,79 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
       bind_rows(yrage) %>%
       arrange(time_start, age_start) 
     
-  } else {
+   } else {
     
     fert_eur <- NULL
     print("No EuroStat fertility rates by single year of age available for selected times and data source year.")
     
-  }
+   }
+    
+  } else { fert_eur <- NULL }
+   
+   # extract ferility rates by single year of age from the Human Fertility Collection
+   
+   if ("HFC-STAT" %in% data_source_fert) {
+     
+     tryCatch({
+       
+       fert_hfc <- get_recorddata(locIds = LocID,
+                                  dataProcessTypeIds = c(6,9), # Estimates and registers 
+                                  indicatorIds = 362, #  Age specific fertility rate (complete)
+                                  startYear = times[1],
+                                  endYear = times[length(times)] + 1,
+                                  locAreaTypeIds = 2,
+                                  subGroupIds = 2,
+                                  dataSourceShortNames = "HFC-STAT",
+                                  dataSourceYears = data_source_year_hfc)
+       
+     }, error=function(e){cat("Error in file", conditionMessage(e), "\n")})
+     
+   if (exists('fert_hfc')) {
+     
+     fert_hfc <- fert_hfc %>% 
+       mutate(data_source = DataSourceShortName,
+              time_start = floor(TimeMid),
+              time_span = 1,
+              age_start = AgeStart,
+              age_span = 1,
+              value = DataValue/1000) %>% 
+       select(data_source, time_start, time_span, age_start, age_span, value) %>% 
+       arrange(data_source, time_start, age_start)
+     
+     # add zero fertility rate for ages outside range
+     yrage <- data.frame(time_start = rep(unique(fert_hfc$time_start), length(pop_count_age_sex_base$age_start[which(pop_count_age_sex_base$sex=="female")])),
+                         age_start = rep(seq(0,max(pop_count_age_sex_base$age_start),1),length(unique(fert_hfc$time_start)))) %>% 
+       arrange(time_start, age_start) %>% 
+       filter(!(age_start %in% fert_hfc$age_start)) %>% 
+       mutate(value = 0.0,
+              time_span = 1,
+              age_span = 1,
+              data_source = fert_hfc$data_source[1])
+     
+     fert_hfc <- fert_hfc %>% 
+       bind_rows(yrage) %>%
+       arrange(time_start, age_start) 
+     
+   } else {
+     
+     fert_hfc <- NULL
+     print("No HFC fertility rates by single year of age available for selected times and data source year.")
+     
+   }
+   } else { fert_hfc <- NULL }
+   
+  dsrank <- data.frame(rank = c(1:length(data_source_fert)), data_source = data_source_fert)
   
-  fert_rate_age_f <- rbind(fert_hfd, fert_eur) %>% 
-    mutate(prefer = ifelse(data_source == data_source_fert[1], 1, 2)) %>% 
+  fert_rate_age_f <- rbind(fert_hfd, fert_eur, fert_hfc) %>% 
+    left_join(dsrank, by = "data_source") %>% 
     group_by(time_start) %>% 
-    mutate(prefer_min = min(prefer)) %>% 
+    mutate(prefer_min = min(rank)) %>% 
     ungroup() %>% 
-    filter(prefer == prefer_min) %>% 
-    select(-prefer, -prefer_min, -data_source)
+    filter(rank == prefer_min) %>% 
+    select(-rank, -prefer_min, -data_source) %>% 
+    mutate(value = replace(value, age_start < 10, 0.000))
+  
+  rm(dsrank)
   
   
  
@@ -417,8 +501,7 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
                                dataSourceYears = data_source_year_hmd)
     
     }, error=function(e){cat("Error in file", conditionMessage(e), "\n")})
-  }
-    
+ 
   if (exists('mort_hmd')) {
     
     mort_hmd <- mort_hmd %>% 
@@ -439,6 +522,7 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
     print("No HMD mortality rates by single year of age available for selected times and data source year.")
     
   }
+  }  else { mort_hmd <- NULL }
   
   # extract EuroStat nmx mortality rates by single year of age 
   
@@ -457,7 +541,6 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
                                  dataSourceYears = data_source_year_eurostat)
       
     }, error=function(e){cat("Error in file", conditionMessage(e), "\n")})
-  }
   
   if (exists('mort_eur')) {
     
@@ -479,6 +562,7 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
     print("No EuroStat mortality rates by single year of age available for selected times and data source year.")
     
   }
+  }  else { mort_eur <- NULL }
   
   mx <- rbind(mort_hmd, mort_eur) %>% 
     mutate(prefer = ifelse(data_source == data_source_mort[1], 1, 2)) %>% 

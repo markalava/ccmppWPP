@@ -567,29 +567,48 @@ plot.demog_change_component_df <-
 #' This is a method for the generic \code{\link[stats]{aggregate}}
 #' function for objects inheriting from
 #' \code{demog_change_component_df} which conveniently aggregates
-#' objects by their demographic dimensions. The \dQuote{value} column
-#' is aggregated using function \code{FUN}. You cannot aggregate any
-#' other columns of \code{x} with this method; coerce \code{x} to a
-#' data frame via \code{\link{as.data.frame}} and use the data frame
-#' method if you want to aggregate other columns.
+#' objects by their demographic dimensions (if \code{by_dimension} is
+#' specified) or an arbitrary list (if \code{by} is specified). The
+#' \dQuote{value} column is aggregated using function
+#' \code{FUN}. You cannot aggregate any other columns of \code{x} with
+#' this method; coerce \code{x} to a data frame via
+#' \code{\link{as.data.frame}} and use the data frame method if you
+#' want to aggregate other columns.
 #'
-#' Argument \code{dimension} is a character vector and can be any of
-#' the allowed demographic \dQuote{dimensions} such as \dQuote{age},
-#' \dQuote{time}, \dQuote{sex} (you can see the full list by calling
-#' \code{ccmppWPP:::get_all_allowed_dimensions}).
+#' Argument \code{by_dimension} is a character vector and can be any
+#' of the allowed demographic \dQuote{dimensions} such as
+#' \dQuote{age}, \dQuote{time}, \dQuote{sex} (you can see the full
+#' list by calling \code{ccmppWPP:::get_all_allowed_dimensions}). The
+#' result will have values completely collapsed over the given
+#' dimension. E.g., if \code{by_dimension = "age"} then column
+#' \code{value} in the result will contain the original \code{value}s
+#' aggregated over all remaining dimensions, where aggregation is done
+#' by fucnction \code{FUN}.
+#'
+#' If complete collapsing over a dimension is not desired, use the
+#' \code{by} argument instead and supply a \emph{list} of the groups
+#' to aggregate within. In this case, operation proceeds as with the
+#' \code{data.frame} method (see
+#' \code{\link[stats]{aggregate.data.frame}}). Note, though, as
+#' mentioned above, only the \code{value} column will be
+#' aggregated. Coerce \code{x} to a \code{data.frame} to aggregate any
+#' of its other columns.
 #'
 #' The function will try to return an object of the class given in
 #' \code{out_class}, which is just \class{x} by default. If a valid
 #' object of this class cannot be created from the result, a warning
-#' is given (in interactive sessions) and the next class in
-#' \code{class{x}} is tried, and so on, down to \code{data.frame}.
+#' is given (in interactive sessions).
 #'
 #' @param x An object inheriting from
 #'     \code{demog_change_component_df}.
-#' @param dimension A \emph{character vector} (not a list) of
-#'     \dQuote{dimensions} to aggregate by (or columns if
-#'     \code{by_type} is \code{\dQuote{columns}}; see
-#'     \dQuote{Details}).
+#' @param by A list defining the groups to aggregate over. See the
+#'     same argument for \code{\link[stats]{aggregate}} for details
+#'     for how to specify this argument. Exactly one of \code{by} and
+#'     \code{by_dimension} must be specified.
+#' @param by_dimension A \emph{character vector} (not a list) of
+#'     demographic \dQuote{dimensions} to aggregate over; see
+#'     \dQuote{Details}). Exactly one of \code{by} and
+#'     \code{by_dimension} must be specified.
 #' @param out_class The first element of the class of \code{x}
 #'     \emph{after} aggregation. It will be expanded by adding
 #'     elements 2, 3, ... of \code{class(x)}} if \code{out_class} is
@@ -597,8 +616,6 @@ plot.demog_change_component_df <-
 #'     \code{out_class} is left as-is.
 #' @param FUN A function to use to aggregate the \dQuote{value} column
 #'     of \code{x}.
-#' @param by_type Character argument specifying whether \code{by}
-#'     provides \dQuote{dimensions} or column names to aggregate by.
 #' @param ... Passed to
 #'     \code{\link[stats]{aggregate.data.frame}}. Must not include
 #'     arguments named \dQuote{\code{x}}, \dQuote{\code{by}},
@@ -611,7 +628,7 @@ plot.demog_change_component_df <-
 #' @examples
 #' x1 <- ccmpp_input_df(expand.grid(age_start = 0:5, time_start = 1950:1954, value = 1),
 #'                    value_type = "count")
-#' x1_agg <- aggregate(x1, "time")
+#' x1_agg <- aggregate(x1, by_dimension = "time")
 #' stopifnot("ccmpp_input_df" %in% class(x1_agg))
 #'
 #'
@@ -624,68 +641,77 @@ plot.demog_change_component_df <-
 #' # Force an invalid object (do not try this at home!):
 #' class(x2) <- c("ccmpp_input_df", "demog_change_component_df", "data.frame")
 #' \dontrun{
-#' x2_agg <- aggregate(x2, "age") # exits with an error message
+#' x2_agg <- aggregate(x2, by_dimension = "age") # exits with an error message
 #' }
 #'
 #' # Coerce object
 #' x2_dcc <- demog_change_component_df(x2, value_type = "count", value_scale = 1)
-#' x2_dcc_agg <- aggregate(x2_dcc, "age") # OK
+#' x2_dcc_agg <- aggregate(x2_dcc, by_dimension = "age") # OK
 #' stopifnot(identical(class(x2_dcc_agg), c("demog_change_component_df", "data.frame")))
 #'
 #' # Specify 'out_class'
-#' x2_dcc_agg <- aggregate(x2, "age", out_class = "demog_change_component_df") # OK
+#' x2_dcc_agg <- aggregate(x2, by_dimension = "age", out_class = "demog_change_component_df") # OK
 #' stopifnot(identical(class(x2_dcc_agg), c("demog_change_component_df", "data.frame")))
 #'
 #'
-#' ## Coercing 'x' to a data.frame. Different arguments!
+#' ## Coercing 'x' to a data.frame.
 #'
 #' x3 <- as.data.frame(x1) # will issue a warning that class is dropped
 #' s3_agg <- aggregate(x3,
-#'                     by = list(time_start = x1$time_start), # no 'dimension' argument!
+#'                     by = list(time_start = x1$time_start), # no 'by_dimension' argument!
 #'                     FUN = "sum")
 #'
 #' @export
-aggregate.demog_change_component_df <- function(x, dimension, FUN = "sum", ..., out_class = class(x)[1]) {
+aggregate.demog_change_component_df <- function(x, by = NULL, by_dimension = NULL, FUN = "sum", ..., out_class = class(x)[1]) {
     if (!value_type(x) %in% get_all_aggregatable_value_types())
-        stop("'value_type(x)' is '", toString(value_type(x)), "' but the only aggregatable or abridgable 'value_type's are '", toString(get_all_aggregatable_value_types()), "'.")
-    if (!is.character(dimension)) stop("'dimension' must be a 'character' vector.")
-    dimension <- match.arg(dimension, get_all_allowed_dimensions(), several.ok = TRUE)
-    dimension <- get_all_req_col_names_excl_spans_for_dimensions(dimension)
-    dimension <- dimension[dimension != "value"]
-    stopifnot(identical(length(out_class), 1L))
-    class_x <- class(x)
-    if (length(class_x) > 1) {
-        i <- match(out_class, class_x)
-        if (!is.na(i) && i < length(class_x)) out_class <- c(out_class, tail(class_x, -i))
-    }
-    if (!all(out_class %in% c(get_all_demog_change_component_df_class_names(), "data.frame")))
-        stop("'out_class' must only use classes in this list '",
-             toString(c(get_all_demog_change_component_df_class_names(), "data.frame")),
-             "'.")
-    value_type_x <- value_type(x)
-    value_scale_x <- value_scale(x)
-    out <- stats::aggregate.data.frame(x = as.data.frame(x[, "value", drop = FALSE]),
-                                       by = x[, dimension, drop = FALSE],
-                                       FUN = FUN, ...)
-    tryout <- try(do.call(get_as_function_for_class(out_class[1]),
-                          list(x = out, value_type = value_type_x, value_scale = value_scale_x)),
-                  silent = TRUE)
-    if (!identical(class(tryout), "try-error") && identical(class(tryout), out_class)) return(tryout)
-    else {
-        class_orig <- class_x
-        while(identical(class(tryout), "try-error") && length(class_x[-1])) {
-            class_x <- class_x[-1]
-            tryout <- try(do.call(get_as_function_for_class(class_x[1]),
-                                  list(x = out, value_type = value_type_x, value_scale = value_scale_x)),
-                          silent = TRUE)
-            if (!identical(class(tryout), "try-error")) {
-                msg <- paste0("The aggregate of 'x' cannot be coerced to the class in argument 'out_class' (i.e., '", toString(out_class), "').\n\tIf you want to aggregate 'x', set 'out_class' to '", class_x[1], "' or coerce it to a '", class_x[1], "' object and use 'aggregate' again (see examples in '?aggregate.demog_change_component_df').")
-                if (identical(class_x[1], "data.frame"))
-                    msg <- paste0(msg, " Note that the 'data.frame' method of 'aggregate' will be called so you will need different arguments. Specifically, the 'dimension' argument cannot be used with this method. See '?aggregate.data.frame'.")
-                msg <- paste0(msg, " Note that the result will not have the same class as 'x'.")
-                stop(msg)
-            }
+        stop("'value_type(x)' is '", toString(value_type(x)), "' but the only aggregatable 'value_type's are '", toString(get_all_aggregatable_value_types()), "'.")
+    if (!identical(sum(is.null(by), is.null(by_dimension)), 1L))
+        stop("Exactly one of 'by' and 'by_dimension' must be non-NULL.")
+    if (!is.null(by_dimension)) {
+        if (!is.character(by_dimension)) stop("'by_dimension' must be a 'character' vector.")
+        by_dimension <- match.arg(by_dimension, get_all_allowed_dimensions(), several.ok = TRUE)
+        by_dimension <- get_all_req_col_names_excl_spans_for_dimensions(by_dimension)
+        by_dimension <- by_dimension[by_dimension != "value"]
+        return(aggregate.demog_change_component_df(x = x, by = x[, by_dimension, drop = FALSE],
+                                                   by_dimension = NULL,
+                                                   FUN = FUN, ..., out_class = out_class))
+    } else {
+        if (!is.list(by)) stop("'by' must be a list.")
+        stopifnot(identical(length(out_class), 1L))
+        class_x <- class(x)
+        if (length(class_x) > 1) {
+            i <- match(out_class, class_x)
+            if (!is.na(i) && i < length(class_x)) out_class <- c(out_class, tail(class_x, -i))
         }
-        stop("Could not aggregate 'x'. Try coercing it to a 'data.frame' and using 'aggregate' on that. Note that the result will not have the same class as 'x'.")
+        if (!all(out_class %in% c(get_all_demog_change_component_df_class_names(), "data.frame")))
+            stop("'out_class' must only use classes in this list '",
+                 toString(c(get_all_demog_change_component_df_class_names(), "data.frame")),
+                 "'.")
+        value_type_x <- value_type(x)
+        value_scale_x <- value_scale(x)
+        out <- stats::aggregate.data.frame(x = as.data.frame(x[, "value", drop = FALSE]),
+                                           by = by,
+                                           FUN = FUN, ...)
+        tryout <- try(do.call(get_as_function_for_class(out_class[1]),
+                              list(x = out, value_type = value_type_x, value_scale = value_scale_x)),
+                      silent = TRUE)
+        if (!identical(class(tryout), "try-error") && identical(class(tryout), out_class)) return(tryout)
+        else {
+            class_orig <- class_x
+            while(identical(class(tryout), "try-error") && length(class_x[-1])) {
+                class_x <- class_x[-1]
+                tryout <- try(do.call(get_as_function_for_class(class_x[1]),
+                                      list(x = out, value_type = value_type_x, value_scale = value_scale_x)),
+                              silent = TRUE)
+                if (!identical(class(tryout), "try-error")) {
+                    msg <- paste0("The aggregate of 'x' cannot be coerced to the class in argument 'out_class' (i.e., '", toString(out_class), "').\n\tIf you want to aggregate 'x', set 'out_class' to '", class_x[1], "' or coerce it to a '", class_x[1], "' object and use 'aggregate' again (see examples in '?aggregate.demog_change_component_df').")
+                    if (identical(class_x[1], "data.frame"))
+                        msg <- paste0(msg, " Note that the 'data.frame' method of 'aggregate' will be called so you will need different arguments. Specifically, the 'by_dimension' argument cannot be used with this method. See '?aggregate.data.frame'.")
+                    msg <- paste0(msg, " Note that the result will not have the same class as 'x'.")
+                    stop(msg)
+                }
+            }
+            stop("Could not aggregate 'x'. Try coercing it to a 'data.frame' and using 'aggregate' on that. Note that the result will not have the same class as 'x'.")
+        }
     }
 }

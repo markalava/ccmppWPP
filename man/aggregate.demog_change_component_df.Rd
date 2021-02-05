@@ -4,16 +4,28 @@
 \alias{aggregate.demog_change_component_df}
 \title{Aggregate a \code{demog_change_component_df}}
 \usage{
-\method{aggregate}{demog_change_component_df}(x, dimension, FUN = "sum", ..., out_class = class(x)[1])
+\method{aggregate}{demog_change_component_df}(
+  x,
+  by = NULL,
+  by_dimension = NULL,
+  FUN = "sum",
+  ...,
+  out_class = class(x)[1]
+)
 }
 \arguments{
 \item{x}{An object inheriting from
 \code{demog_change_component_df}.}
 
-\item{dimension}{A \emph{character vector} (not a list) of
-\dQuote{dimensions} to aggregate by (or columns if
-\code{by_type} is \code{\dQuote{columns}}; see
-\dQuote{Details}).}
+\item{by}{A list defining the groups to aggregate over. See the
+same argument for \code{\link[stats]{aggregate}} for details
+for how to specify this argument. Exactly one of \code{by} and
+\code{by_dimension} must be specified.}
+
+\item{by_dimension}{A \emph{character vector} (not a list) of
+demographic \dQuote{dimensions} to aggregate over; see
+\dQuote{Details}). Exactly one of \code{by} and
+\code{by_dimension} must be specified.}
 
 \item{FUN}{A function to use to aggregate the \dQuote{value} column
 of \code{x}.}
@@ -22,9 +34,6 @@ of \code{x}.}
 \code{\link[stats]{aggregate.data.frame}}. Must not include
 arguments named \dQuote{\code{x}}, \dQuote{\code{by}},
 \dQuote{\code{FUN}}, or \dQuote{\code{out_class}}.}
-
-\item{by_type}{Character argument specifying whether \code{by}
-provides \dQuote{dimensions} or column names to aggregate by.}
 }
 \value{
 A data frame with the column \dQuote{value} after
@@ -34,28 +43,43 @@ A data frame with the column \dQuote{value} after
 This is a method for the generic \code{\link[stats]{aggregate}}
 function for objects inheriting from
 \code{demog_change_component_df} which conveniently aggregates
-objects by their demographic dimensions. The \dQuote{value} column
-is aggregated using function \code{FUN}. You cannot aggregate any
-other columns of \code{x} with this method; coerce \code{x} to a
-data frame via \code{\link{as.data.frame}} and use the data frame
-method if you want to aggregate other columns.
+objects by their demographic dimensions (if \code{by_dimension} is
+specified) or an arbitrary list (if \code{by} is specified). The
+\dQuote{value} column is aggregated using function
+\code{FUN}. You cannot aggregate any other columns of \code{x} with
+this method; coerce \code{x} to a data frame via
+\code{\link{as.data.frame}} and use the data frame method if you
+want to aggregate other columns.
 }
 \details{
-Argument \code{dimension} is a character vector and can be any of
-the allowed demographic \dQuote{dimensions} such as \dQuote{age},
-\dQuote{time}, \dQuote{sex} (you can see the full list by calling
-\code{ccmppWPP:::get_all_allowed_dimensions}).
+Argument \code{by_dimension} is a character vector and can be any
+of the allowed demographic \dQuote{dimensions} such as
+\dQuote{age}, \dQuote{time}, \dQuote{sex} (you can see the full
+list by calling \code{ccmppWPP:::get_all_allowed_dimensions}). The
+result will have values completely collapsed over the given
+dimension. E.g., if \code{by_dimension = "age"} then column
+\code{value} in the result will contain the original \code{value}s
+aggregated over all remaining dimensions, where aggregation is done
+by fucnction \code{FUN}.
+
+If complete collapsing over a dimension is not desired, use the
+\code{by} argument instead and supply a \emph{list} of the groups
+to aggregate within. In this case, operation proceeds as with the
+\code{data.frame} method (see
+\code{\link[stats]{aggregate.data.frame}}). Note, though, as
+mentioned above, only the \code{value} column will be
+aggregated. Coerce \code{x} to a \code{data.frame} to aggregate any
+of its other columns.
 
 The function will try to return an object of the class given in
 \code{out_class}, which is just \class{x} by default. If a valid
 object of this class cannot be created from the result, a warning
-is given (in interactive sessions) and the next class in
-\code{class{x}} is tried, and so on, down to \code{data.frame}.
+is given (in interactive sessions).
 }
 \examples{
 x1 <- ccmpp_input_df(expand.grid(age_start = 0:5, time_start = 1950:1954, value = 1),
                    value_type = "count")
-x1_agg <- aggregate(x1, "time")
+x1_agg <- aggregate(x1, by_dimension = "time")
 stopifnot("ccmpp_input_df" \%in\% class(x1_agg))
 
 
@@ -68,24 +92,24 @@ x2 <- demog_change_component_df(x2, value_type = "count", value_scale = 1)
 # Force an invalid object (do not try this at home!):
 class(x2) <- c("ccmpp_input_df", "demog_change_component_df", "data.frame")
 \dontrun{
-x2_agg <- aggregate(x2, "age") # exits with an error message
+x2_agg <- aggregate(x2, by_dimension = "age") # exits with an error message
 }
 
 # Coerce object
 x2_dcc <- demog_change_component_df(x2, value_type = "count", value_scale = 1)
-x2_dcc_agg <- aggregate(x2_dcc, "age") # OK
+x2_dcc_agg <- aggregate(x2_dcc, by_dimension = "age") # OK
 stopifnot(identical(class(x2_dcc_agg), c("demog_change_component_df", "data.frame")))
 
 # Specify 'out_class'
-x2_dcc_agg <- aggregate(x2, "age", out_class = "demog_change_component_df") # OK
+x2_dcc_agg <- aggregate(x2, by_dimension = "age", out_class = "demog_change_component_df") # OK
 stopifnot(identical(class(x2_dcc_agg), c("demog_change_component_df", "data.frame")))
 
 
-## Coercing 'x' to a data.frame. Different arguments!
+## Coercing 'x' to a data.frame.
 
 x3 <- as.data.frame(x1) # will issue a warning that class is dropped
 s3_agg <- aggregate(x3,
-                    by = list(time_start = x1$time_start), # no 'dimension' argument!
+                    by = list(time_start = x1$time_start), # no 'by_dimension' argument!
                     FUN = "sum")
 
 }

@@ -147,10 +147,11 @@ test_that("printing returns an object of class 'demog_change_component_df'", {
 
 
 test_that("aggregate method works", {
-    x <- aggregate(dcc_df_time_age_sex, dimension = "time")
-    expect_s3_class(x, "demog_change_component_df")
-    x <- aggregate(dcc_df_time_age_sex, dimension = "age")
-    expect_s3_class(x, "demog_change_component_df")
+
+    expect_s3_class(aggregate(dcc_df_time_age_sex, dimension = "time"),
+                    "demog_change_component_df")
+    expect_s3_class(aggregate(dcc_df_time_age_sex, dimension = "age"),
+                    "demog_change_component_df")
 
     x <- aggregate(as_ccmpp_input_df(dcc_df_time_age_sex), dimension = "time")
     expect_s3_class(x, "ccmpp_input_df")
@@ -159,6 +160,27 @@ test_that("aggregate method works", {
 
     x <- subset_age(dcc_df_time_age_sex, ages = 2:10)
     class(x) <- c("ccmpp_input_df", class(x))
-    x <- aggregate(x, dimension = "age")
-    expect_s3_class(x, "demog_change_component_df")
-    })
+    expect_error(aggregate(x, dimension = "age"),
+                 "The aggregate of 'x' cannot be coerced to the class in argument 'out_class'")
+    expect_s3_class(aggregate(as_demog_change_component_df(x), dimension = "time"),
+                    "demog_change_component_df")
+    expect_s3_class(aggregate(x, dimension = "time", out_class = "demog_change_component_df"),
+                    "demog_change_component_df")
+    expect_s3_class(aggregate(x, dimension = "time", out_class = "data.frame"),
+                    "data.frame")
+
+    x <- dcc_df_time_age_sex
+    value_type(x) <- "ratio"
+    expect_error(aggregate(x, dimension = "time"),
+                 "but the only aggregatable or abridgable 'value_type's are")
+
+    expect_error(aggregate(dcc_df_time_age_sex, "age", out_class = "matrix"),
+                 "'out_class' must only use classes in this list")
+})
+
+
+
+
+
+
+

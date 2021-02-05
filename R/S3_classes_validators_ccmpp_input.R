@@ -689,7 +689,8 @@ validate_ccmpp_object.ccmpp_input_list <- function(x, .validate_elements = TRUE,
     }
 
     ## Check that mig_count_age_sex and mig_count_tot_b are consistent with each other
-    mig_tot_agg <- aggregate(x$mig_net_count_age_sex, dimension = "time")
+    mig_tot_agg <- aggregate(x$mig_net_count_age_sex, dimension = "time",
+                             out_class = "data.frame")
     mig_check <- base::merge(x$mig_net_count_tot_b,
                              mig_tot_agg,
                              by = "time_start",

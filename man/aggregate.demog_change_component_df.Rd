@@ -4,7 +4,7 @@
 \alias{aggregate.demog_change_component_df}
 \title{Aggregate a \code{demog_change_component_df}}
 \usage{
-\method{aggregate}{demog_change_component_df}(x, dimension, FUN = "sum", ...)
+\method{aggregate}{demog_change_component_df}(x, dimension, FUN = "sum", ..., out_class = class(x)[1])
 }
 \arguments{
 \item{x}{An object inheriting from
@@ -18,9 +18,10 @@
 \item{FUN}{A function to use to aggregate the \dQuote{value} column
 of \code{x}.}
 
-\item{...}{Passed to \code{\link[stats]{aggregate.data.frame}}. Must not
-include arguments named \dQuote{\code{x}}, \dQuote{\code{by}} or
-\dQuote{\code{FUN}}.}
+\item{...}{Passed to
+\code{\link[stats]{aggregate.data.frame}}. Must not include
+arguments named \dQuote{\code{x}}, \dQuote{\code{by}},
+\dQuote{\code{FUN}}, or \dQuote{\code{out_class}}.}
 
 \item{by_type}{Character argument specifying whether \code{by}
 provides \dQuote{dimensions} or column names to aggregate by.}
@@ -45,11 +46,48 @@ the allowed demographic \dQuote{dimensions} such as \dQuote{age},
 \dQuote{time}, \dQuote{sex} (you can see the full list by calling
 \code{ccmppWPP:::get_all_allowed_dimensions}).
 
-The function will try to return an object of the same class as
-\code{x}. If a valid object of this class cannot be created from
-the result, a warning is given (in interactive sessions) and the
-next class in \code{class{x}} is tried, and so on, down to
-\code{data.frame}.
+The function will try to return an object of the class given in
+\code{out_class}, which is just \class{x} by default. If a valid
+object of this class cannot be created from the result, a warning
+is given (in interactive sessions) and the next class in
+\code{class{x}} is tried, and so on, down to \code{data.frame}.
+}
+\examples{
+x1 <- ccmpp_input_df(expand.grid(age_start = 0:5, time_start = 1950:1954, value = 1),
+                   value_type = "count")
+x1_agg <- aggregate(x1, "time")
+stopifnot("ccmpp_input_df" \%in\% class(x1_agg))
+
+
+## When the result is not a valid member of the class:
+
+x2 <- subset(x1, age_start != 0)
+stopifnot(identical(class(x2), "data.frame"))
+
+x2 <- demog_change_component_df(x2, value_type = "count", value_scale = 1)
+# Force an invalid object (do not try this at home!):
+class(x2) <- c("ccmpp_input_df", "demog_change_component_df", "data.frame")
+\dontrun{
+x2_agg <- aggregate(x2, "age") # exits with an error message
+}
+
+# Coerce object
+x2_dcc <- demog_change_component_df(x2, value_type = "count", value_scale = 1)
+x2_dcc_agg <- aggregate(x2_dcc, "age") # OK
+stopifnot(identical(class(x2_dcc_agg), c("demog_change_component_df", "data.frame")))
+
+# Specify 'out_class'
+x2_dcc_agg <- aggregate(x2, "age", out_class = "demog_change_component_df") # OK
+stopifnot(identical(class(x2_dcc_agg), c("demog_change_component_df", "data.frame")))
+
+
+## Coercing 'x' to a data.frame. Different arguments!
+
+x3 <- as.data.frame(x1) # will issue a warning that class is dropped
+s3_agg <- aggregate(x3,
+                    by = list(time_start = x1$time_start), # no 'dimension' argument!
+                    FUN = "sum")
+
 }
 \seealso{
 \code{\link[stats]{aggregate}}

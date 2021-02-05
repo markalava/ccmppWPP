@@ -144,6 +144,11 @@ get_all_allowed_value_types <- function() {
     c("count", "rate", "ratio", "proportion", "percentage", "real", "categorical")
 }
 
+## List value types that can be aggregated or abridged
+get_all_aggregatable_value_types <- function() {
+    c("count", "real")
+    }
+
 ###-----------------------------------------------------------------------------
 ### * 'value_scale' Attribute
 

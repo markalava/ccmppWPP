@@ -73,3 +73,5 @@ subset_age.ccmpp_input_list <- function(x, ages, include = TRUE) {
 fert_rate_tot_f.ccmpp_input_list <- function(x) {
     fert_rate_tot_f(fert_rate_component(x))
 }
+
+

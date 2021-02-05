@@ -268,6 +268,7 @@ non_zero_fert_ages.fert_rate_age_f <- function(x) {
     fert_rate_age_f(x, non_zero_fert_ages = value)
 }
 
+
 ###-----------------------------------------------------------------------------
 ### * Transformations
 
@@ -300,7 +301,8 @@ fert_rate_tot_f.fert_rate_age_f <- function(x) {
     wtd_value <-
         data.frame(value = x$age_start %in% non_zero_fert_ages(x) *
                        x$value * x$age_span)
-    out <- aggregate(wtd_value, by = list(time_start = x$time_start),
+    out <- stats::aggregate(wtd_value, by = list(time_start = x$time_start),
                      FUN = "sum")
     return(demog_change_component_df(out))
 }
+

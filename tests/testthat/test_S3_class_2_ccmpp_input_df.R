@@ -251,4 +251,4 @@ test_that("'NA's are not allowed", {
     expect_warning(expect_error(ccmpp_input_df(x),
                                 "'value' column has missing entries"),
                    "'value' column has some 'NA' entries")
-    })
+})

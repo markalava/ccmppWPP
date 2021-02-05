@@ -124,3 +124,59 @@ test_that("dimensions are correctly detected", {
     expect_true(is_by_age(y))
     expect_true(is_by_sex(y))
 })
+
+
+### MAKE OBJECT AVAILABLE TO REMAINDER OF TESTS
+
+ccmpp_input_df_test <- ccmpp_input_df(S3_demog_change_component_time_age_sex_test_df,
+                                      dimensions = c("time", "age", "sex"))
+
+
+
+test_that("Abridging works", {
+    ## Just by age
+    expect_error(abridge(ccmpp_input_df_test, age_start = seq(from = 0, to = 100, by = 5)),
+                 "The aggregate of 'x' cannot be coerced to the class in argument 'out_class'")
+    expect_error(abridge(ccmpp_input_df_test, age_span_abridged = 5),
+                 "The aggregate of 'x' cannot be coerced to the class in argument 'out_class'")
+    expect_s3_class(abridge(ccmpp_input_df_test,
+                            age_start_abridged = seq(from = 0, to = 100, by = 5),
+                            out_class = "demog_change_component_df"),
+                    "demog_change_component_df")
+    expect_s3_class(abridge(ccmpp_input_df_test,
+                            age_span_abridged = 5,
+                            out_class = "demog_change_component_df"),
+                    "demog_change_component_df")
+
+    ## Just by time
+    expect_error(abridge(ccmpp_input_df_test, time_start = seq(from = 1950, to = 2019, by = 5)),
+                 "The aggregate of 'x' cannot be coerced to the class in argument 'out_class'")
+    expect_error(abridge(ccmpp_input_df_test, time_span_abridged = 5),
+                 "The aggregate of 'x' cannot be coerced to the class in argument 'out_class'")
+    expect_s3_class(abridge(ccmpp_input_df_test,
+                            time_start_abridged = seq(from = 1950, to = 2019, by = 5),
+                            out_class = "demog_change_component_df"),
+                    "demog_change_component_df")
+    expect_s3_class(abridge(ccmpp_input_df_test,
+                            time_span_abridged = 5,
+                            out_class = "demog_change_component_df"),
+                    "demog_change_component_df")
+
+    ## By age and time
+    expect_s3_class(abridge(ccmpp_input_df_test,
+                            age_start_abridged = seq(from = 0, to = 100, by = 5),
+                            time_start_abridged = seq(from = 1950, to = 2019, by = 5)),
+                    "ccmpp_input_df")
+    expect_s3_class(abridge(ccmpp_input_df_test,
+                            age_span_abridged = 5,
+                            time_span_abridged = 5),
+                    "ccmpp_input_df")
+
+    ## Check some actual sums
+    x <- ccmpp_input_df(expand.grid(age_start = 0:5, time_start = 1950:1954, value = 1))
+    x <- abridge(x, age_span_abridged = 5, time_span_abridged = 5)
+    expect_identical(x$value, c(25, 5))
+    expect_identical(x$age_span, c(5, 5))
+    expect_identical(x$time_span, c(5, 5))
+
+})

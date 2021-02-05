@@ -39,10 +39,7 @@ subset_sex.ccmpp_input_df <- function(x, sexes, include = TRUE) {
 }
 
 ###-----------------------------------------------------------------------------
-### * Transform
-
-###-----------------------------------------------------------------------------
-### ** Re-span
+### * Transformations
 
 #' Change the span of a \code{ccmpp_input_df} object
 #'
@@ -67,5 +64,6 @@ subset_sex.ccmpp_input_df <- function(x, sexes, include = TRUE) {
 #' @rdname change_ccmpp_input_df_span
 #' @export
 `span<-.ccmpp_input_df` <- function(x, value, ...) {
+    ## Use the 'abridge' function
     stop("Not yet implemented")
 }

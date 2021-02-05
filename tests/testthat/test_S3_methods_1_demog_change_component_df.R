@@ -143,4 +143,22 @@ test_that("printing returns an object of class 'demog_change_component_df'", {
     capture.output(x <- print(dcc_df_time_age_sex, print_what = "table"),
                    file = OS_null_file_string)
     expect_s3_class(x, "demog_change_component_df")
+})
+
+
+test_that("aggregate method works", {
+    x <- aggregate(dcc_df_time_age_sex, dimension = "time")
+    expect_s3_class(x, "demog_change_component_df")
+    x <- aggregate(dcc_df_time_age_sex, dimension = "age")
+    expect_s3_class(x, "demog_change_component_df")
+
+    x <- aggregate(as_ccmpp_input_df(dcc_df_time_age_sex), dimension = "time")
+    expect_s3_class(x, "ccmpp_input_df")
+    x <- aggregate(as_ccmpp_input_df(dcc_df_time_age_sex), dimension = "age")
+    expect_s3_class(x, "ccmpp_input_df")
+
+    x <- subset_age(dcc_df_time_age_sex, ages = 2:10)
+    class(x) <- c("ccmpp_input_df", class(x))
+    x <- aggregate(x, dimension = "age")
+    expect_s3_class(x, "demog_change_component_df")
     })

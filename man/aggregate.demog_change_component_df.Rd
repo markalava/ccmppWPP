@@ -4,13 +4,13 @@
 \alias{aggregate.demog_change_component_df}
 \title{Aggregate a \code{demog_change_component_df}}
 \usage{
-\method{aggregate}{demog_change_component_df}(x, by, FUN = "sum", by_type = c("dimensions", "columns"), ...)
+\method{aggregate}{demog_change_component_df}(x, dimension, FUN = "sum", ...)
 }
 \arguments{
 \item{x}{An object inheriting from
 \code{demog_change_component_df}.}
 
-\item{by}{A \emph{character vector} (not a list) of
+\item{dimension}{A \emph{character vector} (not a list) of
 \dQuote{dimensions} to aggregate by (or columns if
 \code{by_type} is \code{\dQuote{columns}}; see
 \dQuote{Details}).}
@@ -18,50 +18,38 @@
 \item{FUN}{A function to use to aggregate the \dQuote{value} column
 of \code{x}.}
 
+\item{...}{Passed to \code{\link[stats]{aggregate.data.frame}}. Must not
+include arguments named \dQuote{\code{x}}, \dQuote{\code{by}} or
+\dQuote{\code{FUN}}.}
+
 \item{by_type}{Character argument specifying whether \code{by}
 provides \dQuote{dimensions} or column names to aggregate by.}
-
-\item{...}{Passed to \code{\link[stats]{aggregate}}.}
 }
 \value{
 A data frame with the column \dQuote{value} after
     aggregation by \code{by} (see \dQuote{Description}).
 }
 \description{
-This is a simple method for the generic
-\code{\link[stats]{aggregate}} function in the \pkg{stats} package
-for objects inheriting from \code{demog_change_component_df}. The
-\dQuote{value} column is aggregated using function \code{FUN}; you
-cannot aggregate any other columns of \code{x} with this
-method. Note that argument \code{by} is a character vector, not a
-list (see \dQuote{Details} for more information). The \code{by}
-variables are the ones that will appear in the output, not the ones
-that are collapsed.
+This is a method for the generic \code{\link[stats]{aggregate}}
+function for objects inheriting from
+\code{demog_change_component_df} which conveniently aggregates
+objects by their demographic dimensions. The \dQuote{value} column
+is aggregated using function \code{FUN}. You cannot aggregate any
+other columns of \code{x} with this method; coerce \code{x} to a
+data frame via \code{\link{as.data.frame}} and use the data frame
+method if you want to aggregate other columns.
 }
 \details{
-Argument \code{by} is a character vector (unlike the default
-method) and can be any of the allowed \dQuote{dimensions} (default)
-\emph{or} column names of \code{x}. You must specify \code{by_type
-= "columns"} if you are supplying column names.
+Argument \code{dimension} is a character vector and can be any of
+the allowed demographic \dQuote{dimensions} such as \dQuote{age},
+\dQuote{time}, \dQuote{sex} (you can see the full list by calling
+\code{ccmppWPP:::get_all_allowed_dimensions}).
 
-The function will try to return an object of class
-\code{demog_change_component_df} (regardless of the class of
-\code{x}). If a valid object of this class cannot be created from
-the result, a \code{\link{data.frame}} is returned (and with a
-warning in interactive sessions).
-
-This method is a rather simple wrapper for conveniently aggregating
-\code{demog_change_component_df} objects by their dimensions (or
-column names if desired). After processing the \code{by} and
-\code{by_type} arguments, the default method for \code{aggregate}
-is called (which, in turn, will call the \code{data.frame} method).
-
-The \dQuote{time_span} and
-\dQuote{age_span} columns, if present in \code{x}, will not be
-present in the result (unless \code{by_type = "columns"} and they
-were included in \code{by}). Pass the output back into
-\code{\link{demog_change_component_df}} to check for validity and
-recompute the \dQuote{span} columns, if required.
+The function will try to return an object of the same class as
+\code{x}. If a valid object of this class cannot be created from
+the result, a warning is given (in interactive sessions) and the
+next class in \code{class{x}} is tried, and so on, down to
+\code{data.frame}.
 }
 \seealso{
 \code{\link[stats]{aggregate}}

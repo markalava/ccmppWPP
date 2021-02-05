@@ -78,7 +78,11 @@ get_master_df_dimensions_w_span_colnames_coltypes <- function() {
 }
 
 get_as_function_for_class <- function(class) {
-    paste("as", class, sep = "_")
+    if (class %in% get_all_demog_change_component_df_class_names())
+        return(paste("as", class, sep = "_"))
+    else if (identical(class, "data.frame"))
+        return("as.data.frame")
+    else stop("Don't know what the 'as' function is for class '", class, "'.")
 }
 
 ###-----------------------------------------------------------------------------

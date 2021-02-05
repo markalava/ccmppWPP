@@ -369,6 +369,7 @@ demog_change_component_df <-
 #'
 #' @param x An object to coerce or check.
 #' @param ... Further arguments passed to specific methods.
+#' @inheritParams demog_change_component_df
 #' @return A coerced object in the case of the \code{as_...}
 #'     functions; a logical for the \code{is_...} functions.
 #' @author Mark Wheldon
@@ -389,13 +390,15 @@ as_demog_change_component_df.default <- function(x, ...) {
 
 #' @rdname coerce_demog_change_component_df
 #' @export
-as_demog_change_component_df.data.frame <- function(x, ...) {
-    demog_change_component_df(as.data.frame(x))
+as_demog_change_component_df.data.frame <- function(x, value_type = attr(x, "value_type"),
+                                                    value_scale = attr(x, "value_scale"), ...) {
+    demog_change_component_df(as.data.frame(x), value_type = value_type, value_scale = value_scale)
 }
 
 #' @rdname coerce_demog_change_component_df
 #' @export
-as_demog_change_component_df.matrix <- function(x, ...) {
+as_demog_change_component_df.matrix <- function(x, value_type = attr(x, "value_type"),
+                                                value_scale = attr(x, "value_scale"), ...) {
     dn <- dimnames(x)
     demog_dim_colnames_df <- get_master_df_of_dimensions_colnames_coltypes()
     if (all(names(dn) %in% demog_dim_colnames_df$colname)) {
@@ -425,7 +428,7 @@ as_demog_change_component_df.matrix <- function(x, ...) {
                  "'.")
         keep_cols <- which(dncol %in% req_cn)
         x <- x[, keep_cols]
-        return(as_demog_change_component_df(as.data.frame(x)))
+        return(as_demog_change_component_df(as.data.frame(x), value_type = value_type, value_scale = value_scale))
     }
 }
 

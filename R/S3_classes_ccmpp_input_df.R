@@ -123,14 +123,15 @@ as_ccmpp_input_df.default <- function(x, ...) {
 
 #' @rdname coerce_ccmpp_input_df
 #' @export
-as_ccmpp_input_df.data.frame <- function(x, ...) {
-    ccmpp_input_df(as.data.frame(x))
+as_ccmpp_input_df.data.frame <- function(x, value_type = attr(x, "value_type"), value_scale = attr(x, "value_scale"), ...) {
+    ccmpp_input_df(as.data.frame(x), value_type = value_type, value_scale = value_scale)
 }
 
 #' @rdname coerce_ccmpp_input_df
 #' @export
-as_ccmpp_input_df.matrix <- function(x, ...) {
-    as_ccmpp_input_df(as_demog_change_component_df(x))
+as_ccmpp_input_df.matrix <- function(x, value_type = attr(x, "value_type"), value_scale = attr(x, "value_scale"), ...) {
+    as_ccmpp_input_df(as_demog_change_component_df(x, value_type = value_type, value_scale = value_scale),
+                      value_type = value_type, value_scale = value_scale)
 }
 
 #' @rdname coerce_ccmpp_input_df

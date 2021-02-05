@@ -14,9 +14,19 @@ as_demog_change_component_df(x, ...)
 
 \method{as_demog_change_component_df}{default}(x, ...)
 
-\method{as_demog_change_component_df}{data.frame}(x, ...)
+\method{as_demog_change_component_df}{data.frame}(
+  x,
+  value_type = attr(x, "value_type"),
+  value_scale = attr(x, "value_scale"),
+  ...
+)
 
-\method{as_demog_change_component_df}{matrix}(x, ...)
+\method{as_demog_change_component_df}{matrix}(
+  x,
+  value_type = attr(x, "value_type"),
+  value_scale = attr(x, "value_scale"),
+  ...
+)
 
 \method{as_demog_change_component_df}{demog_change_component_df}(x, ...)
 
@@ -26,6 +36,12 @@ is_demog_change_component_df(x)
 \item{x}{An object to coerce or check.}
 
 \item{...}{Further arguments passed to specific methods.}
+
+\item{value_type}{Scalar indicating the type of the \dQuote{value}
+column (e.g., \dQuote{count}, \dQuote{rate}, etc.).}
+
+\item{value_scale}{\emph{Numeric} scalar indicating the value_scale of the
+counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
 }
 \value{
 A coerced object in the case of the \code{as_...}

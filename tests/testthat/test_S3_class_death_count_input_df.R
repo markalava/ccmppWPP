@@ -4,7 +4,7 @@ context("Test methods for S3 class 'death_count_age_sex'")
 
 death_count_input_df_time_age_sex <-
     subset(wpp_input_example$life_table_age_sex,
-           indicator == "lt_nqx", select = -indicator)
+           indicator == "lt_ndx", select = -indicator)
 
 
 test_that("valid member created", {
@@ -17,7 +17,7 @@ test_that("valid member created", {
 
 death_count_input_df_time_age_sex <-
     subset(wpp_input_example$life_table_age_sex,
-           indicator == "lt_nqx", select = -indicator)
+           indicator == "lt_ndx", select = -indicator)
 
 life_table_input_df_indicator_time_age_sex <-
     life_table_age_sex(wpp_input_example$life_table_age_sex)
@@ -35,7 +35,8 @@ test_that("Non-zero age detected", {
     z <- subset(y, age_start > 0)
     z <- ccmppWPP:::new_death_count_age_sex(ccmppWPP:::sort_demog_change_component_df(z),
                                      age_span = age_span(death_count_age_sex(y)),
-                                     time_span = time_span(death_count_age_sex(y)))
+                                     time_span = time_span(death_count_age_sex(y)),
+                                     value_scale = 1)
     expect_error(validate_ccmpp_object(z),
                  "'age_start' does not start at '0'")
 })

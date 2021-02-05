@@ -11,7 +11,7 @@ new_death_count_age_sex(
   non_zero_fert_ages = double(),
   dimensions = get_req_dimensions_for_ccmpp_in_out_classes("death_count_age_sex"),
   value_type = get_value_types_for_ccmpp_in_out_classes("death_count_age_sex"),
-  value_scale = NA,
+  value_scale = double(),
   ...,
   class = character()
 )

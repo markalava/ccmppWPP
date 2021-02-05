@@ -119,7 +119,19 @@ NULL
                                 # will then produce a simple data
                                 # frame with no extra attributes.
     else return(x)
+}
+
+#' @rdname subset_replace
+#' @export
+subset.demog_change_component_df <- function(x, ...) {
+    if (identical(parent.frame(), .GlobalEnv)) {
+        S3_class_warning("'subset'ing a '",
+                oldClass(x)[1],
+                "' will not preserve the class or attributes.")
     }
+    return(NextMethod())
+    }
+
 
 ###-----------------------------------------------------------------------------
 ### * Coercion

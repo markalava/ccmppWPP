@@ -1,4 +1,4 @@
-#' Compute period death by age from mx and expousres
+#' Compute period deaths by age from mx and exposures
 #'
 #' @description This function computes the age-specific period deaths from age-specific person-years of exposure
 #' and the age-specific mortality rates for the period.  It further makes slight adjustments to deaths, as 

@@ -2,8 +2,7 @@
 #' Compute age-specific person-years of exposure to fertility/mortality in the period 
 #'
 #' @description This function takes beginning and end period population by age and computes person-years of exposure, 
-#' removing migrants from exposure if migration assuption is "end" of period and adding half of migrants to beginning 
-#' of perod if migration assumption is "even" over period.
+#' removing migrants from exposure if migration assuption is "end" of period 
 #'
 #' @author Sara Hertog
 #'
@@ -12,8 +11,7 @@
 #' @param mig_assumption character. field indicating whether migration is treated as "end" of year or "even" over year.
 #' @param mig_net_count numeric. vector of net migrants age between begin time_start and time_end.
 #'
-#' @details For "even" migration assumption, half of net migrants are added to beginning of year population for computing exposures;
-#' for "end" migration assumption, net migrants are subtracted from end of year population for computing exposures.
+#' @details for "end" migration assumption, net migrants are subtracted from end of year population for computing exposures.
 #'
 #' @return a numeric vector of person-years of exposure by single year of age.
 #' @export
@@ -22,11 +20,12 @@ exposure_age <- function(pop_age_start, pop_age_end, mig_assumption=c("even","en
   if (mig_assumption == "end") {
     pop_age_end <- pop_age_end - mig_net_count
   }
-  exposure_age <- (pop_age_start + pop_age_end) / 2
+  # age-specific constant growth rate
+  r_age <- log(pop_age_end/pop_age_start)
+  exposure_age <- (pop_age_end - pop_age_start)/ r_age
   return(exposure_age)
   
 }
-
 
 #' Loop over time to compute age-specific person years of exposure
 #'
@@ -54,7 +53,7 @@ exposure_age_sex_loop_over_time <- function(pop, mig_assumption, mig) {
   time_start             <- min(pop$time_start)
   time_end               <- max(pop$time_start)
   age_start              <- unique(pop$age_start) 
-  nage                  <- length(age_start)
+  nage                   <- length(age_start)
   
   for (time in seq(time_start, time_end-time_span, time_span)) {
     for (sex in c("female", "male")) {

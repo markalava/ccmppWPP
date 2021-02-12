@@ -1,5 +1,5 @@
 #' 
-#' Compute age-specific person-years of exposure to fertility/mortality in the period 
+#' Approximate age-specific person-years of exposure to fertility/mortality in the period 
 #'
 #' @description This function takes beginning and end period population by age and computes person-years of exposure, 
 #' removing migrants from exposure if migration assuption is "end" of period 
@@ -20,14 +20,20 @@ exposure_age <- function(pop_age_start, pop_age_end, mig_assumption=c("even","en
   if (mig_assumption == "end") {
     pop_age_end <- pop_age_end - mig_net_count
   }
+  
+  # flag ages for which both start and end pop are non zero
+  non_zero <- pop_age_start != 0 & pop_age_end != 0 
+  
   # age-specific constant growth rate
   r_age <- log(pop_age_end/pop_age_start)
   exposure_age <- (pop_age_end - pop_age_start)/ r_age
+  exposure_age[!non_zero] <- (pop_age_start[!non_zero] + pop_age_end[!non_zero])/2 # if there are zeros, then use linear growth to compute exposures
+  
   return(exposure_age)
   
 }
 
-#' Loop over time to compute age-specific person years of exposure
+#' Loop over time to approximate age-specific person years of exposure
 #'
 #' @description Loops over time to implement the exposure_age function for multiple
 #' periods of time.
@@ -79,3 +85,58 @@ exposure_age_sex_loop_over_time <- function(pop, mig_assumption, mig) {
   return(exposure_count_age_sex)
   
 }
+
+
+#' Loop over time to adjust age-specific person years of exposure
+#'
+#' @description Loops over time to re-compute age-specific exposure from input age_specific mortality and age-specific deaths
+#' periods of time.
+#'
+#' @author Sara Hertog
+#'
+#' @param death_age_sex_period data frame with columns time_start, time_span, sex, age_start, age_span and value.  Value contains
+#' the sex- and age-specific death counts output by the death_age_sex_loop_over_time function.
+#' @param mx data frame with columns time_start, time_span, sex, age_start, age_span and value.  Value contains
+#' the original sex- and age-specific mortality rates on the ccmpp_input file.
+#' 
+#' @return a data frame with columns time_start, time_span, sex, age_start, age_span and value.  Value contains
+#' the sex- and age-specific person years of exposure counts 
+#' @export
+exposure_age_sex_adjust_loop_over_time <- function(death_age_sex_period, mx) {
+  
+  # initialize output list
+  exposure_output_list <- list()
+  n <- 0
+  
+  time_span              <- death_age_sex_period$time_span[1]
+  time_start             <- min(death_age_sex_period$time_start)
+  time_end               <- max(death_age_sex_period$time_start)
+  age_start              <- unique(death_age_sex_period$age_start) 
+  nage                   <- length(age_start)
+  
+  for (time in seq(time_start, time_end-time_span, time_span)) {
+    for (sex in c("female", "male")) {
+      
+      n   <- n+1
+      
+      # exposures as deaths divided by nmx
+      exp <- death_age_sex_period$value[which(death_age_sex_period$time_start == time & death_age_sex_period$sex == sex)] /
+        mx$value[which(mx$time_start == time & mx$sex == sex)]
+     
+      exposure_output_list[[n]] <- data.frame(time_start = time,
+                                              time_span  = time_span,
+                                              sex        = sex,
+                                              age_start  = age_start,
+                                              age_span   = c(rep(time_span, nage-1), 1000),
+                                              value      = exp,
+                                              stringsAsFactors = FALSE)
+    }
+  }
+  exposure_count_age_sex <- do.call(rbind, exposure_output_list)
+  
+  return(exposure_count_age_sex)
+  
+}
+
+
+  

@@ -182,3 +182,52 @@ subset_sex.life_table_age_sex <- function(x, sexes, include = TRUE) {
     x <- NextMethod()
     return(life_table_age_sex(x, value_scale = vsx))
 }
+
+
+## ###-----------------------------------------------------------------------------
+## ### * Abridge
+
+## #' @rdname abridge
+## #' @export
+## abridge.life_table_age_sex <- function(x, span_abridged = NULL, time_span_abridged = NULL,
+##                                    age_start_abridged = NULL, time_start_abridged = NULL,
+##                                    out_class = class(x)[1], ...) {
+
+##     ## Abridge lt, ndx, nLx
+
+##     abr_1 <- subset_indicator(as_demog_change_component_df(x),
+##                               c("lt_ndx" ,"lt_lx", "lt_nLx"))
+##     abr_1 <- abridge(abr_1, age_span_abridged = age_span_abridged, time_span_abridged = time_span_abridged,
+##                     age_start_abridged = age_start_abridged, time_start_abridged = time_start_abridged,
+##                     out_class = out_class, ...)
+
+
+
+##     abr_1 <- demog_change_component_df(x[x$indicator %in% c("lt_ndx" ,"lt_lx", "lt_nLx"), ])
+##     abr_1 <- abridgetapply(abr_1, list(indicator = abr_1$indicator), FUN = "abridge",
+##                     age_span_abridged = age_span_abridged, time_span_abridged = time_span_abridged,
+##                     age_start_abridged = age_start_abridged, time_start_abridged = time_start_abridged,
+##                     out_class = out_class, ...)
+
+
+
+##     death_count_abridged <-
+##         abridge(subset_indicator(as_ccmpp_input_df(x), "lt_ndx"),
+##                 age_span_abridged = age_span_abridged, time_span_abridged = time_span_abridged,
+##                 age_start_abridged = age_start_abridged, time_start_abridged = time_start_abridged,
+##                 out_class = out_class, ...)
+##     lx_count_abridged <-
+##         abridge(subset_indicator(x, "lt_lx"),
+##                 age_span_abridged = age_span_abridged, time_span_abridged = time_span_abridged,
+##                 age_start_abridged = age_start_abridged, time_start_abridged = time_start_abridged,
+##                 out_class = out_class, ...)
+
+##     ## Person-years lived
+##     nLx_abridged <-
+##         abridge(subset_indicator(x, "lt_nLx"),
+##                 age_span_abridged = age_span_abridged, time_span_abridged = time_span_abridged,
+##                 age_start_abridged = age_start_abridged, time_start_abridged = time_start_abridged,
+##                 out_class = out_class, ...)
+
+
+

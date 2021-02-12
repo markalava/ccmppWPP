@@ -6,6 +6,7 @@
 \alias{[<-.demog_change_component_df}
 \alias{$<-.demog_change_component_df}
 \alias{[[<-.demog_change_component_df}
+\alias{subset.demog_change_component_df}
 \title{Extract or Replace Parts of a \code{demog_change_component_df}}
 \usage{
 \method{[}{demog_change_component_df}(x, i, j, drop)
@@ -15,6 +16,8 @@
 \method{$}{demog_change_component_df}(x, name) <- value
 
 \method{[[}{demog_change_component_df}(x, i, j) <- value
+
+\method{subset}{demog_change_component_df}(x, ...)
 }
 \arguments{
 \item{x}{data frame.}
@@ -43,6 +46,12 @@
 \item{name}{
     A literal character string or a \link[base]{name} (possibly \link[base]{backtick}
     quoted).}
+
+\item{...}{elements to extract or replace.  For \code{[} and
+    \code{[[}, these are \code{numeric} or \code{character} or, for
+    \code{[} only, empty.  Numeric values are coerced to integer as if
+    by \code{\link[base]{as.integer}}.  For replacement by \code{[}, a logical
+    matrix is allowed.}
 }
 \value{
 A \code{data.frame},

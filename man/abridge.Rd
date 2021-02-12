@@ -10,8 +10,7 @@ abridge(x, ...)
 
 \method{abridge}{demog_change_component_df}(
   x,
-  age_span_abridged = NULL,
-  time_span_abridged = NULL,
+  span_abridged = NULL,
   age_start_abridged = NULL,
   time_start_abridged = NULL,
   out_class = class(x)[1],
@@ -19,14 +18,17 @@ abridge(x, ...)
 )
 }
 \arguments{
-\item{x}{An object inheriting from \code{\link{demog_change_component_df}}.}
+\item{x}{An object inheriting from
+\code{\link{demog_change_component_df}}.}
 
 \item{...}{Other arguments passed to other methods.}
 
-\item{age_start_abridged}{Vector of \emph{new} age_start values; \code{x}
-will be abridged such that \code{age_start_abridged} defines the new age groups.}
+\item{age_start_abridged}{Vector of \emph{new} age_start values;
+\code{x} will be abridged such that \code{age_start_abridged}
+defines the new age groups.}
 
-\item{out_class}{See same argument for \code{\link{aggregate.demog_change_component_df}}.}
+\item{out_class}{See same argument for
+\code{\link{aggregate.demog_change_component_df}}.}
 }
 \value{
 An object of the same class as \code{x}, abridged.
@@ -35,10 +37,12 @@ An object of the same class as \code{x}, abridged.
 This is a generic function with methods for the various sub-classes
 of \code{ccmpp_input_df}. It abridges the first argument, \code{x},
 such that the result has spans or ages and times as supplied in the
-\code{..._span} or \code{..._start} arguments. For each of
-\dQuote{age} and \dQuote{time} you can specify only one of the
-corresponding arguments (e.g., only one of \code{age_span}, and
-\code{age_start}). Abridging is done by \dQuote{sex} if \code{x} has that dimension.
+\code{span_abridged} or \code{..._start_abridged} arguments. You
+can only specify one of these arguments as they others are then
+determined. The result must have the same value for \code{age_span}
+and \code{time_span}. Abridging is done within levels of
+\dQuote{sex} and \dQuote{indicators} \emph{if} \code{x} has those
+dimensions.
 }
 \details{
 This function calls
@@ -55,7 +59,9 @@ from \code{ccmpp_input_df} and you only supplied either
 = 5, time_span = 5}.
 }
 \seealso{
-\code{\link{aggregate.demog_change_component_df}} which this function relies on.
+\code{\link[stats]{aggregate}} which this function relies
+    on, \code{link{collapse_demog_dimension}} for a related
+    function.
 }
 \author{
 Mark Wheldon

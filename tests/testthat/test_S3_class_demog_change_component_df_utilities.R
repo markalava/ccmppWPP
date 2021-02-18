@@ -163,158 +163,160 @@ test_that("collapse_demog_dimension  works", {
 })
 
 
-### MAKE OBJECT AVAILABLE TO REMAINDER OF TESTS
+## ### MAKE OBJECT AVAILABLE TO REMAINDER OF TESTS
 
-ccmpp_input_df_test <- ccmpp_input_df(S3_demog_change_component_time_age_sex_test_df,
-                                      dimensions = c("time", "age", "sex"))
+## ccmpp_input_df_test <- ccmpp_input_df(S3_demog_change_component_time_age_sex_test_df,
+##                                       dimensions = c("time", "age", "sex"))
 
-test_that("Abridging works for 'ccmpp_input_df's", {
-    ## Just by age
-    expect_error(abridge(ccmpp_input_df_test, age_start = seq(from = 0, to = 100, by = 5)),
-                 "The aggregate of 'x' cannot be coerced to the class in argument 'out_class'")
-    expect_error(abridge(ccmpp_input_df_test, age_span_abridged = 5),
-                 "The aggregate of 'x' cannot be coerced to the class in argument 'out_class'")
-    expect_s3_class(abridge(ccmpp_input_df_test,
-                            age_start_abridged = seq(from = 0, to = 100, by = 5),
-                            out_class = "demog_change_component_df"),
-                    "demog_change_component_df")
-    expect_s3_class(abridge(ccmpp_input_df_test,
-                            age_span_abridged = 5,
-                            out_class = "demog_change_component_df"),
-                    "demog_change_component_df")
+## test_that("Abridging works for 'ccmpp_input_df's", {
+##     ## Just by age
+##     expect_error(abridge(ccmpp_input_df_test,
+##                          age_start_abridged = seq(from = 0, to = 100, by = 5)),
+##                  "The result of abridging 'x' cannot be coerced to the class in argument 'out_class'")
+##    expect_error(abridge(ccmpp_input_df_test, age_span_abridged = 5),
+##                  "The result of abridging 'x' cannot be coerced to the class in argument 'out_class'")
+##     expect_s3_class(abridge(ccmpp_input_df_test,
+##                             age_start_abridged = seq(from = 0, to = 100, by = 5),
+##                             out_class = "demog_change_component_df"),
+##                     "demog_change_component_df")
+##     expect_s3_class(abridge(ccmpp_input_df_test,
+##                             age_span_abridged = 5,
+##                             out_class = "demog_change_component_df"),
+##                     "demog_change_component_df")
 
-    ## Just by time
-    expect_error(abridge(ccmpp_input_df_test, time_start = seq(from = 1950, to = 2019, by = 5)),
-                 "The aggregate of 'x' cannot be coerced to the class in argument 'out_class'")
-    expect_error(abridge(ccmpp_input_df_test, time_span_abridged = 5),
-                 "The aggregate of 'x' cannot be coerced to the class in argument 'out_class'")
-    expect_s3_class(abridge(ccmpp_input_df_test,
-                            time_start_abridged = seq(from = 1950, to = 2019, by = 5),
-                            out_class = "demog_change_component_df"),
-                    "demog_change_component_df")
-    expect_s3_class(abridge(ccmpp_input_df_test,
-                            time_span_abridged = 5,
-                            out_class = "demog_change_component_df"),
-                    "demog_change_component_df")
+##     ## Just by time
+##     expect_error(abridge(ccmpp_input_df_test,
+##                          time_start_abridged = seq(from = 1950, to = 2019, by = 5)),
+##                  "The result of abridging 'x' cannot be coerced to the class in argument 'out_class'")
+##     expect_error(abridge(ccmpp_input_df_test, time_span_abridged = 5),
+##                  "The result of abridging 'x' cannot be coerced to the class in argument 'out_class'")
+##     expect_s3_class(abridge(ccmpp_input_df_test,
+##                             time_start_abridged = seq(from = 1950, to = 2019, by = 5),
+##                             out_class = "demog_change_component_df"),
+##                     "demog_change_component_df")
+##     expect_s3_class(abridge(ccmpp_input_df_test,
+##                             time_span_abridged = 5,
+##                             out_class = "demog_change_component_df"),
+##                     "demog_change_component_df")
 
-    ## By age and time
-    expect_s3_class(abridge(ccmpp_input_df_test,
-                            age_start_abridged = seq(from = 0, to = 100, by = 5),
-                            time_start_abridged = seq(from = 1950, to = 2019, by = 5)),
-                    "ccmpp_input_df")
-    expect_s3_class(abridge(ccmpp_input_df_test,
-                            age_span_abridged = 5,
-                            time_span_abridged = 5),
-                    "ccmpp_input_df")
+##     ## By age and time
+##     expect_s3_class(abridge(ccmpp_input_df_test,
+##                             age_start_abridged = seq(from = 0, to = 100, by = 5),
+##                             time_start_abridged = seq(from = 1950, to = 2019, by = 5)),
+##                     "ccmpp_input_df")
+##     expect_s3_class(abridge(ccmpp_input_df_test,
+##                             age_span_abridged = 5,
+##                             time_span_abridged = 5),
+##                     "ccmpp_input_df")
 
-    ## Check some actual sums
-    x <- ccmpp_input_df(expand.grid(age_start = 0:5, time_start = 1950:1954, value = 1))
-    x <- abridge(x, age_span_abridged = 5, time_span_abridged = 5)
-    expect_identical(x$value, c(25, 5))
-    expect_identical(x$age_span, c(5, 5))
-    expect_identical(x$time_span, c(5, 5))
+##     ## Check some actual sums
+##     x <- ccmpp_input_df(expand.grid(age_start = 0:5, time_start = 1950:1954, value = 1))
+##     x <- abridge(x, age_span_abridged = 5, time_span_abridged = 5)
+##     expect_identical(x$value, c(25, 5))
+##     expect_identical(x$age_span, c(5, 5))
+##     expect_identical(x$time_span, c(5, 5))
 
-})
-
-
-test_that("Abridging works for 'death_count_age_sex_df's", {
-    test_df <- death_count_age_sex(rbind(expand.grid(age_start = 0:5,
-                                                    time_start = 1950:1954,
-                                                    sex = c("male"),
-                                                    value = 1),
-                                         expand.grid(age_start = 0:5,
-                                                    time_start = 1950:1954,
-                                                    sex = c("female"),
-                                                    value = 2)),
-                                                    value_scale = 1)
-    expect_error(abridge(test_df, span_abridged = 5),
-                 "The aggregate of 'x' cannot be coerced to the class in argument 'out_class'")
-    expect_s3_class(abridge(test_df, span_abridged = 5,
-                            out_class = "demog_change_component_df"),
-                    "demog_change_component_df")
+## })
 
 
-    x <- abridge(test_df, span_abridged = 5, time_span = 5)
-    expect_s3_class(x, "death_count_age_sex")
-    expect_identical(x$value, c(25, 5, 50, 10))
-    })
+## ## test_that("Abridging works for 'death_count_age_sex_df's", {
+## ##     test_df <- death_count_age_sex(rbind(expand.grid(age_start = 0:5,
+## ##                                                     time_start = 1950:1954,
+## ##                                                     sex = c("male"),
+## ##                                                     value = 1),
+## ##                                          expand.grid(age_start = 0:5,
+## ##                                                     time_start = 1950:1954,
+## ##                                                     sex = c("female"),
+## ##                                                     value = 2)),
+## ##                                                     value_scale = 1)
+## ##     expect_error(abridge(test_df, span_abridged = 5),
+## ##                  "The aggregate of 'x' cannot be coerced to the class in argument 'out_class'")
+## ##     expect_s3_class(abridge(test_df, span_abridged = 5,
+## ##                             out_class = "demog_change_component_df"),
+## ##                     "demog_change_component_df")
 
 
-test_that("Abridging works for 'pop_count_age_sex_base_df's", {
-    test_df <- pop_count_age_sex_base(rbind(expand.grid(age_start = 0:5,
-                                                    time_start = 1950,
-                                                    sex = c("male"),
-                                                    value = 1),
-                                         expand.grid(age_start = 0:5,
-                                                    time_start = 1950,
-                                                    sex = c("female"),
-                                                    value = 2)),
-                                                    value_scale = 1)
-    x <- abridge(test_df, span_abridged = 5)
-    expect_s3_class(x, "pop_count_age_sex_base")
-    expect_identical(x$value, c(5, 1, 10, 2))
-    })
+## ##     x <- abridge(test_df, span_abridged = 5, time_span = 5)
+## ##     expect_s3_class(x, "death_count_age_sex")
+## ##     expect_identical(x$value, c(25, 5, 50, 10))
+## ##     })
 
 
-test_that("Abridging works for 'mig_net_count_age_sex_df's", {
-    test_df <- mig_net_count_age_sex(rbind(expand.grid(age_start = 0:5,
-                                                    time_start = 1950:1954,
-                                                    sex = c("male"),
-                                                    value = 1),
-                                         expand.grid(age_start = 0:5,
-                                                    time_start = 1950:1954,
-                                                    sex = c("female"),
-                                                    value = 2)),
-                                                    value_scale = 1)
-    expect_error(abridge(test_df, span_abridged = 5),
-                 "The aggregate of 'x' cannot be coerced to the class in argument 'out_class'")
-    expect_s3_class(abridge(test_df, span_abridged = 5,
-                            out_class = "demog_change_component_df"),
-                    "demog_change_component_df")
+## ## test_that("Abridging works for 'pop_count_age_sex_base_df's", {
+## ##     test_df <- pop_count_age_sex_base(rbind(expand.grid(age_start = 0:5,
+## ##                                                     time_start = 1950,
+## ##                                                     sex = c("male"),
+## ##                                                     value = 1),
+## ##                                          expand.grid(age_start = 0:5,
+## ##                                                     time_start = 1950,
+## ##                                                     sex = c("female"),
+## ##                                                     value = 2)),
+## ##                                                     value_scale = 1)
+## ##     x <- abridge(test_df, span_abridged = 5)
+## ##     expect_s3_class(x, "pop_count_age_sex_base")
+## ##     expect_identical(x$value, c(5, 1, 10, 2))
+## ##     })
 
 
-    x <- abridge(test_df, span_abridged = 5, time_span = 5)
-    expect_s3_class(x, "mig_net_count_age_sex")
-    expect_identical(x$value, c(25, 5, 50, 10))
-    })
+## ## test_that("Abridging works for 'mig_net_count_age_sex_df's", {
+## ##     test_df <- mig_net_count_age_sex(rbind(expand.grid(age_start = 0:5,
+## ##                                                     time_start = 1950:1954,
+## ##                                                     sex = c("male"),
+## ##                                                     value = 1),
+## ##                                          expand.grid(age_start = 0:5,
+## ##                                                     time_start = 1950:1954,
+## ##                                                     sex = c("female"),
+## ##                                                     value = 2)),
+## ##                                                     value_scale = 1)
+## ##     expect_error(abridge(test_df, span_abridged = 5),
+## ##                  "The aggregate of 'x' cannot be coerced to the class in argument 'out_class'")
+## ##     expect_s3_class(abridge(test_df, span_abridged = 5,
+## ##                             out_class = "demog_change_component_df"),
+## ##                     "demog_change_component_df")
 
 
-## test_that("Abridging works for 'life_table_df's", {
-##     test_df <- life_table_age_sex(wpp_input_example$life_table_age_sex)
-
-##     x <- test_df
-
-##     abr_1 <- subset_indicator(as_demog_change_component_df(x),
-##                               c("lt_ndx" ,"lt_lx", "lt_nLx"))
-##     abr_1 <- abridge(abr_1, span_abridged_abridged = 5, time_span_abridged = 5)
-
-##     nax <- aggregate(as.data.frame(abr_1),
-##                      by = abr_1[, c("age_start", "time_start", "span_abridged", "time_span")],
-##                      FUN = function(z) {
-##         z$lt_nLx -
+## ##     x <- abridge(test_df, span_abridged = 5, time_span = 5)
+## ##     expect_s3_class(x, "mig_net_count_age_sex")
+## ##     expect_identical(x$value, c(25, 5, 50, 10))
+## ##     })
 
 
+## ## test_that("Abridging works for 'life_table_df's", {
+## ##     test_df <- life_table_age_sex(wpp_input_example$life_table_age_sex)
 
+## ##     x <- test_df
 
-##     bob <- subset_indicator(as_ccmpp_input_df(test_df), "lt_ndx")
-##     bob5 <- abridge(bob, span_abridged_abridged = 5,
-##                     time_span_abridged = 5)
+## ##     abr_1 <- subset_indicator(as_demog_change_component_df(x),
+## ##                               c("lt_ndx" ,"lt_lx", "lt_nLx"))
+## ##     abr_1 <- abridge(abr_1, span_abridged_abridged = 5, time_span_abridged = 5)
+
+## ##     nax <- aggregate(as.data.frame(abr_1),
+## ##                      by = abr_1[, c("age_start", "time_start", "span_abridged", "time_span")],
+## ##                      FUN = function(z) {
+## ##         z$lt_nLx -
 
 
 
 
+## ##     bob <- subset_indicator(as_ccmpp_input_df(test_df), "lt_ndx")
+## ##     bob5 <- abridge(bob, span_abridged_abridged = 5,
+## ##                     time_span_abridged = 5)
 
 
 
-##     lx <- subset(test_df, indicator == "lt_lx")
-##     nLx <- subset(test_df, indicator == "lt_nLx")
-##     ex <- subset(test_df, indicator == "lt_ex")
-
-##     x_ab <- lt_single2abridged_loop_over_time(lx_single = lx,
-##                                               nLx_single = nLx,
-##                                               ex_single = ex,
-##                                               sex = "female")
 
 
 
-##     })
+
+## ##     lx <- subset(test_df, indicator == "lt_lx")
+## ##     nLx <- subset(test_df, indicator == "lt_nLx")
+## ##     ex <- subset(test_df, indicator == "lt_ex")
+
+## ##     x_ab <- lt_single2abridged_loop_over_time(lx_single = lx,
+## ##                                               nLx_single = nLx,
+## ##                                               ex_single = ex,
+## ##                                               sex = "female")
+
+
+
+## ##     })

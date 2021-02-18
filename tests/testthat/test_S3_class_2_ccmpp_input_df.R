@@ -211,10 +211,24 @@ test_that("dimensions are correctly detected", {
 })
 
 
-test_that("non-squareness is caught", {
+test_that("inconsistency between '_start' and '_span' columns is caught", {
     x <- S3_demog_change_component_time_age_sex_test_df
-    y <- rbind(x, x[1,])
-    expect_error(ccmpp_input_df(y),
+    x[1, "time_span"] <- 5
+    expect_error(ccmpp_input_df(x, dimensions = c("time", "age", "sex")),
+                 "Not a valid 'ccmpp_input_df' object")
+})
+
+
+test_that("non-squareness is caught", {
+    x <- ccmpp_input_df(S3_demog_change_component_time_age_sex_test_df,
+                                   dimensions = c("time", "age", "sex"))
+    ## NOT OK to just remove one age-time-sex combination.
+    omit_i <- which(x$age_start == 0 & x$time_start == 1950 & x$sex == "male")
+    y <- x[-omit_i, ]
+    ## 'y' has an entry for 1950, age 0, 'female', but the entry for
+    ## 'male' is missing. This is invalid:
+    expect_error(capture.output(ccmpp_input_df(y),
+                                file = OS_null_file_string),
                  "does not have exactly one 'value'")
 })
 

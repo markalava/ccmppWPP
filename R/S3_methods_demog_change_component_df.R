@@ -584,7 +584,7 @@ plot.demog_change_component_df <-
 #' alternative if aggregation across an entire demographic dimension
 #' (e.g., \dQuote{age}, \dQuote{time}, etc.) is desired.
 #'
-#' @inheritParams aggregate
+#' @inheritParams stats::aggregate
 #' @author Mark Wheldon
 #'
 #' @seealso \code{\link[stats]{aggregate}}, \code{link{collapse_demog_dimension}}

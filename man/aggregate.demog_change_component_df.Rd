@@ -6,6 +6,25 @@
 \usage{
 \method{aggregate}{demog_change_component_df}(x, by, FUN, ..., simplify = TRUE, drop = TRUE)
 }
+\arguments{
+\item{x}{an R object.}
+
+\item{by}{a list of grouping elements, each as long as the variables
+    in the data frame \code{x}.  The elements are coerced to factors
+    before use.}
+
+\item{FUN}{a function to compute the summary statistics which can be
+    applied to all data subsets.}
+
+\item{...}{further arguments passed to or used by methods.}
+
+\item{simplify}{a logical indicating whether results should be
+    simplified to a vector or matrix if possible.}
+
+\item{drop}{a logical indicating whether to drop unused combinations
+    of grouping values.  The non-default case \code{drop=FALSE} has been
+    amended for \R 3.5.0 to drop unused combinations.}
+}
 \description{
 A method for the generic \code{\link[stats]{aggregate}}
 function. This merely calls the

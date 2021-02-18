@@ -39,7 +39,6 @@ validate_ccmpp_object.ccmpp_input_df <- function(x, ...) {
     ## SPANS:
     ## 1. Span attributes must be of length 1
     ## 2. Spans must all be equal
-    ## 2. Span columns must contain
 
     attr_w_span_names <- get_all_dimensions_w_spans()
     attr_w_span_names <-
@@ -64,7 +63,27 @@ validate_ccmpp_object.ccmpp_input_df <- function(x, ...) {
             stop(not_a_valid_object_msg("ccmpp_input_df",
                                         "'", span_name, "' is not of length 1."))
 
-        ## Diffs of unique values
+        ## Spans must be consistent with the differences between the
+        ## '_start' column values.
+        by_col_names <- sapply(demog_change_component_dims_x,
+                                   FUN = "get_df_col_names_for_dimensions", spans = FALSE)
+            by_col_names <- by_col_names[!by_col_names %in% start_name]
+            if (length(by_col_names)) {
+            start_vs_span_diff <-
+                lapply(split(x[, c(by_col_names, span_name, start_name)], x[, by_col_names]),
+                       function(z) {
+                    sum(head(z[, span_name], -1) - diff(z[, start_name], differences = 1))
+                })
+            } else {
+                start_vs_span_diff <-
+                    sum(head(x[, span_name], -1) - diff(x[, start_name], differences = 1))
+            }
+            if (any(unlist(start_vs_span_diff) != 0))
+                stop(not_a_valid_object_msg("ccmpp_input_df",
+                                        "Spacings between each 'x$", start_name,
+                 "' do not equal the corresponding values of 'x$", span_name))
+
+        ## Diffs of '_start' column values must equal the value of span attribute
         start_1st_diff <-
             diff(sort(unique(start_col)), differences = 1)
         if (!identical(as.double(sum(start_1st_diff != span_attr)), 0))
@@ -689,7 +708,7 @@ validate_ccmpp_object.ccmpp_input_list <- function(x, .validate_elements = TRUE,
     }
 
     ## Check that mig_count_age_sex and mig_count_tot_b are consistent with each other
-    mig_tot_agg <- aggregate(x$mig_net_count_age_sex, by_dimension = "time",
+    mig_tot_agg <- collapse_demog_dimension(x$mig_net_count_age_sex, by_dimension = "time",
                              out_class = "data.frame")
     mig_check <- base::merge(x$mig_net_count_tot_b,
                              mig_tot_agg,

@@ -75,6 +75,7 @@ subset_time.demog_change_component_df <- function(x, times, include = TRUE, drop
     }
 
     value_type_x <- value_type(x)
+    value_scale_x <- value_scale(x)
     time_col_name <- get_df_col_names_for_dimensions(dimensions = "time", spans = FALSE)
 
     if (include) {
@@ -95,7 +96,9 @@ subset_time.demog_change_component_df <- function(x, times, include = TRUE, drop
 
     return(suppressMessages(demog_change_component_df(x,
                                                       dimensions = NULL,
-                                                      value_type = value_type_x)))
+                                                      value_type = value_type_x,
+                                                      value_scale = value_scale_x
+                                                      )))
 }
 
 #' @rdname subset_demog_change_component_df
@@ -123,6 +126,7 @@ subset_age.demog_change_component_df <- function(x, ages, include = TRUE, drop =
     }
 
     value_type_x <- value_type(x)
+    value_scale_x <- value_scale(x)
     age_col_name <- get_df_col_names_for_dimensions(dimensions = "age", spans = FALSE)
 
     if (include) {
@@ -143,7 +147,8 @@ subset_age.demog_change_component_df <- function(x, ages, include = TRUE, drop =
 
     return(suppressMessages(demog_change_component_df(x,
                                                       dimensions = NULL,
-                                                      value_type = value_type_x)))
+                                                      value_type = value_type_x,
+                                                      value_scale = value_scale_x)))
 }
 
 #' @rdname subset_demog_change_component_df
@@ -160,6 +165,7 @@ subset_sex.demog_change_component_df <-
         sexes <- match.arg(sexes, several.ok = TRUE)
 
         value_type_x <- value_type(x)
+        value_scale_x <- value_scale(x)
         sex_col_name <- get_df_col_names_for_dimensions(dimensions = "sex", spans = FALSE)
 
         if (include) {
@@ -180,7 +186,8 @@ subset_sex.demog_change_component_df <-
 
         return(suppressMessages(demog_change_component_df(x,
                                                           dimensions = NULL,
-                                                          value_type = value_type_x)))
+                                                          value_type = value_type_x,
+                                                          value_scale = value_scale_x)))
     }
 
 #' @rdname subset_demog_change_component_df
@@ -196,6 +203,7 @@ subset_indicator.demog_change_component_df <-
         stopifnot(is_by_indicator(x))
 
         value_type_x <- value_type(x)
+        value_scale_x <- value_scale(x)
         indicator_col_name <- get_df_col_names_for_dimensions(dimensions = "indicator", spans = FALSE)
 
         if (include) {
@@ -216,7 +224,8 @@ subset_indicator.demog_change_component_df <-
 
         return(suppressMessages(demog_change_component_df(x,
                                                           dimensions = NULL,
-                                                          value_type = value_type_x)))
+                                                          value_type = value_type_x,
+                                                          value_scale = value_scale_x)))
     }
 
 ###-----------------------------------------------------------------------------
@@ -466,163 +475,183 @@ collapse_demog_dimension <- function(x, FUN = "sum", ..., by_dimension = get_all
 }
 
 
-#' Abridge a \code{ccmpp_input_df} object
-#'
-#' This is a generic function with methods for the various sub-classes
-#' of \code{ccmpp_input_df}. It abridges the first argument, \code{x},
-#' such that the result has spans or ages and times as supplied in the
-#' \code{span_abridged} or \code{..._start_abridged} arguments. You
-#' can only specify one of these arguments as they others are then
-#' determined. The result must have the same value for \code{age_span}
-#' and \code{time_span}. Abridging is done within levels of
-#' \dQuote{sex} and \dQuote{indicators} \emph{if} \code{x} has those
-#' dimensions.
-#'
-#' This function calls
-#' \code{\link{aggregate.demog_change_component_df}} to do the actual
-#' abridging.
-#'
-#' If you get an error along the lines of \dQuote{result is invalid as
-#' a member of the class} or similar, it means that, after abridging,
-#' the result is no longer valid as a member of the class \code{x}
-#' started as. This would occur, for example, if \code{x} inherits
-#' from \code{ccmpp_input_df} and you only supplied either
-#' \dQuote{age} or \dQuote{time} arguments. Try supplying both
-#' \dQuote{age} and \dQuote{time} arguments, e.g., \code{... age_span
-#' = 5, time_span = 5}.
-#'
-#' @param x An object inheriting from
-#'     \code{\link{demog_change_component_df}}.
-#' @param span_abridged
-#' @param age_start_abridged Vector of \emph{new} age_start values;
-#'     \code{x} will be abridged such that \code{age_start_abridged}
-#'     defines the new age groups.
-#' @param time_start_abridged
-#' @param out_class See same argument for
-#'     \code{\link{aggregate.demog_change_component_df}}.
-#' @param ... Other arguments passed to other methods.
-#' @return An object of the same class as \code{x}, abridged.
-#' @author Mark Wheldon
-#' @name abridge
-#' @seealso \code{\link[stats]{aggregate}} which this function relies
-#'     on, \code{link{collapse_demog_dimension}} for a related
-#'     function.
-#' @export
-abridge <- function(x, ...) {
-    UseMethod("abridge")
-}
+## #' Abridge a \code{demog_change_component_df} object
+## #'
+## #' This is a generic function with methods for the various sub-classes
+## #' of \code{ccmpp_input_df}. It abridges the first argument, \code{x},
+## #' such that the result has spans or ages and times as supplied in the
+## #' \code{span_abridged}, \code{age_start_abridged} and
+## #' \code{time_start_abridged} arguments. See \dQuote{Details} for
+## #' restrictions on specifying the arguments.
+## #'
+## #' If you specify \code{age_span_abridged} you cannot specify
+## #' \code{age_start_abridged}, and similarly for
+## #' \code{time_span_abridged} and \code{time_start_abridged}. If you
+## #' specify only one of \dQuote{age} and \dQuote{time}, all levels of
+## #' the other are kept if \code{x} has the corresponding demographic
+## #' dimension. Moreover, abridging is done within levels of \dQuote{sex} and
+## #' \dQuote{indicators} if \code{x} has those dimensions.
+## #'
+## #' This function calls
+## #' \code{\link{aggregate.demog_change_component_df}} to do the actual
+## #' abridging.
+## #'
+## #' If you get an error along the lines of \dQuote{result is invalid as
+## #' a member of the class} or similar, it means that, after abridging,
+## #' the result is no longer valid as a member of the class \code{x}
+## #' has. This would occur, for example, if \code{x} inherits from
+## #' \code{ccmpp_input_df} and you only supplied one of the
+## #' \code{..._start_abridged} arguments. Try supplying both or,
+## #' instead, specify \code{span_abridged}.
+## #'
+## #' @param x An object inheriting from
+## #'     \code{\link{demog_change_component_df}}.
+## #' @param age_span_abridged A numeric scalar giving the \emph{new}
+## #'     \code{age_span} values; \code{x} will be abridged such that
+## #'     it's \code{age_span} is \code{age_span_abridged}.
+## #' @param time_span_abridged As \code{age_span_abridged} but for time.
+## #' @param age_start_abridged Vector of \emph{new} \code{age_start}
+## #'     values; \code{x} will be abridged such that
+## #'     \code{age_start_abridged} defines the new age groups.
+## #' @param time_start_abridged As \code{age_start_abridged} but for
+## #'     time.
+## #' @param out_class See same argument for
+## #'     \code{\link{aggregate.demog_change_component_df}}.
+## #' @param ... Other arguments passed to other methods.
+## #' @return An object of the same class as \code{x}, abridged.
+## #' @author Mark Wheldon
+## #' @name abridge
+## #' @seealso \code{\link[stats]{aggregate}} which this function relies
+## #'     on, \code{link{collapse_demog_dimension}} for a related
+## #'     function.
+## #' @export
+## abridge <- function(x, ...) {
+##     UseMethod("abridge")
+## }
 
-#' @rdname abridge
-#' @export
-abridge.demog_change_component_df <- function(x, span_abridged = NULL,
-                                   age_start_abridged = NULL, time_start_abridged = NULL,
-                                   out_class = class(x)[1], ...) {
-    ## Lots of checks:
+## #' @rdname abridge
+## #' @export
+## abridge.demog_change_component_df <- function(x,
+##                                               age_span_abridged = NULL, time_span_abridged = NULL,
+##                                    age_start_abridged = NULL, time_start_abridged = NULL,
+##                                    out_class = class(x)[1], ...) {
+##     ## Lots of checks:
 
-    ## 'x' must be abridgeable
-    if (!value_type(x) %in% get_all_aggregatable_value_types())
-        stop("'value_type(x)' is '", toString(value_type(x)),
-             "' but the only abridge-able 'value_type's are '", toString(get_all_aggregatable_value_types()), "'.")
+##     ## 'x' must be abridgeable
+##     if (!value_type(x) %in% get_all_aggregatable_value_types())
+##         stop("'value_type(x)' is '", toString(value_type(x)),
+##              "' but the only abridge-able 'value_type's are '", toString(get_all_aggregatable_value_types()), "'.")
+##     if (!is_by_age(x) && !is_by_time(x))
+##         stop("'x' is has neither the \"age\" nor \"time\" demographic dimension; it must have at least one of these to be abridged.")
 
-    ## Must specify only one of one span or start
-    if (sum(c(!is.null(span_abridged), !is.null(age_start_abridged), !is.null(time_start_abridged))) > 1)
-        stop("Only one of 'span_abridged', 'age_start_abridged', 'time_start_abridged' can be specified.")
+##     ## Age arguments
+##     if (!is.null(age_span_abridged) || !is.null(age_start_abridged)) {
+##         if (!is_by_age(x))
+##             stop("'age_start_abridged' or 'age_span_abridged' is non-NULL but 'x' does not have the age demographic dimension.")
+##         if (!is.null(age_span_abridged) && !is.null(age_start_abridged))
+##             stop("You can specify 'age_span_abridged' OR 'age_start_abridged' but not both.")
+##         if (!is.null(age_span_abridged) && (!is.numeric(age_span_abridged) || !identical(length(age_span_abridged), 1L))) {
+##             stop("'age_span_abridged' must be 'numeric', length 1.")
+##         } else if (!is.null(age_start_abridged) && !is.numeric(age_start_abridged)) {
+##             stop("'age_start_abridged' must be 'numeric'.")
+##         }
+##     }
 
-    ## If age or time span or start given, 'x' must be by_age/by_time
-    if (!is_by_age(x) && !is_by_time(x))
-        stop("'x' is has neither the \"age\" nor \"time\" demographic dimension; it must have at least one of these to be abridged.")
-    if (!is.null(age_start_abridged) && !is_by_age(x))
-        stop("'age_start_abridged' is non-NULL but 'x' does not have the age demographic dimension.")
-    if (!is.null(time_start_abridged) && !is_by_time(x))
-        stop("'time_start_abridged' is non-NULL but 'x' does not have the time demographic dimension.")
+##     ## Time arguments
+##     if (!is.null(time_span_abridged) || !is.null(time_start_abridged)) {
+##         if (!is_by_time(x))
+##             stop("'time_start_abridged' or 'time_span_abridged' is non-NULL but 'x' does not have the time demographic dimension.")
+##         if (!is.null(time_span_abridged) && !is.null(time_start_abridged))
+##             stop("You can specify 'time_span_abridged' OR 'time_start_abridged' but not both.")
+##         if (!is.null(time_span_abridged) && (!is.numeric(time_span_abridged) || !identical(length(time_span_abridged), 1L))) {
+##             stop("'time_span_abridged' must be 'numeric', length 1.")
+##         } else if (!is.null(time_start_abridged) && !is.numeric(time_start_abridged)) {
+##             stop("'time_start_abridged' must be 'numeric'.")
+##         }
+##     }
 
-    ## Span and start must be numeric
-    if (!is.numeric(span_abridged) && !is.null(span_abridged))
-        stop("'span_abridged' must be 'numeric'.")
-    if (!is.numeric(age_start_abridged) && !is.null(age_start_abridged))
-        stop("'age_start_abridged' must be 'numeric'.")
-    if (!is.numeric(time_start_abridged) && !is.null(time_start_abridged))
-        stop("'time_start_abridged' must be 'numeric'.")
+##     ## out_class
+##     class_x <- class(x)
+##     if (length(class_x) > 1) {
+##         i <- match(out_class, class_x)
+##         if (!is.na(i) && i < length(class_x)) out_class <- c(out_class, tail(class_x, -i))
+##     }
+##     if (!all(out_class %in% c(get_all_demog_change_component_df_class_names(), "data.frame")))
+##         stop("'out_class' must only use classes in this list '",
+##              toString(c(get_all_demog_change_component_df_class_names(), "data.frame")),
+##              "'.")
 
-    ## out_class
-    class_x <- class(x)
-    if (length(class_x) > 1) {
-        i <- match(out_class, class_x)
-        if (!is.na(i) && i < length(class_x)) out_class <- c(out_class, tail(class_x, -i))
-    }
-    if (!all(out_class %in% c(get_all_demog_change_component_df_class_names(), "data.frame")))
-        stop("'out_class' must only use classes in this list '",
-             toString(c(get_all_demog_change_component_df_class_names(), "data.frame")),
-             "'.")
+##     ## Start abridging ---:
 
-    ## Start abridging ---:
+##     by_list <- list()
 
-    by_list <- list()
+##     if (!is.null(age_span_abridged)) {
+##             ages_x <- ages(x)
+##             age_start_abridged <-
+##                 seq(from = min(ages_x), to = max(ages_x), by = age_span_abridged)
+##     }
+##     if (!is.null(time_span_abridged)) {
+##             times_x <- times(x)
+##             time_start_abridged <-
+##                 seq(from = min(times_x), to = max(times_x), by = time_span_abridged)
+##     }
+##     if (!is.null(age_start_abridged)) { # either user-supplied or computed above from 'age_span_abridged'
+##         start_int <- findInterval(x$age_start, age_start_abridged)
+##         age_start <- age_start_abridged[start_int]
+##         by_list <- c(by_list, list(age_start = age_start))
+##     } else if (is_by_age(x)) { # 'age_start_abridged' is null
+##         ## Keep any age columns already in 'x'
+##         by_list <- c(by_list, list(age_start = x$age_start))
+##     }
+##     if (!is.null(time_start_abridged)) { # either user-supplied or computed from 'time_span_abridged'
+##         start_int <- findInterval(x$time_start, time_start_abridged)
+##         time_start <- time_start_abridged[start_int]
+##         by_list <- c(by_list, list(time_start = time_start))
+##     } else if (is_by_time(x)) { # 'time_start_abridged' is null
+##         ## Keep any time columns already in 'x'
+##         by_list <- c(by_list, list(time_start = x$time_start))
+##     }
 
-    if (!is.null(span_abridged)) {
-        ages_x <- ages(x)
-        age_start_abridged <- seq(from = min(ages_x), to = max(ages_x), by = span_abridged)
-        times_x <- times(x)
-        time_start_abridged <- seq(from = min(times_x), to = max(times_x), by = span_abridged)
-    }
-    if (!is.null(age_start_abridged)) { # either user-supplied or computed above from 'span_abridged'
-        start_int <- findInterval(x$age_start, age_start_abridged)
-        start_int <- age_start_abridged[start_int]
-        by_list <- c(by_list, list(age_start = start_int))
-    } else if (is_by_age(x)) { # 'age_start_abridged' is null
-        # Keep any age columns already in 'x'
-        by_list <- c(by_list, list(age_start = x$age_start))
-    }
-    if (!is.null(time_start_abridged)) { # either user-supplied or computed from 'span_abridged'
-        start_int <- findInterval(x$time_start, time_start_abridged)
-        start_int <- time_start_abridged[start_int]
-        by_list <- c(by_list, list(time_start = start_int))
-    } else if (is_by_time(x)) { # 'time_start_abridged' is null
-        # Keep any time columns already in 'x'
-        by_list <- c(by_list, list(time_start = x$time_start))
-    }
+##     ## Abridge by sex and indicator if present
+##     if (is_by_sex(x))
+##         by_list <- c(by_list, list(sex = x$sex))
+##     if (is_by_indicator(x))
+##         by_list <- c(by_list, list(indicator = x$indicator))
 
-    ## Abridge by sex and indicator if present
-    if (is_by_sex(x))
-        by_list <- c(by_list, list(sex = x$sex))
-    if (is_by_indicator(x))
-        by_list <- c(by_list, list(indicator = x$indicator))
+##     ## Aggregate
+##     value_type_x <- value_type(x)
+##     value_scale_x <- value_scale(x)
+##     out <- aggregate(data.frame(value = x$value), by = by_list, FUN = "sum")
 
-    ## Aggregate
-    clss
-    value_type_x <- value_type(x)
-    value_scale_x <- value_scale(x)
-    out <- aggregate(x, by = by_list, FUN = "sum", out_class = out_class)
+##     ## Check the class
+##     tryout <- try(do.call(get_as_function_for_class(out_class[1]),
+##                           list(x = out, value_type = value_type_x, value_scale = value_scale_x)),
+##                   silent = TRUE)
+##     if (identical(class(tryout), "try-error") || !identical(class(tryout), out_class)) {
+##         class_orig <- class_x
+##         while(identical(class(tryout), "try-error") && length(class_x[-1])) {
+##             class_x <- class_x[-1]
+##             tryout <- try(do.call(get_as_function_for_class(class_x[1]),
+##                                   list(x = out, value_type = value_type_x, value_scale = value_scale_x)),
+##                           silent = TRUE)
+##             if (!identical(class(tryout), "try-error")) {
+##                 msg <- paste0("The result of abridging 'x' cannot be coerced to the class in argument 'out_class' (i.e., '", toString(out_class), "').\n\tIf you want to abridge 'x', set 'out_class' to '", class_x[1], "' or coerce it to a '", class_x[1], "' object and use 'abridge' again (see examples in '?abridge').")
+##                 stop(msg)
+##             }
+##         }
+##         stop("Could not abridge 'x'.")
+##     } else {
+##         validate_tryout <- FALSE
+##         if (!identical(value_type(tryout), value_type_x)) {
+##             validate_tryout <- TRUE  #have to validate again after setting value type and scale
+##             value_type(tryout) <- value_type_x
+##         }
+##         if (!identical(as.numeric(value_scale(tryout)), as.numeric(value_scale_x))) {
+##             validate_tryout <- TRUE
+##             value_scale(tryout) <- value_scale_x
+##         }
+##         if (validate_tryout) tryout <- validate_ccmpp_object(tryout)
 
-    ## Check the class
-    tryout <- try(do.call(get_as_function_for_class(out_class[1]),
-                          list(x = out, value_type = value_type_x, value_scale = value_scale_x)),
-                  silent = TRUE)
-    if (identical(class(tryout), "try-error") || !identical(class(tryout), out_class)) {
-        class_orig <- class_x
-        while(identical(class(tryout), "try-error") && length(class_x[-1])) {
-            class_x <- class_x[-1]
-            tryout <- try(do.call(get_as_function_for_class(class_x[1]),
-                                  list(x = out, value_type = value_type_x, value_scale = value_scale_x)),
-                          silent = TRUE)
-            if (!identical(class(tryout), "try-error")) {
-                msg <- paste0("The result of abridging 'x' cannot be coerced to the class in argument 'out_class' (i.e., '", toString(out_class), "').\n\tIf you want to abridge 'x', set 'out_class' to '", class_x[1], "' or coerce it to a '", class_x[1], "' object and use 'abridge' again (see examples in '?abridge').")
-                stop(msg)
-            }
-        }
-        stop("Could not abridge 'x'.")
-    } else {
-        validate_tryout <- FALSE
-        if (!identical(value_type(tryout), value_type_x)) {
-            validate_tryout <- TRUE  #have to validate again after setting value type and scale
-            value_type(tryout) <- value_type_x
-        }
-        if (!identical(as.numeric(value_scale(tryout)), as.numeric(value_scale_x))) {
-            validate_tryout <- TRUE
-            value_scale(tryout) <- value_scale_x
-        }
-        if (validate_tryout) tryout <- validate_ccmpp_object(tryout)
-
-        return(tryout)
-    }
-}
+##         return(tryout)
+##     }
+## }

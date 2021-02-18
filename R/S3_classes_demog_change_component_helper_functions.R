@@ -107,12 +107,12 @@ ensure_these_dimensions_correctly_ordered <- function(dimensions) {
     all_dims[all_dims %in% dimensions]
 }
 
-## All required columns
+## All required columns (including 'value'). Don't want 'value'? See 'get_df_col_names_for_dimensions()' below.
 get_all_req_col_names_for_dimensions <- function(dimensions) {
     c(subset_master_df_of_dimensions_colnames_coltypes(dimensions = dimensions)$colname, "value")
 }
 
-## All required columns
+## All required columns except spans (including 'value'). Don't want 'value'? See 'get_df_col_names_for_dimensions()' below.
 get_all_req_col_names_excl_spans_for_dimensions <- function(dimensions) {
     c(subset_master_df_of_dimensions_colnames_coltypes(dimensions = dimensions,
                                                        spans = FALSE)$colname, "value")
@@ -224,7 +224,7 @@ tabulate_demog_change_component_df <- function(x) {
         x[[coln_info_x[coln_info_x$dimension == dimension, "colname"]]]
     }
 
-    tab_factors <- lapply(dims_names_x, "get_x_col")
+    tab_factors <- lapply(setNames(dims_names_x, dims_names_x), "get_x_col")
     return(table(tab_factors))
 }
 

@@ -4,12 +4,12 @@
 
     ## -------* OPTIONS
 
-  op <- options()
-  op.ccmppWPP <- list(
-    ccmppWPP.suppress_S3_class_messages = FALSE,
-    ccmppWPP.suppress_S3_class_warnings = FALSE
-  )
-  toset <- !(names(op.ccmppWPP) %in% names(op))
+    op <- options()
+    op.ccmppWPP <- list(
+        ccmppWPP.suppress_S3_class_messages = FALSE,
+        ccmppWPP.suppress_S3_class_warnings = FALSE
+    )
+    toset <- !(names(op.ccmppWPP) %in% names(op))
     if(any(toset)) options(op.ccmppWPP[toset])
 
     ## -------* METHODS FOR FUNCTIONS IN OTHER PACKAGES
@@ -61,7 +61,7 @@
     vctrs__s3_register("tidyr::spread", "demog_change_component_df")
     vctrs__s3_register("tidyr::unite", "demog_change_component_df")
 
-  invisible()
+    invisible()
 }
 
 

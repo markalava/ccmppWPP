@@ -170,16 +170,6 @@ validate_ccmpp_object.demog_change_component_df <-
                      "'; values other than these are not supported."))
         }
 
-        ## CHECK SQUARENESS
-        ## 1. Must be _one_ value per indicator * time * sex * age combination.
-
-        x_tbl <- tabulate_demog_change_component_df(x)
-        if (!identical(as.double(sum(x_tbl != 1)), 0)) {
-            print(which(x_tbl != 1, arr.ind = TRUE))
-            stop(not_a_valid_object_msg("demog_change_component_df",
-                                        "'x' does not have exactly one 'value' per 'age' * 'sex' * 'time' * 'indicator' combination. Either there are duplicates or some are missing. The combinations with more or less than 1 row are printed above. See ?demog_change_component_df for class definition."))
-        }
-
     return(x)
 }
 

@@ -220,10 +220,35 @@ test_that("inconsistency between '_start' and '_span' columns is caught", {
 
 
 test_that("non-squareness is caught", {
-    x <- ccmpp_input_df(S3_demog_change_component_time_age_sex_test_df,
-                                   dimensions = c("time", "age", "sex"))
+    x <- S3_demog_change_component_time_age_sex_test_df
+
+    ## OK to omit a whole time, or sex group. NB: omitting only the
+    ## first time or age here because otherwise would have to also
+    ## adjust the '_span' columns. Also only test time and sex because
+    ## omitting age_start '0' triggers a different error.
+    omit_i <- which(x$time_start == 1950)
+    y <- x[-omit_i, ]
+    expect_s3_class(ccmpp_input_df(y),
+                    "ccmpp_input_df")
+
+    omit_i <- which(x$sex == "male")
+    y <- x[-omit_i, ]
+    expect_s3_class(ccmpp_input_df(y),
+                    "ccmpp_input_df")
+
     ## NOT OK to just remove one age-time-sex combination.
-    omit_i <- which(x$age_start == 0 & x$time_start == 1950 & x$sex == "male")
+    omit_i <- which(x$age_start == 5 & x$time_start == 1950 & x$sex == "male")
+    y <- x[-omit_i, ]
+    ## 'y' has an entry for 1950, age 0, 'female', but the entry for
+    ## 'male' is missing. This is invalid:
+    expect_error(capture.output(ccmpp_input_df(y),
+                                file = OS_null_file_string),
+                 "does not have exactly one 'value'")
+    ## It's not enough to omit 'female' entry as well because there
+    ## are entries for age 5 for all other years and sexes. E.g.,
+    ## 1951, age 5, 'male' and 'female' exists; the absence of the
+    ## 1950 entry is invalid.
+    omit_i <- which(x$age_start == 5 & x$time_start == 1950)
     y <- x[-omit_i, ]
     ## 'y' has an entry for 1950, age 0, 'female', but the entry for
     ## 'male' is missing. This is invalid:

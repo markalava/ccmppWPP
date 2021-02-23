@@ -211,16 +211,19 @@ test_that("non-squareness is caught", {
                                         by = min_span),
                         time_start = seq(from = min(x$time_start),
                                         to = max(x$time_start),
-                                        by = min_span))
+                                        by = min_span),
+                        stringsAsFactors = FALSE)
 
 
     x <- expand.grid(age_start = c(0, 1, 5, 10), time_start = c(1950:1952, 1960),
-                     sex = c("male", "female"))
+                     sex = c("male", "female"),
+                        stringsAsFactors = FALSE)
     x <- plyr::ddply(x, c("time_start", "sex"), "transform",
                      age_span = c(diff(age_start), 1000))
     x <- plyr::ddply(x, c("age_start", "sex"), "transform",
                      time_span = c(diff(time_start), 1))
     x <- sort_demog_change_component_df(x)
+    rownames(x) <- NULL
 
     min_span <- min(c(x$age_span, x$time_span))
     x$age_span_2 <- x$age_span

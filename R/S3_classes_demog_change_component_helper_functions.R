@@ -213,20 +213,56 @@ sort_demog_change_component_df <- function(x) {
     return(x[do.call("order", sort_factors), ])
 }
 
-## Tabulate to check squareness
-tabulate_demog_change_component_df <- function(x) {
+
+## Tabulate Lexis squares.
+tabulate_lexis_squares <- function(x) {
     coln_x <- colnames(x)
     coln_info_x <- subset_master_df_of_dimensions_colnames_coltypes(spans = FALSE)
     coln_info_x <- coln_info_x[coln_info_x$colname %in% coln_x, ]
     dims_names_x <- coln_info_x$dimension
+    coln_x_no_spans <- coln_info_x$colname
 
-    get_x_col <- function(dimension) {
-        x[[coln_info_x[coln_info_x$dimension == dimension, "colname"]]]
+    span_coln_info_x <- subset_master_df_of_dimensions_colnames_coltypes(spans = TRUE)
+    span_coln_info_x <- span_coln_info_x[span_coln_info_x$dimension %in% dims_names_x, , drop = FALSE]
+    dims_w_span_names_x <- dims_names_x[dims_names_x %in% get_all_dimensions_w_spans()]
+    for (dim in dims_w_span_names_x) {
+        coln_span <- span_coln_info_x[span_coln_info_x$dimension == dim, "colname"]
+        if (!coln_span %in% coln_x) stop("'span' column for ", dim, " not in 'x'.")
     }
 
-    tab_factors <- lapply(setNames(dims_names_x, dims_names_x), "get_x_col")
-    return(table(tab_factors))
+    ## Expand using '_spans' ----
+
+    start_cols <- c("age_start", "time_start")[c("age_start", "time_start") %in% coln_x]
+    min_span <- min(c(x$age_span, x$time_span))
+    x$age_span[x$age_span == 1000] <- 1 # TEMP as along as '1000' used to mark open ended age group
+    x$age_span <- x$age_span / min_span # scale in case min span != 1
+    x$time_span <- x$time_span / min_span
+    x <- split(x, x[, coln_x_no_spans])
+    x <- lapply(x, function(z) {
+        grid_list <- list()
+        if ("age_start" %in% coln_x_no_spans)
+            grid_list <- c(grid_list,
+                           list(age_start = seq(from = z[,"age_start"],
+                                                length.out = z[,"age_span"],
+                                                by = min_span)))
+        if ("time_start" %in% coln_x_no_spans)
+            grid_list <- c(grid_list,
+                           list(time_start = seq(from = z[,"time_start"],
+                                                length.out = z[,"time_span"],
+                                                by = min_span)))
+        if ("sex" %in% coln_x_no_spans)
+            grid_list <- c(grid_list, list(sex = unique(z[, "sex"])))
+        if ("indicator" %in% coln_x_no_spans)
+            grid_list <- c(grid_list, list(indicator = unique(z[, "indicator"])))
+        expand.grid(grid_list)
+    })
+    x <- do.call(rbind, x)
+
+    ## Tabulate ----
+
+    return(table(x))
 }
+
 
 ## Get min age within each dimension
 get_min_age_in_dims_in_df <- function(x) {

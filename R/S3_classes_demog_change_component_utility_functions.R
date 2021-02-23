@@ -450,7 +450,6 @@ collapse_demog_dimension <- function(x, FUN = "sum", ..., by_dimension = get_all
              toString(get_all_aggregatable_value_types()), "'.")
 
     ## Do the collapsing
-    x <- as.data.frame(x)
     out <- stats::aggregate.data.frame(x = x[, "value", drop = FALSE],
                                        by = x[, by_dimension, drop = FALSE],
                                        FUN = FUN, ...)

@@ -225,133 +225,113 @@ tabulate_lexis_squares <- function(x) {
         coln_info_x[!coln_info_x$dimension %in% get_all_dimensions_w_spans(),
                     "colname"]
     dim_names_x_span_dims_only <-
-            dims_names_x[dims_names_x %in% get_all_dimensions_w_spans()]
+        dims_names_x[dims_names_x %in% get_all_dimensions_w_spans()]
 
     ## If no age or time then just tabulate sex * indicator
     if (!length(dim_names_x_span_dims_only)) {
         return(table(x[, colnames_x_no_spans]))
-    } else {
 
-        ## Expand using '_spans' ----
+    } else {
 
         span_col_names <- paste0(dim_names_x_span_dims_only, "_span")
         start_col_names <- paste0(dim_names_x_span_dims_only, "_start")
-
+        ## check:
         if (!identical(length(span_col_names), length(start_col_names)))
             stop("Must have '_span' cols for all '_start' cols and vice versa.")
 
-browser()
+        ## if all spans the same then don't need to expand out the Lexis squares
+        if (identical(length(unique(unlist(x[, span_col_names]))), 1L)) {
+            return(table(x[, colnames_x_no_spans]))
 
-        min_span <- min(x[, span_col_names])
+        } else {
 
-        if ("age" %in% dims_names_x) {
-            x$age_span[x$age_span == 1000] <- 1
+            ## Expand using '_spans' ----
+
+            min_span <- min(x[, span_col_names])
+
+            if ("age" %in% dims_names_x) {
+                x$age_span[x$age_span == 1000] <- 1
                                 # ^ TEMP as along as '1000' used to mark
                                 # open ended age group
-            x$age_span <- x$age_span / min_span # scale in case min span != 1
-        }
-        if ("time" %in% dims_names_x) {
-            x$time_span <- x$time_span / min_span
-        }
+                x$age_span <- x$age_span / min_span # scale in case min span != 1
+            }
+            if ("time" %in% dims_names_x) {
+                x$time_span <- x$time_span / min_span
+            }
 
-        non_min_span <-
-            sort(which(x[, span_col_names] != min_span, arr.ind = TRUE)[, 1])
-
-        x_min_span <- x[-non_min_span, ]
-
-        ## test <- by(x[non_min_span, ],
-        ##            x[non_min_span, colnames_x_no_spans],
-        ##            function(z) z){
-        ##     grid_list <- list()
-        ##     if ("age_start" %in% colnames_x_no_spans)
-        ##         grid_list <- c(grid_list,
-        ##                        list(age_start = seq(from = z[,"age_start"],
-        ##                                             length.out = z[,"age_span"],
-        ##                                             by = min_span)))
-        ##     if ("time_start" %in% colnames_x_no_spans)
-        ##         grid_list <- c(grid_list,
-        ##                        list(time_start = seq(from = z[,"time_start"],
-        ##                                              length.out = z[,"time_span"],
-        ##                                              by = min_span)))
-        ##     if ("sex" %in% colnames_x_no_spans)
-        ##         grid_list <- c(grid_list, list(sex = unique(z[, "sex"])))
-        ##     if ("indicator" %in% colnames_x_no_spans)
-        ##         grid_list <- c(grid_list, list(indicator = unique(z[, "indicator"])))
-        ##     expand.grid(grid_list)
-        ## })
-
-
-
-
-        ## grid_list <-
-        ##     lapply(setNames(seq_along(start_col_names), start_col_names),
-        ##            function(i) {
-        ##         l <- Map(function(a, b) seq(from = a, length.out = b, by = min_span),
-        ##                  a = x[, start_col_names[i]], b = x[, span_col_names[i]])
-        ##         return(unlist(l))
-        ##     })
-
-        ## non_span_dims <- setdiff(dims_names_x, dim_names_x_span_dims_only)
-        ## if (length(non_span_dims)) {
-        ##     non_span_dims_colnames <- get_df_col_names_for_dimensions(non_span_dims)
-        ##     grid_list <- c(grid_list,
-        ##                    lapply(setNames(non_span_dims_colnames, non_span_dims_colnames),
-        ##                           function(z) unique(x[, z])))
-
-
-## y <- x[x$age_span != min_span || x$time_span != min_span, ]
-
-##     y <- plyr::ddply(x, coln_x_no_spans, "transform",
-##                      function(z) {
-
-
-
-
-        x <- split(x, x[, colnames_x_no_spans])
-        x <- lapply(x, function(z) {
-            if (all(z[, span_col_names] == min_span)) return(z[, colnames_x_no_spans])
-            else {
-                grid_list <- list()
-                ## 'age', 'time'
-                for (j in seq_along(span_col_names)) {
+            x <- by(x, x[, colnames_x_no_spans], function(z) {
+                if (all(z[, span_col_names] == min_span)) return(z[, colnames_x_no_spans])
+                else {
+                    out_df <- data.frame()
+                    ## if there are multiple rows here it will
+                    ## end up being invalid so check.
                     for (i in seq_len(nrow(z))) {
-                        grid_list <- c(grid_list,
-                                       setNames(list(seq(from = z[i, start_col_names[j]],
-                                                         length.out = z[i, span_col_names[j]],
-                                                         by = min_span)),
-                                                start_col_names[j]))
+                        ## lapply over the dims with spans
+                        grid_list <-
+                            lapply(setNames(seq_along(start_col_names), start_col_names),
+                                   function(j) {
+                                out <- vector(mode = "numeric")
+                                seq(from = z[i, start_col_names[j]],
+                                    length.out = z[i, span_col_names[j]],
+                                    by = min_span)
+                            })
+
+
+                        ## grid_list <- list()
+                        ## ## 'age', 'time'
+                        ## for (j in seq_along(span_col_names)) {
+                        ##     for (i in seq_len(nrow(z))) {
+                        ##         grid_list <- c(grid_list,
+                        ##                        setNames(list(seq(from = z[i, start_col_names[j]],
+                        ##                                          length.out = z[i, span_col_names[j]],
+                        ##                                          by = min_span)),
+                        ##                                 start_col_names[j]))
+                        ##     }
+                        ## }
+                        ## 'sex', 'indicator'
+                        grid_list2 <- list()
+                        for (dn in setdiff(dims_names_x, dim_names_x_span_dims_only)) {
+                            grid_list2 <- c(grid_list2,
+                                            setNames(list(unique(z[i, dn])), dn))
+                        }
+                        grid_list <- c(grid_list, grid_list2)
+                        out_df <- rbind(out_df, expand.grid(grid_list))
                     }
                 }
-                ## if ("age_start" %in% colnames_x_no_spans)
-                ##     if (
-                ##     grid_list <- c(grid_list,
-                ##                    list(age_start = seq(from = z[,"age_start"],
-                ##                                         length.out = z[,"age_span"],
-                ##                                         by = min_span)))
-                ## if ("time_start" %in% colnames_x_no_spans)
-                ##     grid_list <- c(grid_list,
-                ##                    list(time_start = seq(from = z[,"time_start"],
-                ##                                         length.out = z[,"time_span"],
-                ##                                         by = min_span)))
-                for (dn in setdiff(dims_names_x, dim_names_x_span_dims_only)) {
-                    grid_list <- c(grid_list,
-                                   setNames(list(unique(z[, dn])), dn))
-                }
+                return(out_df)
+            })
 
-        ## if ("sex" %in% colnames_x_no_spans)
-        ##     grid_list <- c(grid_list, list(sex = unique(z[, "sex"])))
-        ## if ("indicator" %in% colnames_x_no_spans)
-        ##     grid_list <- c(grid_list, list(indicator = unique(z[, "indicator"])))
-        return(expand.grid(grid_list))
+            ## x <- split(x, x[, colnames_x_no_spans])
+            ## x <- lapply(x, function(z) {
+            ##     if (all(z[, span_col_names] == min_span)) return(z[, colnames_x_no_spans])
+            ##     else {
+            ##         grid_list <- list()
+            ##         ## 'age', 'time'
+            ##         for (j in seq_along(span_col_names)) {
+            ##             for (i in seq_len(nrow(z))) {
+            ##                 grid_list <- c(grid_list,
+            ##                                setNames(list(seq(from = z[i, start_col_names[j]],
+            ##                                                  length.out = z[i, span_col_names[j]],
+            ##                                                  by = min_span)),
+            ##                                         start_col_names[j]))
+            ##             }
+            ##         }
+            ##         ## 'sex', 'indicator'
+            ##         for (dn in setdiff(dims_names_x, dim_names_x_span_dims_only)) {
+            ##             grid_list <- c(grid_list,
+            ##                            setNames(list(unique(z[, dn])), dn))
+            ##         }
+            ##         return(expand.grid(grid_list))
+            ##     }
+            ## })
+            x <- do.call(rbind, x)
+
+            ## Tabulate ----
+
+            return(table(x))
+            }
         }
-    })
-    x <- do.call(rbind, x)
-
-    ## Tabulate ----
-
-        return(table(x))
-        }
-}
+    }
 
 
 ## Get min age within each dimension

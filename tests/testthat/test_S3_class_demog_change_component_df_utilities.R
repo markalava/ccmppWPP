@@ -222,6 +222,9 @@ test_that("non-squareness is caught", {
                      age_span = c(diff(age_start), 1000))
     x <- plyr::ddply(x, c("age_start", "sex"), "transform",
                      time_span = c(diff(time_start), 1))
+    x <- rbind(x,
+               data.frame(age_start = 1, time_start = 1952, sex = "female",
+                          age_span = 4, time_span = 8))
     x <- sort_demog_change_component_df(x)
     rownames(x) <- NULL
 

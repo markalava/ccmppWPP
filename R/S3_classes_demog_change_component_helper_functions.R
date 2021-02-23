@@ -259,12 +259,21 @@ tabulate_lexis_squares <- function(x) {
                 x$time_span <- x$time_span / min_span
             }
 
-            x <- by(x, x[, colnames_x_no_spans], function(z) {
-                if (all(z[, span_col_names] == min_span)) return(z[, colnames_x_no_spans])
-                else {
-                    out_df <- data.frame()
-                    ## if there are multiple rows here it will
+            ## This is *slow*... needs speeding up! plyr::ddplyr shaves
+            ## off about 8% user time relative to base::by. Would using
+            ## '.parallel = TRUE' help?
+
+            ## x <- by(x, x[, colnames_x_no_spans], function(z) {
+            x <- plyr::ddply(x, colnames_x_no_spans, function(z) {
+                if (all(z[, span_col_names] == min_span)) {
+                    ## Don't need to expand anything
+                    return(z[, colnames_x_no_spans])
+                } else {
+                    ## Will need to expand using the spans.
+
+                    ## If there are multiple rows here it will
                     ## end up being invalid so check.
+                    out_df <- data.frame()
                     for (i in seq_len(nrow(z))) {
                         ## lapply over the dims with spans
                         grid_list <-
@@ -275,20 +284,6 @@ tabulate_lexis_squares <- function(x) {
                                     length.out = z[i, span_col_names[j]],
                                     by = min_span)
                             })
-
-
-                        ## grid_list <- list()
-                        ## ## 'age', 'time'
-                        ## for (j in seq_along(span_col_names)) {
-                        ##     for (i in seq_len(nrow(z))) {
-                        ##         grid_list <- c(grid_list,
-                        ##                        setNames(list(seq(from = z[i, start_col_names[j]],
-                        ##                                          length.out = z[i, span_col_names[j]],
-                        ##                                          by = min_span)),
-                        ##                                 start_col_names[j]))
-                        ##     }
-                        ## }
-                        ## 'sex', 'indicator'
                         grid_list2 <- list()
                         for (dn in setdiff(dims_names_x, dim_names_x_span_dims_only)) {
                             grid_list2 <- c(grid_list2,
@@ -300,31 +295,8 @@ tabulate_lexis_squares <- function(x) {
                 }
                 return(out_df)
             })
-
-            ## x <- split(x, x[, colnames_x_no_spans])
-            ## x <- lapply(x, function(z) {
-            ##     if (all(z[, span_col_names] == min_span)) return(z[, colnames_x_no_spans])
-            ##     else {
-            ##         grid_list <- list()
-            ##         ## 'age', 'time'
-            ##         for (j in seq_along(span_col_names)) {
-            ##             for (i in seq_len(nrow(z))) {
-            ##                 grid_list <- c(grid_list,
-            ##                                setNames(list(seq(from = z[i, start_col_names[j]],
-            ##                                                  length.out = z[i, span_col_names[j]],
-            ##                                                  by = min_span)),
-            ##                                         start_col_names[j]))
-            ##             }
-            ##         }
-            ##         ## 'sex', 'indicator'
-            ##         for (dn in setdiff(dims_names_x, dim_names_x_span_dims_only)) {
-            ##             grid_list <- c(grid_list,
-            ##                            setNames(list(unique(z[, dn])), dn))
-            ##         }
-            ##         return(expand.grid(grid_list))
-            ##     }
-            ## })
-            x <- do.call(rbind, x)
+            ##x <- do.call(rbind, x)
+                         # ^ goes with the base::by version
 
             ## Tabulate ----
 

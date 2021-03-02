@@ -211,14 +211,6 @@ test_that("dimensions are correctly detected", {
 })
 
 
-test_that("inconsistency between '_start' and '_span' columns is caught", {
-    x <- S3_demog_change_component_time_age_sex_test_df
-    x[1, "time_span"] <- 5
-    expect_error(ccmpp_input_df(x, dimensions = c("time", "age", "sex")),
-                 "Not a valid 'ccmpp_input_df' object")
-})
-
-
 test_that("non-squareness is caught", {
     x <- S3_demog_change_component_time_age_sex_test_df
 

@@ -206,67 +206,67 @@ test_that("non-squareness is caught", {
                  "does not have exactly one 'value'")
 
 
-    grid <- expand.grid(age_start = seq(from = min(x$age_start),
-                                        to = max(x$age_start),
-                                        by = min_span),
-                        time_start = seq(from = min(x$time_start),
-                                        to = max(x$time_start),
-                                        by = min_span),
-                        stringsAsFactors = FALSE)
+    ## grid <- expand.grid(age_start = seq(from = min(x$age_start),
+    ##                                     to = max(x$age_start),
+    ##                                     by = min_span),
+    ##                     time_start = seq(from = min(x$time_start),
+    ##                                     to = max(x$time_start),
+    ##                                     by = min_span),
+    ##                     stringsAsFactors = FALSE)
 
 
-    x <- expand.grid(age_start = c(0, 1, 5, 10), time_start = c(1950:1952, 1960),
-                     sex = c("male", "female"),
-                        stringsAsFactors = FALSE)
-    x <- plyr::ddply(x, c("time_start", "sex"), "transform",
-                     age_span = c(diff(age_start), 1000))
-    x <- plyr::ddply(x, c("age_start", "sex"), "transform",
-                     time_span = c(diff(time_start), 1))
-    x <- rbind(x,
-               data.frame(age_start = 1, time_start = 1952, sex = "female",
-                          age_span = 4, time_span = 8))
-    x <- sort_demog_change_component_df(x)
-    rownames(x) <- NULL
+    ## x <- expand.grid(age_start = c(0, 1, 5, 10), time_start = c(1950:1952, 1960),
+    ##                  sex = c("male", "female"),
+    ##                     stringsAsFactors = FALSE)
+    ## x <- plyr::ddply(x, c("time_start", "sex"), "transform",
+    ##                  age_span = c(diff(age_start), 1000))
+    ## x <- plyr::ddply(x, c("age_start", "sex"), "transform",
+    ##                  time_span = c(diff(time_start), 1))
+    ## x <- rbind(x,
+    ##            data.frame(age_start = 1, time_start = 1952, sex = "female",
+    ##                       age_span = 4, time_span = 8))
+    ## x <- sort_demog_change_component_df(x)
+    ## rownames(x) <- NULL
 
-    min_span <- min(c(x$age_span, x$time_span))
-    x$age_span_2 <- x$age_span
-    x$age_span_2[x$age_span_2 == 1000] <- 1
-    x$age_span_scaled <- x$age_span_2 / min_span
-    x$time_span_scaled <- x$time_span / min_span
-
-
-    test <- split(x, x[, c("age_start", "time_start")])
-    test <- lapply(test, function(z) {
-        ## if cols exist
-        expand.grid(age_start = seq(from = z[,"age_start"],
-                                            length.out = z[,"age_span_scaled"],
-                                    by = min_span),
-                    time_start = seq(from = z[,"time_start"],
-                                            length.out = z[,"time_span_scaled"],
-                                     by = min_span))
-    })
-    test <- do.call(rbind, test)
+    ## min_span <- min(c(x$age_span, x$time_span))
+    ## x$age_span_2 <- x$age_span
+    ## x$age_span_2[x$age_span_2 == 1000] <- 1
+    ## x$age_span_scaled <- x$age_span_2 / min_span
+    ## x$time_span_scaled <- x$time_span / min_span
 
 
-    all_age_sqares <-
-        unname(unlist(apply(x, 1,
-                            function(z) seq(from = z["age_start"],
-                                            length.out = z["age_span_scaled"],
-                                            by = min_span))))
-        all_time_sqares <-
-        unname(unlist(apply(x, 1,
-                            function(z) seq(from = z["time_start"],
-                                            length.out = z["time_span_scaled"],
-                                            by = min_span))))
+    ## test <- split(x, x[, c("age_start", "time_start")])
+    ## test <- lapply(test, function(z) {
+    ##     ## if cols exist
+    ##     expand.grid(age_start = seq(from = z[,"age_start"],
+    ##                                         length.out = z[,"age_span_scaled"],
+    ##                                 by = min_span),
+    ##                 time_start = seq(from = z[,"time_start"],
+    ##                                         length.out = z[,"time_span_scaled"],
+    ##                                  by = min_span))
+    ## })
+    ## test <- do.call(rbind, test)
+
+
+    ## all_age_sqares <-
+    ##     unname(unlist(apply(x, 1,
+    ##                         function(z) seq(from = z["age_start"],
+    ##                                         length.out = z["age_span_scaled"],
+    ##                                         by = min_span))))
+    ##     all_time_sqares <-
+    ##     unname(unlist(apply(x, 1,
+    ##                         function(z) seq(from = z["time_start"],
+    ##                                         length.out = z["time_span_scaled"],
+    ##                                         by = min_span))))
 
 
 
-        grid <- expand.grid(age_start = seq(from = min(x$age_start),
-                                        to = max(x$age_start),
-                                        by = min_span),
-                        time_start = seq(from = min(x$time_start),
-                                        to = max(x$time_start),
-                                        by = min_span))
+    ##     grid <- expand.grid(age_start = seq(from = min(x$age_start),
+    ##                                     to = max(x$age_start),
+    ##                                     by = min_span),
+    ##                     time_start = seq(from = min(x$time_start),
+    ##                                     to = max(x$time_start),
+    ##                                     by = min_span))
 
 })
 

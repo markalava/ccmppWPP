@@ -25,7 +25,7 @@ This is a generic function with methods for the various sub-classes
 of \code{ccmpp_input_df}. Valid objects inheriting from
 \code{ccmpp_input_df} have a common value for \dQuote{age_span} and
 \dQuote{time_span}. This function provides a way of coherently
-chaning this value, ensuring that the result is still a valid
+changing this value, ensuring that the result is still a valid
 member of its class.
 }
 \author{

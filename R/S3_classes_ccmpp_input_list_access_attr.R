@@ -106,7 +106,7 @@ value_scale.ccmpp_input_list <- function(x) {
 #' Access the \code{ccmpp_input_df} components of a list
 #'
 #' These functions extract the \code{ccmpp_input_df} elements from an object
-#' inheriting from \code{list}.
+#' inheriting from \code{ccmpp_input_list}.
 #'
 #' @param x An object of class \code{ccmpp_input_list}
 #' @return An object inheriting from \code{ccmpp_input_df}.

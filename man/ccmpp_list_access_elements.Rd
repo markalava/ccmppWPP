@@ -180,7 +180,7 @@ An object inheriting from \code{ccmpp_input_df}.
 }
 \description{
 These functions extract the \code{ccmpp_input_df} elements from an object
-inheriting from \code{list}.
+inheriting from \code{ccmpp_input_list}.
 }
 \author{
 Mark Wheldon

@@ -19,7 +19,7 @@
 \arguments{
 \item{x}{object of class \code{data.frame}.}
 
-\item{...}{optional arguments to \code{print} methods.}
+\item{...}{optional arguments to \code{print} or \code{plot} methods.}
 
 \item{digits}{the minimum number of significant digits to be used: see
     \code{\link[base]{print.default}}.}

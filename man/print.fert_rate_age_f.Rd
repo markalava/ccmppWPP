@@ -19,7 +19,7 @@
 \arguments{
 \item{x}{object of class \code{data.frame}.}
 
-\item{...}{optional arguments to \code{print} methods.}
+\item{...}{optional arguments to \code{print} or \code{plot} methods.}
 
 \item{n}{Integer controlling how many rows of \code{x} are
 printed. Passed to \code{link{head}}; see the documentation of

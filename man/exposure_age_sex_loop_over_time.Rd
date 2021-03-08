@@ -2,7 +2,7 @@
 % Please edit documentation in R/exposure_helper_functions.R
 \name{exposure_age_sex_loop_over_time}
 \alias{exposure_age_sex_loop_over_time}
-\title{Loop over time to compute age-specific person years of exposure}
+\title{Loop over time to approximate age-specific person years of exposure}
 \usage{
 exposure_age_sex_loop_over_time(pop, mig_assumption, mig)
 }

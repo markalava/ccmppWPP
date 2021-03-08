@@ -19,7 +19,7 @@
 \arguments{
 \item{x}{An object of class \code{demog_change_component_df}.}
 
-\item{...}{optional arguments to \code{print} methods.}
+\item{...}{optional arguments to \code{print} or \code{plot} methods.}
 
 \item{n}{Integer controlling how many rows of \code{x} are
 printed. Passed to \code{link{head}}; see the documentation of

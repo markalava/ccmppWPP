@@ -58,7 +58,8 @@ and \code{value_type} return lists, with one element per element of
 }
 \seealso{
 Other extract_attributes: 
-\code{\link{age_span}()}
+\code{\link{age_span}()},
+\code{\link{value_scale}()}
 }
 \author{
 Mark Wheldon

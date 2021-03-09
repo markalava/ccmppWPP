@@ -264,13 +264,13 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
   srb <- birth_reg %>% 
     # keep sex-specific births direct from VR (no adjustment)
     filter(SexID %in% c(1,2) & DataTypeName == "Direct") %>% 
-    select(DataSourceName,DataSourceYear, DataStatusName,DataTypeName,TimeStart,TimeMid,SexName,DataValue) %>% 
+    select(DataSourceYear,TimeStart,TimeMid,SexName,DataValue) %>% 
     # if there is more than one record per sex and TimeMid, then keep the one with the latest DataSourceYear
-    group_by(DataSourceName,DataStatusName,DataTypeName,TimeStart,TimeMid,SexName) %>% 
-    mutate(nrecords = length(DataValue),
-           latestDataSourceYear = max(DataSourceYear)) %>% 
+    group_by(TimeStart,TimeMid,SexName) %>% 
+    mutate(latestDataSourceYear = max(DataSourceYear)) %>% 
     ungroup() %>% 
-    filter(nrecords == 1 | DataSourceYear == latestDataSourceYear) %>% 
+    filter(DataSourceYear == latestDataSourceYear) %>% 
+    distinct() %>% 
     # transform into standard srb data frame needed for inputs
     spread(SexName, DataValue) %>% 
     mutate(time_start = floor(TimeMid),

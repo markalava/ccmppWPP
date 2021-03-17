@@ -19,10 +19,6 @@ new_ccmpp_input_df(
 \item{dimensions}{Character vector listing the dimensions such as
 \dQuote{time}, \dQuote{age}, \dQuote{sex}.}
 
-\item{age_span}{Scalar indicating the span of the age groups.}
-
-\item{time_span}{Scalar indicating the span of the time periods.}
-
 \item{value_type}{Scalar indicating the type of the \dQuote{value}
 column (e.g., \dQuote{count}, \dQuote{rate}, etc.).}
 

@@ -45,8 +45,6 @@
 #'
 #' @seealso demog_change_component_df
 #'
-#' @param age_span Scalar indicating the span of the age groups.
-#' @param time_span Scalar indicating the span of the time periods.
 #' @param value_scale \emph{Numeric} scalar indicating the value_scale of the
 #'     counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.
 #' @param dimensions Character vector listing the dimensions such as
@@ -159,7 +157,7 @@ prepare_df_for_demog_change_component_df <- function(x,
     if ("time" %in% dimensions) {
         if ("time_span" %in% coln_x) time_span_undefined <- FALSE
         else {
-            diff_x <- diff(unique(x$time_start))[1]
+            diff_x <- guess_span_for_dimension_for_df(x, "time")
             if (!(is.numeric(diff_x) & is.finite(diff_x))) {
                 time_span_undefined <- TRUE
             } else {
@@ -175,7 +173,7 @@ prepare_df_for_demog_change_component_df <- function(x,
     if ("age" %in% dimensions) {
         if ("age_span" %in% coln_x) age_span_undefined <- FALSE
         else {
-            diff_x <- diff(unique(x$age_start))[1]
+            diff_x <- guess_span_for_dimension_for_df(x, "age")
             if (!(is.numeric(diff_x) & is.finite(diff_x))) {
                 age_span_undefined <- TRUE
             } else {

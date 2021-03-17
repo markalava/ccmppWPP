@@ -89,7 +89,7 @@ subset_time.demog_change_component_df <- function(x, times, include = TRUE, drop
     }
 
     x <- x[time_x, ]
-    if (identical(length(times), 1L) && drop) {
+    if (identical(length(unique(x[[time_col_name]])), 1L) && drop) {
         x <- x[, -which(colnames(x) == get_df_col_names_for_dimensions(dimensions = "time", spans = FALSE))]
         attr(x, "dimensions") <- attr(x, "dimensions")[attr(x, "dimensions") != "time"]
         }
@@ -140,7 +140,7 @@ subset_age.demog_change_component_df <- function(x, ages, include = TRUE, drop =
     }
 
     x <- x[age_x, ]
-    if (identical(length(ages), 1L) && drop) {
+    if (identical(length(unique(x[[age_col_name]])), 1L) && drop) {
         x <- x[, -which(colnames(x) == get_df_col_names_for_dimensions(dimensions = "age", spans = FALSE))]
         attr(x, "dimensions") <- attr(x, "dimensions")[attr(x, "dimensions") != "age"]
         }
@@ -179,7 +179,7 @@ subset_sex.demog_change_component_df <-
         }
 
         x <- x[sex_x, ]
-        if (identical(length(sexes), 1L) && drop) {
+        if (identical(length(unique(x[[sex_col_name]])), 1L) && drop) {
             x <- x[, -which(colnames(x) == get_df_col_names_for_dimensions(dimensions = "sex", spans = FALSE))]
             attr(x, "dimensions") <- attr(x, "dimensions")[attr(x, "dimensions") != "sex"]
             }
@@ -217,7 +217,7 @@ subset_indicator.demog_change_component_df <-
         }
 
         x <- x[indicator_x, ]
-        if (identical(length(indicators), 1L) && drop) {
+        if (identical(length(unique(x[[indicator_col_name]])), 1L) && drop) {
             x <- x[, -which(colnames(x) == get_df_col_names_for_dimensions(dimensions = "indicator", spans = FALSE))]
             attr(x, "dimensions") <- attr(x, "dimensions")[attr(x, "dimensions") != "indicator"]
         }

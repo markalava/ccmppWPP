@@ -17,10 +17,6 @@ new_mortality_rate_age_sex(
 )
 }
 \arguments{
-\item{age_span}{Scalar indicating the span of the age groups.}
-
-\item{time_span}{Scalar indicating the span of the time periods.}
-
 \item{dimensions}{Character vector listing the dimensions such as
 \dQuote{time}, \dQuote{age}, \dQuote{sex}.}
 

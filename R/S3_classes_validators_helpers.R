@@ -3,7 +3,7 @@
 ## to the class of the object.
 
 not_a_valid_object_msg <- function(class, ...) {
-    paste0("Not a valid '", class, "' object:\n", ...)
+    paste0("Not a valid '", class, "' object:\n", ..., "\n")
 }
 
 ## Unusual values

@@ -18,10 +18,6 @@ new_ccmpp_input_list(
 columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
 \dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.}
 
-\item{age_span}{Scalar indicating the span of the age groups.}
-
-\item{time_span}{Scalar indicating the span of the time periods.}
-
 \item{...}{Passed to the low-level constructor.}
 }
 \value{

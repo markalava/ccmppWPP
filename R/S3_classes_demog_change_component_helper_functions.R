@@ -35,7 +35,7 @@ get_all_allowed_dimensions <- function() {
     c("indicator", "time", "sex", "age")
 }
 
-## Attributes with corresponding '_span' !!! should be 'dimensions'
+## Dimensions with corresponding '_span'
 get_all_dimensions_w_spans <- function() {
     c("time", "age")
 }
@@ -123,17 +123,54 @@ get_all_req_col_types_for_dimensions <- function(dimensions) {
     c(subset_master_df_of_dimensions_colnames_coltypes(dimensions = dimensions)$type, "any")
 }
 
-## Get the column name in a data frame corresponding to the given
-## dimensions (as in 'get_df_col_info_for_dimensions()')
+## Get the column names in a data frame corresponding to the given
+## dimensions. Includes span but excludes value.
 get_df_col_names_for_dimensions <- function(...) {
     subset_master_df_of_dimensions_colnames_coltypes(...)$colname
 }
 
-###-----------------------------------------------------------------------------
-### * Sexes
-
+## Sexes
 get_all_allowed_sexes <- function() {
     c("female", "male", "both")
+}
+
+## Guess spans.
+
+#' Guess the \dQuote{span} for a demographic dimension
+#'
+#' Certain demographic dimensions, such as \dQuote{time} and
+#' \dQuote{age} have associated spans. These should ordinarily be
+#' supplied by the user when calling, e.g.,
+#' \code{\link{demog_change_component_df}}, but a very simple guess
+#' will be attempted if not. Currently, the smallest difference
+#' between successive values in the corresponding
+#' \dQuote{\code{_start}} column is
+#' returned. \code{guess_span_from_start} takes a
+#' vector of \dQuote{\code{_start}} values as first argument;
+#' \code{guess_span_for_dimension_for_df} is a convenience wrapper
+#' that takes a data frame with such a column instead.
+#'
+#' @param x Vector of \dQuote{start} values (e.g., the
+#'     \code{time_start} or \code{age_start} column from a
+#'     \code{\link{demog_change_component_df}} object).
+#' @param dimension A single demographic dimension with a
+#'     \dQuote{span} (e.g., \dQuote{age}, \dQuote{time}).
+#' @return Guessed span.
+#' @author Mark Wheldon
+#' @name guess_span_for_dimension
+#' @export
+guess_span_from_start <- function(x) {
+    min(diff(unique(as.numeric(x)), differences = 1))
+}
+
+#' @rdname guess_span_for_dimension
+#' @export
+guess_span_for_dimension_for_df <- function(x, dimension = get_all_dimensions_w_spans()) {
+    dimension <- match.arg(dimension, several.ok = FALSE)
+    start_col_name <- grep("_start",
+                           get_df_col_names_for_dimensions(dimension),
+                           value = TRUE)
+    guess_span_from_start(x = x[, start_col_name])
     }
 
 ###-----------------------------------------------------------------------------
@@ -212,7 +249,6 @@ sort_demog_change_component_df <- function(x) {
 
     return(x[do.call("order", sort_factors), ])
 }
-
 
 ## Tabulate Lexis squares.
 tabulate_lexis_squares <- function(x) {

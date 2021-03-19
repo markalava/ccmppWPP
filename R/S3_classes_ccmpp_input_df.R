@@ -81,7 +81,7 @@ ccmpp_input_df <-
                 value_scale = value_scale)
 
         ## Create/Validate
-        validate_ccmpp_object(
+        validate_ccmppWPP_object(
             new_ccmpp_input_df(li$df,
                                dimensions = li$dimensions,
                                age_span = li$age_span,
@@ -142,7 +142,7 @@ as_ccmpp_input_df.ccmpp_input_df <- function(x, ...) {
     i <- match("ccmpp_input_df", cl)
     if (i > 1L)
         class(x) <- cl[-(1L:(i - 1L))]
-    return(validate_ccmpp_object(x))
+    return(validate_ccmppWPP_object(x))
 }
 
 #' @rdname coerce_ccmpp_input_df

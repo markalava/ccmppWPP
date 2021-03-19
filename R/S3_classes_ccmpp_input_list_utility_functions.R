@@ -14,7 +14,7 @@
 #'
 #' If the object returned after subsetting is a valid member of the
 #' original class it will be returned (valid according to
-#' \code{\link{validate_ccmpp_object}}). If it is not valid an error
+#' \code{\link{validate_ccmppWPP_object}}). If it is not valid an error
 #' will be signalled and nothing is returned.
 #'
 #' @section Note:

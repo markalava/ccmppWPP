@@ -19,7 +19,7 @@ test_that("Non-zero age detected", {
                                                value_scale = 1,
                                      age_span = age_span(y),
                                      time_span = time_span(y))
-    expect_error(validate_ccmpp_object(z),
+    expect_error(validate_ccmppWPP_object(z),
                  "'age_start' does not start at '0'")
 })
 
@@ -31,7 +31,7 @@ test_that("More than one time period detected", {
                                                value_scale = 1,
                                      time_span = time_span(y),
                                      age_span = age_span(y))
-    expect_error(validate_ccmpp_object(z),
+    expect_error(validate_ccmppWPP_object(z),
                  "has more than one unique value")
     })
 

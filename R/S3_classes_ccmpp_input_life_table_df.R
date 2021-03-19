@@ -62,7 +62,7 @@ new_life_table_age_sex <-
 #' \code{life_table_age_sex} is the \emph{radix} of the life table.
 #'
 #' @family ccmpp_input_objects
-#' @seealso \code{\link{validate_ccmpp_object}} for object validation,
+#' @seealso \code{\link{validate_ccmppWPP_object}} for object validation,
 #'     \code{\link{ccmpp_input_df}} for the class from which this one
 #'     inherits.
 #'
@@ -83,7 +83,7 @@ life_table_age_sex <-
         if (is.null(attr(x, "value_scale"))) li$value_scale <- get_life_table_radix_from_li(li)
 
         ## Create/Validate
-        validate_ccmpp_object(
+        validate_ccmppWPP_object(
             new_life_table_age_sex(li$df,
                                age_span = li$age_span,
                                time_span = li$time_span,
@@ -138,7 +138,7 @@ as_life_table_age_sex.life_table_age_sex <- function(x, ...) {
     i <- match("life_table_age_sex", cl)
     if (i > 1L)
         class(x) <- cl[-(1L:(i - 1L))]
-    return(validate_ccmpp_object(x))
+    return(validate_ccmppWPP_object(x))
 }
 
 #' @rdname coerce_life_table_age_sex

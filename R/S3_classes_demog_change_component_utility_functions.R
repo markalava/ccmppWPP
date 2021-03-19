@@ -11,7 +11,7 @@
 #' = TRUE}, otherwise it is retained (default). If the object returned
 #' after subsetting is a valid member of the original class it will be
 #' returned (valid according to
-#' \code{\link{validate_ccmpp_object}}). If it is not valid an error
+#' \code{\link{validate_ccmppWPP_object}}). If it is not valid an error
 #' will be signalled and nothing is returned.
 #'
 #' For \code{subset_times} and \code{subset_ages} rows can be excluded
@@ -649,7 +649,7 @@ abridge.demog_change_component_df <- function(x,
             validate_tryout <- TRUE
             value_scale(tryout) <- value_scale_x
         }
-        if (validate_tryout) tryout <- validate_ccmpp_object(tryout)
+        if (validate_tryout) tryout <- validate_ccmppWPP_object(tryout)
 
         return(tryout)
     }

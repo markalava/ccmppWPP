@@ -1,6 +1,6 @@
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.ccmpp_output_df <- function(x, ...) {
+validate_ccmppWPP_object.ccmpp_output_df <- function(x, ...) {
 
     ## BASE CHECKS:
     ## Run the inherited checks
@@ -73,9 +73,9 @@ validate_ccmpp_object.ccmpp_output_df <- function(x, ...) {
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.pop_count_age_sex <- function(x, ...) {
+validate_ccmppWPP_object.pop_count_age_sex <- function(x, ...) {
 
     ## BASE CHECKS:
     ## Run the inherited checks

@@ -1,6 +1,6 @@
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.ccmpp_input_df <- function(x, ...) {
+validate_ccmppWPP_object.ccmpp_input_df <- function(x, ...) {
 
     ## BASE CHECKS:
     ## Run the inherited checks
@@ -117,9 +117,9 @@ validate_ccmpp_object.ccmpp_input_df <- function(x, ...) {
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.fert_rate_age_f <- function(x, ...) {
+validate_ccmppWPP_object.fert_rate_age_f <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -159,9 +159,9 @@ validate_ccmpp_object.fert_rate_age_f <- function(x, ...) {
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.survival_ratio_age_sex <- function(x, check_sex_equality_by_time = FALSE, ...) {
+validate_ccmppWPP_object.survival_ratio_age_sex <- function(x, check_sex_equality_by_time = FALSE, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -194,9 +194,9 @@ validate_ccmpp_object.survival_ratio_age_sex <- function(x, check_sex_equality_b
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.mortality_rate_age_sex <- function(x, check_sex_equality_by_time = FALSE, ...) {
+validate_ccmppWPP_object.mortality_rate_age_sex <- function(x, check_sex_equality_by_time = FALSE, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -229,9 +229,9 @@ validate_ccmpp_object.mortality_rate_age_sex <- function(x, check_sex_equality_b
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.death_probability_age_sex <- function(x, check_sex_equality_by_time = FALSE, ...) {
+validate_ccmppWPP_object.death_probability_age_sex <- function(x, check_sex_equality_by_time = FALSE, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -264,9 +264,9 @@ validate_ccmpp_object.death_probability_age_sex <- function(x, check_sex_equalit
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.death_count_age_sex <- function(x, check_sex_equality_by_time = FALSE, ...) {
+validate_ccmppWPP_object.death_count_age_sex <- function(x, check_sex_equality_by_time = FALSE, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -299,9 +299,9 @@ validate_ccmpp_object.death_count_age_sex <- function(x, check_sex_equality_by_t
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.pop_count_age_sex_base <- function(x, check_sex_equality_by_time = FALSE, ...) {
+validate_ccmppWPP_object.pop_count_age_sex_base <- function(x, check_sex_equality_by_time = FALSE, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -342,9 +342,9 @@ validate_ccmpp_object.pop_count_age_sex_base <- function(x, check_sex_equality_b
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.srb <- function(x, ...) {
+validate_ccmppWPP_object.srb <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -367,9 +367,9 @@ validate_ccmpp_object.srb <- function(x, ...) {
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.mig_net_rate_age_sex <- function(x, ...) {
+validate_ccmppWPP_object.mig_net_rate_age_sex <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -392,9 +392,9 @@ validate_ccmpp_object.mig_net_rate_age_sex <- function(x, ...) {
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.mig_net_count_age_sex <- function(x, ...) {
+validate_ccmppWPP_object.mig_net_count_age_sex <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -417,9 +417,9 @@ validate_ccmpp_object.mig_net_count_age_sex <- function(x, ...) {
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.mig_net_count_tot_b <- function(x, ...) {
+validate_ccmppWPP_object.mig_net_count_tot_b <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -444,9 +444,9 @@ validate_ccmpp_object.mig_net_count_tot_b <- function(x, ...) {
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.mig_net_prop_age_sex <- function(x, ...) {
+validate_ccmppWPP_object.mig_net_prop_age_sex <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -475,9 +475,9 @@ validate_ccmpp_object.mig_net_prop_age_sex <- function(x, ...) {
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.mig_parameter <- function(x, ...) {
+validate_ccmppWPP_object.mig_parameter <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -513,9 +513,9 @@ validate_ccmpp_object.mig_parameter <- function(x, ...) {
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.life_table_age_sex <- function(x, check_sex_equality_by_time, ...) {
+validate_ccmppWPP_object.life_table_age_sex <- function(x, check_sex_equality_by_time, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -579,9 +579,9 @@ validate_ccmpp_object.life_table_age_sex <- function(x, check_sex_equality_by_ti
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.ccmpp_input_list <- function(x, .validate_elements = TRUE, ...) {
+validate_ccmppWPP_object.ccmpp_input_list <- function(x, .validate_elements = TRUE, ...) {
 
     req_el_names <- get_all_required_ccmpp_input_list_element_names()
     req_el_classes <- get_all_required_ccmpp_input_list_element_classes()
@@ -618,7 +618,7 @@ validate_ccmpp_object.ccmpp_input_list <- function(x, .validate_elements = TRUE,
 
         ## Validate objects
         if (.validate_elements) {
-            test <- tryCatch(validate_ccmpp_object(x[[df_nm]]))
+            test <- tryCatch(validate_ccmppWPP_object(x[[df_nm]]))
             if (identical(class(test), "try-error"))
                 stop(not_a_valid_object_msg("ccmpp_input_list",
                                             df_nm, ":\n", strsplit(c(test), " : ")[[1]][2]))

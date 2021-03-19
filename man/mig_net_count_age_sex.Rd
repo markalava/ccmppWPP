@@ -47,7 +47,7 @@ counts, matched by age, sex, and time. Unlike
 valid element of \code{ccmpp_input_list}s.
 }
 \seealso{
-\code{\link{validate_ccmpp_object}} for object validation,
+\code{\link{validate_ccmppWPP_object}} for object validation,
     \code{\link{ccmpp_input_df}} for the class from which this one
     inherits.
 

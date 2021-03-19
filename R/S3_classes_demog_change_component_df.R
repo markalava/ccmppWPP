@@ -268,7 +268,7 @@ prepare_df_for_demog_change_component_df <- function(x,
 #' \item{\code{is_demog_change_component_df}}{Tests if its
 #' argument is a \code{demog_change_component_df}. \emph{Note:} This only checks
 #' inheritance (via \code{\link{base::inherits}}), not validity. To
-#' validate an object use \code{\link{validate_ccmpp_object}}.}
+#' validate an object use \code{\link{validate_ccmppWPP_object}}.}
 #'
 #' \code{demog_change_component_df} is the
 #' parent class of a family of classes for holding age- time-specific
@@ -346,7 +346,7 @@ demog_change_component_df <-
                 value_scale = value_scale)
 
         ## Create/Validate
-        validate_ccmpp_object(
+        validate_ccmppWPP_object(
             new_demog_change_component_df(li$df,
                               dimensions = li$dimensions,
                               ## age_span = (if (is.null(age_span)) double() else age_span),
@@ -438,7 +438,7 @@ as_demog_change_component_df.demog_change_component_df <- function(x, ...) {
     i <- match("demog_change_component_df", cl)
     if (i > 1L)
         class(x) <- cl[-(1L:(i - 1L))]
-    return(validate_ccmpp_object(x))
+    return(validate_ccmppWPP_object(x))
 }
 
 #' @rdname coerce_demog_change_component_df

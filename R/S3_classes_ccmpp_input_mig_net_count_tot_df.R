@@ -42,7 +42,7 @@ new_mig_net_count_tot_b <-
 #'   \item{Within year and sex, age must start at 0.}}
 #'
 #' @family ccmpp_input_objects
-#' @seealso \code{\link{validate_ccmpp_object}} for object validation,
+#' @seealso \code{\link{validate_ccmppWPP_object}} for object validation,
 #'     \code{\link{ccmpp_input_df}} for the class from which this one
 #'     inherits.
 #'
@@ -59,7 +59,7 @@ mig_net_count_tot_b <-
                             value_type = get_value_types_for_ccmpp_in_out_classes("mig_net_count_tot_b"),
                             value_scale = value_scale)
         ## Create/Validate
-        validate_ccmpp_object(
+        validate_ccmppWPP_object(
             new_mig_net_count_tot_b(li$df,
                                     time_span = li$time_span,
                                     value_scale = li$value_scale)
@@ -113,7 +113,7 @@ as_mig_net_count_tot_b.mig_net_count_tot_b <- function(x, ...) {
     i <- match("mig_net_count_tot_b", cl)
     if (i > 1L)
         class(x) <- cl[-(1L:(i - 1L))]
-    return(validate_ccmpp_object(x))
+    return(validate_ccmppWPP_object(x))
 }
 
 #' @rdname coerce_mig_net_count_tot_b

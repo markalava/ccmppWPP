@@ -200,7 +200,7 @@ value_type.demog_change_component_df <- function(x) {
             S3_class_message("Setting 'value_scale' to 'NA'.")
         }
     }
-    validate_ccmpp_object(x)
+    validate_ccmppWPP_object(x)
 }
 
 

@@ -42,7 +42,7 @@ new_srb <-
 #'   \item{There can be no 'sex' dimension.}}
 #'
 #' @family ccmpp_input_objects
-#' @seealso \code{\link{validate_ccmpp_object}} for object validation,
+#' @seealso \code{\link{validate_ccmppWPP_object}} for object validation,
 #'     \code{\link{ccmpp_input_df}} for the class from which this one
 #'     inherits.
 #'
@@ -60,7 +60,7 @@ srb <-
                             value_scale = NA)
 
         ## Create/Validate
-        validate_ccmpp_object(
+        validate_ccmppWPP_object(
             new_srb(li$df,
                     time_span = li$time_span,
                     value_scale = NA)
@@ -114,7 +114,7 @@ as_srb.srb <- function(x, ...) {
     i <- match("srb", cl)
     if (i > 1L)
         class(x) <- cl[-(1L:(i - 1L))]
-    return(validate_ccmpp_object(x))
+    return(validate_ccmppWPP_object(x))
 }
 
 #' @rdname coerce_srb

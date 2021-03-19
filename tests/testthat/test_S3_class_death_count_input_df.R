@@ -37,7 +37,7 @@ test_that("Non-zero age detected", {
                                      age_span = age_span(death_count_age_sex(y)),
                                      time_span = time_span(death_count_age_sex(y)),
                                      value_scale = 1)
-    expect_error(validate_ccmpp_object(z),
+    expect_error(validate_ccmppWPP_object(z),
                  "'age_start' does not start at '0'")
 })
 

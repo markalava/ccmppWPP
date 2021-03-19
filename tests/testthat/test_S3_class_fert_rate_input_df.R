@@ -87,7 +87,7 @@ test_that("superfluous columns are caught", {
                                "source")], value_scale = 1,
                              age_span = 1, time_span = 1)
     expect_error(## Fail: Catches the extra column
-        validate_ccmpp_object(y),
+        validate_ccmppWPP_object(y),
         "has superfluous columns. The following are not permitted: 'source'")
 })
 
@@ -124,7 +124,7 @@ test_that("sorting is handled properly", {
     expect_identical(z$sex, x$sex)
 
     ## Should fail
-    validate_ccmpp_object(z)
+    validate_ccmppWPP_object(z)
 
 })
 
@@ -138,7 +138,7 @@ test_that("erroneous sex dimension detected", {
                  "that correspond to dimensions")
 
     attr(z, "dimensions") <- unique(c(attr(z, "dimensions"), "sex"))
-    expect_error(validate_ccmpp_object(z),
+    expect_error(validate_ccmppWPP_object(z),
                  "must have dimensions")
 
     expect_false("sex" %in% colnames(fert_rate_age_f(z)))
@@ -160,7 +160,7 @@ test_that("indicator dimension detected", {
                                 non_zero_fert_ages = non_zero_fert_ages(y))
     attr(z, "dimensions") <- unique(c(attr(z, "dimensions"), "indicator"))
 
-    expect_error(validate_ccmpp_object(z),
+    expect_error(validate_ccmppWPP_object(z),
                  "must have dimensions")
 
     expect_false("indicator" %in% colnames(fert_rate_age_f(z)))
@@ -199,7 +199,7 @@ test_that("zero fertility rate ages that are non-zero are caught", {
              value_type = get_value_types_for_ccmpp_in_out_classes("fert_rate_age_f"),
              value_scale = 1,
              non_zero_fert_ages = 0:5)
-    expect_s3_class(validate_ccmpp_object(y), "fert_rate_age_f")
+    expect_s3_class(validate_ccmppWPP_object(y), "fert_rate_age_f")
     y <- new_fert_rate_age_f(y,
              age_span = 1,
              time_span = 1,
@@ -207,6 +207,6 @@ test_that("zero fertility rate ages that are non-zero are caught", {
              value_type = get_value_types_for_ccmpp_in_out_classes("fert_rate_age_f"),
              value_scale = 1,
              non_zero_fert_ages = 2)
-    expect_error(validate_ccmpp_object(y), "have non-zero 'value' for at least some 'time_start's")
+    expect_error(validate_ccmppWPP_object(y), "have non-zero 'value' for at least some 'time_start's")
     })
 

@@ -51,7 +51,7 @@ new_mig_net_count_age_sex <-
 #' valid element of \code{ccmpp_input_list}s.
 #'
 #' @family ccmpp_input_objects
-#' @seealso \code{\link{validate_ccmpp_object}} for object validation,
+#' @seealso \code{\link{validate_ccmppWPP_object}} for object validation,
 #'     \code{\link{ccmpp_input_df}} for the class from which this one
 #'     inherits.
 #'
@@ -93,7 +93,7 @@ mig_net_count_age_sex.data.frame <-
                             value_scale = value_scale)
 
         ## Create/Validate
-        validate_ccmpp_object(
+        validate_ccmppWPP_object(
             new_mig_net_count_age_sex(li$df,
                                age_span = li$age_span,
                                time_span = li$time_span,
@@ -161,7 +161,7 @@ as_mig_net_count_age_sex.mig_net_count_age_sex <- function(x, ...) {
     i <- match("mig_net_count_age_sex", cl)
     if (i > 1L)
         class(x) <- cl[-(1L:(i - 1L))]
-    return(validate_ccmpp_object(x))
+    return(validate_ccmppWPP_object(x))
 }
 
 #' @rdname coerce_mig_net_count_age_sex

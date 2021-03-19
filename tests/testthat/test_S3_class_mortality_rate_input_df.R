@@ -36,7 +36,7 @@ test_that("Non-zero age detected", {
     z <- ccmppWPP:::new_mortality_rate_age_sex(ccmppWPP:::sort_demog_change_component_df(z),
                                      age_span = age_span(mortality_rate_age_sex(y)),
                                      time_span = time_span(mortality_rate_age_sex(y)))
-    expect_error(validate_ccmpp_object(z),
+    expect_error(validate_ccmppWPP_object(z),
                  "'age_start' does not start at '0'")
 })
 

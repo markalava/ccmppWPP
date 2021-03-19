@@ -26,7 +26,7 @@ An object of class \code{pop_count_age_sex_base}.
 
 }
 \seealso{
-\code{\link{validate_ccmpp_object}} for object validation,
+\code{\link{validate_ccmppWPP_object}} for object validation,
     \code{\link{ccmpp_input_df}} for the class from which this one
     inherits.
 

@@ -27,18 +27,18 @@
 #'     \emph{sure}, always leave \code{TRUE} (default).
 #' @return Either an error or the object \code{x}.
 #' @author Mark Wheldon
-#' @name validate_ccmpp_object
+#' @name validate_ccmppWPP_object
 NULL
 
 #' @export
-#' @rdname validate_ccmpp_object
-validate_ccmpp_object <- function(x, ...) {
-    UseMethod("validate_ccmpp_object")
+#' @rdname validate_ccmppWPP_object
+validate_ccmppWPP_object <- function(x, ...) {
+    UseMethod("validate_ccmppWPP_object")
 }
 
 #' @export
-#' @rdname validate_ccmpp_object
-validate_ccmpp_object.default <- function(x, ...) {
+#' @rdname validate_ccmppWPP_object
+validate_ccmppWPP_object.default <- function(x, ...) {
     stop("'x' is not an object with a valid CCMPP object class. 'class(x) = ",
          class(x),
          "'. Valid classes are '",
@@ -47,9 +47,9 @@ validate_ccmpp_object.default <- function(x, ...) {
          "'.")
     }
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.demog_change_component_df <-
+validate_ccmppWPP_object.demog_change_component_df <-
     function(x, ...) {
 
         if (!inherits(x, "data.frame"))

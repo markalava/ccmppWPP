@@ -295,7 +295,7 @@ x
 
 ## Not run:
 ## ccmpp_input_df(x)
-## Error in validate_ccmpp_object.ccmpp_input_df(new_ccmpp_input_df(li$df,  : 
+## Error in validate_ccmppWPP_object.ccmpp_input_df(new_ccmpp_input_df(li$df,  : 
 ##   Not a valid 'ccmpp_input_df' object:
 ## Spacings between each 'x$age_start' do not equal the corresponding values of 'x$age_span
 ```
@@ -473,19 +473,19 @@ The following are the responsibility of the user and will *not* be done automati
 
 ## Validation
 
-The function `validate_ccmpp_object()` is available to validate any object as a member of the class. As per convention, if the object is valid it is returned; if not, an error is signalled:
+The function `validate_ccmppWPP_object()` is available to validate any object as a member of the class. As per convention, if the object is valid it is returned; if not, an error is signalled:
 
 ```{r validate-vr-class}
-x <- validate_ccmpp_object(x = demog_change_example_df)
+x <- validate_ccmppWPP_object(x = demog_change_example_df)
 class(x)
  
 ## Not run:
-## y <- validate_ccmpp_object(x = wpp_input_example$mig_net_count_age_sex)
-## > Error in validate_ccmpp_object.default(x = wpp_input_example$mig_net_count_age_sex) :
+## y <- validate_ccmppWPP_object(x = wpp_input_example$mig_net_count_age_sex)
+## > Error in validate_ccmppWPP_object.default(x = wpp_input_example$mig_net_count_age_sex) :
 ## 'x' is not an object with a valid CCMPP object class ...
 ```
 
-`validate_ccmpp_object()` is an S3 generic function; it has methods for all the classes and subclasses associated with the `demog_change_component_df` base class. 
+`validate_ccmppWPP_object()` is an S3 generic function; it has methods for all the classes and subclasses associated with the `demog_change_component_df` base class. 
 
 You can always check if an existing object inherits from a particular class using the appropriate `is_` function. These functions only check the "class" attribute; they do not check that the underlying data components are valid.
 
@@ -732,7 +732,7 @@ A subset that is not a valid class object will not be created and an error will 
 ```{r}
 ## NOT RUN:
 ## x <- subset_age(ccmpp_input_example_df, age = 5)
-## Error in validate_ccmpp_object.ccmpp_input_df(new_ccmpp_input_df(li$df,  : 
+## Error in validate_ccmppWPP_object.ccmpp_input_df(new_ccmpp_input_df(li$df,  : 
 ##   'age_start' does not start at '0' for each time * sex combination.
 ```
 

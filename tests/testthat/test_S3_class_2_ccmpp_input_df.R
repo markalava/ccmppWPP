@@ -144,7 +144,7 @@ test_that("superfluous columns are caught", {
                              value_type = "real", value_scale = 1,
                        dimensions = c("time", "age", "sex"))
     expect_error(## Fail: Catches the extra column
-        validate_ccmpp_object(y),
+        validate_ccmppWPP_object(y),
         "has superfluous columns. The following are not permitted: 'source'")
 })
 
@@ -169,7 +169,7 @@ test_that("'indicator' column OK", {
           colnames(ccmpp_input_df(z)))
 
     y <- ccmpp_input_df(z)
-    expect_s3_class(validate_ccmpp_object(y), "ccmpp_input_df")
+    expect_s3_class(validate_ccmppWPP_object(y), "ccmpp_input_df")
 
     z <- transform(z, indicator = 84)
     expect_error(ccmpp_input_df(z),

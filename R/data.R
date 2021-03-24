@@ -113,3 +113,17 @@
 #' }
 "wpp_output_example"
 
+
+#' Demographic data for France, 1950--2020
+#'
+#' A dataset containing fertility, mortality, migration and population
+#' data for France, 1950--2000.
+#'
+#' @format
+#' \describe{
+#'   \item{}{}
+#'   \item{}{}
+#'   ...
+#' }
+#' @source \url{}
+"france_pop_data_raw"

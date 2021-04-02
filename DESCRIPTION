@@ -27,10 +27,12 @@ Suggests:
 RoxygenNote: 7.1.1
 LinkingTo: 
     Rcpp
-Imports: 
+Imports:
+    dplyr,
     Rcpp,
     stringr,
-    DemoTools
+    DemoTools,
+    DDSQLtools
 Depends: 
     R (>= 2.10)
 VignetteBuilder: knitr

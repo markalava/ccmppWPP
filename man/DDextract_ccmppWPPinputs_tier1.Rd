@@ -53,9 +53,9 @@ a list of two objects. 1) the ccmppWPP_inputs list required to run the populatio
 }
 \description{
 This function extracts from the DemoData SQL database population counts by
-age and sex, annual births by sex to compute sex ratio at birth, 1x1 age specific 
-fertility rates from the Human Fertility Database and EuroStat and mortality rates from the Human 
-Mortality Database and EuroStat.  It compiles those data into the input file required by ccmppWPP.  It 
+age and sex, annual births by sex to compute sex ratio at birth, 1x1 age specific
+fertility rates from the Human Fertility Database and EuroStat and mortality rates from the Human
+Mortality Database and EuroStat.  It compiles those data into the input file required by ccmppWPP.  It
 also compiles a refernce dataset of population counts by age and sex for various reference
 periods
 }

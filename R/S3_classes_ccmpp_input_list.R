@@ -197,3 +197,60 @@ is_ccmpp_input_list <- function(x) {
     inherits(x, "ccmpp_input_list")
 }
 
+
+#' Convert Demo Data extract to a CCMPP input list
+#'
+#' Takes the output of \code{\link{DDextract_ccmppWPPinputs_tier1}}
+#' and returns an object inheriting from
+#' \code{\link{ccmpp_input_list}}. Note that this will discard some
+#' components of the input (e.g., the reference population counts).
+#'
+#' This function extracts the CCMPP input list component from \code{x}
+#' and checks that the components are consistent with each
+#' other. Currenlty, this involves selecting rows for times that all
+#' components have in common.
+#'
+#' @param x A list of the form returned by \code{\link{DDextract_ccmppWPPinputs_tier1}}.
+#' @return An object inheriting from \code{\link{ccmpp_input_list}}.
+#' @author Mark Wheldon
+#' @export
+DDextract_to_ccmpp_input_list <- function(x) {
+    op <- getOption("ccmppWPP.suppress_S3_class_messages")
+    options(ccmppWPP.suppress_S3_class_messages = TRUE)
+    on.exit(options(ccmppWPP.suppress_S3_class_messages = op))
+
+    ## Check
+    stopifnot("ccmppWPP_inputs" %in% names(x))
+    req_names <- c("pop_count_age_sex_base",
+                   "life_table_age_sex", "fert_rate_age_f",
+                   "srb", "mig_net_count_age_sex",
+                   "mig_net_rate_age_sex", "mig_net_count_tot_b",
+                   "mig_parameter")
+    missing_nms <- req_names[!req_names %in% names(x$ccmppWPP_inputs)]
+    if (length(missing_nms))
+        stop("'x$ccmppWPP_inputs' must have all of the following elements: ",
+             toString(req_names),
+             ". ",
+             toString(missing_nms),
+             " is/are missing.")
+
+    ## Make all ccmpp inputs have common times. Do this 'manually',
+    ## i.e,. not using ccmppWPP functions. To use 'ccmppWPP::times'
+    ## all elements have to be coerced to ccmpp_input_df objects first
+    ## which is time conusming and wasteful because this will be done
+    ## by 'as_ccmpp_input_list' anyway. A downside is that the name of
+    ## the time columne ('time_start') is hardcoded.
+    all_but_baseline_names <- req_names[!req_names %in% "pop_count_age_sex_base"]
+    common_times <-
+        Reduce("intersect",
+               lapply(x$ccmppWPP_inputs[all_but_baseline_names], function(z) {
+                   unique(z$time_start)
+               }))
+    x <- lapply(x$ccmppWPP_inputs[req_names], function(z, common_times) {
+        z[z$time_start %in% common_times, ]
+    }, common_times = common_times)
+
+    return(as_ccmpp_input_list(x))
+}
+
+

@@ -270,7 +270,7 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
     dplyr::filter(DataSourceYear == latestDataSourceYear) %>%
     dplyr::distinct() %>%
     # transform into standard srb data frame needed for inputs
-    dplyr::spread(SexName, DataValue) %>%
+    tidyr::spread(SexName, DataValue) %>%
     dplyr::mutate(time_start = floor(TimeMid),
            time_span  = 1,
            value = Male/Female) %>%
@@ -573,7 +573,7 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
   mx_m <- mx[mx$sex == "male",]
   lt_m <- NULL
   for (i in unique(mx_m$time_start)) {
-    lt <- lt_single_mx(nMx = mx_m$value[mx_m$time_start==i], Age = mx_m$age_start[mx_m$time_start==i], OAnew = max(pop_count_age_sex_base$age_start), Sex = "m") %>%
+    lt <- DemoTools::lt_single_mx(nMx = mx_m$value[mx_m$time_start==i], Age = mx_m$age_start[mx_m$time_start==i], OAnew = max(pop_count_age_sex_base$age_start), Sex = "m") %>%
       dplyr::mutate(time_start = i,
              time_span = 1,
              age_span = 1)
@@ -584,7 +584,7 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
   mx_f <- mx[mx$sex == "female",]
   lt_f <- NULL
   for (i in unique(mx_f$time_start)) {
-    lt <- lt_single_mx(nMx = mx_f$value[mx_f$time_start==i], Age = mx_f$age_start[mx_f$time_start==i], OAnew = max(pop_count_age_sex_base$age_start), Sex = "f") %>%
+    lt <- DemoTools::lt_single_mx(nMx = mx_f$value[mx_f$time_start==i], Age = mx_f$age_start[mx_f$time_start==i], OAnew = max(pop_count_age_sex_base$age_start), Sex = "f") %>%
       dplyr::mutate(time_start = i,
              time_span = 1,
              age_span = 1)
@@ -593,7 +593,7 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
   lt_f$sex <- "female"
 
   lt <- rbind(lt_m, lt_f) %>%
-    gather(key = "indicator", value = "value", c(3:11)) %>%
+    tidyr::gather(key = "indicator", value = "value", c(3:11)) %>%
     dplyr::mutate(indicator = paste0("lt_", indicator),
            age_start = as.numeric(Age),
            age_span = 1) %>%

@@ -14,19 +14,20 @@
 
     ## -------* METHODS FOR FUNCTIONS IN OTHER PACKAGES
 
+    vctrs__s3_register("tibble::add_column", "demog_change_component_df")
+    vctrs__s3_register("tibble::add_row", "demog_change_component_df")
+    vctrs__s3_register("tibble::column_to_rownames", "demog_change_component_df")
+    vctrs__s3_register("tibble::remove_rownames", "demog_change_component_df")
+    vctrs__s3_register("tibble::rownames_to_column", "demog_change_component_df")
+
     vctrs__s3_register("dplyr::across", "demog_change_component_df")
     vctrs__s3_register("dplyr::arrange", "demog_change_component_df")
-    vctrs__s3_register("dplyr::add_column", "demog_change_component_df")
-    vctrs__s3_register("dplyr::add_row", "demog_change_component_df")
-    vctrs__s3_register("dplyr::column_to_rownames", "demog_change_component_df")
     vctrs__s3_register("dplyr::filter", "demog_change_component_df")
     vctrs__s3_register("dplyr::mutate", "demog_change_component_df")
     vctrs__s3_register("dplyr::mutate_all", "demog_change_component_df")
     vctrs__s3_register("dplyr::mutate_if", "demog_change_component_df")
     vctrs__s3_register("dplyr::mutate_at", "demog_change_component_df")
-    vctrs__s3_register("dplyr::remove_rownames", "demog_change_component_df")
     vctrs__s3_register("dplyr::rename", "demog_change_component_df")
-    vctrs__s3_register("dplyr::rownames_to_column", "demog_change_component_df")
     vctrs__s3_register("dplyr::pull", "demog_change_component_df")
     vctrs__s3_register("dplyr::select", "demog_change_component_df")
     vctrs__s3_register("dplyr::slice", "demog_change_component_df")

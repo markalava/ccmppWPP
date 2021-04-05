@@ -29,6 +29,8 @@ LinkingTo:
     Rcpp
 Imports:
     dplyr,
+    tibble,
+    tidyr,
     Rcpp,
     stringr,
     DemoTools,

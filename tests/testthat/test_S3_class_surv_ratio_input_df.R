@@ -1,4 +1,4 @@
-context("Test methods for S3 class 'survival_ratio_age_sex'")
+
 
 ### MAKE OBJECT AVAILABLE TO REMAINDER OF TESTS
 

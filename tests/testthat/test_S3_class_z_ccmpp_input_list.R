@@ -1,4 +1,4 @@
-context("Test S3 class 'ccmpp_input_list'")
+
 
 test_that("valid member created", {
     expect_s3_class(ccmpp_input_list(

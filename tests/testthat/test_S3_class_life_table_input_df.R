@@ -1,4 +1,4 @@
-context("Test methods for S3 class 'life_table_age_sex'")
+
 
 test_that("valid member created", {
     expect_s3_class(life_table_age_sex(wpp_input_example$life_table_age_sex),

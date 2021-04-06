@@ -1,4 +1,4 @@
-context("Test methods for S3 class 'srb'")
+
 
 
 test_that("valid member created", {

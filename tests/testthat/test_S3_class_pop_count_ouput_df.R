@@ -1,4 +1,4 @@
-context("Test methods for S3 class 'pop_count_age_sex'")
+
 
 test_that("valid member created from a data frame", {
     x <- data.frame(

@@ -1,4 +1,3 @@
-context("Test that projection functions return values known to be correct.")
 
 test_that("the female and male projected populations are equal under 'NULL' projection conditions.", {
 

@@ -1,4 +1,4 @@
-context("Test that raw data extracts can be converted to 'ccmppWPP' objects.")
+
 
 
 ## Load required data

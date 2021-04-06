@@ -1,4 +1,4 @@
-context("Test that project_ccmpp_z_by_z function returns values known to be correct.")
+
 
 test_that("the female and male projected populations are equal under 'NULL' projection conditions.", {
 

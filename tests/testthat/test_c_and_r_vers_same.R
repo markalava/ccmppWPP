@@ -1,4 +1,4 @@
-context("Compare R and Cpp versions")
+
 
 test_that("the female and male projected populations are equal under 'NULL' projection conditions.", {
 

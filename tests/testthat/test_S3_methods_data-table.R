@@ -1,4 +1,4 @@
-context("Methods for data.table functions")
+
 
 ### OBJECTS NEEDED (tested already)
 

@@ -1,4 +1,3 @@
-context("Test construction and validation of S3 class 'ccmpp_input_df'")
 
 test_that("objects are created properly", {
 

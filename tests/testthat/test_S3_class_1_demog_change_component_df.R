@@ -1,5 +1,3 @@
-context("Test construction and validation of S3 class 'demog_change_component_df'")
-
 test_that("objects are created properly", {
 
 ### Time, Age, Sex

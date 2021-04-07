@@ -3,64 +3,79 @@
 \name{ccmpp_list_access_elements}
 \alias{ccmpp_list_access_elements}
 \alias{pop_count_base_component}
+\alias{pop_count_base_component.list}
 \alias{pop_count_base_component.ccmpp_input_list}
 \alias{pop_count_base_component<-}
 \alias{pop_count_base_component<-.ccmpp_input_list}
 \alias{life_table_component}
+\alias{life_table_component.list}
 \alias{life_table_component.ccmpp_input_list}
 \alias{life_table_component<-}
 \alias{life_table_component<-.ccmpp_input_list}
 \alias{survival_ratio_component}
 \alias{survival_ratio_component.life_table_age_sex}
+\alias{survival_ratio_component.list}
 \alias{survival_ratio_component.ccmpp_input_list}
 \alias{survival_ratio_component<-}
 \alias{survival_ratio_component<-.life_table_age_sex}
 \alias{survival_ratio_component<-.ccmpp_input_list}
 \alias{mortality_rate_component}
 \alias{mortality_rate_component.life_table_age_sex}
+\alias{mortality_rate_component.list}
 \alias{mortality_rate_component.ccmpp_input_list}
 \alias{mortality_rate_component<-}
 \alias{mortality_rate_component<-.life_table_age_sex}
 \alias{mortality_rate_component<-.ccmpp_input_list}
 \alias{death_probability_component}
 \alias{death_probability_component.life_table_age_sex}
+\alias{death_probability_component.list}
 \alias{death_probability_component.ccmpp_input_list}
 \alias{death_probability_component<-}
 \alias{death_probability_component<-.life_table_age_sex}
 \alias{death_probability_component<-.ccmpp_input_list}
 \alias{death_count_component}
 \alias{death_count_component.life_table_age_sex}
+\alias{death_count_component.list}
 \alias{death_count_component.ccmpp_input_list}
 \alias{death_count_component<-}
 \alias{death_count_component<-.life_table_age_sex}
 \alias{death_count_component<-.ccmpp_input_list}
 \alias{fert_rate_component}
+\alias{fert_rate_component.list}
 \alias{fert_rate_component.ccmpp_input_list}
 \alias{fert_rate_component<-}
 \alias{fert_rate_component<-.ccmpp_input_list}
 \alias{srb_component}
+\alias{srb_component.list}
 \alias{srb_component.ccmpp_input_list}
 \alias{srb_component<-}
 \alias{srb_component<-.ccmpp_input_list}
 \alias{mig_net_count_component}
+\alias{mig_net_count_component.list}
 \alias{mig_net_count_component.ccmpp_input_list}
 \alias{mig_net_count_component<-}
 \alias{mig_net_count_component<-.ccmpp_input_list}
 \alias{mig_net_rate_component}
+\alias{mig_net_rate_component.list}
 \alias{mig_net_rate_component.ccmpp_input_list}
 \alias{mig_net_rate_component<-}
 \alias{mig_net_rate_component<-.ccmpp_input_list}
 \alias{mig_net_count_tot_component}
+\alias{mig_net_count_tot_component.list}
 \alias{mig_net_count_tot_component.ccmpp_input_list}
 \alias{mig_net_count_tot_component<-}
 \alias{mig_net_count_tot_component<-.ccmpp_input_list}
 \alias{mig_parameter_component}
+\alias{mig_parameter_component.list}
 \alias{mig_parameter_component.ccmpp_input_list}
 \alias{mig_parameter_component<-}
 \alias{mig_parameter_component<-.ccmpp_input_list}
+\alias{mig_assumption.list}
 \title{Access the \code{ccmpp_input_df} components of a list}
 \usage{
 pop_count_base_component(x)
+
+\method{pop_count_base_component}{list}(x)
 
 \method{pop_count_base_component}{ccmpp_input_list}(x)
 
@@ -69,6 +84,8 @@ pop_count_base_component(x) <- value
 \method{pop_count_base_component}{ccmpp_input_list}(x) <- value
 
 life_table_component(x)
+
+\method{life_table_component}{list}(x)
 
 \method{life_table_component}{ccmpp_input_list}(x)
 
@@ -79,6 +96,8 @@ life_table_component(x) <- value
 survival_ratio_component(x)
 
 \method{survival_ratio_component}{life_table_age_sex}(x)
+
+\method{survival_ratio_component}{list}(x)
 
 \method{survival_ratio_component}{ccmpp_input_list}(x)
 
@@ -92,6 +111,8 @@ mortality_rate_component(x)
 
 \method{mortality_rate_component}{life_table_age_sex}(x)
 
+\method{mortality_rate_component}{list}(x)
+
 \method{mortality_rate_component}{ccmpp_input_list}(x)
 
 mortality_rate_component(x) <- value
@@ -103,6 +124,8 @@ mortality_rate_component(x) <- value
 death_probability_component(x)
 
 \method{death_probability_component}{life_table_age_sex}(x)
+
+\method{death_probability_component}{list}(x)
 
 \method{death_probability_component}{ccmpp_input_list}(x)
 
@@ -116,6 +139,8 @@ death_count_component(x)
 
 \method{death_count_component}{life_table_age_sex}(x)
 
+\method{death_count_component}{list}(x)
+
 \method{death_count_component}{ccmpp_input_list}(x)
 
 death_count_component(x) <- value
@@ -126,6 +151,8 @@ death_count_component(x) <- value
 
 fert_rate_component(x)
 
+\method{fert_rate_component}{list}(x)
+
 \method{fert_rate_component}{ccmpp_input_list}(x)
 
 fert_rate_component(x) <- value
@@ -133,6 +160,8 @@ fert_rate_component(x) <- value
 \method{fert_rate_component}{ccmpp_input_list}(x) <- value
 
 srb_component(x)
+
+\method{srb_component}{list}(x)
 
 \method{srb_component}{ccmpp_input_list}(x)
 
@@ -142,6 +171,8 @@ srb_component(x) <- value
 
 mig_net_count_component(x)
 
+\method{mig_net_count_component}{list}(x)
+
 \method{mig_net_count_component}{ccmpp_input_list}(x)
 
 mig_net_count_component(x) <- value
@@ -149,6 +180,8 @@ mig_net_count_component(x) <- value
 \method{mig_net_count_component}{ccmpp_input_list}(x) <- value
 
 mig_net_rate_component(x)
+
+\method{mig_net_rate_component}{list}(x)
 
 \method{mig_net_rate_component}{ccmpp_input_list}(x)
 
@@ -158,6 +191,8 @@ mig_net_rate_component(x) <- value
 
 mig_net_count_tot_component(x)
 
+\method{mig_net_count_tot_component}{list}(x)
+
 \method{mig_net_count_tot_component}{ccmpp_input_list}(x)
 
 mig_net_count_tot_component(x) <- value
@@ -166,11 +201,15 @@ mig_net_count_tot_component(x) <- value
 
 mig_parameter_component(x)
 
+\method{mig_parameter_component}{list}(x)
+
 \method{mig_parameter_component}{ccmpp_input_list}(x)
 
 mig_parameter_component(x) <- value
 
 \method{mig_parameter_component}{ccmpp_input_list}(x) <- value
+
+\method{mig_assumption}{list}(x)
 }
 \arguments{
 \item{x}{An object of class \code{ccmpp_input_list}}

@@ -15,9 +15,13 @@
 #' \code{x}. By default, elements that do not have an
 #' \dQuote{indicator} dimension are dropped by \code{indicators}.
 #'
-#' @param x An object inheriting from \code{ccmpp_input_list}
-#' @param drop Logical, for \code{indicators}: should \code{NULL} elements be dropped?
-#' @return The requested attribute or dimension levels; see \dQuote{Details}.
+#' @param x An object inheriting from \code{ccmpp_input_list}, or a
+#'     list that can be coerced to a \code{ccmpp_input_list} via
+#'     \code{\link{as_ccmpp_input_list}}.
+#' @param drop Logical, for \code{indicators}: should \code{NULL}
+#'     elements be dropped?
+#' @return The requested attribute or dimension levels; see
+#'     \dQuote{Details}.
 #' @author Mark Wheldon
 #' @name extract_ccmpp_input_list_attributes
 #' @family extract_attributes
@@ -25,8 +29,20 @@ NULL
 
 #' @rdname extract_ccmpp_input_list_attributes
 #' @export
+age_span.list <- function(x) {
+    age_span(as_ccmpp_input_list(x))
+}
+
+#' @rdname extract_ccmpp_input_list_attributes
+#' @export
 age_span.ccmpp_input_list <- function(x) {
     attr(x, "age_span")
+}
+
+#' @rdname extract_ccmpp_input_list_attributes
+#' @export
+time_span.list <- function(x) {
+    time_span(as_ccmpp_input_list(x))
 }
 
 #' @rdname extract_ccmpp_input_list_attributes
@@ -41,8 +57,20 @@ time_span.ccmpp_input_list <- function(x) {
 
 #' @rdname extract_ccmpp_input_list_attributes
 #' @export
+ages.list <- function(x) {
+    ages(as_ccmpp_input_list(x))
+}
+
+#' @rdname extract_ccmpp_input_list_attributes
+#' @export
 ages.ccmpp_input_list <- function(x) {
     ages(mig_net_count_component(x))
+}
+
+#' @rdname extract_ccmpp_input_list_attributes
+#' @export
+non_zero_fert_ages.list <- function(x) {
+    non_zero_fert_ages(as_ccmpp_input_list(x))
 }
 
 #' @rdname extract_ccmpp_input_list_attributes
@@ -68,14 +96,32 @@ non_zero_fert_ages.ccmpp_input_list <- function(x) {
 
 #' @rdname extract_ccmpp_input_list_attributes
 #' @export
+times.list <- function(x) {
+    times(as_ccmpp_input_list(x))
+}
+
+#' @rdname extract_ccmpp_input_list_attributes
+#' @export
 times.ccmpp_input_list <- function(x) {
     times(mig_net_count_component(x))
 }
 
 #' @rdname extract_ccmpp_input_list_attributes
 #' @export
+sexes.list <- function(x) {
+    sexes(as_ccmpp_input_list(x))
+}
+
+#' @rdname extract_ccmpp_input_list_attributes
+#' @export
 sexes.ccmpp_input_list <- function(x) {
     sexes(mig_net_count_component(x))
+}
+
+#' @rdname extract_ccmpp_input_list_attributes
+#' @export
+indicators.list <- function(x, drop = TRUE) {
+    indicators(as_ccmpp_input_list(x))
 }
 
 #' @rdname extract_ccmpp_input_list_attributes
@@ -90,8 +136,20 @@ indicators.ccmpp_input_list <- function(x, drop = TRUE) {
 
 #' @rdname extract_ccmpp_input_list_attributes
 #' @export
+value_type.list <- function(x) {
+    value_type(as_ccmpp_input_list(x))
+}
+
+#' @rdname extract_ccmpp_input_list_attributes
+#' @export
 value_type.ccmpp_input_list <- function(x) {
     lapply(x, "value_type")
+}
+
+#' @rdname extract_ccmpp_input_list_attributes
+#' @export
+value_scale.list <- function(x) {
+    value_scale(as_ccmpp_input_list(x))
 }
 
 #' @rdname extract_ccmpp_input_list_attributes
@@ -122,6 +180,13 @@ NULL
 pop_count_base_component <- function(x) {
     UseMethod("pop_count_base_component")
 }
+
+#' @rdname ccmpp_list_access_elements
+#' @export
+pop_count_base_component.list <- function(x) {
+    pop_count_base_component(as_ccmpp_input_list(x))
+}
+
 #' @rdname ccmpp_list_access_elements
 #' @export
 pop_count_base_component.ccmpp_input_list <- function(x) {
@@ -148,6 +213,13 @@ pop_count_base_component.ccmpp_input_list <- function(x) {
 life_table_component <- function(x) {
     UseMethod("life_table_component")
 }
+
+#' @rdname ccmpp_list_access_elements
+#' @export
+life_table_component.list <- function(x) {
+    life_table_component(as_ccmpp_input_list(x))
+}
+
 #' @rdname ccmpp_list_access_elements
 #' @export
 life_table_component.ccmpp_input_list <- function(x) {
@@ -174,13 +246,21 @@ life_table_component.ccmpp_input_list <- function(x) {
 survival_ratio_component <- function(x) {
     UseMethod("survival_ratio_component")
 }
+
 #' @rdname ccmpp_list_access_elements
 #' @export
 survival_ratio_component.life_table_age_sex <- function(x) {
     as_survival_ratio_age_sex(x[x$indicator == "lt_Sx",
                                 c("time_start", "time_span", "sex",
                                   "age_start", "age_span", "value")])
-    }
+}
+
+#' @rdname ccmpp_list_access_elements
+#' @export
+survival_ratio_component.list <- function(x) {
+    survival_ratio_component(as_ccmpp_input_list(x))
+}
+
 #' @rdname ccmpp_list_access_elements
 #' @export
 survival_ratio_component.ccmpp_input_list <- function(x) {
@@ -214,13 +294,20 @@ survival_ratio_component.ccmpp_input_list <- function(x) {
 mortality_rate_component <- function(x) {
     UseMethod("mortality_rate_component")
 }
+
 #' @rdname ccmpp_list_access_elements
 #' @export
 mortality_rate_component.life_table_age_sex <- function(x) {
     as_mortality_rate_age_sex(x[x$indicator == "lt_nMx",
                                 c("time_start", "time_span", "sex",
                                   "age_start", "age_span", "value")])
-    }
+}
+
+#' @rdname ccmpp_list_access_elements
+#' @export
+mortality_rate_component.list <- function(x) {
+    mortality_rate_component(as_ccmpp_input_list(x))
+}
 #' @rdname ccmpp_list_access_elements
 #' @export
 mortality_rate_component.ccmpp_input_list <- function(x) {
@@ -247,7 +334,7 @@ mortality_rate_component.ccmpp_input_list <- function(x) {
 }
 
 ###-----------------------------------------------------------------------------
-### ** Mortality probability
+### ** Death probability
 
 #' @rdname ccmpp_list_access_elements
 #' @export
@@ -260,7 +347,13 @@ death_probability_component.life_table_age_sex <- function(x) {
     as_death_probability_age_sex(x[x$indicator == "lt_nqx",
                                 c("time_start", "time_span", "sex",
                                   "age_start", "age_span", "value")])
-    }
+}
+
+#' @rdname ccmpp_list_access_elements
+#' @export
+death_probability_component.list <- function(x) {
+    death_probability_component(as_ccmpp_input_list(x))
+}
 #' @rdname ccmpp_list_access_elements
 #' @export
 death_probability_component.ccmpp_input_list <- function(x) {
@@ -300,7 +393,13 @@ death_count_component.life_table_age_sex <- function(x) {
     as_death_count_age_sex(x[x$indicator == "lt_ndx",
                                 c("time_start", "time_span", "sex",
                                   "age_start", "age_span", "value")])
-    }
+}
+
+#' @rdname ccmpp_list_access_elements
+#' @export
+death_count_component.list <- function(x) {
+    death_count_component(as_ccmpp_input_list(x))
+}
 #' @rdname ccmpp_list_access_elements
 #' @export
 death_count_component.ccmpp_input_list <- function(x) {
@@ -334,6 +433,12 @@ death_count_component.ccmpp_input_list <- function(x) {
 fert_rate_component <- function(x) {
     UseMethod("fert_rate_component")
 }
+
+#' @rdname ccmpp_list_access_elements
+#' @export
+fert_rate_component.list <- function(x) {
+    fert_rate_component(as_ccmpp_input_list(x))
+}
 #' @rdname ccmpp_list_access_elements
 #' @export
 fert_rate_component.ccmpp_input_list <- function(x) {
@@ -359,6 +464,12 @@ fert_rate_component.ccmpp_input_list <- function(x) {
 #' @export
 srb_component <- function(x) {
     UseMethod("srb_component")
+}
+
+#' @rdname ccmpp_list_access_elements
+#' @export
+srb_component.list <- function(x) {
+    srb_component(as_ccmpp_input_list(x))
 }
 #' @rdname ccmpp_list_access_elements
 #' @export
@@ -386,6 +497,12 @@ srb_component.ccmpp_input_list <- function(x) {
 mig_net_count_component <- function(x) {
     UseMethod("mig_net_count_component")
 }
+
+#' @rdname ccmpp_list_access_elements
+#' @export
+mig_net_count_component.list <- function(x) {
+    mig_net_count_component(as_ccmpp_input_list(x))
+}
 #' @rdname ccmpp_list_access_elements
 #' @export
 mig_net_count_component.ccmpp_input_list <- function(x) {
@@ -411,6 +528,12 @@ mig_net_count_component.ccmpp_input_list <- function(x) {
 #' @export
 mig_net_rate_component <- function(x) {
     UseMethod("mig_net_rate_component")
+}
+
+#' @rdname ccmpp_list_access_elements
+#' @export
+mig_net_rate_component.list <- function(x) {
+    mig_net_rate_component(as_ccmpp_input_list(x))
 }
 #' @rdname ccmpp_list_access_elements
 #' @export
@@ -438,6 +561,13 @@ mig_net_rate_component.ccmpp_input_list <- function(x) {
 mig_net_count_tot_component <- function(x) {
     UseMethod("mig_net_count_tot_component")
 }
+
+
+#' @rdname ccmpp_list_access_elements
+#' @export
+mig_net_count_tot_component.list <- function(x) {
+    mig_net_count_tot_component(as_ccmpp_input_list(x))
+}
 #' @rdname ccmpp_list_access_elements
 #' @export
 mig_net_count_tot_component.ccmpp_input_list <- function(x) {
@@ -464,6 +594,12 @@ mig_net_count_tot_component.ccmpp_input_list <- function(x) {
 mig_parameter_component <- function(x) {
     UseMethod("mig_parameter_component")
 }
+
+#' @rdname ccmpp_list_access_elements
+#' @export
+mig_parameter_component.list <- function(x) {
+    mig_parameter_component(as_ccmpp_input_list(x))
+}
 #' @rdname ccmpp_list_access_elements
 #' @export
 mig_parameter_component.ccmpp_input_list <- function(x) {
@@ -483,6 +619,11 @@ mig_parameter_component.ccmpp_input_list <- function(x) {
 }
 
 
+#' @rdname ccmpp_list_access_elements
+#' @export
+mig_assumption.list <- function(x) {
+    mig_assumption(as_ccmpp_input_list(x))
+}
 #' @rdname mig_assumption_extract_and_set
 #' @export
 mig_assumption.ccmpp_input_list <- function(x) {

@@ -21,25 +21,23 @@ collapse_demog_dimension(
 of \code{x}; found by \code{\link{match.fun}}.}
 
 \item{...}{Passed to
-\code{\link[stats]{aggregate.data.frame}}. Must not include any
-named arguments that would clash with that function.}
+\code{\link[stats]{aggregate.data.frame}}. Must not include
+arguments named \code{X}, \code{by}, or \code{FUN}.}
 
 \item{by_dimension}{A \emph{character vector} (not a list) of
 demographic \dQuote{dimensions} to aggregate over; see
-\dQuote{Details}). Exactly one of \code{by} and
-\code{by_dimension} must be specified.}
+\dQuote{Details}).}
 }
 \value{
 A data frame.
 }
 \description{
-This is function conveniently collapses objects across the
-demographic dimensions specified in \code{by_dimension}. The
-\dQuote{value} column is aggregated using function \code{FUN} and
-columsn corresponding to \code{by_dimension} are dropped. If you
-want to aggregate other columns, or complete collapsing over a
-dimension is not desired, use \code{\link[stats]{aggregate}}, or
-similar.
+This function conveniently collapses objects across the demographic
+dimension(s) specified in \code{by_dimension}. The \dQuote{value}
+column is aggregated using function \code{FUN}. Columns
+corresponding to \code{by_dimension} are dropped. If you want to
+aggregate other columns, or complete collapsing over a dimension is
+not desired, use \code{\link[stats]{aggregate}}, or similar.
 }
 \details{
 Argument \code{by_dimension} is a character vector and can be any
@@ -54,8 +52,9 @@ by function \code{FUN}.
 
 The function will try to return an object of the class given in
 \code{out_class}, which is just \code{\class{x}} by default (see
-the argument description for how to specify). If a valid object of
-this class cannot be created from the result an error is signalled.
+the argument description for how to specify it). If a valid object
+of this class cannot be created from the result an error is
+signalled.
 }
 \examples{
 x1 <- ccmpp_input_df(expand.grid(age_start = 0:5, time_start = 1950:1954, value = 1),

@@ -468,7 +468,7 @@ collapse_demog_dimension <- function(x, FUN = "sum", ..., by_dimension = get_all
                 stop(msg)
             }
         }
-        stop("Could not collapse 'x'. Try coercing it to a 'data.frame' via 'as.data.frame(x)' and re-applying the function on that, or use 'base::aggregate'. Note that the result will not have the same class as 'x' until you re-cast it.")
+        stop("Could not collapse 'x'. Try coercing it to a 'data.frame' via 'as.data.frame(x)' and re-applying the function on that, or use 'stats::aggregate'. Note that the result will not have the same class as 'x' until you re-cast it.")
     }
 }
 
@@ -619,7 +619,7 @@ abridge.demog_change_component_df <- function(x,
     ## Aggregate
     value_type_x <- value_type(x)
     value_scale_x <- value_scale(x)
-    out <- aggregate(data.frame(value = x$value), by = by_list, FUN = "sum")
+    out <- stats::aggregate(data.frame(value = x$value), by = by_list, FUN = "sum")
 
     ## Check the class
     tryout <- try(do.call(get_as_function_for_class(out_class[1]),

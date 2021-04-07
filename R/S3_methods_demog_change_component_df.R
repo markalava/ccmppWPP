@@ -589,6 +589,7 @@ plot.demog_change_component_df <-
 #'
 #' @seealso \code{\link[stats]{aggregate}}, \code{link{collapse_demog_dimension}}
 #'
+#' @importFrom stats aggregate
 #' @export
 aggregate.demog_change_component_df <- function (x, by, FUN, ..., simplify = TRUE, drop = TRUE) {
 

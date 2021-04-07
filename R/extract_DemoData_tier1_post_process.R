@@ -4,9 +4,9 @@
 #' Nations, 2021}) for a location (country or area) and returns the
 #' years in which censuses were conducted. This is a convenience
 #' function for extracting the years from
-#' \code{data("census_years"). It is primarily intended to be called
-#' via \code{\link{get_pop_count_age_sex_reference}}. See that
-#' function's help file for more details.
+#' \code{data("census_years"). This function is called by
+#' \code{\link{DDextract_to_pop_count_age_sex_reference}}. See that
+#' function's help file for additional notes.
 #'
 #' Years in which censuses were conducted are provided in
 #' \code{data("census_years")} for many countries. Ranges of the form
@@ -40,9 +40,9 @@ get_census_years <- function(loc_id) {
 #' \code{\link{as.numeric}}). Ranges in the form \code{"xxxx-yyyy"}
 #' (e.g., as returned by \code{link{get_census_years}}) are replaced
 #' by their midpoints, rounded down to the nearest integer, and then
-#' converted. This function is primarily intended to be called via
-#' \code{\link{get_pop_count_age_sex_reference}}. See that function's
-#' help file for more details.
+#' converted. This function is called by
+#' \code{\link{DDextract_to_pop_count_age_sex_reference}}. See that
+#' function's help file for additional notes.
 #'
 #' @param times A vector of times (probably years), numeric or
 #'     character, possibly with ranges in the format
@@ -75,14 +75,14 @@ parse_pop_count_reference_times_ranges <- function(times) {
 
 #' Get reference population times from DDSQL extract
 #'
-#' \code{exclude_baseline_pop_count_times} subsets its argument
+#' \code{DDextract_exclude_baseline_pop_count_times} subsets its argument
 #' \code{times} by excluding the time of the baseline population
 #' counts in the \code{ccmppWPP_inputs} element of
-#' \code{x}. \code{get_pop_count_reference_times} is a wrapper that
+#' \code{x}. \code{DDextract_get_pop_count_reference_times} is a wrapper that
 #' sets \code{times} to the times of the
 #' \code{pop_count_age_sex_reference} element of \code{x}. This
 #' function is primarily intended to be called via
-#' \code{\link{get_pop_count_age_sex_reference}}. See that function's
+#' \code{\link{DDextract_to_pop_count_age_sex_reference}}. See that function's
 #' help file for more details.
 #'
 #' @param x A list of the form returned by \code{\link{DDextract_ccmppWPPinputs_tier1}}.
@@ -91,17 +91,17 @@ parse_pop_count_reference_times_ranges <- function(times) {
 #' @seealso \code{\link{ccmpp_input_list}}, \code{\link{pop_count_age_sex_base}}
 #' @author Mark Wheldon
 #' @export
-get_pop_count_reference_times <- function(x) {
+DDextract_get_pop_count_reference_times <- function(x) {
     times <- unique(as.numeric(x$pop_count_age_sex_reference$time_start))
     if (!all(is.finite(times)))
         stop("'times' were taken from 'x$pop_count_age_sex_reference' but some are not finite.")
-    return(exclude_baseline_pop_count_times(x, times))
+    return(DDextract_exclude_baseline_pop_count_times(x, times))
 }
 
-#' @rdname get_pop_count_reference_times
-#' @aliases exclude_baseline_pop_count_times
+#' @rdname DDextract_get_pop_count_reference_times
+#' @aliases DDextract_exclude_baseline_pop_count_times
 #' @export
-exclude_baseline_pop_count_times <- function(x, times) {
+DDextract_exclude_baseline_pop_count_times <- function(x, times) {
     base_times <- as.numeric(unique(x$ccmppWPP_inputs$pop_count_age_sex_base$time_start))
     if (!all(is.finite(base_times)))
         stop("Cannot determine the 'times' of the baseline population counts in 'x$ccmppWPP'.")
@@ -155,14 +155,14 @@ exclude_baseline_pop_count_times <- function(x, times) {
 #' data("census_years")
 #'
 #' all_years <-
-#'   get_pop_count_age_sex_reference(france_wpp_1950_2020_population_data)
+#'   DDextract_to_pop_count_age_sex_reference(france_wpp_1950_2020_population_data)
 #'
 #' census_years_only <-
-#'   get_pop_count_age_sex_reference(france_wpp_1950_2020_population_data,
+#'   DDextract_to_pop_count_age_sex_reference(france_wpp_1950_2020_population_data,
 #'                                    times = get_census_years(250))
 #'
 #' @export
-get_pop_count_age_sex_reference <- function(x, times = NULL) {
+DDextract_get_pop_count_age_sex_reference <- function(x, times = NULL) {
     ## Checks
     stopifnot("pop_count_age_sex_reference" %in% names(x))
 
@@ -178,9 +178,9 @@ get_pop_count_age_sex_reference <- function(x, times = NULL) {
 
     ## 'times'
     if (is.null(times)) {
-        times <- get_pop_count_reference_times(x)
+        times <- DDextract_get_pop_count_reference_times(x)
     } else {
-        times <- exclude_baseline_pop_count_times(x,
+        times <- DDextract_exclude_baseline_pop_count_times(x,
                    times = parse_pop_count_reference_times_ranges(times))
     }
 
@@ -188,3 +188,62 @@ get_pop_count_age_sex_reference <- function(x, times = NULL) {
     pop_count_age_sex_reference <- demog_change_component_df(x$pop_count_age_sex_reference)
     return(subset_time(pop_count_age_sex_reference, times))
 }
+
+
+#' Convert Demo Data extract to a CCMPP input list
+#'
+#' Takes the output of \code{\link{DDextract_ccmppWPPinputs_tier1}}
+#' and returns an object inheriting from
+#' \code{\link{ccmpp_input_list}}. Note that this will discard some
+#' components of the input (e.g., the reference population counts).
+#'
+#' This function extracts the CCMPP input list component from \code{x}
+#' and checks that the components are consistent with each
+#' other. Currenlty, this involves selecting rows for times that all
+#' components have in common.
+#'
+#' @param x A list of the form returned by \code{\link{DDextract_ccmppWPPinputs_tier1}}.
+#' @return An object inheriting from \code{\link{ccmpp_input_list}}.
+#' @author Mark Wheldon
+#' @export
+DDextract_get_ccmpp_input_list <- function(x) {
+    op <- getOption("ccmppWPP.suppress_S3_class_messages")
+    options(ccmppWPP.suppress_S3_class_messages = TRUE)
+    on.exit(options(ccmppWPP.suppress_S3_class_messages = op))
+
+    ## Check
+    stopifnot("ccmppWPP_inputs" %in% names(x))
+    req_names <- c("pop_count_age_sex_base",
+                   "life_table_age_sex", "fert_rate_age_f",
+                   "srb", "mig_net_count_age_sex",
+                   "mig_net_rate_age_sex", "mig_net_count_tot_b",
+                   "mig_parameter")
+    missing_nms <- req_names[!req_names %in% names(x$ccmppWPP_inputs)]
+    if (length(missing_nms))
+        stop("'x$ccmppWPP_inputs' must have all of the following elements: ",
+             toString(req_names),
+             ". ",
+             toString(missing_nms),
+             " is/are missing.")
+
+    ## Make all ccmpp inputs have common times. Do this 'manually',
+    ## i.e,. not using ccmppWPP functions. To use 'ccmppWPP::times'
+    ## all elements have to be coerced to ccmpp_input_df objects first
+    ## which is time conusming and wasteful because this will be done
+    ## by 'as_ccmpp_input_list' anyway. A downside is that the name of
+    ## the time columne ('time_start') is hardcoded.
+    all_but_baseline_names <- req_names[!req_names %in% "pop_count_age_sex_base"]
+    common_times <-
+        Reduce("intersect",
+               lapply(x$ccmppWPP_inputs[all_but_baseline_names], function(z) {
+                   unique(z$time_start)
+               }))
+    x <- lapply(x$ccmppWPP_inputs[req_names], function(z, common_times) {
+        z[z$time_start %in% common_times, ]
+    }, common_times = common_times)
+
+    return(as_ccmpp_input_list(x))
+}
+
+
+

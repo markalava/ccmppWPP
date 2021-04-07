@@ -127,3 +127,18 @@
 #' }
 #' @source \url{}
 "france_wpp_1950_2020_population_data"
+
+
+#' Years censuses were conducted by country
+#'
+#' A \code{\link[tibble]{tibble}} containing the years in which census
+#' data are available for most countries and areas.
+#'
+#' @format
+#' \describe{
+#'   \item{}{}
+#'   \item{}{}
+#'   ...
+#' }
+#' @source \url{}
+"census_years"

@@ -7,7 +7,7 @@
 fert_gross(fert_data_age, srb, byvar)
 }
 \arguments{
-\item{fert_data_age}{data frame. columns "age_start" and "age_span" describe age group of mother 
+\item{fert_data_age}{data frame. columns "age_start" and "age_span" describe age group of mother
 and "value" is age-specific fertility rates in births per woman.}
 
 \item{srb}{data frame. column "value" is the sex ratio at birth}
@@ -18,7 +18,7 @@ and "value" is age-specific fertility rates in births per woman.}
 a data frame with gross reproductive rate in the "value" field, computed by byvar columns.
 }
 \description{
-This function computes the gross reproductive rate from the age-specific fertility rates 
+This function computes the gross reproductive rate from the age-specific fertility rates
 and sex ratio at birth of a given period.
 }
 \details{

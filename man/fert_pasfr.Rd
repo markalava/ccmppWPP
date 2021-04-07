@@ -7,13 +7,13 @@
 fert_pasfr(fert_data_age, byvar)
 }
 \arguments{
-\item{fert_data_age}{data frame. columns "age_start" and "age_span" describe age group of mother 
+\item{fert_data_age}{data frame. columns "age_start" and "age_span" describe age group of mother
 and "value" is age-specific fertility rates in births per woman.}
 
 \item{byvar}{character. string of column names in fert_data_age by which pasfr will be computed.}
 }
 \value{
-a data frame with percentage age specific fertility rates in the "value" field, computed by byvar 
+a data frame with percentage age specific fertility rates in the "value" field, computed by byvar
 columns and age_start, age_span. Sums to 100 for each combination of byvar.
 }
 \description{

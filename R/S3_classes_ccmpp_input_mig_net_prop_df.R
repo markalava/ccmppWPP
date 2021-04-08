@@ -122,7 +122,7 @@ mig_net_prop_age_sex.ccmpp_input_list <-
 mig_net_prop_age_sex.mig_net_count_age_sex <-
     function(x, pop_count_age_sex,
              ...) {
-        pop_count_age_sex <- ccmpp_input_df(pop_count_age_sex,
+        pop_count_age_sex <- as_ccmpp_input_df(pop_count_age_sex,
                                             value_type = "count")
         mig_net_prop_age_sex(make_value_ratio(num = x,
                                               denom = pop_count_age_sex))

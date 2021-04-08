@@ -36,13 +36,24 @@ new_pop_count_age_sex <-
 #' Constructor for class \code{pop_count_age_sex}
 #'
 #' \code{pop_count_age_sex} is a subclass of
-#' \code{\link{ccmpp_output_df}}. It imposes two additional conditions:
-#' \enumerate{
-#'   \item{\code{Value_type} attribute equals \dQuote{count}.}
-#'   \item{Within year and sex, age must start at 0.}}
+#' \code{\link{ccmpp_output_df}}. It imposes two additional
+#' conditions: \enumerate{
+#' \item{\code{Value_type} attribute equals \dQuote{count}}
+#' \item{Within year and sex, age must start at 0.}}
 #' It is intended as a class that can be used for the population
-#' counts produced by the CCMPP. There are methods for
-#' \code{\link{base::data.frame}}s and \code{link{ccmpp_input_list}}s.
+#' counts produced by the CCMPP. Methods for the creator function
+#' exist for \code{\link{base::data.frame}}s and
+#' \code{link{ccmpp_input_list}}s. The latter is a wrapper for
+#' \code{\link{project_ccmpp_loop_over_time}}; it implements cohort
+#' component projection on the input list and returns the projected
+#' counts as a \code{pop_count_age_sex}
+#' object. \code{get_projected_pop_counts} is a more descriptively
+#' name wrapper for
+#' \code{pop_count_age_sex.ccmpp_input_list(x, keep_baseline = FALSE)}.
+#'
+#' \code{ccmpp_input_list}s determine completely the population counts
+#' in subsequent times. As such, the \code{ccmpp_input_list} method
+#' can be viewed as a way of \dQuote{extracting} these counts from the input.
 #'
 #' @family ccmpp_output_objects
 #' @seealso \code{\link{validate_ccmppWPP_object}} for object validation,
@@ -63,7 +74,7 @@ pop_count_age_sex <- function(x, ...) {
     UseMethod("pop_count_age_sex")
 }
 
-#' @rdname
+#' @rdname pop_count_age_sex
 #' @export
 pop_count_age_sex.data.frame <-
     function(x,
@@ -83,7 +94,7 @@ pop_count_age_sex.data.frame <-
         )
     }
 
-#' @rdname
+#' @rdname pop_count_age_sex
 #' @export
 pop_count_age_sex.ccmpp_input_list <-
     function(x, keep_baseline = TRUE, ...) {
@@ -110,6 +121,20 @@ pop_count_age_sex.ccmpp_input_list <-
                                value_scale = pop_out$value_scale)
         )
     }
+
+#' @rdname pop_count_age_sex
+#' @aliases get_projected_pop_counts
+#' @export
+get_projected_pop_counts <- function(x, ...) {
+    UseMethod("get_projected_pop_counts")
+}
+
+#' @rdname pop_count_age_sex
+#' @aliases get_projected_pop_counts
+#' @export
+get_projected_pop_counts.ccmpp_input_list <- function(x) {
+    pop_count_age_sex.ccmpp_input_list(x, keep_baseline = FALSE)
+}
 
 
 #' Coerce to a \code{pop_count_age_sex}

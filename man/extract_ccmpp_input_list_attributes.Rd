@@ -2,45 +2,76 @@
 % Please edit documentation in R/S3_classes_ccmpp_input_list_access_attr.R
 \name{extract_ccmpp_input_list_attributes}
 \alias{extract_ccmpp_input_list_attributes}
+\alias{age_span.list}
 \alias{age_span.ccmpp_input_list}
+\alias{time_span.list}
 \alias{time_span.ccmpp_input_list}
+\alias{ages.list}
 \alias{ages.ccmpp_input_list}
+\alias{non_zero_fert_ages.list}
 \alias{non_zero_fert_ages.ccmpp_input_list}
 \alias{non_zero_fert_ages<-.ccmpp_input_list}
+\alias{times.list}
 \alias{times.ccmpp_input_list}
+\alias{sexes.list}
 \alias{sexes.ccmpp_input_list}
+\alias{indicators.list}
 \alias{indicators.ccmpp_input_list}
+\alias{value_type.list}
 \alias{value_type.ccmpp_input_list}
+\alias{value_scale.list}
 \alias{value_scale.ccmpp_input_list}
 \title{Extract attributes of a \code{ccmpp_input_list}}
 \usage{
+\method{age_span}{list}(x)
+
 \method{age_span}{ccmpp_input_list}(x)
+
+\method{time_span}{list}(x)
 
 \method{time_span}{ccmpp_input_list}(x)
 
+\method{ages}{list}(x)
+
 \method{ages}{ccmpp_input_list}(x)
+
+\method{non_zero_fert_ages}{list}(x)
 
 \method{non_zero_fert_ages}{ccmpp_input_list}(x)
 
 \method{non_zero_fert_ages}{ccmpp_input_list}(x) <- value
 
+\method{times}{list}(x)
+
 \method{times}{ccmpp_input_list}(x)
+
+\method{sexes}{list}(x)
 
 \method{sexes}{ccmpp_input_list}(x)
 
+\method{indicators}{list}(x, drop = TRUE)
+
 \method{indicators}{ccmpp_input_list}(x, drop = TRUE)
 
+\method{value_type}{list}(x)
+
 \method{value_type}{ccmpp_input_list}(x)
+
+\method{value_scale}{list}(x)
 
 \method{value_scale}{ccmpp_input_list}(x)
 }
 \arguments{
-\item{x}{An object inheriting from \code{ccmpp_input_list}}
+\item{x}{An object inheriting from \code{ccmpp_input_list}, or a
+list that can be coerced to a \code{ccmpp_input_list} via
+\code{\link{as_ccmpp_input_list}}.}
 
-\item{drop}{Logical, for \code{indicators}: should \code{NULL} elements be dropped?}
+\item{drop}{Logical, for \code{indicators}: should \code{NULL}
+elements be dropped?}
 }
 \value{
-The requested attribute or dimension levels; see \dQuote{Details}.
+The requested attribute or dimension levels; see
+    \dQuote{Details}.
 }
 \description{
 These are convenience functions for accessing specific attributes
@@ -58,7 +89,8 @@ and \code{value_type} return lists, with one element per element of
 }
 \seealso{
 Other extract_attributes: 
-\code{\link{age_span}()}
+\code{\link{age_span}()},
+\code{\link{value_scale}()}
 }
 \author{
 Mark Wheldon

@@ -45,8 +45,6 @@
 #'
 #' @seealso demog_change_component_df
 #'
-#' @param age_span Scalar indicating the span of the age groups.
-#' @param time_span Scalar indicating the span of the time periods.
 #' @param value_scale \emph{Numeric} scalar indicating the value_scale of the
 #'     counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.
 #' @param dimensions Character vector listing the dimensions such as
@@ -159,7 +157,7 @@ prepare_df_for_demog_change_component_df <- function(x,
     if ("time" %in% dimensions) {
         if ("time_span" %in% coln_x) time_span_undefined <- FALSE
         else {
-            diff_x <- diff(unique(x$time_start))[1]
+            diff_x <- guess_span_for_dimension_for_df(x, "time")
             if (!(is.numeric(diff_x) & is.finite(diff_x))) {
                 time_span_undefined <- TRUE
             } else {
@@ -175,7 +173,7 @@ prepare_df_for_demog_change_component_df <- function(x,
     if ("age" %in% dimensions) {
         if ("age_span" %in% coln_x) age_span_undefined <- FALSE
         else {
-            diff_x <- diff(unique(x$age_start))[1]
+            diff_x <- guess_span_for_dimension_for_df(x, "age")
             if (!(is.numeric(diff_x) & is.finite(diff_x))) {
                 age_span_undefined <- TRUE
             } else {
@@ -270,7 +268,7 @@ prepare_df_for_demog_change_component_df <- function(x,
 #' \item{\code{is_demog_change_component_df}}{Tests if its
 #' argument is a \code{demog_change_component_df}. \emph{Note:} This only checks
 #' inheritance (via \code{\link{base::inherits}}), not validity. To
-#' validate an object use \code{\link{validate_ccmpp_object}}.}
+#' validate an object use \code{\link{validate_ccmppWPP_object}}.}
 #'
 #' \code{demog_change_component_df} is the
 #' parent class of a family of classes for holding age- time-specific
@@ -348,7 +346,7 @@ demog_change_component_df <-
                 value_scale = value_scale)
 
         ## Create/Validate
-        validate_ccmpp_object(
+        validate_ccmppWPP_object(
             new_demog_change_component_df(li$df,
                               dimensions = li$dimensions,
                               ## age_span = (if (is.null(age_span)) double() else age_span),
@@ -369,6 +367,7 @@ demog_change_component_df <-
 #'
 #' @param x An object to coerce or check.
 #' @param ... Further arguments passed to specific methods.
+#' @inheritParams demog_change_component_df
 #' @return A coerced object in the case of the \code{as_...}
 #'     functions; a logical for the \code{is_...} functions.
 #' @author Mark Wheldon
@@ -389,13 +388,15 @@ as_demog_change_component_df.default <- function(x, ...) {
 
 #' @rdname coerce_demog_change_component_df
 #' @export
-as_demog_change_component_df.data.frame <- function(x, ...) {
-    demog_change_component_df(as.data.frame(x))
+as_demog_change_component_df.data.frame <- function(x, value_type = attr(x, "value_type"),
+                                                    value_scale = attr(x, "value_scale"), ...) {
+    demog_change_component_df(as.data.frame(x), value_type = value_type, value_scale = value_scale)
 }
 
 #' @rdname coerce_demog_change_component_df
 #' @export
-as_demog_change_component_df.matrix <- function(x, ...) {
+as_demog_change_component_df.matrix <- function(x, value_type = attr(x, "value_type"),
+                                                value_scale = attr(x, "value_scale"), ...) {
     dn <- dimnames(x)
     demog_dim_colnames_df <- get_master_df_of_dimensions_colnames_coltypes()
     if (all(names(dn) %in% demog_dim_colnames_df$colname)) {
@@ -425,7 +426,7 @@ as_demog_change_component_df.matrix <- function(x, ...) {
                  "'.")
         keep_cols <- which(dncol %in% req_cn)
         x <- x[, keep_cols]
-        return(as_demog_change_component_df(as.data.frame(x)))
+        return(as_demog_change_component_df(as.data.frame(x), value_type = value_type, value_scale = value_scale))
     }
 }
 
@@ -437,7 +438,7 @@ as_demog_change_component_df.demog_change_component_df <- function(x, ...) {
     i <- match("demog_change_component_df", cl)
     if (i > 1L)
         class(x) <- cl[-(1L:(i - 1L))]
-    return(validate_ccmpp_object(x))
+    return(validate_ccmppWPP_object(x))
 }
 
 #' @rdname coerce_demog_change_component_df

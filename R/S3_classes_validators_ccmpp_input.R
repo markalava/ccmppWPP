@@ -1,6 +1,6 @@
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.ccmpp_input_df <- function(x, ...) {
+validate_ccmppWPP_object.ccmpp_input_df <- function(x, ...) {
 
     ## BASE CHECKS:
     ## Run the inherited checks
@@ -39,7 +39,6 @@ validate_ccmpp_object.ccmpp_input_df <- function(x, ...) {
     ## SPANS:
     ## 1. Span attributes must be of length 1
     ## 2. Spans must all be equal
-    ## 2. Span columns must contain
 
     attr_w_span_names <- get_all_dimensions_w_spans()
     attr_w_span_names <-
@@ -64,7 +63,27 @@ validate_ccmpp_object.ccmpp_input_df <- function(x, ...) {
             stop(not_a_valid_object_msg("ccmpp_input_df",
                                         "'", span_name, "' is not of length 1."))
 
-        ## Diffs of unique values
+        ## Spans must be consistent with the differences between the
+        ## '_start' column values.
+        by_col_names <- sapply(demog_change_component_dims_x,
+                                   FUN = "get_df_col_names_for_dimensions", spans = FALSE)
+            by_col_names <- by_col_names[!by_col_names %in% start_name]
+            if (length(by_col_names)) {
+            start_vs_span_diff <-
+                lapply(split(x[, c(by_col_names, span_name, start_name)], x[, by_col_names]),
+                       function(z) {
+                    sum(head(z[, span_name], -1) - diff(z[, start_name], differences = 1))
+                })
+            } else {
+                start_vs_span_diff <-
+                    sum(head(x[, span_name], -1) - diff(x[, start_name], differences = 1))
+            }
+            if (any(unlist(start_vs_span_diff) != 0))
+                stop(not_a_valid_object_msg("ccmpp_input_df",
+                                        "Spacings between each 'x$", start_name,
+                 "' do not equal the corresponding values of 'x$", span_name))
+
+        ## Diffs of '_start' column values must equal the value of span attribute
         start_1st_diff <-
             diff(sort(unique(start_col)), differences = 1)
         if (!identical(as.double(sum(start_1st_diff != span_attr)), 0))
@@ -98,9 +117,9 @@ validate_ccmpp_object.ccmpp_input_df <- function(x, ...) {
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.fert_rate_age_f <- function(x, ...) {
+validate_ccmppWPP_object.fert_rate_age_f <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -140,9 +159,9 @@ validate_ccmpp_object.fert_rate_age_f <- function(x, ...) {
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.survival_ratio_age_sex <- function(x, check_sex_equality_by_time = FALSE, ...) {
+validate_ccmppWPP_object.survival_ratio_age_sex <- function(x, check_sex_equality_by_time = FALSE, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -175,9 +194,9 @@ validate_ccmpp_object.survival_ratio_age_sex <- function(x, check_sex_equality_b
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.mortality_rate_age_sex <- function(x, check_sex_equality_by_time = FALSE, ...) {
+validate_ccmppWPP_object.mortality_rate_age_sex <- function(x, check_sex_equality_by_time = FALSE, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -210,9 +229,9 @@ validate_ccmpp_object.mortality_rate_age_sex <- function(x, check_sex_equality_b
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.death_probability_age_sex <- function(x, check_sex_equality_by_time = FALSE, ...) {
+validate_ccmppWPP_object.death_probability_age_sex <- function(x, check_sex_equality_by_time = FALSE, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -245,9 +264,9 @@ validate_ccmpp_object.death_probability_age_sex <- function(x, check_sex_equalit
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.death_count_age_sex <- function(x, check_sex_equality_by_time = FALSE, ...) {
+validate_ccmppWPP_object.death_count_age_sex <- function(x, check_sex_equality_by_time = FALSE, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -280,9 +299,9 @@ validate_ccmpp_object.death_count_age_sex <- function(x, check_sex_equality_by_t
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.pop_count_age_sex_base <- function(x, check_sex_equality_by_time = FALSE, ...) {
+validate_ccmppWPP_object.pop_count_age_sex_base <- function(x, check_sex_equality_by_time = FALSE, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -323,9 +342,9 @@ validate_ccmpp_object.pop_count_age_sex_base <- function(x, check_sex_equality_b
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.srb <- function(x, ...) {
+validate_ccmppWPP_object.srb <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -348,9 +367,9 @@ validate_ccmpp_object.srb <- function(x, ...) {
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.mig_net_rate_age_sex <- function(x, ...) {
+validate_ccmppWPP_object.mig_net_rate_age_sex <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -373,9 +392,9 @@ validate_ccmpp_object.mig_net_rate_age_sex <- function(x, ...) {
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.mig_net_count_age_sex <- function(x, ...) {
+validate_ccmppWPP_object.mig_net_count_age_sex <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -398,9 +417,9 @@ validate_ccmpp_object.mig_net_count_age_sex <- function(x, ...) {
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.mig_net_count_tot_b <- function(x, ...) {
+validate_ccmppWPP_object.mig_net_count_tot_b <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -425,9 +444,9 @@ validate_ccmpp_object.mig_net_count_tot_b <- function(x, ...) {
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.mig_net_prop_age_sex <- function(x, ...) {
+validate_ccmppWPP_object.mig_net_prop_age_sex <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -456,9 +475,9 @@ validate_ccmpp_object.mig_net_prop_age_sex <- function(x, ...) {
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.mig_parameter <- function(x, ...) {
+validate_ccmppWPP_object.mig_parameter <- function(x, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -494,9 +513,9 @@ validate_ccmpp_object.mig_parameter <- function(x, ...) {
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.life_table_age_sex <- function(x, check_sex_equality_by_time, ...) {
+validate_ccmppWPP_object.life_table_age_sex <- function(x, check_sex_equality_by_time, ...) {
 
     ## Base checks
     x <- NextMethod()
@@ -560,9 +579,9 @@ validate_ccmpp_object.life_table_age_sex <- function(x, check_sex_equality_by_ti
 }
 
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.ccmpp_input_list <- function(x, .validate_elements = TRUE, ...) {
+validate_ccmppWPP_object.ccmpp_input_list <- function(x, .validate_elements = TRUE, ...) {
 
     req_el_names <- get_all_required_ccmpp_input_list_element_names()
     req_el_classes <- get_all_required_ccmpp_input_list_element_classes()
@@ -599,7 +618,7 @@ validate_ccmpp_object.ccmpp_input_list <- function(x, .validate_elements = TRUE,
 
         ## Validate objects
         if (.validate_elements) {
-            test <- tryCatch(validate_ccmpp_object(x[[df_nm]]))
+            test <- tryCatch(validate_ccmppWPP_object(x[[df_nm]]))
             if (identical(class(test), "try-error"))
                 stop(not_a_valid_object_msg("ccmpp_input_list",
                                             df_nm, ":\n", strsplit(c(test), " : ")[[1]][2]))
@@ -689,7 +708,8 @@ validate_ccmpp_object.ccmpp_input_list <- function(x, .validate_elements = TRUE,
     }
 
     ## Check that mig_count_age_sex and mig_count_tot_b are consistent with each other
-    mig_tot_agg <- aggregate(x$mig_net_count_age_sex, by = "time")
+    mig_tot_agg <- collapse_demog_dimension(x$mig_net_count_age_sex, by_dimension = "time",
+                             out_class = "data.frame")
     mig_check <- base::merge(x$mig_net_count_tot_b,
                              mig_tot_agg,
                              by = "time_start",

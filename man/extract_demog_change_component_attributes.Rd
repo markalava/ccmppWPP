@@ -8,7 +8,6 @@
 \alias{time_span}
 \alias{time_span.ccmpp_input_df}
 \alias{value_type<-.ccmpp_input_df}
-\alias{value_scale.ccmpp_input_df}
 \alias{print.ccmpp_input_df_value_scale}
 \alias{non_zero_fert_ages}
 \alias{non_zero_fert_ages.fert_rate_age_f}
@@ -31,11 +30,6 @@
 \alias{value_type.demog_change_component_df}
 \alias{value_type<-}
 \alias{value_type<-.demog_change_component_df}
-\alias{value_scale}
-\alias{value_scale.demog_change_component_df}
-\alias{print.demog_change_component_df_value_scale}
-\alias{value_scale<-}
-\alias{value_scale<-.demog_change_component_df}
 \title{Extract specific components}
 \usage{
 age_span(x)
@@ -47,8 +41,6 @@ time_span(x)
 \method{time_span}{ccmpp_input_df}(x)
 
 \method{value_type}{ccmpp_input_df}(x, ...) <- value
-
-\method{value_scale}{ccmpp_input_df}(x)
 
 \method{print}{ccmpp_input_df_value_scale}(x, ...)
 
@@ -91,16 +83,6 @@ value_type(x)
 value_type(x, ...) <- value
 
 \method{value_type}{demog_change_component_df}(x, ...) <- value
-
-value_scale(x)
-
-\method{value_scale}{demog_change_component_df}(x)
-
-\method{print}{demog_change_component_df_value_scale}(x, ...)
-
-value_scale(x, ...) <- value
-
-\method{value_scale}{demog_change_component_df}(x, ...) <- value
 }
 \arguments{
 \item{x}{An object from which to extract attributes.}
@@ -128,7 +110,8 @@ column if \code{\link{value_type}} does not return
 }
 \seealso{
 Other extract_attributes: 
-\code{\link{extract_ccmpp_input_list_attributes}}
+\code{\link{extract_ccmpp_input_list_attributes}},
+\code{\link{value_scale}()}
 }
 \author{
 Mark Wheldon

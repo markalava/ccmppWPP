@@ -59,7 +59,7 @@ new_mig_parameter <-
 #' \code{\link{ccmpp_input_df}}. It contains
 #'
 #' @family ccmpp_input_objects
-#' @seealso \code{\link{validate_ccmpp_object}} for object validation,
+#' @seealso \code{\link{validate_ccmppWPP_object}} for object validation,
 #'     \code{\link{ccmpp_input_df}} for the class from which this one
 #'     inherits.
 #'
@@ -75,7 +75,7 @@ mig_parameter <-
                             value_type = get_value_types_for_ccmpp_in_out_classes("mig_parameter"),
                             value_scale = NA)
         ## Create/Validate
-        validate_ccmpp_object(
+        validate_ccmppWPP_object(
             new_mig_parameter(li$df,
                               time_span = li$time_span,
                               value_scale = NA)
@@ -132,7 +132,7 @@ as_mig_parameter.mig_parameter <- function(x, ...) {
     i <- match("mig_parameter", cl)
     if (i > 1L)
         class(x) <- cl[-(1L:(i - 1L))]
-    return(validate_ccmpp_object(x))
+    return(validate_ccmppWPP_object(x))
 }
 
 #' @rdname coerce_mig_parameter

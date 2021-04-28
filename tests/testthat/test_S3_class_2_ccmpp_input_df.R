@@ -1,4 +1,3 @@
-context("Test construction and validation of S3 class 'ccmpp_input_df'")
 
 test_that("objects are created properly", {
 
@@ -144,7 +143,7 @@ test_that("superfluous columns are caught", {
                              value_type = "real", value_scale = 1,
                        dimensions = c("time", "age", "sex"))
     expect_error(## Fail: Catches the extra column
-        validate_ccmpp_object(y),
+        validate_ccmppWPP_object(y),
         "has superfluous columns. The following are not permitted: 'source'")
 })
 
@@ -169,7 +168,7 @@ test_that("'indicator' column OK", {
           colnames(ccmpp_input_df(z)))
 
     y <- ccmpp_input_df(z)
-    expect_s3_class(validate_ccmpp_object(y), "ccmpp_input_df")
+    expect_s3_class(validate_ccmppWPP_object(y), "ccmpp_input_df")
 
     z <- transform(z, indicator = 84)
     expect_error(ccmpp_input_df(z),
@@ -213,8 +212,39 @@ test_that("dimensions are correctly detected", {
 
 test_that("non-squareness is caught", {
     x <- S3_demog_change_component_time_age_sex_test_df
-    y <- rbind(x, x[1,])
-    expect_error(ccmpp_input_df(y),
+
+    ## OK to omit a whole time, or sex group. NB: omitting only the
+    ## first time or age here because otherwise would have to also
+    ## adjust the '_span' columns. Also only test time and sex because
+    ## omitting age_start '0' triggers a different error.
+    omit_i <- which(x$time_start == 1950)
+    y <- x[-omit_i, ]
+    expect_s3_class(ccmpp_input_df(y),
+                    "ccmpp_input_df")
+
+    omit_i <- which(x$sex == "male")
+    y <- x[-omit_i, ]
+    expect_s3_class(ccmpp_input_df(y),
+                    "ccmpp_input_df")
+
+    ## NOT OK to just remove one age-time-sex combination.
+    omit_i <- which(x$age_start == 5 & x$time_start == 1950 & x$sex == "male")
+    y <- x[-omit_i, ]
+    ## 'y' has an entry for 1950, age 0, 'female', but the entry for
+    ## 'male' is missing. This is invalid:
+    expect_error(capture.output(ccmpp_input_df(y),
+                                file = OS_null_file_string),
+                 "does not have exactly one 'value'")
+    ## It's not enough to omit 'female' entry as well because there
+    ## are entries for age 5 for all other years and sexes. E.g.,
+    ## 1951, age 5, 'male' and 'female' exists; the absence of the
+    ## 1950 entry is invalid.
+    omit_i <- which(x$age_start == 5 & x$time_start == 1950)
+    y <- x[-omit_i, ]
+    ## 'y' has an entry for 1950, age 0, 'female', but the entry for
+    ## 'male' is missing. This is invalid:
+    expect_error(capture.output(ccmpp_input_df(y),
+                                file = OS_null_file_string),
                  "does not have exactly one 'value'")
 })
 
@@ -251,4 +281,4 @@ test_that("'NA's are not allowed", {
     expect_warning(expect_error(ccmpp_input_df(x),
                                 "'value' column has missing entries"),
                    "'value' column has some 'NA' entries")
-    })
+})

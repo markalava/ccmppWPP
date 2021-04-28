@@ -2,7 +2,7 @@
 % Please edit documentation in R/exposure_helper_functions.R
 \name{exposure_age}
 \alias{exposure_age}
-\title{Compute age-specific person-years of exposure to fertility/mortality in the period}
+\title{Approximate age-specific person-years of exposure to fertility/mortality in the period}
 \usage{
 exposure_age(
   pop_age_start,
@@ -25,11 +25,9 @@ a numeric vector of person-years of exposure by single year of age.
 }
 \description{
 This function takes beginning and end period population by age and computes person-years of exposure, 
-removing migrants from exposure if migration assuption is "end" of period and adding half of migrants to beginning 
-of perod if migration assumption is "even" over period.
+removing migrants from exposure if migration assuption is "end" of period
 }
 \details{
-For "even" migration assumption, half of net migrants are added to beginning of year population for computing exposures;
 for "end" migration assumption, net migrants are subtracted from end of year population for computing exposures.
 }
 \author{

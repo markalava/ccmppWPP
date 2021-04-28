@@ -1,4 +1,4 @@
-context("Test methods for S3 class 'demog_change_component_df'")
+
 
 ### OBJECTS NEEDED (tested already)
 
@@ -143,4 +143,11 @@ test_that("printing returns an object of class 'demog_change_component_df'", {
     capture.output(x <- print(dcc_df_time_age_sex, print_what = "table"),
                    file = OS_null_file_string)
     expect_s3_class(x, "demog_change_component_df")
-    })
+})
+
+
+
+
+
+
+

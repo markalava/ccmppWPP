@@ -119,7 +119,19 @@ NULL
                                 # will then produce a simple data
                                 # frame with no extra attributes.
     else return(x)
+}
+
+#' @rdname subset_replace
+#' @export
+subset.demog_change_component_df <- function(x, ...) {
+    if (identical(parent.frame(), .GlobalEnv)) {
+        S3_class_warning("'subset'ing a '",
+                oldClass(x)[1],
+                "' will not preserve the class or attributes.")
     }
+    return(NextMethod())
+    }
+
 
 ###-----------------------------------------------------------------------------
 ### * Coercion
@@ -564,78 +576,27 @@ plot.demog_change_component_df <-
 
 #' Aggregate a \code{demog_change_component_df}
 #'
-#' This is a simple method for the generic
-#' \code{\link[stats]{aggregate}} function in the \pkg{stats} package
-#' for objects inheriting from \code{demog_change_component_df}. The
-#' \dQuote{value} column is aggregated using function \code{FUN}; you
-#' cannot aggregate any other columns of \code{x} with this
-#' method. Note that argument \code{by} is a character vector, not a
-#' list (see \dQuote{Details} for more information). The \code{by}
-#' variables are the ones that will appear in the output, not the ones
-#' that are collapsed.
+#' A method for the generic \code{\link[stats]{aggregate}}
+#' function. This merely calls the
+#' \code{\link[stats]{aggregate.data.frame}} method and issues a
+#' warning that the class will be dropped (if called
+#' interactively). See \code{link{collapse_demog_dimension}} for an
+#' alternative if aggregation across an entire demographic dimension
+#' (e.g., \dQuote{age}, \dQuote{time}, etc.) is desired.
 #'
-#' Argument \code{by} is a character vector (unlike the default
-#' method) and can be any of the allowed \dQuote{dimensions} (default)
-#' \emph{or} column names of \code{x}. You must specify \code{by_type
-#' = "columns"} if you are supplying column names.
-#'
-#' The function will try to return an object of class
-#' \code{demog_change_component_df} (regardless of the class of
-#' \code{x}). If a valid object of this class cannot be created from
-#' the result, a \code{\link{data.frame}} is returned (and with a
-#' warning in interactive sessions).
-#'
-#' This method is a rather simple wrapper for conveniently aggregating
-#' \code{demog_change_component_df} objects by their dimensions (or
-#' column names if desired). After processing the \code{by} and
-#' \code{by_type} arguments, the default method for \code{aggregate}
-#' is called (which, in turn, will call the \code{data.frame} method).
-#'
-#' The \dQuote{time_span} and
-#' \dQuote{age_span} columns, if present in \code{x}, will not be
-#' present in the result (unless \code{by_type = "columns"} and they
-#' were included in \code{by}). Pass the output back into
-#' \code{\link{demog_change_component_df}} to check for validity and
-#' recompute the \dQuote{span} columns, if required.
-#'
-#' @param x An object inheriting from
-#'     \code{demog_change_component_df}.
-#' @param by A \emph{character vector} (not a list) of
-#'     \dQuote{dimensions} to aggregate by (or columns if
-#'     \code{by_type} is \code{\dQuote{columns}}; see
-#'     \dQuote{Details}).
-#' @param FUN A function to use to aggregate the \dQuote{value} column
-#'     of \code{x}.
-#' @param by_type Character argument specifying whether \code{by}
-#'     provides \dQuote{dimensions} or column names to aggregate by.
-#' @param ... Passed to \code{\link[stats]{aggregate}}.
-#' @return A data frame with the column \dQuote{value} after
-#'     aggregation by \code{by} (see \dQuote{Description}).
+#' @inheritParams stats::aggregate
 #' @author Mark Wheldon
-#' @seealso \code{\link[stats]{aggregate}}
-#'     \code{\link{demog_change_component_df}}
+#'
+#' @seealso \code{\link[stats]{aggregate}}, \code{link{collapse_demog_dimension}}
+#'
+#' @importFrom stats aggregate
 #' @export
-aggregate.demog_change_component_df <- function(x, by, FUN = "sum", by_type = c("dimensions", "columns"),
-                                                ...) {
-    if (!is.character(by)) stop("'by' must be a 'character' vector.")
-    by_type <- match.arg(by_type)
-    if (identical(by_type, "dimensions")) {
-        by <- match.arg(by, get_all_allowed_dimensions(), several.ok = TRUE)
-        by <- get_all_req_col_names_excl_spans_for_dimensions(by)
-        by <- by[by != "value"]
-    } else {
-        by <- match.arg(by, colnames(x), several.ok = TRUE)
+aggregate.demog_change_component_df <- function (x, by, FUN, ..., simplify = TRUE, drop = TRUE) {
+
+    if (identical(parent.frame(), .GlobalEnv)) {
+        S3_class_warning("'aggregate'ing a '",
+                oldClass(x)[1],
+                "' will not preserve the class or attributes. See ?collapse_demog_dimension for a possible alternative.")
     }
-    out <- stats::aggregate(x[, "value", drop = FALSE],
-                     by = x[, by, drop = FALSE],
-                     FUN = FUN, ...)
-    tryout <- try(demog_change_component_df(out), silent = TRUE)
-    if (identical(class(tryout), "try-error")) {
-        if (identical(parent.frame(), .GlobalEnv)) {
-            S3_class_warning("Result is not a valid 'demog_change_component_df'; returning a data frame.")
-        }
-        return(out)
-    } else {
-        return(tryout)
+    return(NextMethod())
     }
-}

@@ -35,7 +35,7 @@ get_all_allowed_dimensions <- function() {
     c("indicator", "time", "sex", "age")
 }
 
-## Attributes with corresponding '_span' !!! should be 'dimensions'
+## Dimensions with corresponding '_span'
 get_all_dimensions_w_spans <- function() {
     c("time", "age")
 }
@@ -78,7 +78,11 @@ get_master_df_dimensions_w_span_colnames_coltypes <- function() {
 }
 
 get_as_function_for_class <- function(class) {
-    paste("as", class, sep = "_")
+    if (class %in% get_all_demog_change_component_df_class_names())
+        return(paste("as", class, sep = "_"))
+    else if (identical(class, "data.frame"))
+        return("as.data.frame")
+    else stop("Don't know what the 'as' function is for class '", class, "'.")
 }
 
 ###-----------------------------------------------------------------------------
@@ -103,12 +107,12 @@ ensure_these_dimensions_correctly_ordered <- function(dimensions) {
     all_dims[all_dims %in% dimensions]
 }
 
-## All required columns
+## All required columns (including 'value'). Don't want 'value'? See 'get_df_col_names_for_dimensions()' below.
 get_all_req_col_names_for_dimensions <- function(dimensions) {
     c(subset_master_df_of_dimensions_colnames_coltypes(dimensions = dimensions)$colname, "value")
 }
 
-## All required columns
+## All required columns except spans (including 'value'). Don't want 'value'? See 'get_df_col_names_for_dimensions()' below.
 get_all_req_col_names_excl_spans_for_dimensions <- function(dimensions) {
     c(subset_master_df_of_dimensions_colnames_coltypes(dimensions = dimensions,
                                                        spans = FALSE)$colname, "value")
@@ -119,17 +123,54 @@ get_all_req_col_types_for_dimensions <- function(dimensions) {
     c(subset_master_df_of_dimensions_colnames_coltypes(dimensions = dimensions)$type, "any")
 }
 
-## Get the column name in a data frame corresponding to the given
-## dimensions (as in 'get_df_col_info_for_dimensions()')
+## Get the column names in a data frame corresponding to the given
+## dimensions. Includes span but excludes value.
 get_df_col_names_for_dimensions <- function(...) {
     subset_master_df_of_dimensions_colnames_coltypes(...)$colname
 }
 
-###-----------------------------------------------------------------------------
-### * Sexes
-
+## Sexes
 get_all_allowed_sexes <- function() {
     c("female", "male", "both")
+}
+
+## Guess spans.
+
+#' Guess the \dQuote{span} for a demographic dimension
+#'
+#' Certain demographic dimensions, such as \dQuote{time} and
+#' \dQuote{age} have associated spans. These should ordinarily be
+#' supplied by the user when calling, e.g.,
+#' \code{\link{demog_change_component_df}}, but a very simple guess
+#' will be attempted if not. Currently, the smallest difference
+#' between successive values in the corresponding
+#' \dQuote{\code{_start}} column is
+#' returned. \code{guess_span_from_start} takes a
+#' vector of \dQuote{\code{_start}} values as first argument;
+#' \code{guess_span_for_dimension_for_df} is a convenience wrapper
+#' that takes a data frame with such a column instead.
+#'
+#' @param x Vector of \dQuote{start} values (e.g., the
+#'     \code{time_start} or \code{age_start} column from a
+#'     \code{\link{demog_change_component_df}} object).
+#' @param dimension A single demographic dimension with a
+#'     \dQuote{span} (e.g., \dQuote{age}, \dQuote{time}).
+#' @return Guessed span.
+#' @author Mark Wheldon
+#' @name guess_span_for_dimension
+#' @export
+guess_span_from_start <- function(x) {
+    min(diff(unique(as.numeric(x)), differences = 1))
+}
+
+#' @rdname guess_span_for_dimension
+#' @export
+guess_span_for_dimension_for_df <- function(x, dimension = get_all_dimensions_w_spans()) {
+    dimension <- match.arg(dimension, several.ok = FALSE)
+    start_col_name <- grep("_start",
+                           get_df_col_names_for_dimensions(dimension),
+                           value = TRUE)
+    guess_span_from_start(x = x[, start_col_name])
     }
 
 ###-----------------------------------------------------------------------------
@@ -139,6 +180,11 @@ get_all_allowed_sexes <- function() {
 get_all_allowed_value_types <- function() {
     c("count", "rate", "ratio", "proportion", "percentage", "real", "categorical")
 }
+
+## List value types that can be aggregated or abridged
+get_all_aggregatable_value_types <- function() {
+    c("count", "real")
+    }
 
 ###-----------------------------------------------------------------------------
 ### * 'value_scale' Attribute
@@ -202,87 +248,4 @@ sort_demog_change_component_df <- function(x) {
     }
 
     return(x[do.call("order", sort_factors), ])
-}
-
-## Tabulate to check squareness
-tabulate_demog_change_component_df <- function(x) {
-    coln_x <- colnames(x)
-    coln_info_x <- subset_master_df_of_dimensions_colnames_coltypes(spans = FALSE)
-    coln_info_x <- coln_info_x[coln_info_x$colname %in% coln_x, ]
-    dims_names_x <- coln_info_x$dimension
-
-    get_x_col <- function(dimension) {
-        x[[coln_info_x[coln_info_x$dimension == dimension, "colname"]]]
-    }
-
-    tab_factors <- lapply(dims_names_x, "get_x_col")
-    return(table(tab_factors))
-}
-
-## Get min age within each dimension
-get_min_age_in_dims_in_df <- function(x) {
-    stopifnot(is_by_age(x))
-
-    coln_x <- colnames(x)
-    coln_info_x <- subset_master_df_of_dimensions_colnames_coltypes(spans = FALSE)
-    coln_info_x <- coln_info_x[coln_info_x$colname %in% coln_x, ]
-    dims_names_x <- coln_info_x$dimension
-
-    get_x_col <- function(dimension) {
-        x[[coln_info_x[coln_info_x$dimension == dimension, "colname"]]]
-    }
-
-    dims_names_not_age <- dims_names_x[!dims_names_x == "age"]
-
-    if (length(dims_names_not_age) > 1) {
-
-        tab_factors <-
-            lapply(dims_names_not_age, "get_x_col")
-
-        return(tapply(get_x_col("age"), INDEX = tab_factors,
-                      FUN = "min"))
-
-    } else if ("age" %in% dims_names_x)
-        return(min(get_x_col("age")))
-}
-
-## Check value type
-check_value_type_of_value_in_df <- function(value, type) {
-
-    is_na <- is.na(value)
-    if (all(is_na)) {
-        S3_class_warning("All 'value' entries are 'NA'.")
-        return(invisible())
-    }
-    if (any(is_na)) {
-        S3_class_warning("'value' column has some 'NA' entries.")
-        value <- value[!is_na]
-    }
-
-    stop_msg <- function(suff) {
-        paste0("'value_type' is '", type, "' but ", suff)
-    }
-
-    ## Character types
-    if (identical(type, "categorical")) {
-        if (!is.character(value))
-            stop(stop_msg("values are not character."))
-    } else {
-        ## Numeric types
-        if (!all(is.finite(value)))
-            stop("Not all 'value's are finite and non-missing.")
-
-        if (type %in% c("rate", "ratio", "real", "count"))
-            return(invisible())
-
-        if (identical(type, "proportion")) {
-            if (any(value < 0 | value > 1))
-                stop(stop_msg("values less than 0 or greater than 1 are present."))
-        } else if (identical(type, "percentage")) {
-            if (any(value < 0 | value > 100))
-                stop(stop_msg("values less than 0 or greater than 100 are present."))
-        } else {
-            return(invisible())
-        }
-    }
 }

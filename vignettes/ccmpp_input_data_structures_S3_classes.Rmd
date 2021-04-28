@@ -193,16 +193,16 @@ The class `demog_change_component_df` was designed to accommodate all of the dat
 
 "value_scale"
 
-:  This attribute specifies the scale of the `value` column (see below). It is either a numeric scalar or `NA`. It is non-missing only for objects with "value_type"s `r toString(ccmppWPP:::get_value_types_w_non_NA_value_scale())`.
+:  This attribute specifies the scale of the `value` column (see below). It is either a numeric scalar or `NA`. It is non-missing only for objects with "value_type"s `r toString(ccmppWPP:::get_value_types_w_non_NA_value_scale())`. 
 
-The data frames in `wpp_input_example` have various subsets of the `dimension`s. For example, `wpp_input_example$srb` has only the "time" dimension, the fertility rate component has only the "time" and "age" dimensions. Specific subclasses for these data frames are defined to formalize their characteristics (see below). 
+The data frames in `wpp_input_example` have various subsets of the `dimension`s. For example, `wpp_input_example$srb` has only the "time" dimension, the fertility rate component has only the "time" and "age" dimensions. Specific subclasses for these data frames are defined to formalize their characteristics (see below). The units for age and time are years.
 
 The "value_type" "real" is a catch-all for numeric values that do not fall under any other type. It is also used when the `value` column contains a mixture of the other types, as is the case for `wpp_input_example$life_table_age_sex`. 
 
 The "value_scale" attribute takes the value `1` by default for objects with "value_type"s `r paste(ccmppWPP:::get_value_types_w_non_NA_value_scale())` and `NA` otherwise. Objects of class `life_table_age_sex` (see Section \@ref(sec:subclasses-ccmpp)) are the exception where the default is `1e+05` to indicate the radix. The interpretation of the "value_scale" is dependent on the both the "value_type" and object class. For "value_types" `count` and `real` "value_scale" is a mulitplier. For `count` a typical "value_type" might be `1000` to indicate the counts are in thousands. For "value_type" "rate" the "value_scale" is interpreted as the scale of the denominator (exposure). When printed using the `value_scale` function it will indicate this, e.g., "`per 1`", "`per 1000`", etc.
 	
 	
-### Data Component
+### Data Component {#data-component}
 
 The data component of `demog_change_component_df`s is a standard *R* data frame. Therefore, `demog_change_component_df` inherits from the class `data.frame` and any functions applied to `demog_change_component_df`s that do not have specifically defined methods (see below) will behave as if they were given a data frame. 
 
@@ -210,21 +210,36 @@ The data frame must contain a column called `value` to hold the parameter values
 
 Table: (\#tab:data-frame-columns-by-dimension) Required columns by dimension for `demog_change_component_df` objects.
 
-+--------------------+--------------------+----------------------------------------------------------------+
-|   Dimension        | Columns Required   | Description                                                    |
-+====================+====================+================================================================+
-|indicator           | - `indicator`      | Character values labeling the indicator (no restrictions)      |
-+--------------------+--------------------+----------------------------------------------------------------+
-| time               | - `time_start`     | Numeric values indicating the start and span of the time period|
-|                    | - `time_span`      |                                                                |
-+--------------------+--------------------+----------------------------------------------------------------+
-| sex                | - sex              | Character values in `c("female", "male", "both")`              |
-+--------------------+--------------------+----------------------------------------------------------------+
-| age                | - `age_start`      | Numeric values indicating the start and span of the age period |
-|                    | - `age_span`       |                                                                |
-+--------------------+--------------------+----------------------------------------------------------------+
++--------------------+--------------------+-----------------------------------------------------------------+
+|   Dimension        | Columns Required   | Description                                                     |
++====================+====================+=================================================================+
+|indicator           | - `indicator`      | Character values labeling the indicator (no restrictions)       |
++--------------------+--------------------+-----------------------------------------------------------------+
+| time               | - `time_start`     | Numeric values indicating the start and span of the time period |
+|                    | - `time_span`      |                                                                 |
++--------------------+--------------------+-----------------------------------------------------------------+
+| sex                | - sex              | Character values in `c("female", "male", "both")`               |
++--------------------+--------------------+-----------------------------------------------------------------+
+| age                | - `age_start`      | Numeric values indicating the start and span of the age period  |
+|                    | - `age_span`       |                                                                 |
++--------------------+--------------------+-----------------------------------------------------------------+
 
 **NOTE** We could add `age_open_ended` to indicate which row is the open-ended age group.
+
+
+#### Spans {-}
+
+The `age_span` and `time_span` columns give the length of the interval over which the `value` applies. It is valid to have a `_span`s that do not match the row-wise differences in the corresponding `_start` column. For example, an observation with `age_start = 5` and `age_span = 1` means that the `value` applies to ages in the interval $[5, 6)$. Similarly for `time_start` and `time_span`:
+
+```{r}
+x <- data.frame(age_start = seq(from = 0, to = 20, by = 5),
+                age_span = rep(1, 5), value = 1000)
+x
+
+demog_change_component_df(x)
+```
+
+Such a data set contains values for ages 0, 5, ..., 20, but each value only pertains the single-year age intervals $[0, 1)$, $[1, 2)$, ..., $[20, 21)$. Information about the other age intervals is not present in `x`. 
 
 
 ### Constraints
@@ -233,9 +248,9 @@ The following constraints must be satisfied for an object to be a valid member o
 
 1. Exactly the columns required for the "dimensions" must all be present; none can be absent and no additional columns can be present.
 2. All non-`NA` elements in the `value` column must conform to the "value_type" attribute.
-3. The data frame has exactly one value per `indicator` $\times$ `age_start` $\times$ `sex` $\times$` time_start` combination. 
-4. The rows must be sorted by `indicator`, `time`, `sex`, `age`, varying slowest to fastest in that order. 
-5. The only values allowed in the `sex` column are "both", "female", and "male". 
+3. The rows must be sorted by `indicator`, `time`, `sex`, `age`, varying slowest to fastest in that order. 
+4. The only values allowed in the `sex` column are "both", "female", and "male". 
+4. The data frame must have exactly one value per `age_start` $\times$ `time_start` "Lexis square" for each `indicator` $\times$ `sex` combination. `age_span` and `time_span` are used to expand the `age_start` and `time_start` columns so that each age-time year is checked.
 
 
 ## Class `ccmpp_input_df`
@@ -259,7 +274,7 @@ The `age_span`s and `time_span`s must all be equal to a single common value for 
 
 ### Data Component
 
-No structural differences. Although `age_span` and `time_span` are attributes the columns are retained in the data frame.
+No structural differences. Although `age_span` and `time_span` are attributes the columns are retained in the data frame. 
 
 
 ### Constraints
@@ -267,8 +282,23 @@ No structural differences. Although `age_span` and `time_span` are attributes th
 The `ccmpp_input_df` has some additional constraints to ensure the objects are valid CCMPP inputs.
 
 1. `NA`s in the `value` column are not permitted.
-2. `age_span` and `time_span` are equal to each other and apply to all ages and times.
-3. For every unique `indicator` $\times$ `time_start` $\times$ `sex` combination there is an `age_start` that equals 0; i.e., the age breakdown must start at age 0.
+2. `age_span` and `time_span` must be consistent with the row-wise first differences of `age_start` and `time_start` (resp.). That is, if rows $i$ and $i+1$ have `age_start` values 1950 and 1950 + $n$, `age_span` in row $i$ must be $n$. This does not apply to the last row but see the next constraint.
+3. `age_span` and `time_span` are equal to each other and are the same for all ages and times.
+5. For every unique `indicator` $\times$ `time_start` $\times$ `sex` combination there is an `age_start` that equals 0; i.e., the age breakdown must start at age 0.
+
+Note that the extra restrictions mean that the example given at the end of Section \@ref(data-component) is no longer valid; there can be no age or time intervals missing.
+
+```{r}
+x <- data.frame(age_start = seq(from = 0, to = 20, by = 5),
+                age_span = rep(1, 5), value = 1000)
+x
+
+## Not run:
+## ccmpp_input_df(x)
+## Error in validate_ccmppWPP_object.ccmpp_input_df(new_ccmpp_input_df(li$df,  : 
+##   Not a valid 'ccmpp_input_df' object:
+## Spacings between each 'x$age_start' do not equal the corresponding values of 'x$age_span
+```
 
 
 ## Subclasses of `ccmpp_input_df` {#sec:subclasses-ccmpp}
@@ -422,6 +452,9 @@ demog_change_example_df <-
 :  - An attempt will be made to guess the attribute "non_zero_fert_ages" if it is not supplied as an argument.
 
 
+Many warnings and messages are associated with these operations. See Section \@ref(sec:package-options) if you want to turn these off via package `options`. 
+
+
 ### User Responsibilities
 
 The following are the responsibility of the user and will *not* be done automatically . Note that these are hierarchical; everything that is listed under a function applies to all those beneath it.
@@ -440,19 +473,19 @@ The following are the responsibility of the user and will *not* be done automati
 
 ## Validation
 
-The function `validate_ccmpp_object()` is available to validate any object as a member of the class. As per convention, if the object is valid it is returned; if not, an error is signalled:
+The function `validate_ccmppWPP_object()` is available to validate any object as a member of the class. As per convention, if the object is valid it is returned; if not, an error is signalled:
 
 ```{r validate-vr-class}
-x <- validate_ccmpp_object(x = demog_change_example_df)
+x <- validate_ccmppWPP_object(x = demog_change_example_df)
 class(x)
  
 ## Not run:
-## y <- validate_ccmpp_object(x = wpp_input_example$mig_net_count_age_sex)
-## > Error in validate_ccmpp_object.default(x = wpp_input_example$mig_net_count_age_sex) :
+## y <- validate_ccmppWPP_object(x = wpp_input_example$mig_net_count_age_sex)
+## > Error in validate_ccmppWPP_object.default(x = wpp_input_example$mig_net_count_age_sex) :
 ## 'x' is not an object with a valid CCMPP object class ...
 ```
 
-`validate_ccmpp_object()` is an S3 generic function; it has methods for all the classes and subclasses associated with the `demog_change_component_df` base class. 
+`validate_ccmppWPP_object()` is an S3 generic function; it has methods for all the classes and subclasses associated with the `demog_change_component_df` base class. 
 
 You can always check if an existing object inherits from a particular class using the appropriate `is_` function. These functions only check the "class" attribute; they do not check that the underlying data components are valid.
 
@@ -613,6 +646,8 @@ z <- demog_change_example_df[, "age_start"]
 class(z)
 ```
 
+Note that these warnings can be turned off globally using the option `ccmppWPP.suppress_S3_class_warnings` (see Section \@ref(sec:package-options)).
+
 ```{r subsetting-vrdf-data-frame}
 ## Extract a sub-data frame
 z <- demog_change_example_df[demog_change_example_df$time_start == 1950, ]
@@ -632,7 +667,7 @@ To create a valid subset, re-make the object as a member of the class (`suppress
 ```{r subset-vrdf-remake}
 z <-
     demog_change_component_df(
-        suppressWarnings(
+        suppressWarnings( # or use the package option "ccmppWPP.suppress_S3_class_warnings"
             demog_change_example_df[demog_change_example_df$time_start == 1950, ]),
         age_span = attr(demog_change_example_df, "age_span"),
         time_span = attr(demog_change_example_df, "time_span"))
@@ -640,6 +675,8 @@ class(z)
 ```
 
 Alternatively, one of the special subset functions could be used (see Section \@ref(new-subset-functions)).
+
+Note that subsetting could easily invalidate the object as a member of its class. For example, subsetting a `ccmpp_input_df` object on age by removing just one age group would render it invalid because objects of that class must have an uninterrupted age-sequence of values. 
 
 
 ### Subset-Replacing ###
@@ -695,14 +732,16 @@ A subset that is not a valid class object will not be created and an error will 
 ```{r}
 ## NOT RUN:
 ## x <- subset_age(ccmpp_input_example_df, age = 5)
-## Error in validate_ccmpp_object.ccmpp_input_df(new_ccmpp_input_df(li$df,  : 
+## Error in validate_ccmppWPP_object.ccmpp_input_df(new_ccmpp_input_df(li$df,  : 
 ##   'age_start' does not start at '0' for each time * sex combination.
 ```
 
 
-# Other Features
+# Other Features 
 
-Messages are issued for various reasons during object creation and manipulation. These can be turned off globally with the option "ccmppWPP.suppress_S3_class_messages", e.g., `r options(ccmppWPP.suppress_S3_class_messages = TRUE)`.
+## Package Options {#package-options}
+
+Warnings and messages are issued for various reasons during object creation and manipulation. These can be turned off globally with the options "ccmppWPP.suppress_S3_class_warnings" and "ccmppWPP.suppress_S3_class_messages", e.g., `r options(ccmppWPP.suppress_S3_class_messages = TRUE)`.
 
 
 # What Next?

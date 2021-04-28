@@ -1,4 +1,4 @@
-context("Test S3 class 'ccmpp_input_list'")
+
 
 test_that("valid member created", {
     expect_s3_class(ccmpp_input_list(
@@ -40,7 +40,7 @@ test_that("all elements required", {
     y <- x[1:3]
     y <- new_ccmpp_input_list(y, age_span = age_span(x),
                               time_span = time_span(x))
-    expect_error(validate_ccmpp_object(y),
+    expect_error(validate_ccmppWPP_object(y),
                  "must have these elements")
 })
 
@@ -85,7 +85,7 @@ test_that("common set of times is enforced", {
                     )
     y <- new_ccmpp_input_list(y, age_span = age_span(x),
                               time_span = time_span(x))
-        expect_error(capture.output(validate_ccmpp_object(y),
+        expect_error(capture.output(validate_ccmppWPP_object(y),
                                     file = OS_null_file_string),
                  "must have the same number of unique times")
 
@@ -101,7 +101,7 @@ test_that("common set of times is enforced", {
                             )
     y <- new_ccmpp_input_list(y, age_span = age_span(x),
                               time_span = time_span(x))
-        expect_error(capture.output(validate_ccmpp_object(y),
+        expect_error(capture.output(validate_ccmppWPP_object(y),
                                    file = OS_null_file_string),
                      "must have the same unique times")
 })

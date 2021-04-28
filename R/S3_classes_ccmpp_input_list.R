@@ -119,7 +119,7 @@ ccmpp_input_list <-
 
         ## Individual elements are all validated by
         ## 'as_...' functions so don't redo that part.
-        validate_ccmpp_object(
+        validate_ccmppWPP_object(
             new_ccmpp_input_list(obj,
                                age_span = age_span,
                                time_span = time_span,
@@ -188,7 +188,7 @@ as_ccmpp_input_list.ccmpp_input_list <- function(x, ...) {
     i <- match("ccmpp_input_list", cl)
     if (i > 1L)
         class(x) <- cl[-(1L:(i - 1L))]
-    return(validate_ccmpp_object(x))
+    return(validate_ccmppWPP_object(x))
 }
 
 #' @rdname coerce_ccmpp_input_list
@@ -196,4 +196,5 @@ as_ccmpp_input_list.ccmpp_input_list <- function(x, ...) {
 is_ccmpp_input_list <- function(x) {
     inherits(x, "ccmpp_input_list")
 }
+
 

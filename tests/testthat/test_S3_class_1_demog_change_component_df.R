@@ -1,5 +1,3 @@
-context("Test construction and validation of S3 class 'demog_change_component_df'")
-
 test_that("objects are created properly", {
 
 ### Time, Age, Sex
@@ -166,7 +164,7 @@ test_that("superfluous columns are caught", {
                              value_type = "real", value_scale = 1,
                        dimensions = c("time", "age", "sex"))
     expect_error(## Fail: Catches the extra column
-        validate_ccmpp_object(y),
+        validate_ccmppWPP_object(y),
         "has superfluous columns. The following are not permitted: 'source'")
 })
 
@@ -196,21 +194,12 @@ test_that("'indicator' column OK", {
                                                  c("age", "time", "sex", "indicator")))],
                              value_type = "real", value_scale = 1,
                        dimensions = c("time", "age", "sex", "indicator"))
-    expect_s3_class(validate_ccmpp_object(y), "demog_change_component_df")
+    expect_s3_class(validate_ccmppWPP_object(y), "demog_change_component_df")
 
     z <- transform(z, indicator = 84)
     expect_error(demog_change_component_df(z),
                  "Cannot coerce column 'indicator' to 'character'")
 })
-
-
-test_that("non-squareness is caught", {
-    x <- S3_demog_change_component_time_age_sex_test_df
-    y <- rbind(x, x[1,])
-    expect_error(demog_change_component_df(y),
-                 "does not have exactly one 'value'")
-})
-
 
 test_that("'NA's are allowed", {
     x <- S3_demog_change_component_time_age_sex_test_df

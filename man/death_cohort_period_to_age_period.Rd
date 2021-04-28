@@ -2,7 +2,7 @@
 % Please edit documentation in R/death_helper_functions.R
 \name{death_cohort_period_to_age_period}
 \alias{death_cohort_period_to_age_period}
-\title{Compute period death by age from mx and expousres}
+\title{Compute period deaths by age from mx and exposures}
 \usage{
 death_cohort_period_to_age_period(
   mort_rate_age_period,

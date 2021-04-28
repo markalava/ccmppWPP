@@ -1,4 +1,4 @@
-context("Methods for plyr functions")
+
 
 ### OBJECTS NEEDED (tested already)
 

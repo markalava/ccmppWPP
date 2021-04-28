@@ -1,4 +1,4 @@
-context("Test methods for S3 class 'ccmpp_input_list'")
+
 
 ### OBJECTS NEEDED (already tested)
 

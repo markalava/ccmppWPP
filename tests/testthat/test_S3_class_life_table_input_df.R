@@ -1,4 +1,4 @@
-context("Test methods for S3 class 'life_table_age_sex'")
+
 
 test_that("valid member created", {
     expect_s3_class(life_table_age_sex(wpp_input_example$life_table_age_sex),
@@ -18,7 +18,7 @@ test_that("Non-zero age detected", {
     z <- ccmppWPP:::new_life_table_age_sex(z, value_scale = 1,
                                      age_span = age_span(y),
                                      time_span = time_span(y))
-    expect_error(validate_ccmpp_object(z))
+    expect_error(validate_ccmppWPP_object(z))
 })
 
 

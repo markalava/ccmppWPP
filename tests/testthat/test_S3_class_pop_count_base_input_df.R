@@ -1,4 +1,4 @@
-context("Test methods for S3 class 'pop_count_age_sex_base'")
+
 
 test_that("valid member created", {
     expect_s3_class(pop_count_age_sex_base(wpp_input_example$pop_count_age_sex_base),
@@ -19,7 +19,7 @@ test_that("Non-zero age detected", {
                                                value_scale = 1,
                                      age_span = age_span(y),
                                      time_span = time_span(y))
-    expect_error(validate_ccmpp_object(z),
+    expect_error(validate_ccmppWPP_object(z),
                  "'age_start' does not start at '0'")
 })
 
@@ -31,7 +31,7 @@ test_that("More than one time period detected", {
                                                value_scale = 1,
                                      time_span = time_span(y),
                                      age_span = age_span(y))
-    expect_error(validate_ccmpp_object(z),
+    expect_error(validate_ccmppWPP_object(z),
                  "has more than one unique value")
     })
 

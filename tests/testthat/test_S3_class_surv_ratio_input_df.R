@@ -1,4 +1,4 @@
-context("Test methods for S3 class 'survival_ratio_age_sex'")
+
 
 ### MAKE OBJECT AVAILABLE TO REMAINDER OF TESTS
 
@@ -36,7 +36,7 @@ test_that("Non-zero age detected", {
     z <- ccmppWPP:::new_survival_ratio_age_sex(ccmppWPP:::sort_demog_change_component_df(z),
                                      age_span = age_span(survival_ratio_age_sex(y)),
                                      time_span = time_span(survival_ratio_age_sex(y)))
-    expect_error(validate_ccmpp_object(z),
+    expect_error(validate_ccmppWPP_object(z),
                  "'age_start' does not start at '0'")
 })
 

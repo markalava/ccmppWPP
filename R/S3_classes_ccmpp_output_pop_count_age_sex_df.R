@@ -41,22 +41,23 @@ new_pop_count_age_sex <-
 #' \item{\code{Value_type} attribute equals \dQuote{count}}
 #' \item{Within year and sex, age must start at 0.}}
 #' It is intended as a class that can be used for the population
-#' counts produced by the CCMPP. Methods for the creator function
-#' exist for \code{\link{base::data.frame}}s and
+#' counts produced by the CCMPP.
+#'
+#' Methods for the creator function exist for
+#' \code{\link{base::data.frame}}s and
 #' \code{link{ccmpp_input_list}}s. The latter is a wrapper for
 #' \code{\link{project_ccmpp_loop_over_time}}; it implements cohort
 #' component projection on the input list and returns the projected
 #' counts as a \code{pop_count_age_sex}
 #' object. \code{get_projected_pop_counts} is a more descriptively
-#' name wrapper for
-#' \code{pop_count_age_sex.ccmpp_input_list(x, keep_baseline = FALSE)}.
-#'
-#' \code{ccmpp_input_list}s determine completely the population counts
-#' in subsequent times. As such, the \code{ccmpp_input_list} method
-#' can be viewed as a way of \dQuote{extracting} these counts from the input.
+#' name wrapper for \code{pop_count_age_sex.ccmpp_input_list(x,
+#' keep_baseline = FALSE)}. \code{ccmpp_input_list}s determine
+#' completely the population counts in subsequent times. As such, the
+#' \code{ccmpp_input_list} method can be viewed as a way of
+#' \dQuote{extracting} these counts from the input.
 #'
 #' \code{pop_count_age_sex.ccmpp_input_list} and
-#' \code{get_projected_pop_counts} are wrappers that return projected
+#' \code{get_projected_pop_counts} return projected
 #' counts as an object of class \code{pop_count_age_sex}. For an
 #' alternative list output, see the underlying function
 #' \code{\link{project_ccmpp_loop_over_time}}.

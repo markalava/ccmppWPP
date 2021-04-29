@@ -98,6 +98,13 @@ new_fert_rate_age_f <-
 #'   specifies the reproductive age range as a vector of
 #'   \code{age_start} values (see \dQuote{Details}).}}
 #'
+#' Methods are defined for \code{\link{data.frame}}s and
+#' \code{\link{ccmpp_input_list}}s, and possibly other objects as
+#' well. The \code{data.frame} method \dQuote{constructs} an object
+#' from \code{x}. The \code{ccmpp_input_list} method \dQuote{extracts}
+#' an object from \code{x}. There is also a replacement function which
+#' complements the extraction methods.
+#'
 #' An attempt will be made to guess \code{non_zero_fert_ages} if they
 #' are not explicitly specified using the \code{non_zero_fert_ages}
 #' argument.
@@ -115,13 +122,20 @@ new_fert_rate_age_f <-
 #'     \code{\link{ccmpp_input_df}} for the class from which this one
 #'     inherits.
 #'
+#' @param x An object for which a method is defined (see \dQuote{Details}).
 #' @inheritParams demog_change_component_df
 #' @param non_zero_fert_ages Numeric vector of unique ages indicating
 #'     the reproductive age range. See the \dQuote{Details} section.
 #' @return An object of class \code{fert_rate_age_f}.
 #' @author Mark Wheldon
 #' @export
-fert_rate_age_f <-
+fert_rate_age_f <- function(x, ...) {
+    UseMethod("fert_rate_age_f")
+}
+
+#' @rdname fert_rate_age_f
+#' @export
+fert_rate_age_f.data.frame <-
     function(x,
              non_zero_fert_ages = attr(x, "non_zero_fert_ages"),
              value_scale = attr(x, "value_scale")) {
@@ -156,6 +170,18 @@ fert_rate_age_f <-
                                non_zero_fert_ages = non_zero_fert_ages)
         )
     }
+
+#' @rdname fert_rate_age_f
+#' @export
+fert_rate_age_f.ccmpp_input_list <- function(x) {
+    fert_rate_component(x)
+}
+
+#' @rdname fert_rate_age_f
+#' @export
+`fert_rate_age_f<-` <- function(x, value) {
+    `fert_rate_component<-`(x, value)
+}
 
 
 ###-----------------------------------------------------------------------------

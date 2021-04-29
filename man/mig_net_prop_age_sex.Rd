@@ -16,11 +16,7 @@ mig_net_prop_age_sex(x, ...)
 \method{mig_net_prop_age_sex}{mig_net_count_age_sex}(x, pop_count_age_sex, ...)
 }
 \arguments{
-\item{x}{Depending on the method
-\describe{
-  \item{\code{data.frame}}{A \code{\link{base::data.frame}} object}
-  \item{\code{ccmpp_input_list}}{A \code{\link{ccmpp_input_list}} object}
-  \item{\code{mig_net_count_age_sex}}{A \code{\link{mig_net_count_age_sex}} object}}}
+\item{x}{An object for which a method is defined (see \dQuote{Usage}).}
 
 \item{...}{Passed to the low-level constructor.}
 

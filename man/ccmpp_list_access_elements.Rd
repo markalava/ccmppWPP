@@ -218,8 +218,11 @@ mig_parameter_component(x) <- value
 An object inheriting from \code{ccmpp_input_df}.
 }
 \description{
-These functions extract the \code{ccmpp_input_df} elements from an object
-inheriting from \code{ccmpp_input_list}.
+These functions extract the \code{ccmpp_input_df} elements from an
+object inheriting from \code{ccmpp_input_list}. These are \emph{not
+exported}; use the constructor functions instead. For example, to
+extract fertility rates from \code{ccmpp_input_list}, \code{x}, use
+\verb{fert_rate_age_f(x)} instead of \verb{fert_rate_component(x)}.
 }
 \author{
 Mark Wheldon

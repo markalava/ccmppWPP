@@ -43,18 +43,30 @@ new_mortality_rate_age_sex <-
 #'   \item{\code{Value_type} attribute equals \dQuote{proportion}.}
 #'   \item{Within year and sex, age must start at 0.}}
 #'
+#' Methods are defined for \code{\link{data.frame}}s and
+#' \code{\link{ccmpp_input_list}}s, and possibly other objects as
+#' well. The \code{data.frame} method \dQuote{constructs} an object
+#' from \code{x}. The \code{ccmpp_input_list} method \dQuote{extracts}
+#' an object from \code{x}. There is also a replacement function which
+#' complements the extraction methods.
+#'
 #' @family ccmpp_input_objects
 #' @seealso \code{\link{validate_ccmppWPP_object}} for object validation,
 #'     \code{\link{ccmpp_input_df}} for the class from which this one
 #'     inherits.
 #'
+#' @param x An object for which a method is defined (see \dQuote{Details}).
 #' @inheritParams demog_change_component_df
 #' @return An object of class \code{mortality_rate_age_sex}.
 #' @author Mark Wheldon
 #' @export
-mortality_rate_age_sex <-
-    function(x) {
+mortality_rate_age_sex <- function(x, ...) {
+    UseMethod("mortality_rate_age_sex")
+}
 
+#' @rdname mortality_rate_age_sex
+#' @export
+mortality_rate_age_sex.data.frame <- function(x) {
         li <- prepare_df_for_ccmpp_input_df(x,
                            dimensions = get_req_dimensions_for_ccmpp_in_out_classes("mortality_rate_age_sex"),
                            value_type = get_value_types_for_ccmpp_in_out_classes("mortality_rate_age_sex"),
@@ -67,7 +79,25 @@ mortality_rate_age_sex <-
                                time_span = li$time_span,
                                value_scale = NA)
         )
-    }
+}
+
+#' @rdname mortality_rate_age_sex
+#' @export
+mortality_rate_age_sex.life_table_age_sex <- function(x) {
+    mortality_rate_component(x)
+}
+
+#' @rdname mortality_rate_age_sex
+#' @export
+mortality_rate_age_sex.ccmpp_input_list <- function(x) {
+    mortality_rate_component(x)
+}
+
+#' @rdname mortality_rate_age_sex
+#' @export
+`mortality_rate_age_sex<-` <- function(x, value) {
+    `mortality_rate_component<-`(x, value)
+}
 
 
 #' Coerce to a \code{mortality_rate_age_sex}

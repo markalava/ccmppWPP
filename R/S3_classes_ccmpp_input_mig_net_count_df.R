@@ -41,32 +41,25 @@ new_mig_net_count_age_sex <-
 #'   \item{\code{Value_type} attribute equals \dQuote{rate}.}
 #'   \item{Within year and sex, age must start at 0.}}
 #'
-#' This function is generic with methods for \code{data.frame}, and
-#' \code{mig_net_prop_age_sex}. The latter method will compute the
-#' counts from migration proportions and a baseline population by
-#' simple multiplication of migration proportions by population
-#' counts, matched by age, sex, and time. Unlike
-#' \code{link{mig_net_prop_age_sex}} there is no
-#' \code{ccmpp_input_list} method because migration proportions are not a
-#' valid element of \code{ccmpp_input_list}s.
+#' Methods are defined for \code{\link{data.frame}}s and
+#' \code{\link{ccmpp_input_list}}s, and possibly other objects as
+#' well. The \code{data.frame} method \dQuote{constructs} an object
+#' from \code{x}. The \code{ccmpp_input_list} method \dQuote{extracts}
+#' an object from \code{x}. There is also a replacement function which
+#' complements the extraction methods.
 #'
 #' @family ccmpp_input_objects
 #' @seealso \code{\link{validate_ccmppWPP_object}} for object validation,
 #'     \code{\link{ccmpp_input_df}} for the class from which this one
 #'     inherits.
 #'
-#' @param x Depending on the method
-#' \describe{
-#'   \item{\code{data.frame}}{A \code{\link{base::data.frame}} object}
-#'   \item{\code{mig_net_prop_age_sex}}{A \code{\link{mig_net_prop_age_sex}} object}}
-#'
+#' @param x An object for which a method is defined (see \dQuote{Details}).
 #' @param pop_count_age_sex For the \code{mig_net_prop_age_sex}
 #'     method, an object that can be coreced to a
 #'     \code{\link{ccmpp_input_df}} object (e.g., a
 #'     \code{data.frame}), holding population counts from which to
 #'     calculate the migration counts. The \code{value_type} must be
-#'     \dQuote{count} and the \code{value_scale}s must match.
-#'
+#'     \dQuote{count} and the \code{value_scale}s must match.#'
 #' @param value_scale_pop_count The scale of the \code{value} column
 #'     in \code{pop_count_age_sex}. If unspecified, defaults to the
 #'     \dQuote{value_scale} attribute of \code{pop_count_age_sex} if
@@ -113,6 +106,18 @@ mig_net_count_age_sex.mig_net_prop_age_sex <-
                                                  y = pop_count_age_sex),
                               value_scale = value_scale_pop_count)
     }
+
+#' @rdname
+#' @export
+mig_net_count_age_sex.ccmpp_input_list <- function(x) {
+    mig_net_count_component(x)
+}
+
+#' @rdname
+#' @export
+`mig_net_count_age_sex<-`  <- function(x, value) {
+    `mig_net_count_component<-`(x, value)
+}
 
 
 #' Coerce to a \code{mig_net_count_age_sex}

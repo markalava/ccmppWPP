@@ -57,6 +57,13 @@ new_life_table_age_sex <-
 #' \code{life_table_age_sex} is a subclass of
 #' \code{\link{ccmpp_input_df}}. It has an indicator column that **TO BE COMPLETED**
 #'
+#' Methods are defined for \code{\link{data.frame}}s and
+#' \code{\link{ccmpp_input_list}}s, and possibly other objects as
+#' well. The \code{data.frame} method \dQuote{constructs} an object
+#' from \code{x}. The \code{ccmpp_input_list} method \dQuote{extracts}
+#' an object from \code{x}. There is also a replacement function which
+#' complements the extraction methods.
+#'
 #' @section Note:
 #' The \dQuote{value_scale} attribute for objects of class
 #' \code{life_table_age_sex} is the \emph{radix} of the life table.
@@ -66,12 +73,18 @@ new_life_table_age_sex <-
 #'     \code{\link{ccmpp_input_df}} for the class from which this one
 #'     inherits.
 #'
+#' @param x An object for which a method is defined (see \dQuote{Details}).
 #' @inheritParams demog_change_component_df
 #' @return An object of class \code{life_table_age_sex}.
 #' @author Mark Wheldon
 #' @export
-life_table_age_sex <-
-    function(x,
+life_table_age_sex <- function(x, ...) {
+    UseMethod("life_table_age_sex")
+}
+
+#' @rdname life_table_age_sex
+#' @export
+life_table_age_sex.data.frame <- function(x,
              value_scale = attr(x, "value_scale")) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
@@ -89,7 +102,19 @@ life_table_age_sex <-
                                time_span = li$time_span,
                                value_scale = li$value_scale)
         )
-    }
+}
+
+#' @rdname life_table_age_sex
+#' @export
+life_table_age_sex.ccmpp_input_list <- function(x) {
+    life_table_component(x)
+}
+
+#' @rdname life_table_age_sex
+#' @export
+`life_table_age_sex<-` <- function(x, value) {
+    `life_table_component<-`(x, value)
+}
 
 
 #' Coerce to a \code{life_table_age_sex}

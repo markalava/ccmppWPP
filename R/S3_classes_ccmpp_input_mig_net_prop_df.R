@@ -73,6 +73,7 @@ new_mig_net_prop_age_sex <-
 #'     calculate the migration proportions. The \code{value_type} must
 #'     be \dQuote{count} and the \code{value_scale}s must match.
 #'
+#' @param x An object for which a method is defined (see \dQuote{Usage}).
 #' @inheritParams demog_change_component_df
 #'
 #' @return An object of class \code{mig_net_prop_age_sex} with the

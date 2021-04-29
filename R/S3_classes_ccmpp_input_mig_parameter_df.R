@@ -58,18 +58,30 @@ new_mig_parameter <-
 #' \code{mig_parameter} is a subclass of
 #' \code{\link{ccmpp_input_df}}. It contains
 #'
+#' Methods are defined for \code{\link{data.frame}}s and
+#' \code{\link{ccmpp_input_list}}s, and possibly other objects as
+#' well. The \code{data.frame} method \dQuote{constructs} an object
+#' from \code{x}. The \code{ccmpp_input_list} method \dQuote{extracts}
+#' an object from \code{x}. There is also a replacement function which
+#' complements the extraction methods.
+#'
 #' @family ccmpp_input_objects
 #' @seealso \code{\link{validate_ccmppWPP_object}} for object validation,
 #'     \code{\link{ccmpp_input_df}} for the class from which this one
 #'     inherits.
 #'
+#' @param x An object for which a method is defined (see \dQuote{Details}).
 #' @inheritParams demog_change_component_df
 #' @return An object of class \code{mig_parameter}.
 #' @author Mark Wheldon
 #' @export
-mig_parameter <-
-    function(x) {
+mig_parameter <- function(x, ...) {
+    UseMethod("mig_parameter")
+}
 
+#' @rdname mig_parameter
+#' @export
+mig_parameter.data.frame <- function(x) {
         li <- prepare_df_for_ccmpp_input_df(x,
                             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("mig_parameter"),
                             value_type = get_value_types_for_ccmpp_in_out_classes("mig_parameter"),
@@ -81,6 +93,18 @@ mig_parameter <-
                               value_scale = NA)
         )
     }
+
+#' @rdname mig_parameter
+#' @export
+mig_parameter.ccmpp_input_list <- function(x) {
+    mig_parameter_component(x)
+}
+
+#' @rdname mig_parameter
+#' @export
+`mig_parameter<-` <- function(x, value) {
+    `mig_parameter_component<-`(x, value)
+}
 
 
 ###-----------------------------------------------------------------------------

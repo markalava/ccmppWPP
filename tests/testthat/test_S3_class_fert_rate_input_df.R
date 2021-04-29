@@ -39,13 +39,13 @@ test_that("invalid data objects are caught", {
     x <- fert_rate_input_df_time_age
 
     expect_error(fert_rate_age_f(as.list(x)),
-                 "not a data.frame")
+                 "no applicable method")
 
     expect_error(fert_rate_age_f(as.matrix(x)),
-                 "not a data.frame")
+                 "no applicable method")
 
     expect_error(fert_rate_age_f(data.matrix(x)),
-                 "not a data.frame")
+                 "no applicable method")
 })
 
 

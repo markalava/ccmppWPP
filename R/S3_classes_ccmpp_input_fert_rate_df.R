@@ -272,6 +272,31 @@ non_zero_fert_ages.fert_rate_age_f <- function(x) {
 ###-----------------------------------------------------------------------------
 ### * Transformations
 
+#' Drop zero fertility rate ages
+#'
+#' Drops zero fertility rate ages from a \code{fert_rate_age_df}
+#' object. Note that the result is \emph{not valid} as a member of
+#' this class so a \code{\link{demog_change_component_df}} will be
+#' returned.
+#'
+#' @param x An object inheriting from \code{fert_rate_age_df}
+#' @param ... Not implemented
+#' @return A \code{demog_change_component_df} with the only the rows
+#'     corresponding to \code{non_zero_fert_ages(x)}.
+#' @author Mark Wheldon
+#' @export
+drop_zero_fert_ages <- function(x, ...) {
+    UseMethod("drop_zero_fert_ages")
+}
+
+#' @rdname drop_zero_fert_ages
+#' @export
+drop_zero_fert_ages.fert_rate_age_f <- function(x) {
+    nzfa <- non_zero_fert_ages(x)
+    x <- as_demog_change_component_df(x)
+    subset_age(x, nzfa)
+}
+
 #' Calculate total fertility rates
 #'
 #' This generic function returns total fertility rates from an object

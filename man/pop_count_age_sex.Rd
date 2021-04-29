@@ -55,6 +55,12 @@ name wrapper for
 \code{ccmpp_input_list}s determine completely the population counts
 in subsequent times. As such, the \code{ccmpp_input_list} method
 can be viewed as a way of \dQuote{extracting} these counts from the input.
+
+\code{pop_count_age_sex.ccmpp_input_list} and
+\code{get_projected_pop_counts} are wrappers that return projected
+counts as an object of class \code{pop_count_age_sex}. For an
+alternative list output, see the underlying function
+\code{\link{project_ccmpp_loop_over_time}}.
 }
 \seealso{
 \code{\link{validate_ccmppWPP_object}} for object validation,

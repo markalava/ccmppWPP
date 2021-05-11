@@ -270,5 +270,26 @@ test_that("'subset_indicators' works as expected", {
     expect_equal(indicators(subset_indicator(x, "test_1", include = FALSE)), "test_2")
     expect_error(subset_indicator(x, c("test_1", "test_2"), include = FALSE),
                  "'x' does not have any entries; you have excluded all rows.")
-    })
+})
 
+
+test_that("Non-squareness is OK", {
+    x <- demog_change_component_df(S3_demog_change_component_time_age_sex_test_df,
+                                   dimensions = c("time", "age", "sex"),
+                                   value_type = "real",
+                                   value_scale = 1)
+
+    y <- expect_message(demog_change_component_df(x[-1, ]))
+    expect_s3_class(y, "demog_change_component_df")
+    expect_s3_class(y, "data.frame")
+    expect_true(setequal(demog_change_component_dims(y), c("time", "age", "sex")))
+    expect_true(identical(names(demog_change_component_attributes(y)),
+                          c("dimensions", "value_type", "value_scale")))
+
+    y <- expect_message(demog_change_component_df(rbind(x[1, ], x)))
+    expect_s3_class(y, "demog_change_component_df")
+    expect_s3_class(y, "data.frame")
+    expect_true(setequal(demog_change_component_dims(y), c("time", "age", "sex")))
+    expect_true(identical(names(demog_change_component_attributes(y)),
+                          c("dimensions", "value_type", "value_scale")))
+})

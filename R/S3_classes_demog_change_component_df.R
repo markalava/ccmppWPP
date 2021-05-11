@@ -88,7 +88,7 @@ prepare_df_for_demog_change_component_df <- function(x,
     if (!is.data.frame(x))
         stop("'x' is not a data.frame.")
 
-    ## Coerce so things classes like tibbles are dropped. These cause
+    ## Coerce so classes like tibbles are dropped. These cause
     ## problems later on.
     x <- as.data.frame(x)
 

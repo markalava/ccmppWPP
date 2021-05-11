@@ -114,7 +114,7 @@ exposure_age_sex_adjust_loop_over_time <- function(death_age_sex_period, mx) {
   age_start              <- unique(death_age_sex_period$age_start) 
   nage                   <- length(age_start)
   
-  for (time in seq(time_start, time_end-time_span, time_span)) {
+  for (time in seq(time_start, time_end, time_span)) {
     for (sex in c("female", "male")) {
       
       n   <- n+1

@@ -30,14 +30,13 @@ demog_change_component_attributes.demog_change_component_df <- function(x) {
 }
 
 
-#' Extract the \dQuote{dimensions} attribute
+#' Report the demographic \dQuote{dimensions}
 #'
-#' Extracts the demographic dimensions, i.e., age, time and sex, from
-#' an object.
+#' Reports the demographic dimensions, in a character vector.
 #'
 #' @param x An object for which a method exists, e.g., one inheriting
 #'     from \code{demog_change_component_df}.
-#' @return The extracted attribute
+#' @return A character vector with demographic dimensions present.
 #' @author Mark Wheldon
 #' @name demog_change_component_dims
 #' @export

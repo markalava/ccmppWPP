@@ -32,10 +32,11 @@ demog_change_component_attributes.demog_change_component_df <- function(x) {
 
 #' Extract the \dQuote{dimensions} attribute
 #'
-#' Extracts the non-data.frame attributes. The only method that exists
-#' is for \code{demog_change_component_df} objects.
+#' Extracts the demographic dimensions, i.e., age, time and sex, from
+#' an object.
 #'
-#' @param x An object from which to extract attributes.
+#' @param x An object for which a method exists, e.g., one inheriting
+#'     from \code{demog_change_component_df}.
 #' @return The extracted attribute
 #' @author Mark Wheldon
 #' @name demog_change_component_dims

@@ -41,17 +41,30 @@ new_mig_net_count_tot_b <-
 #'   \item{\code{Value_type} attribute equals \dQuote{rate}.}
 #'   \item{Within year and sex, age must start at 0.}}
 #'
+#' Methods are defined for \code{\link{data.frame}}s and
+#' \code{\link{ccmpp_input_list}}s, and possibly other objects as
+#' well. The \code{data.frame} method \dQuote{constructs} an object
+#' from \code{x}. The \code{ccmpp_input_list} method \dQuote{extracts}
+#' an object from \code{x}. There is also a replacement function which
+#' complements the extraction methods.
+#'
 #' @family ccmpp_input_objects
 #' @seealso \code{\link{validate_ccmppWPP_object}} for object validation,
 #'     \code{\link{ccmpp_input_df}} for the class from which this one
 #'     inherits.
 #'
+#' @param x An object for which a method is defined (see \dQuote{Details}).
 #' @inheritParams demog_change_component_df
 #' @return An object of class \code{mig_net_count_tot_b}.
 #' @author Mark Wheldon
 #' @export
-mig_net_count_tot_b <-
-    function(x,
+mig_net_count_tot_b <- function(x, ...) {
+    UseMethod("mig_net_count_tot_b")
+}
+
+#' @rdname mig_net_count_tot_b
+#' @export
+mig_net_count_tot_b.data.frame <- function(x,
              value_scale = attr(x, "value_scale")) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
@@ -65,6 +78,19 @@ mig_net_count_tot_b <-
                                     value_scale = li$value_scale)
         )
     }
+
+#' @rdname mig_net_count_tot_b
+#' @export
+mig_net_count_tot_b.ccmpp_input_list <- function(x) {
+    mig_net_count_tot_component(x)
+}
+
+
+#' @rdname mig_net_count_tot_b
+#' @export
+`mig_net_count_tot_b<-` <- function(x, value) {
+    `mig_net_count_tot_component<-`(x, value)
+}
 
 
 #' Coerce to a \code{mig_net_count_tot_b}

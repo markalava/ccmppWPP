@@ -7,10 +7,7 @@
 mig_net_count_age_sex(x, ...)
 }
 \arguments{
-\item{x}{Depending on the method
-\describe{
-  \item{\code{data.frame}}{A \code{\link{base::data.frame}} object}
-  \item{\code{mig_net_prop_age_sex}}{A \code{\link{mig_net_prop_age_sex}} object}}}
+\item{x}{An object for which a method is defined (see \dQuote{Details}).}
 
 \item{...}{Passed to the low-level constructor.}
 
@@ -19,7 +16,7 @@ method, an object that can be coreced to a
 \code{\link{ccmpp_input_df}} object (e.g., a
 \code{data.frame}), holding population counts from which to
 calculate the migration counts. The \code{value_type} must be
-\dQuote{count} and the \code{value_scale}s must match.}
+\dQuote{count} and the \code{value_scale}s must match.#'}
 
 \item{value_scale_pop_count}{The scale of the \code{value} column
 in \code{pop_count_age_sex}. If unspecified, defaults to the
@@ -37,14 +34,12 @@ An object of class \code{mig_net_count_age_sex}.
   \item{Within year and sex, age must start at 0.}}
 }
 \details{
-This function is generic with methods for \code{data.frame}, and
-\code{mig_net_prop_age_sex}. The latter method will compute the
-counts from migration proportions and a baseline population by
-simple multiplication of migration proportions by population
-counts, matched by age, sex, and time. Unlike
-\code{link{mig_net_prop_age_sex}} there is no
-\code{ccmpp_input_list} method because migration proportions are not a
-valid element of \code{ccmpp_input_list}s.
+Methods are defined for \code{\link{data.frame}}s and
+\code{\link{ccmpp_input_list}}s, and possibly other objects as
+well. The \code{data.frame} method \dQuote{constructs} an object
+from \code{x}. The \code{ccmpp_input_list} method \dQuote{extracts}
+an object from \code{x}. There is also a replacement function which
+complements the extraction methods.
 }
 \seealso{
 \code{\link{validate_ccmppWPP_object}} for object validation,

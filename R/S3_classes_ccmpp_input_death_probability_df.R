@@ -43,18 +43,30 @@ new_death_probability_age_sex <-
 #'   \item{\code{Value_type} attribute equals \dQuote{proportion}.}
 #'   \item{Within year and sex, age must start at 0.}}
 #'
+#' Methods are defined for \code{\link{data.frame}}s and
+#' \code{\link{ccmpp_input_list}}s, and possibly other objects as
+#' well. The \code{data.frame} method \dQuote{constructs} an object
+#' from \code{x}. The \code{ccmpp_input_list} method \dQuote{extracts}
+#' an object from \code{x}. There is also a replacement function which
+#' complements the extraction methods.
+#'
 #' @family ccmpp_input_objects
 #' @seealso \code{\link{validate_ccmppWPP_object}} for object validation,
 #'     \code{\link{ccmpp_input_df}} for the class from which this one
 #'     inherits.
 #'
+#' @param x An object for which a method is defined (see \dQuote{Details}).
 #' @inheritParams demog_change_component_df
 #' @return An object of class \code{death_probability_age_sex}.
 #' @author Mark Wheldon
 #' @export
-death_probability_age_sex <-
-    function(x) {
+death_probability_age_sex <- function(x, ...) {
+    UseMethod("death_probability_age_sex")
+}
 
+#' @rdname death_probability_age_sex
+#' @export
+death_probability_age_sex.data.frame <- function(x) {
         li <- prepare_df_for_ccmpp_input_df(x,
                            dimensions = get_req_dimensions_for_ccmpp_in_out_classes("death_probability_age_sex"),
                            value_type = get_value_types_for_ccmpp_in_out_classes("death_probability_age_sex"),
@@ -68,6 +80,24 @@ death_probability_age_sex <-
                                value_scale = NA)
         )
     }
+
+#' @rdname death_probability_age_sex
+#' @export
+death_probability_age_sex.life_table_age_sex <- function(x) {
+    death_probability_component(x)
+}
+
+#' @rdname death_probability_age_sex
+#' @export
+death_probability_age_sex.ccmpp_input_list <- function(x) {
+    death_probability_component(x)
+}
+
+#' @rdname death_probability_age_sex
+#' @export
+`death_probability_age_sex<-` <- function(x, value) {
+    `death_probability_component<-`(x, value)
+}
 
 
 #' Coerce to a \code{death_probability_age_sex}

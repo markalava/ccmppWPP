@@ -2,14 +2,26 @@
 % Please edit documentation in R/S3_classes_ccmpp_input_death_count_df.R
 \name{death_count_age_sex}
 \alias{death_count_age_sex}
+\alias{death_count_age_sex.data.frame}
+\alias{death_count_age_sex.life_table_age_sex}
+\alias{death_count_age_sex.ccmpp_input_list}
+\alias{death_count_age_sex<-}
 \title{Constructor for class \code{death_count_age_sex}}
 \usage{
-death_count_age_sex(x, value_scale = attr(x, "value_scale"))
+death_count_age_sex(x, ...)
+
+\method{death_count_age_sex}{data.frame}(x, value_scale = attr(x, "value_scale"))
+
+\method{death_count_age_sex}{life_table_age_sex}(x)
+
+\method{death_count_age_sex}{ccmpp_input_list}(x)
+
+death_count_age_sex(x) <- value
 }
 \arguments{
-\item{x}{For \code{demog_change_component_df}: A data frame with
-columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
-\dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.}
+\item{x}{An object for which a method is defined (see \dQuote{Details}).}
+
+\item{...}{Passed to the low-level constructor.}
 
 \item{value_scale}{\emph{Numeric} scalar indicating the value_scale of the
 counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
@@ -23,6 +35,14 @@ An object of class \code{death_count_age_sex}.
 \enumerate{
   \item{\code{Value_type} attribute equals \dQuote{proportion}.}
   \item{Within year and sex, age must start at 0.}}
+}
+\details{
+Methods are defined for \code{\link{data.frame}}s and
+\code{\link{ccmpp_input_list}}s, and possibly other objects as
+well. The \code{data.frame} method \dQuote{constructs} an object
+from \code{x}. The \code{ccmpp_input_list} method \dQuote{extracts}
+an object from \code{x}. There is also a replacement function which
+complements the extraction methods.
 }
 \seealso{
 \code{\link{validate_ccmppWPP_object}} for object validation,

@@ -39,13 +39,13 @@ test_that("invalid data objects are caught", {
     x <- fert_rate_input_df_time_age
 
     expect_error(fert_rate_age_f(as.list(x)),
-                 "not a data.frame")
+                 "no applicable method")
 
     expect_error(fert_rate_age_f(as.matrix(x)),
-                 "not a data.frame")
+                 "no applicable method")
 
     expect_error(fert_rate_age_f(data.matrix(x)),
-                 "not a data.frame")
+                 "no applicable method")
 })
 
 
@@ -208,5 +208,11 @@ test_that("zero fertility rate ages that are non-zero are caught", {
              value_scale = 1,
              non_zero_fert_ages = 2)
     expect_error(validate_ccmppWPP_object(y), "have non-zero 'value' for at least some 'time_start's")
-    })
+})
+
+
+test_that("non-zero fertility rate ages can be dropped", {
+    x <- drop_zero_fert_ages(fert_rate_input_df_time_age)
+    expect_s3_class(x, "demog_change_component_df")
+})
 

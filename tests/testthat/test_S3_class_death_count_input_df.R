@@ -23,7 +23,7 @@ life_table_input_df_indicator_time_age_sex <-
 
 
 test_that("successfully extracted from 'life_table...' object", {
-    expect_s3_class(death_count_component(
+    expect_s3_class(death_count_age_sex(
         life_table_input_df_indicator_time_age_sex),
         "death_count_age_sex")
     })

@@ -7,12 +7,27 @@ validate_ccmppWPP_object.ccmpp_input_df <- function(x, ...) {
 
     x <- NextMethod()
 
+    ## SQUARENESS:
+    ## Must be exactly _one_ value per indicator * sex * 'Lexis square' (i.e., age-time square).
+
+    x_tbl <- tabulate_lexis_squares(x)
+    if (!identical(as.double(sum(x_tbl != 1)), 0)) {
+        indx <- which(x_tbl != 1, arr.ind = TRUE)
+        errs <- apply(indx, 1, function(z) {
+            mapply(function(x, y) x[[y]],
+                   dimnames(x_tbl), as.list(z))
+        })
+        print(errs)
+        stop(not_a_valid_object_msg("demog_change_component_df",
+                                    "'x' does not have exactly one 'value' per 'age_start' * 'sex' * 'time_start' * 'indicator' combination. Either there are duplicates or some are missing. The combinations with more or less than 1 row are printed above. See ?demog_change_component_df for class definition."))
+    }
+
     ## VALUES:
-    ## 1. Cannot be 'NA':
+    ## Cannot be 'NA':
     check_value_type_of_value_in_ccmpp_in_out_df(x$value)
 
     ## ATTRIBUTES:
-    ## 1. Extra attributes required
+    ## Extra attributes required
 
     req_attr <-
         get_req_attr_names_for_ccmpp_in_out_dfs_for_dimensions(demog_change_component_dims(x))
@@ -102,7 +117,7 @@ validate_ccmppWPP_object.ccmpp_input_df <- function(x, ...) {
              "'."))
 
     ## AGE:
-    ## 1. Must start at age 0 within indicator * time * sex
+    ## Must start at age 0 within indicator * time * sex
 
     if (is_by_age(x)) {
         min_age_start <- get_min_age_in_dims_in_df(x)

@@ -59,6 +59,8 @@ ccmppWPP_workflow_one_country_variant <- function(wpp_input) {
     # aggregate exposures to both sexes
     exposure_count_age_b   <- sum_last_column(exposure_count_age_sex[,c("time_start", "time_span",
                                                                         "age_start", "age_span", "value")])
+    exposure_count_age_b <- exposure_count_age_b[with(exposure_count_age_b, order(time_start,
+                                                                                        age_start)),]
     exposure_count_age_b$sex <- "both"
     # r bind both sexes exposures with exposures by sex
     exposure_count_age_sex <- rbind(exposure_count_age_sex,
@@ -70,6 +72,8 @@ ccmppWPP_workflow_one_country_variant <- function(wpp_input) {
     # aggregate age-period deaths to both sexes
     death_count_age_b   <- sum_last_column(death_count_age_sex[,c("time_start", "time_span",
                                                                   "age_start", "age_span", "value")])
+    death_count_age_b <- death_count_age_b[with(death_count_age_b, order(time_start,
+                                                                               age_start)),]
     death_count_age_b$sex <- "both"
     # rbind both sexes deaths by age with deaths by sex
     death_count_age_sex <- rbind(death_count_age_sex,
@@ -81,8 +85,9 @@ ccmppWPP_workflow_one_country_variant <- function(wpp_input) {
   # compute both sexes life tables by single year of age ("complete" life tables)
 
     # compute age-specific mortality rates from age-specific deaths and exposures
+    exp_b <- ifelse(exposure_count_age_b$value == 0, 0.00000001, exposure_count_age_b$value) # don't allow division by zero
     mx_b <- cbind(death_count_age_b[, 1:4],
-                  value = death_count_age_b$value / max(exposure_count_age_b$value, 0.00000001)) # don't allow division by zero
+                  value = death_count_age_b$value / exp_b) 
     # compute all life table columns from single year mx
     life_table_age_b <- lt_complete_loop_over_time(mx = mx_b, sex="both")
   

@@ -45,23 +45,17 @@ ccmppWPP_workflow_one_country_variant <- function(wpp_input) {
                                                                          age_start)),]
     rm(pop_count_age_sex_b)
     
-  # approximate exposures (mid-period population assuming constant rate of change in age group) by time and age and sex
-       ## would be better to use apply than these loop over time functions, but I need more time to figure that out
-       ## in the meantime, this works
-    exposure_count_age_sex <- exposure_age_sex_loop_over_time(pop = pop_count_age_sex,
-                                                              mig_assumption = ccmpp_input$mig_parameter[which(ccmpp_input$mig_parameter$indicator == "mig_assumption"),],
-                                                              mig = ccmpp_output$mig_net_count_age_sex)
+
+  # compute period deaths by age and sex from cohort deaths and separation factors computed with lx and nLx from input life table
+    death_count_age_sex <- death_age_sex_loop_over_time(dth_cohort = ccmpp_output$death_count_cohort_sex,
+                                                        lx = wpp_input$life_table_age_sex[which(wpp_input$life_table_age_sex$indicator == "lt_lx"),],
+                                                        nLx = wpp_input$life_table_age_sex[which(wpp_input$life_table_age_sex$indicator == "lt_nLx"),])
+    
+  # derive exposures from input nMx and period deaths by age and sex 
+    exposure_count_age_sex <- exposure_age_sex_loop_over_time(dth_age = death_count_age_sex,
+                                                              nmx = wpp_input$life_table_age_sex[which(wpp_input$life_table_age_sex$indicator == "lt_nMx"),])
+    
   
-  # compute period deaths by age and sex from input mx and exposures approximation
-    death_count_age_sex <- death_age_sex_loop_over_time(mx = wpp_input$life_table_age_sex[which(wpp_input$life_table_age_sex$indicator == "lt_nMx"),],
-                                                        exp = exposure_count_age_sex,
-                                                        distribute_residual = TRUE, # ensures that total age-period deaths = total cohort-period deaths
-                                                        dth_cohort = ccmpp_output$death_count_cohort_sex)
-    
-  # adjust exposures to ensure that age-period deaths/exposures returns exactly the input 1Mx
-    exposure_count_age_sex <- exposure_age_sex_adjust_loop_over_time(death_age_sex_period = death_count_age_sex,
-                                                                     mx = wpp_input$life_table_age_sex[which(wpp_input$life_table_age_sex$indicator == "lt_nMx"),])
-    
     # aggregate exposures to both sexes
     exposure_count_age_b   <- sum_last_column(exposure_count_age_sex[,c("time_start", "time_span",
                                                                         "age_start", "age_span", "value")])

@@ -2,22 +2,19 @@
 % Please edit documentation in R/death_helper_functions.R
 \name{death_age_sex_loop_over_time}
 \alias{death_age_sex_loop_over_time}
-\title{Loop over time to compute age-period deaths from mortality rates and exposures}
+\title{Loop over time to compute age-period deaths from cohort deaths and lx and nLx life table values}
 \usage{
-death_age_sex_loop_over_time(mx, exp, distribute_residual = TRUE, dth_cohort)
+death_age_sex_loop_over_time(dth_cohort, lx, nLx)
 }
 \arguments{
-\item{mx}{data frame with columns time_start, time_span, sex, age_start, age_span and value.  Value contains
-the age-specific mortality rates from the wpp inputs life table data frame}
-
-\item{exp}{data frame with columns time_start, time_span, sex, age_start, age_span and value.  Value contains
-the sex- and age-specific person years of exposure output by the exposure_age_sex_loop_over_time function}
-
-\item{distribute_residual}{logical. controls whether residual difference between total deaths by age and total
-deaths by cohort should be distributed over deaths by age proportional to the age distribution of deaths.}
-
 \item{dth_cohort}{data frame with columns time_start, time_span, sex, age_start, age_span and value.  Value contains
 the cohort-specific death counts output from the project_ccmpp_loop_over_time function}
+
+\item{lx}{data frame with columns time_start, time_span, sex, age_start, age_span and value.  Value contains
+the lx values from the wpp inputs life table data frame}
+
+\item{nLx}{data frame with columns time_start, time_span, sex, age_start, age_span and value.  Value contains
+the nLx values from the wpp inputs life table data frame}
 }
 \value{
 a data frame with columns time_start, time_span, sex, age_start, age_span and value.  Value contains

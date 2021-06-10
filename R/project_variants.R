@@ -63,9 +63,11 @@ pasfr_global_model <- function(tfr_all_locs = "data/tfr_estimates_projections_fo
 #'
 #' @author Sara Hertog
 #'
+#' @param PasfrGlobalNorm matrix. output from pasfr_global_model() function
 #' @param pasfr_observed matrix. with age in single years from 10 to 54 in rows and year in columns. Value is country estimates of pasfr
 #' @param tfr_observed_projected numeric vector. TFR values for the country. Names are years.
 #' @param years_projection numeric vector.  Years for which pasfr is to be projected
+#' @param num_points numeric scalar. The number of past point estimates to be used to model pasfr
 #'
 #' @details accesses the global model in the data frame "pasfr_global_model"
 #'
@@ -73,9 +75,9 @@ pasfr_global_model <- function(tfr_all_locs = "data/tfr_estimates_projections_fo
 #' @export
 #' 
 #' 
-pasfr_given_tfr <- function(pasfr_observed, tfr_observed_projected, years_projection = 2020:2100) {
+pasfr_given_tfr <- function(PasfrGlobalNorm, pasfr_observed, tfr_observed_projected, years_projection = 2020:2100, num_points = 15) {
   
-  pasfr_global_norm <- list(PasfrGlobalNorm = pasfr_global_model())
+  pasfr_global_norm <- list(PasfrGlobalNorm = PasfrGlobalNorm)
   
   # assemble the country-specific inputs required for the bayesPop:::kantorova.pasfr function
   inputs <- list(PASFRpattern = data.frame(PasfrNorm = "Global Norm"),
@@ -90,7 +92,7 @@ pasfr_given_tfr <- function(pasfr_observed, tfr_observed_projected, years_projec
                                       proj.years = years_projection, 
                                       tfr.med = tfr_observed_projected[length(tfr_observed_projected)], 
                                       annual = TRUE, 
-                                      nr.est.points = 15)
+                                      nr.est.points = num_points)
   
   # as percentage
   pasfr <- round(pasfr*100, 2)

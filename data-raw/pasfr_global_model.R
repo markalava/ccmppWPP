@@ -1,36 +1,27 @@
-## code to prepare `pasfr_global_model` dataset goes here
-pasfr_global_model <- function() {
-    
-    # define the global fertility patterns associated with different models
-    
-    #WPP19 used the following models for five year age groups
-    # MF - Model to use for the fertility pattern (PASFR), each corresponding to TFR=2.1
-    #    1 - EARLY MODEL c(0.20,0.40,0.25,0.10,0.04,0.01,0.00)
-    #    2 - INTERMEDIATE MODEL c(0.12,0.31,0.31,0.16,0.08,0.02,0.00)
-    #    3 - LATE MODEL c(0.04,0.22,0.40,0.22,0.10,0.02,0.00)
-    
-    # for now I have just divided the 5-year intermediate pasfr by five to graduate to single year of age
-    # ultimately these need to be replaced with a 1x model
-    
-    pasfr_global_model <- data.frame(age_start = seq(0,100,1),
-                        age_span = rep(1,101),
-                        value     = c(rep(0,15),
-                                      rep(0.12/5,5),
-                                      rep(0.31/5,5),
-                                      rep(0.31/5,5),
-                                      rep(0.16/5,5),
-                                      rep(0.08/5,5),
-                                      rep(0.02/5,5),
-                                      rep(0.0/5,5),
-                                      rep(0, 51)))
+## create a dataset that identifies locations to be included in computing pasfr global norm
 
-    return(pasfr_global_model)
-    
-}
+# data(UNlocations, package = "wpp2019")
+# 
+# PASFRpattern <- UNlocations[as.numeric(UNlocations$country_code) < 900, c("country_code","name")]
+# PASFRpattern$PasfrNorm <- as.factor("Global Norm")
+# PASFRpattern$PasfrGlobalNorm <- 0
+# PASFRpattern$PasfrGlobalNorm[PASFRpattern$country_code %in% c(40,56,830,344,446,158,203,208,233,246,250,276,380,392,442,470,528,578,702,705,724,752,756,826)] <- 1
+# PASFRpattern <- PASFRpattern[order(PASFRpattern$country_code), c(1,3,4)]
+# 
+# save(PASFRpattern, file = "data/PASFRpattern.RData")
+
+#############################
+#############################
+# create an RData file that has PASFR estimates for single year of age from 10 to 54 for all countries
+
+# pasfr_estimates <- read.delim(file = "data/pasfr_estimates_for_pasfr_global_norm.txt", comment.char = "#", check.names = FALSE)
+# save(pasfr_estimates, file = "data/pasfr_estimates_for_pasfr_global_norm.RData")
+
+#############################
+#############################
+# create an RData file that has TFR estimates for single year for all countries
+
+# tfr_estimates_projections <- read.delim(file = "data/tfr_estimates_projections_for_pasfr_global_norm.txt", comment.char = "#", check.names = FALSE)
+# save(tfr_estimates_projections, file = "data/tfr_estimates_projections_for_pasfr_global_norm.RData")
 
 
-## Overwrites function
-pasfr_global_model <- pasfr_global_model()
-
-## Creates the data .rda file
-usethis::use_data(pasfr_global_model, overwrite = TRUE)

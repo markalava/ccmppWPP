@@ -269,6 +269,11 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
     dplyr::ungroup() %>%
     dplyr::filter(DataSourceYear == latestDataSourceYear) %>%
     dplyr::distinct() %>%
+    dplyr::group_by(TimeStart,TimeMid,SexName) %>%
+    dplyr::mutate(maxValue = max(DataValue)) %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(DataValue == maxValue) %>%
+    dplyr::select(TimeStart, TimeMid, SexName, DataValue) %>% 
     # transform into standard srb data frame needed for inputs
     tidyr::spread(SexName, DataValue) %>%
     dplyr::mutate(time_start = floor(TimeMid),
@@ -302,12 +307,7 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
            value = replace(value,
                            is.na(value) & time_start > latest_obs,
                            srb$value[time_start == latest_obs]))
- # if still more than one record per year, take the average
-   srb <- unique(srb) %>%
-    dplyr::group_by(time_start, time_span) %>%
-    dplyr::summarise(value = mean(value))
-
-
+ 
 
 # extract ferility rates by single year of age from HFD
 

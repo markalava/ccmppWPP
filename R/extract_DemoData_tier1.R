@@ -262,20 +262,13 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
   srb <- birth_reg %>%
     # keep sex-specific births direct from VR (no adjustment)
     dplyr::filter(SexID %in% c(1,2) & DataTypeName == "Direct") %>%
-    dplyr::select(DataSourceYear,TimeStart,TimeMid,SexName,DataValue,DataReliabilitySort) %>%
+    dplyr::select(DataSourceYear,TimeStart,TimeMid,SexName,DataValue) %>%
     # if there is more than one record per sex and TimeMid, then keep the one with the latest DataSourceYear
     dplyr::group_by(TimeStart,TimeMid,SexName) %>%
     dplyr::mutate(latestDataSourceYear = max(DataSourceYear)) %>%
     dplyr::ungroup() %>%
     dplyr::filter(DataSourceYear == latestDataSourceYear) %>%
-      dplyr::distinct() %>%
-      # If still duplicate rows choose the one with better data quality
-      dplyr::group_by(TimeStart,TimeMid,SexName) %>%
-      dplyr::mutate(bestDataReliability = min(DataReliabilitySort)) %>%
-      dplyr::ungroup() %>%
-      dplyr::filter(DataReliabilitySort == bestDataReliability) %>%
-      dplyr::select(-bestDataReliability, -DataReliabilitySort) %>%
-      dplyr::distinct() %>%
+    dplyr::distinct() %>%
     # transform into standard srb data frame needed for inputs
     tidyr::spread(SexName, DataValue) %>%
     dplyr::mutate(time_start = floor(TimeMid),

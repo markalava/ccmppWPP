@@ -174,7 +174,7 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
       dplyr::group_by(data_source, time_start, time_span, time_reference, sex) %>%
       dplyr::summarise(value = sum(value)) %>%
       dplyr::mutate(age_start = 100,
-             age_span = 1)
+             age_span = 1000)
 
     # append open age group 100+ to single year of age from 0-99
     pop_hmd <- pop_hmd %>%
@@ -227,6 +227,8 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
       dplyr::select(data_source, time_reference, time_start, time_span, age_start, age_span, sex, value) %>%
       dplyr::arrange(data_source, time_start, time_reference, sex, age_start)
 
+    pop_eur$age_span[pop_eur$age_start == 100] <- 1000
+    
   } else {
 
     pop_eur <- NULL
@@ -352,6 +354,8 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
    fert_hfd <- fert_hfd %>%
      dplyr::bind_rows(yrage) %>%
      dplyr::arrange(time_start, age_start)
+   
+   fert_hfd$age_span[fert_hfd$age_start == 100] <- 1000
 
   } else {
 
@@ -405,6 +409,8 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
     fert_eur <- fert_eur %>%
       dplyr::bind_rows(yrage) %>%
       dplyr::arrange(time_start, age_start)
+    
+    fert_eur$age_span[fert_eur$age_start == 100] <- 1000
 
    } else {
 
@@ -458,6 +464,8 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
      fert_hfc <- fert_hfc %>%
        dplyr::bind_rows(yrage) %>%
        dplyr::arrange(time_start, age_start)
+     
+     fert_hfc$age_span[fert_hfc$age_start == 100] <- 1000
 
    } else {
 
@@ -598,6 +606,8 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
            age_start = as.numeric(Age),
            age_span = 1) %>%
     dplyr::select(indicator, time_start, time_span, sex, age_start, age_span, value)
+  
+  lt$age_span[lt$age_start == 100] <- 1000
 
 if (times_censored_common == TRUE) {
 

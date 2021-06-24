@@ -38,7 +38,7 @@ ECHO. ==========================================================================
 ECHO. INSTALL
 ECHO. ================================================================================
 
-Rscript -e 'devtools::install(build_vignettes = FALSE, upgrade = "never")'
+Rscript -e "devtools::install(build_vignettes = FALSE, upgrade = 'never')"
 if %ERRORLEVEL% GEQ 1 PAUSE
 
 

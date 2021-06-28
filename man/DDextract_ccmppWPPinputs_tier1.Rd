@@ -7,13 +7,14 @@
 DDextract_ccmppWPPinputs_tier1(
   LocID,
   times = 1950:2020,
-  times_censored_common = TRUE,
+  times_censored_common = FALSE,
   data_source_pop = c("HMD", "EuroStat"),
   data_source_mort = c("HMD", "EuroStat"),
-  data_source_fert = c("HFD", "EuroStat"),
+  data_source_fert = c("HFD", "EuroStat", "HFC-STAT"),
   data_source_year_hmd = 2020,
   data_source_year_hfd = 2020,
   data_source_year_eurostat = 2020,
+  data_source_year_hfc = c(2012, 2014, 2015),
   revision = "test",
   variant = "estimates"
 )
@@ -40,6 +41,8 @@ to harmonize the times across indicators before ccmppWPP workflow can be execute
 
 \item{data_source_year_eurostat}{numeric. DataSourceYear for the EuroStat series to use.}
 
+\item{data_source_year_hfc}{numeric. DataSourceYear for the HFC series to use.}
+
 \item{revision}{character. Revision attribute for output ccmppWPP_inputs list.}
 
 \item{variant}{character. Variant attribute for output ccmppWPP_inputs list.}
@@ -50,9 +53,9 @@ a list of two objects. 1) the ccmppWPP_inputs list required to run the populatio
 }
 \description{
 This function extracts from the DemoData SQL database population counts by
-age and sex, annual births by sex to compute sex ratio at birth, 1x1 age specific 
-fertility rates from the Human Fertility Database and EuroStat and mortality rates from the Human 
-Mortality Database and EuroStat.  It compiles those data into the input file required by ccmppWPP.  It 
+age and sex, annual births by sex to compute sex ratio at birth, 1x1 age specific
+fertility rates from the Human Fertility Database and EuroStat and mortality rates from the Human
+Mortality Database and EuroStat.  It compiles those data into the input file required by ccmppWPP.  It
 also compiles a refernce dataset of population counts by age and sex for various reference
 periods
 }

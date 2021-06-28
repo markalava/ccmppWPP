@@ -25,12 +25,15 @@ Suggests:
     bookdown,
     DiagrammeR
 RoxygenNote: 7.1.1
-LinkingTo: 
-    Rcpp
-Imports: 
+Imports:
+    dplyr,
+    tibble,
+    tidyr,
+    plyr,
     Rcpp,
     stringr,
-    DemoTools
+    DemoTools,
+    DDSQLtools
 Depends: 
     R (>= 2.10)
 VignetteBuilder: knitr

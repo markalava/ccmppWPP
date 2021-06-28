@@ -45,15 +45,22 @@ ccmppWPP_workflow_one_country_variant <- function(wpp_input) {
                                                                          age_start)),]
     rm(pop_count_age_sex_b)
     
-  # compute exposures (mid-period population) by time and age and sex
 
-    exposure_count_age_sex <- exposure_age_sex_loop_over_time(pop = pop_count_age_sex,
-                                                              mig_assumption = ccmpp_input$mig_parameter[which(ccmpp_input$mig_parameter$indicator == "mig_assumption"),],
-                                                              mig = ccmpp_output$mig_net_count_age_sex)
+  # compute period deaths by age and sex from cohort deaths and separation factors computed with lx and nLx from input life table
+    death_count_age_sex <- death_age_sex_loop_over_time(dth_cohort = ccmpp_output$death_count_cohort_sex,
+                                                        lx = wpp_input$life_table_age_sex[which(wpp_input$life_table_age_sex$indicator == "lt_lx"),],
+                                                        nLx = wpp_input$life_table_age_sex[which(wpp_input$life_table_age_sex$indicator == "lt_nLx"),])
+    
+  # derive exposures from input nMx and period deaths by age and sex 
+    exposure_count_age_sex <- exposure_age_sex_loop_over_time(dth_age = death_count_age_sex,
+                                                              nmx = wpp_input$life_table_age_sex[which(wpp_input$life_table_age_sex$indicator == "lt_nMx"),])
+    
   
-    # aggregate to both sexes
+    # aggregate exposures to both sexes
     exposure_count_age_b   <- sum_last_column(exposure_count_age_sex[,c("time_start", "time_span",
                                                                         "age_start", "age_span", "value")])
+    exposure_count_age_b <- exposure_count_age_b[with(exposure_count_age_b, order(time_start,
+                                                                                        age_start)),]
     exposure_count_age_b$sex <- "both"
     # r bind both sexes exposures with exposures by sex
     exposure_count_age_sex <- rbind(exposure_count_age_sex,
@@ -61,16 +68,12 @@ ccmppWPP_workflow_one_country_variant <- function(wpp_input) {
     exposure_count_age_sex <- exposure_count_age_sex[with(exposure_count_age_sex, order(time_start,
                                                                                         sex,
                                                                                         age_start)),]
-
-
-  # compute period deaths by age and sex from mx and exposures
-    death_count_age_sex <- death_age_sex_loop_over_time(mx = wpp_input$life_table_age_sex[which(wpp_input$life_table_age_sex$indicator == "lt_nMx"),],
-                                                        exp = exposure_count_age_sex,
-                                                        distribute_residual = TRUE,
-                                                        dth_cohort = ccmpp_output$death_count_cohort_sex)
-    # aggregate to both sexes
+    
+    # aggregate age-period deaths to both sexes
     death_count_age_b   <- sum_last_column(death_count_age_sex[,c("time_start", "time_span",
-                                                                        "age_start", "age_span", "value")])
+                                                                  "age_start", "age_span", "value")])
+    death_count_age_b <- death_count_age_b[with(death_count_age_b, order(time_start,
+                                                                               age_start)),]
     death_count_age_b$sex <- "both"
     # rbind both sexes deaths by age with deaths by sex
     death_count_age_sex <- rbind(death_count_age_sex,
@@ -78,12 +81,13 @@ ccmppWPP_workflow_one_country_variant <- function(wpp_input) {
     death_count_age_sex <- death_count_age_sex[with(death_count_age_sex, order(time_start,
                                                                                sex,
                                                                                age_start)),]
-
+    
   # compute both sexes life tables by single year of age ("complete" life tables)
 
     # compute age-specific mortality rates from age-specific deaths and exposures
+    exp_b <- ifelse(exposure_count_age_b$value == 0, 0.00000001, exposure_count_age_b$value) # don't allow division by zero
     mx_b <- cbind(death_count_age_b[, 1:4],
-                  value = death_count_age_b$value / max(exposure_count_age_b$value, 0.00000001)) # don't allow division by zero
+                  value = death_count_age_b$value / exp_b) 
     # compute all life table columns from single year mx
     life_table_age_b <- lt_complete_loop_over_time(mx = mx_b, sex="both")
   

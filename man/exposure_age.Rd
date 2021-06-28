@@ -2,35 +2,21 @@
 % Please edit documentation in R/exposure_helper_functions.R
 \name{exposure_age}
 \alias{exposure_age}
-\title{Compute age-specific person-years of exposure to fertility/mortality in the period}
+\title{Approximate age-specific person-years of exposure to fertility/mortality in the period}
 \usage{
-exposure_age(
-  pop_age_start,
-  pop_age_end,
-  mig_assumption = c("even", "end"),
-  mig_net_count = 0
-)
+exposure_age(death_age_period, nmx_age_period)
 }
 \arguments{
-\item{pop_age_start}{numeric. vector of population by age at the beginning of the period.}
+\item{death_age_period}{numeric. vector of age-period deaths}
 
-\item{pop_age_end}{numeric. vector of population by age at the end of the period.}
-
-\item{mig_assumption}{character. field indicating whether migration is treated as "end" of year or "even" over year.}
-
-\item{mig_net_count}{numeric. vector of net migrants age between begin time_start and time_end.}
+\item{nmx_age_period}{numeric. vector of life table nMx values}
 }
 \value{
 a numeric vector of person-years of exposure by single year of age.
 }
 \description{
-This function takes beginning and end period population by age and computes person-years of exposure, 
-removing migrants from exposure if migration assuption is "end" of period and adding half of migrants to beginning 
-of perod if migration assumption is "even" over period.
-}
-\details{
-For "even" migration assumption, half of net migrants are added to beginning of year population for computing exposures;
-for "end" migration assumption, net migrants are subtracted from end of year population for computing exposures.
+This function takes cohort-period deaths and age-specific nMx to approximate age-specific person years of exposure
+Useful for aggregating life tables across time, age, geographies
 }
 \author{
 Sara Hertog

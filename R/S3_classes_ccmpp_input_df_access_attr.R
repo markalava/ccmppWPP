@@ -74,17 +74,6 @@ time_span.ccmpp_input_df <- function(x) {
 }
 
 
-## Value_Scale
-
-#' @rdname extract_demog_change_component_attributes
-#' @export
-value_scale.ccmpp_input_df <- function(x) {
-    new_demog_change_component_df_value_scale(x = attr(x, "value_scale"),
-                                        class_of_df = oldClass(x)[1],
-                                        value_type = value_type(x),
-                                        class = "ccmpp_input_df_value_scale")
-}
-
 #' @rdname extract_demog_change_component_attributes
 #' @export
 print.ccmpp_input_df_value_scale <- function(x, ...) {

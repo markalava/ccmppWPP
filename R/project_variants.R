@@ -3,6 +3,59 @@
 # requires the output of ccmppWPP_workflow_one_country_variant for the medium variant projection
 
 
+#' Compute global normative model of proportion age-specific fertility rates
+#'
+#' @description This function calls bayesPop functions to return the proportional age-specific fertility rates associated with a global norm
+#' based on historical patterns of TFR and PASFR
+#'
+#' @author Sara Hertog
+#'
+#' @param tfr_all_locs character. file path to RData file with annual TFR; countries in rows, years in columns
+#' @param pasfr_all_locs character. file path to RData file with 1x1 PASFR; countries and ages from 10 to 54 in rows, years in columns
+#' @param pasfr_pattern character. file path to RData file with 1 record per LocID; country_code = LocID, PASFRNorm = "Global Norm", 
+#' PasfrGlobalNorm is c(0,1)flag indicating whether the countrys data should be used in computing global norm.
+#' @param present_year numeric. Last year of observed data?
+#'
+#' @details calls embedded functions from bayesPop
+#'
+#' @return a matrix of annual PASFR norms; age from 10 to 54 in row, year in columns
+#' @export
+#' 
+
+pasfr_global_model <- function(tfr_all_locs = "data/tfr_estimates_projections_for_pasfr_global_norm.RData",
+                               pasfr_all_locs = "data/pasfr_estimates_for_pasfr_global_norm.RData",
+                               pasfr_pattern = "data/PASFRpattern.RData",
+                               present_year = 2019) {
+  
+
+  load(tfr_all_locs)   # tfr estimates and projections
+  load(pasfr_all_locs)  # 1x1 pasfr estimates
+  load(pasfr_pattern)  # flags which countries are included for global norm computation
+  
+  # reshape TFR estimates and projections to long data frame with year, country_code and TFR value
+  TFRpred <- reshape(tfr_estimates_projections, direction = "long", 
+                     varying = list(names(tfr_estimates_projections)[3:153]),
+                     times = as.factor(names(tfr_estimates_projections)[3:153]),
+                     timevar = "year",
+                     v.names = "value")
+  TFRpred <- TFRpred[,c("year", "country_code", "value")]
+  
+  # compile inputs to bayesPop:::compute.pasfr.global.norms function (this is "kant" from Hana's code)
+  inputs <- list(end.year = 2020,
+                      observed = list(PASFR = pasfr_estimates[, names(pasfr_estimates) != "name"]),
+                      PASFR = NULL,
+                      PASFRnorms = NULL,
+                      PASFRpattern = PASFRpattern,
+                      present.year = 2019,
+                      TFRpred = TFRpred)
+  pasfr_global_norm <- bayesPop:::compute.pasfr.global.norms(inputs = inputs)$PasfrGlobalNorm
+  
+  rownames(pasfr_global_norm) <- 10:54
+   
+  return(pasfr_global_norm)
+  
+}
+
 #' Infer proportion age-specific fertility rates from tfr using a global normative model
 #'
 #' @description This function returns the proportional age-specific fertility rates given a projected level of
@@ -10,22 +63,44 @@
 #'
 #' @author Sara Hertog
 #'
-#' @param pasfr_initial data frame. with age_start and age_span indicating age groups and initial pasfr in the value column
-#' @param tfr_initial numeric. the initial level of total fertility
-#' @param tfr_given numeric.  the projected level of total fertility for which we want to infer a pasfr
+#' @param PasfrGlobalNorm matrix. output from pasfr_global_model() function
+#' @param pasfr_observed matrix. with age in single years from 10 to 54 in rows and year in columns. Value is country estimates of pasfr
+#' @param tfr_observed_projected numeric vector. TFR values for the country. Names are years.
+#' @param years_projection numeric vector.  Years for which pasfr is to be projected
+#' @param num_points numeric scalar. The number of past point estimates to be used to model pasfr
 #'
 #' @details accesses the global model in the data frame "pasfr_global_model"
 #'
 #' @return a data frame with the inferred pasfr in the "value" field.
 #' @export
 #' 
-pasfr_given_tfr <- function(pasfr_initial, tfr_initial, tfr_given) {
+#' 
+pasfr_given_tfr <- function(PasfrGlobalNorm, pasfr_observed, tfr_observed_projected, years_projection = 2020:2100, num_points = 15) {
   
-  ####### we need to swap in Hana's implementation here
+  pasfr_global_norm <- list(PasfrGlobalNorm = PasfrGlobalNorm)
+  
+  # assemble the country-specific inputs required for the bayesPop:::kantorova.pasfr function
+  inputs <- list(PASFRpattern = data.frame(PasfrNorm = "Global Norm"),
+                         # observed pasfr can be overwritten here if different from the initial pasfr file
+                         observed = list(PASFR = as.matrix(pasfr_observed)))
+  
+  # computation
+  #############
+  pasfr <- bayesPop:::kantorova.pasfr(tfr = tfr_observed_projected, 
+                                      inputs = inputs,
+                                      norms = pasfr_global_norm, 
+                                      proj.years = years_projection, 
+                                      tfr.med = tfr_observed_projected[length(tfr_observed_projected)], 
+                                      annual = TRUE, 
+                                      nr.est.points = num_points)
+  
+  # as percentage
+  pasfr <- round(pasfr*100, 2)
+  
+  # set time as column names and age as row names
+  colnames(pasfr) <- years_projection
+  rownames(pasfr) <- rownames(pasfr_observed)
 
-  # for now we do a proportional adjustment to pasfr based on difference between original and adjusted
-  pasfr  <- pasfr_initial * (tfr_given/tfr_initial)
-  
   return(pasfr)
   
 }
@@ -45,14 +120,69 @@ pasfr_given_tfr <- function(pasfr_initial, tfr_initial, tfr_given) {
 #' @return a list of data frames
 #' @export
 #' 
-project_variants_inputs <- function(medium_variant_outputs) {
-  
-  df <- medium_variant_outputs
-  
-  # create vector of projection time_starts
-  projection_times <- df$fert_rate_tot_f$time_start
-  proj_start <- projection_times[1]
+#' 
+#' 
 
+
+
+project_variants_inputs <- function(medium_variant_tfr,
+                                    medium_variant_e0,
+                                    medium_variant_mig,
+                                    past_pasfr,
+                                    last_mx,
+                                    projection_start_year = 2020,
+                                    projection_end_year = 2100) {
+  
+  
+
+    # 
+    # data("wpp_tfr_med")
+    # data("wpp_pasfr_med")
+    # medium_variant_tfr <- wpp_tfr_med[wpp_tfr_med$LocID == 4,]
+    # load("C:/Users/SARAH/OneDrive - United Nations/PEPS/Engine/testData/WPP19 1x1 inputs/Estimates 1950-2020/4_1950_2020.RData")
+    # 
+    # past_pasfr <- inputs$fert_rate_age_f %>% 
+    #   group_by(time_start) %>% 
+    #   mutate(value = value/sum(value)) %>% # convert asfr to pasfr
+    #   ungroup() %>% 
+    #   pivot_wider(names_from = "time_start", values_from = "value") %>% 
+    #   filter(age_start %in% 10:54) %>% 
+    #   select(-time_span, -age_span, -age_start) 
+    # past_pasfr <- as.matrix(past_pasfr)
+    # rownames(past_pasfr) <- 10:54
+    # 
+    
+    
+  # create vector of projection time_starts
+  projection_times <- projection_start_year:projection_end_year
+  
+  ############################
+  ############################
+  # compute asfr inputs for medium variant
+  tfr_med <- medium_variant_tfr$value[medium_variant_tfr$time_start %in% projection_times]
+  names(tfr_med) <- projection_times
+  
+  # assemble the inputs
+  country.inputs <- list(PASFRpattern = data.frame(PasfrNorm = "Global Norm"),
+                         # observed pasfr can be overwritten here if different from the initial pasfr file
+                         observed = list(PASFR=past_pasfr))
+  
+  # computation
+  #############
+  pasfr <- bayesPop:::kantorova.pasfr(tfr = tfr_med, 
+                                      country.inputs, 
+                                      norms = PASFRnorms, 
+                                      proj.years = projection_times, 
+                                      tfr.med = tfr_med[length(tfr_med)], 
+                                      annual = TRUE, 
+                                      nr.est.points = 15)
+  
+  # as percentage
+  pasfr <- round(pasfr*100, 2)
+  
+  PASFRpattern <- data.frame(PasfrNorm = "Global Norm")
+  
+  
   ############################
   ############################
   # compute asfr inputs for low/high fertility variants

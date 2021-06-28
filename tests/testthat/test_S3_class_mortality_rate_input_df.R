@@ -1,4 +1,4 @@
-context("Test methods for S3 class 'mortality_rate_age_sex'")
+
 
 ### MAKE OBJECT AVAILABLE TO REMAINDER OF TESTS
 
@@ -24,7 +24,7 @@ life_table_input_df_indicator_time_age_sex <-
 
 
 test_that("successfully extracted from 'life_table...' object", {
-    expect_s3_class(mortality_rate_component(
+    expect_s3_class(mortality_rate_age_sex(
         life_table_input_df_indicator_time_age_sex),
         "mortality_rate_age_sex")
     })
@@ -36,7 +36,7 @@ test_that("Non-zero age detected", {
     z <- ccmppWPP:::new_mortality_rate_age_sex(ccmppWPP:::sort_demog_change_component_df(z),
                                      age_span = age_span(mortality_rate_age_sex(y)),
                                      time_span = time_span(mortality_rate_age_sex(y)))
-    expect_error(validate_ccmpp_object(z),
+    expect_error(validate_ccmppWPP_object(z),
                  "'age_start' does not start at '0'")
 })
 

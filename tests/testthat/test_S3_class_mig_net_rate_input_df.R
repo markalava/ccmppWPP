@@ -1,4 +1,4 @@
-context("Test methods for S3 class 'mig_net_rate_age_sex'")
+
 
 test_that("valid member created", {
     expect_s3_class(mig_net_rate_age_sex(wpp_input_example$mig_net_rate_age_sex),
@@ -19,6 +19,6 @@ test_that("Non-zero age detected", {
                                              value_scale = 1,
                                      age_span = age_span(y),
                                      time_span = time_span(y))
-    expect_error(validate_ccmpp_object(z),
+    expect_error(validate_ccmppWPP_object(z),
                  "'age_start' does not start at '0'")
 })

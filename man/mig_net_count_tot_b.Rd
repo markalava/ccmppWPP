@@ -2,14 +2,23 @@
 % Please edit documentation in R/S3_classes_ccmpp_input_mig_net_count_tot_df.R
 \name{mig_net_count_tot_b}
 \alias{mig_net_count_tot_b}
+\alias{mig_net_count_tot_b.data.frame}
+\alias{mig_net_count_tot_b.ccmpp_input_list}
+\alias{mig_net_count_tot_b<-}
 \title{Constructor for class \code{mig_net_count_tot_b}}
 \usage{
-mig_net_count_tot_b(x, value_scale = attr(x, "value_scale"))
+mig_net_count_tot_b(x, ...)
+
+\method{mig_net_count_tot_b}{data.frame}(x, value_scale = attr(x, "value_scale"))
+
+\method{mig_net_count_tot_b}{ccmpp_input_list}(x)
+
+mig_net_count_tot_b(x) <- value
 }
 \arguments{
-\item{x}{For \code{demog_change_component_df}: A data frame with
-columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
-\dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.}
+\item{x}{An object for which a method is defined (see \dQuote{Details}).}
+
+\item{...}{Passed to the low-level constructor.}
 
 \item{value_scale}{\emph{Numeric} scalar indicating the value_scale of the
 counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
@@ -24,8 +33,16 @@ An object of class \code{mig_net_count_tot_b}.
   \item{\code{Value_type} attribute equals \dQuote{rate}.}
   \item{Within year and sex, age must start at 0.}}
 }
+\details{
+Methods are defined for \code{\link{data.frame}}s and
+\code{\link{ccmpp_input_list}}s, and possibly other objects as
+well. The \code{data.frame} method \dQuote{constructs} an object
+from \code{x}. The \code{ccmpp_input_list} method \dQuote{extracts}
+an object from \code{x}. There is also a replacement function which
+complements the extraction methods.
+}
 \seealso{
-\code{\link{validate_ccmpp_object}} for object validation,
+\code{\link{validate_ccmppWPP_object}} for object validation,
     \code{\link{ccmpp_input_df}} for the class from which this one
     inherits.
 

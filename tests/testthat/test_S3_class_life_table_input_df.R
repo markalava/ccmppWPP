@@ -1,4 +1,4 @@
-context("Test methods for S3 class 'life_table_age_sex'")
+
 
 test_that("valid member created", {
     expect_s3_class(life_table_age_sex(wpp_input_example$life_table_age_sex),
@@ -18,7 +18,7 @@ test_that("Non-zero age detected", {
     z <- ccmppWPP:::new_life_table_age_sex(z, value_scale = 1,
                                      age_span = age_span(y),
                                      time_span = time_span(y))
-    expect_error(validate_ccmpp_object(z))
+    expect_error(validate_ccmppWPP_object(z))
 })
 
 
@@ -60,4 +60,36 @@ test_that("Equal sex values are detected", {
     y[y$sex == "male", "value"] <- y[y$sex == "female", "value"] + 1e-5
     expect_warning(life_table_age_sex(y),
                    "Female and male life table quantities are very similar")
-    })
+})
+
+
+test_that("'death_count_age_sex' component can be changed", {
+    z <- life_table_input_df_indicator_time_age_sex
+    x <- death_count_age_sex(z)
+    expect_s3_class(x, "death_count_age_sex")
+    expect_error(death_count_age_sex(z) <- x, NA)
+})
+
+
+test_that("'death_probability_age_sex' component can be changed", {
+    z <- life_table_input_df_indicator_time_age_sex
+    x <- death_probability_age_sex(z)
+    expect_s3_class(x, "death_probability_age_sex")
+    expect_error(death_probability_age_sex(z) <- x, NA)
+})
+
+
+test_that("'mortality_rate_age_sex' component can be changed", {
+    z <- life_table_input_df_indicator_time_age_sex
+    x <- mortality_rate_age_sex(z)
+    expect_s3_class(x, "mortality_rate_age_sex")
+    expect_error(mortality_rate_age_sex(z) <- x, NA)
+})
+
+
+test_that("'survival_ratio_age_sex' component can be changed", {
+    z <- life_table_input_df_indicator_time_age_sex
+    x <- survival_ratio_age_sex(z)
+    expect_s3_class(x, "survival_ratio_age_sex")
+    expect_error(survival_ratio_age_sex(z) <- x, NA)
+})

@@ -2,18 +2,16 @@
 % Please edit documentation in R/exposure_helper_functions.R
 \name{exposure_age_sex_loop_over_time}
 \alias{exposure_age_sex_loop_over_time}
-\title{Loop over time to compute age-specific person years of exposure}
+\title{Loop over time to approximate age-specific person years of exposure}
 \usage{
-exposure_age_sex_loop_over_time(pop, mig_assumption, mig)
+exposure_age_sex_loop_over_time(dth_age, nmx)
 }
 \arguments{
-\item{pop}{data frame with columns time_start, time_span, sex, age_start, age_span and value.  Value contains
-the sex- and age-specific population counts output by the project_ccmpp_loop_over_time function.}
+\item{dth_age}{data frame with columns time_start, time_span, sex, age_start, age_span and value.  Value contains
+the sex- and age-specific death counts.}
 
-\item{mig_assumption}{character vector. field indicating whether migration is treated as "end" of period or "even" over period.}
-
-\item{mig}{data frame with columns time_start, time_span, sex, age_start, age_span and value.  Value contains
-the sex- and age-specific net migrant counts output by the project_ccmpp_loop_over_time function.}
+\item{nmx}{data frame with columns time_start, time_span, sex, age_start, age_span and value.  Value contains
+the nMx values from the wpp inputs life table data frame}
 }
 \value{
 a data frame with columns time_start, time_span, sex, age_start, age_span and value.  Value contains

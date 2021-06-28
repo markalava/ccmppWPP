@@ -4,21 +4,21 @@
 \name{demog_change_component_dims}
 \alias{demog_change_component_dims}
 \alias{demog_change_component_dims.demog_change_component_df}
-\title{Extract the \dQuote{dimensions} attribute}
+\title{Report the demographic \dQuote{dimensions}}
 \usage{
 demog_change_component_dims(x)
 
 \method{demog_change_component_dims}{demog_change_component_df}(x)
 }
 \arguments{
-\item{x}{An object from which to extract attributes.}
+\item{x}{An object for which a method exists, e.g., one inheriting
+from \code{demog_change_component_df}.}
 }
 \value{
-The extracted attribute
+A character vector with demographic dimensions present.
 }
 \description{
-Extracts the non-data.frame attributes. The only method that exists
-is for \code{demog_change_component_df} objects.
+Reports the demographic dimensions, in a character vector.
 }
 \author{
 Mark Wheldon

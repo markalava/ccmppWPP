@@ -43,17 +43,30 @@ new_survival_ratio_age_sex <-
 #'   \item{\code{Value_type} attribute equals \dQuote{proportion}.}
 #'   \item{Within year and sex, age must start at 0.}}
 #'
+#' Methods are defined for \code{\link{data.frame}}s and
+#' \code{\link{ccmpp_input_list}}s, and possibly other objects as
+#' well. The \code{data.frame} method \dQuote{constructs} an object
+#' from \code{x}. The \code{ccmpp_input_list} method \dQuote{extracts}
+#' an object from \code{x}. There is also a replacement function which
+#' complements the extraction methods.
+#'
 #' @family ccmpp_input_objects
-#' @seealso \code{\link{validate_ccmpp_object}} for object validation,
+#' @seealso \code{\link{validate_ccmppWPP_object}} for object validation,
 #'     \code{\link{ccmpp_input_df}} for the class from which this one
 #'     inherits.
 #'
+#' @param x An object for which a method is defined (see \dQuote{Details}).
 #' @inheritParams demog_change_component_df
 #' @return An object of class \code{survival_ratio_age_sex}.
 #' @author Mark Wheldon
 #' @export
-survival_ratio_age_sex <-
-    function(x) {
+survival_ratio_age_sex <- function(x, ...) {
+    UseMethod("survival_ratio_age_sex")
+}
+
+#' @rdname survival_ratio_age_sex
+#' @export
+survival_ratio_age_sex.data.frame <- function(x) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
                            dimensions = get_req_dimensions_for_ccmpp_in_out_classes("survival_ratio_age_sex"),
@@ -61,13 +74,31 @@ survival_ratio_age_sex <-
                            value_scale = NA)
 
         ## Create/Validate
-        validate_ccmpp_object(
+        validate_ccmppWPP_object(
             new_survival_ratio_age_sex(li$df,
                                age_span = li$age_span,
                                time_span = li$time_span,
                                value_scale = NA)
         )
     }
+
+#' @rdname survival_ratio_age_sex
+#' @export
+survival_ratio_age_sex.life_table_age_sex <- function(x) {
+    survival_ratio_component(x)
+}
+
+#' @rdname survival_ratio_age_sex
+#' @export
+survival_ratio_age_sex.ccmpp_input_list <- function(x) {
+    survival_ratio_component(x)
+}
+
+#' @rdname survival_ratio_age_sex
+#' @export
+`survival_ratio_age_sex<-`<- function(x, value) {
+    `survival_ratio_component<-`(x, value)
+}
 
 
 #' Coerce to a \code{survival_ratio_age_sex}
@@ -116,7 +147,7 @@ as_survival_ratio_age_sex.survival_ratio_age_sex <- function(x, ...) {
     i <- match("survival_ratio_age_sex", cl)
     if (i > 1L)
         class(x) <- cl[-(1L:(i - 1L))]
-    return(validate_ccmpp_object(x))
+    return(validate_ccmppWPP_object(x))
 }
 
 #' @rdname coerce_survival_ratio_age_sex

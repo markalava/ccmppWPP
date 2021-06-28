@@ -28,7 +28,7 @@ project_ccmpp_loop_over_time <- function(indata) {
     time_span              <- time_span(indata)
     time_start             <- min(times(indata))
     time_end               <- max(times(indata)) + time_span
-    survival_ratio_age_sex <- survival_ratio_component(indata)
+    survival_ratio_age_sex <- indata$life_table_age_sex[indata$life_table_age_sex$indicator=="lt_Sx",]
 
   # define projection steps
   for (time in time_start:(time_end-time_span)) {

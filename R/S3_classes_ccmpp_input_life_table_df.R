@@ -57,21 +57,34 @@ new_life_table_age_sex <-
 #' \code{life_table_age_sex} is a subclass of
 #' \code{\link{ccmpp_input_df}}. It has an indicator column that **TO BE COMPLETED**
 #'
+#' Methods are defined for \code{\link{data.frame}}s and
+#' \code{\link{ccmpp_input_list}}s, and possibly other objects as
+#' well. The \code{data.frame} method \dQuote{constructs} an object
+#' from \code{x}. The \code{ccmpp_input_list} method \dQuote{extracts}
+#' an object from \code{x}. There is also a replacement function which
+#' complements the extraction methods.
+#'
 #' @section Note:
 #' The \dQuote{value_scale} attribute for objects of class
 #' \code{life_table_age_sex} is the \emph{radix} of the life table.
 #'
 #' @family ccmpp_input_objects
-#' @seealso \code{\link{validate_ccmpp_object}} for object validation,
+#' @seealso \code{\link{validate_ccmppWPP_object}} for object validation,
 #'     \code{\link{ccmpp_input_df}} for the class from which this one
 #'     inherits.
 #'
+#' @param x An object for which a method is defined (see \dQuote{Details}).
 #' @inheritParams demog_change_component_df
 #' @return An object of class \code{life_table_age_sex}.
 #' @author Mark Wheldon
 #' @export
-life_table_age_sex <-
-    function(x,
+life_table_age_sex <- function(x, ...) {
+    UseMethod("life_table_age_sex")
+}
+
+#' @rdname life_table_age_sex
+#' @export
+life_table_age_sex.data.frame <- function(x,
              value_scale = attr(x, "value_scale")) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
@@ -83,13 +96,25 @@ life_table_age_sex <-
         if (is.null(attr(x, "value_scale"))) li$value_scale <- get_life_table_radix_from_li(li)
 
         ## Create/Validate
-        validate_ccmpp_object(
+        validate_ccmppWPP_object(
             new_life_table_age_sex(li$df,
                                age_span = li$age_span,
                                time_span = li$time_span,
                                value_scale = li$value_scale)
         )
-    }
+}
+
+#' @rdname life_table_age_sex
+#' @export
+life_table_age_sex.ccmpp_input_list <- function(x) {
+    life_table_component(x)
+}
+
+#' @rdname life_table_age_sex
+#' @export
+`life_table_age_sex<-` <- function(x, value) {
+    `life_table_component<-`(x, value)
+}
 
 
 #' Coerce to a \code{life_table_age_sex}
@@ -138,7 +163,7 @@ as_life_table_age_sex.life_table_age_sex <- function(x, ...) {
     i <- match("life_table_age_sex", cl)
     if (i > 1L)
         class(x) <- cl[-(1L:(i - 1L))]
-    return(validate_ccmpp_object(x))
+    return(validate_ccmppWPP_object(x))
 }
 
 #' @rdname coerce_life_table_age_sex
@@ -182,3 +207,52 @@ subset_sex.life_table_age_sex <- function(x, sexes, include = TRUE) {
     x <- NextMethod()
     return(life_table_age_sex(x, value_scale = vsx))
 }
+
+
+## ###-----------------------------------------------------------------------------
+## ### * Abridge
+
+## #' @rdname abridge
+## #' @export
+## abridge.life_table_age_sex <- function(x, span_abridged = NULL, time_span_abridged = NULL,
+##                                    age_start_abridged = NULL, time_start_abridged = NULL,
+##                                    out_class = class(x)[1], ...) {
+
+##     ## Abridge lt, ndx, nLx
+
+##     abr_1 <- subset_indicator(as_demog_change_component_df(x),
+##                               c("lt_ndx" ,"lt_lx", "lt_nLx"))
+##     abr_1 <- abridge(abr_1, age_span_abridged = age_span_abridged, time_span_abridged = time_span_abridged,
+##                     age_start_abridged = age_start_abridged, time_start_abridged = time_start_abridged,
+##                     out_class = out_class, ...)
+
+
+
+##     abr_1 <- demog_change_component_df(x[x$indicator %in% c("lt_ndx" ,"lt_lx", "lt_nLx"), ])
+##     abr_1 <- abridgetapply(abr_1, list(indicator = abr_1$indicator), FUN = "abridge",
+##                     age_span_abridged = age_span_abridged, time_span_abridged = time_span_abridged,
+##                     age_start_abridged = age_start_abridged, time_start_abridged = time_start_abridged,
+##                     out_class = out_class, ...)
+
+
+
+##     death_count_abridged <-
+##         abridge(subset_indicator(as_ccmpp_input_df(x), "lt_ndx"),
+##                 age_span_abridged = age_span_abridged, time_span_abridged = time_span_abridged,
+##                 age_start_abridged = age_start_abridged, time_start_abridged = time_start_abridged,
+##                 out_class = out_class, ...)
+##     lx_count_abridged <-
+##         abridge(subset_indicator(x, "lt_lx"),
+##                 age_span_abridged = age_span_abridged, time_span_abridged = time_span_abridged,
+##                 age_start_abridged = age_start_abridged, time_start_abridged = time_start_abridged,
+##                 out_class = out_class, ...)
+
+##     ## Person-years lived
+##     nLx_abridged <-
+##         abridge(subset_indicator(x, "lt_nLx"),
+##                 age_span_abridged = age_span_abridged, time_span_abridged = time_span_abridged,
+##                 age_start_abridged = age_start_abridged, time_start_abridged = time_start_abridged,
+##                 out_class = out_class, ...)
+
+
+

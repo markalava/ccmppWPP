@@ -39,10 +39,7 @@ subset_sex.ccmpp_input_df <- function(x, sexes, include = TRUE) {
 }
 
 ###-----------------------------------------------------------------------------
-### * Transform
-
-###-----------------------------------------------------------------------------
-### ** Re-span
+### * Transformations
 
 #' Change the span of a \code{ccmpp_input_df} object
 #'
@@ -50,7 +47,7 @@ subset_sex.ccmpp_input_df <- function(x, sexes, include = TRUE) {
 #' of \code{ccmpp_input_df}. Valid objects inheriting from
 #' \code{ccmpp_input_df} have a common value for \dQuote{age_span} and
 #' \dQuote{time_span}. This function provides a way of coherently
-#' chaning this value, ensuring that the result is still a valid
+#' changing this value, ensuring that the result is still a valid
 #' member of its class.
 #'
 #' @param x An object inheriting from \code{\link{ccmpp_input_df}}.
@@ -67,5 +64,6 @@ subset_sex.ccmpp_input_df <- function(x, sexes, include = TRUE) {
 #' @rdname change_ccmpp_input_df_span
 #' @export
 `span<-.ccmpp_input_df` <- function(x, value, ...) {
+    ## Use the 'abridge' function
     stop("Not yet implemented")
 }

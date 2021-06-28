@@ -2,14 +2,23 @@
 % Please edit documentation in R/S3_classes_ccmpp_input_srb_df.R
 \name{srb}
 \alias{srb}
+\alias{srb.data.frame}
+\alias{srb.ccmpp_input_list}
+\alias{srb<-}
 \title{Constructor for class \code{srb}}
 \usage{
-srb(x, time_span = attr(x, "time_span"))
+srb(x, ...)
+
+\method{srb}{data.frame}(x, time_span = attr(x, "time_span"))
+
+\method{srb}{ccmpp_input_list}(x)
+
+srb(x) <- value
 }
 \arguments{
-\item{x}{For \code{demog_change_component_df}: A data frame with
-columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
-\dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.}
+\item{x}{An object for which a method is defined (see \dQuote{Details}).}
+
+\item{...}{Passed to the low-level constructor.}
 }
 \value{
 An object of class \code{srb}.
@@ -22,8 +31,16 @@ An object of class \code{srb}.
   \item{There can be no 'age' dimension.}
   \item{There can be no 'sex' dimension.}}
 }
+\details{
+Methods are defined for \code{\link{data.frame}}s and
+\code{\link{ccmpp_input_list}}s, and possibly other objects as
+well. The \code{data.frame} method \dQuote{constructs} an object
+from \code{x}. The \code{ccmpp_input_list} method \dQuote{extracts}
+an object from \code{x}. There is also a replacement function which
+complements the extraction methods.
+}
 \seealso{
-\code{\link{validate_ccmpp_object}} for object validation,
+\code{\link{validate_ccmppWPP_object}} for object validation,
     \code{\link{ccmpp_input_df}} for the class from which this one
     inherits.
 

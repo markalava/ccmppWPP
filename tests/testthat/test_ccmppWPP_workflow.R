@@ -1,5 +1,3 @@
-context("Test that ccmppWPP_workflow_one_country_variant runs without errors and produces valid values.")
-
 test_that("canada workflow processed fully without errors and returns valid values.", {
 
     data("canada_wpp_1950_2020_ccmpp_inputs_1x1")

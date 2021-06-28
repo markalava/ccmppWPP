@@ -2,33 +2,28 @@
 % Please edit documentation in R/death_helper_functions.R
 \name{death_cohort_period_to_age_period}
 \alias{death_cohort_period_to_age_period}
-\title{Compute period death by age from mx and expousres}
+\title{Compute period deaths by age from mx and exposures}
 \usage{
 death_cohort_period_to_age_period(
-  mort_rate_age_period,
-  exposure_age_period,
-  distribute_residual = TRUE,
-  death_cohort_period
+  death_cohort_period,
+  lx_age_period,
+  nLx_age_period
 )
 }
 \arguments{
-\item{mort_rate_age_period}{numeric. vector of mortality rates by age.}
-
-\item{exposure_age_period}{numeric. vector of person-years of exposure by age.}
-
-\item{distribute_residual}{logical. controls whether residual difference between total deaths by age and total
-deaths by cohort should be distributed over deaths by age proportional to the age distribution of deaths.}
-
 \item{death_cohort_period}{numeric. vector of deaths by cohort computed by project_ccmpp_z_by_z.}
+
+\item{lx_age_period}{numeric. vector life table lx values}
+
+\item{nLx_age_period}{numeric. vector of life table nLx values}
 }
 \value{
 a numeric vector period deaths by age.
 }
 \description{
-This function computes the age-specific period deaths from age-specific person-years of exposure
-and the age-specific mortality rates for the period.  It further makes slight adjustments to deaths, as 
-necessary, to ensure that total period deaths by age are equal to total period deaths by cohort computed by the 
-project_ccmpp_z_by_z function.
+This function computes the age-specific period deaths from cohort-specific deaths
+and life table values lx and nLx. Approach uses cohort separation factors as described by 
+Thomas Buettner in http://abcabacus.org/?page_id=599
 }
 \author{
 Sara Hertog

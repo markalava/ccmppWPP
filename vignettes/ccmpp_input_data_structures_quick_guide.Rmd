@@ -171,16 +171,16 @@ Similar functions exist for the other data frame elements.
 
 ## Validating Data Frame Components
 
-At any time, the validity of an object as a member of its class can be checked using the function `validate_ccmpp_object`. This function inspects the objects "class" and calls the appropriate subfunction to check that the data structure and attributes of the object match the class definition. If they match the object is simply returned as-is; this is standard *R* convention. If the object is not valid, an error is signalled:
+At any time, the validity of an object as a member of its class can be checked using the function `validate_ccmppWPP_object`. This function inspects the objects "class" and calls the appropriate subfunction to check that the data structure and attributes of the object match the class definition. If they match the object is simply returned as-is; this is standard *R* convention. If the object is not valid, an error is signalled:
 
 ```{r}
 ## Not run:
-## validate_ccmpp_object(wpp_input_example$fert_rate_age_f)
-## Error in validate_ccmpp_object.default(wpp_input_example$fert_rate_age_f) : 
+## validate_ccmppWPP_object(wpp_input_example$fert_rate_age_f)
+## Error in validate_ccmppWPP_object.default(wpp_input_example$fert_rate_age_f) : 
 ##   'x' is not an object with a valid CCMPP object class. 'class(x) = data.frame'. Valid classes are 'life_table_age_sex', 'mig_parameter', 'mig_net_count_tot_b', 'mig_net_count_age_sex', 'mig_net_rate_age_sex', 'srb', 'pop_count_age_sex_base', 'survival_ratio_input_df', 'fert_rate_age_f', 'ccmpp_input_df', 'demog_change_component_df'.
 
 ## Valid objects are simply returned to the console
-validate_ccmpp_object(fert_example)
+validate_ccmppWPP_object(fert_example)
 ```
 
 
@@ -219,10 +219,10 @@ class(ccmpp_input_list_example_2)
        
 ## Validating Input Lists
 
-The same function used above, `validate_ccmpp_object` can be used to validate a list
+The same function used above, `validate_ccmppWPP_object` can be used to validate a list
 
 ```{r}
-validate_ccmpp_object(ccmpp_input_list_example)
+validate_ccmppWPP_object(ccmpp_input_list_example)
 ```
 
 

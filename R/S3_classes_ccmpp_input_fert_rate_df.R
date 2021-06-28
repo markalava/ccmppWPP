@@ -98,6 +98,13 @@ new_fert_rate_age_f <-
 #'   specifies the reproductive age range as a vector of
 #'   \code{age_start} values (see \dQuote{Details}).}}
 #'
+#' Methods are defined for \code{\link{data.frame}}s and
+#' \code{\link{ccmpp_input_list}}s, and possibly other objects as
+#' well. The \code{data.frame} method \dQuote{constructs} an object
+#' from \code{x}. The \code{ccmpp_input_list} method \dQuote{extracts}
+#' an object from \code{x}. There is also a replacement function which
+#' complements the extraction methods.
+#'
 #' An attempt will be made to guess \code{non_zero_fert_ages} if they
 #' are not explicitly specified using the \code{non_zero_fert_ages}
 #' argument.
@@ -111,17 +118,24 @@ new_fert_rate_age_f <-
 #' (specifically \code{as.double(0)}s).
 #'
 #' @family ccmpp_input_objects
-#' @seealso \code{\link{validate_ccmpp_object}} for object validation,
+#' @seealso \code{\link{validate_ccmppWPP_object}} for object validation,
 #'     \code{\link{ccmpp_input_df}} for the class from which this one
 #'     inherits.
 #'
+#' @param x An object for which a method is defined (see \dQuote{Details}).
 #' @inheritParams demog_change_component_df
 #' @param non_zero_fert_ages Numeric vector of unique ages indicating
 #'     the reproductive age range. See the \dQuote{Details} section.
 #' @return An object of class \code{fert_rate_age_f}.
 #' @author Mark Wheldon
 #' @export
-fert_rate_age_f <-
+fert_rate_age_f <- function(x, ...) {
+    UseMethod("fert_rate_age_f")
+}
+
+#' @rdname fert_rate_age_f
+#' @export
+fert_rate_age_f.data.frame <-
     function(x,
              non_zero_fert_ages = attr(x, "non_zero_fert_ages"),
              value_scale = attr(x, "value_scale")) {
@@ -148,7 +162,7 @@ fert_rate_age_f <-
 
 
         ## Create/Validate
-        validate_ccmpp_object(
+        validate_ccmppWPP_object(
             new_fert_rate_age_f(li$df,
                                age_span = li$age_span,
                                time_span = li$time_span,
@@ -156,6 +170,18 @@ fert_rate_age_f <-
                                non_zero_fert_ages = non_zero_fert_ages)
         )
     }
+
+#' @rdname fert_rate_age_f
+#' @export
+fert_rate_age_f.ccmpp_input_list <- function(x) {
+    fert_rate_component(x)
+}
+
+#' @rdname fert_rate_age_f
+#' @export
+`fert_rate_age_f<-` <- function(x, value) {
+    `fert_rate_component<-`(x, value)
+}
 
 
 ###-----------------------------------------------------------------------------
@@ -207,7 +233,7 @@ as_fert_rate_age_f.fert_rate_age_f <- function(x, ...) {
     i <- match("fert_rate_age_f", cl)
     if (i > 1L)
         class(x) <- cl[-(1L:(i - 1L))]
-    return(validate_ccmpp_object(x))
+    return(validate_ccmppWPP_object(x))
 }
 
 #' @rdname coerce_fert_rate_age_f
@@ -268,8 +294,34 @@ non_zero_fert_ages.fert_rate_age_f <- function(x) {
     fert_rate_age_f(x, non_zero_fert_ages = value)
 }
 
+
 ###-----------------------------------------------------------------------------
 ### * Transformations
+
+#' Drop zero fertility rate ages
+#'
+#' Drops zero fertility rate ages from a \code{fert_rate_age_df}
+#' object. Note that the result is \emph{not valid} as a member of
+#' this class so a \code{\link{demog_change_component_df}} will be
+#' returned.
+#'
+#' @param x An object inheriting from \code{fert_rate_age_df}
+#' @param ... Not implemented
+#' @return A \code{demog_change_component_df} with the only the rows
+#'     corresponding to \code{non_zero_fert_ages(x)}.
+#' @author Mark Wheldon
+#' @export
+drop_zero_fert_ages <- function(x, ...) {
+    UseMethod("drop_zero_fert_ages")
+}
+
+#' @rdname drop_zero_fert_ages
+#' @export
+drop_zero_fert_ages.fert_rate_age_f <- function(x) {
+    nzfa <- non_zero_fert_ages(x)
+    x <- as_demog_change_component_df(x)
+    subset_age(x, nzfa)
+}
 
 #' Calculate total fertility rates
 #'
@@ -300,7 +352,8 @@ fert_rate_tot_f.fert_rate_age_f <- function(x) {
     wtd_value <-
         data.frame(value = x$age_start %in% non_zero_fert_ages(x) *
                        x$value * x$age_span)
-    out <- aggregate(wtd_value, by = list(time_start = x$time_start),
+    out <- stats::aggregate(wtd_value, by = list(time_start = x$time_start),
                      FUN = "sum")
     return(demog_change_component_df(out))
 }
+

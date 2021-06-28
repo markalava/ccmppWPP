@@ -4,14 +4,24 @@
 \alias{pasfr_given_tfr}
 \title{Infer proportion age-specific fertility rates from tfr using a global normative model}
 \usage{
-pasfr_given_tfr(pasfr_initial, tfr_initial, tfr_given)
+pasfr_given_tfr(
+  PasfrGlobalNorm,
+  pasfr_observed,
+  tfr_observed_projected,
+  years_projection = 2020:2100,
+  num_points = 15
+)
 }
 \arguments{
-\item{pasfr_initial}{data frame. with age_start and age_span indicating age groups and initial pasfr in the value column}
+\item{PasfrGlobalNorm}{matrix. output from pasfr_global_model() function}
 
-\item{tfr_initial}{numeric. the initial level of total fertility}
+\item{pasfr_observed}{matrix. with age in single years from 10 to 54 in rows and year in columns. Value is country estimates of pasfr}
 
-\item{tfr_given}{numeric.  the projected level of total fertility for which we want to infer a pasfr}
+\item{tfr_observed_projected}{numeric vector. TFR values for the country. Names are years.}
+
+\item{years_projection}{numeric vector.  Years for which pasfr is to be projected}
+
+\item{num_points}{numeric scalar. The number of past point estimates to be used to model pasfr}
 }
 \value{
 a data frame with the inferred pasfr in the "value" field.

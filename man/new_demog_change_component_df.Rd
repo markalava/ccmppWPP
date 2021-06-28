@@ -22,10 +22,6 @@ column (e.g., \dQuote{count}, \dQuote{rate}, etc.).}
 
 \item{value_scale}{\emph{Numeric} scalar indicating the value_scale of the
 counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
-
-\item{age_span}{Scalar indicating the span of the age groups.}
-
-\item{time_span}{Scalar indicating the span of the time periods.}
 }
 \value{
 An object of class \code{demog_change_component_df}.

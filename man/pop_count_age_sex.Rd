@@ -2,15 +2,30 @@
 % Please edit documentation in R/S3_classes_ccmpp_output_pop_count_age_sex_df.R
 \name{pop_count_age_sex}
 \alias{pop_count_age_sex}
+\alias{pop_count_age_sex.data.frame}
+\alias{pop_count_age_sex.ccmpp_input_list}
+\alias{get_projected_pop_counts}
+\alias{get_projected_pop_counts.ccmpp_input_list}
 \title{Constructor for class \code{pop_count_age_sex}}
 \usage{
 pop_count_age_sex(x, ...)
+
+\method{pop_count_age_sex}{data.frame}(x, value_scale = attr(x, "value_scale"), ...)
+
+\method{pop_count_age_sex}{ccmpp_input_list}(x, keep_baseline = TRUE, ...)
+
+get_projected_pop_counts(x, ...)
+
+\method{get_projected_pop_counts}{ccmpp_input_list}(x)
 }
 \arguments{
 \item{x}{A \code{\link{base::data.frame}} or
 \code{link{ccmpp_input_list}} object.}
 
 \item{...}{Passed to the low-level constructor.}
+
+\item{value_scale}{\emph{Numeric} scalar indicating the value_scale of the
+counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
 
 \item{keep_baseline}{Logical, \code{link{ccmpp_input_list}} method:
 should the baseline population counts be included in the
@@ -21,16 +36,35 @@ An object of class \code{pop_count_age_sex}.
 }
 \description{
 \code{pop_count_age_sex} is a subclass of
-\code{\link{ccmpp_output_df}}. It imposes two additional conditions:
-\enumerate{
-  \item{\code{Value_type} attribute equals \dQuote{count}.}
-  \item{Within year and sex, age must start at 0.}}
+\code{\link{ccmpp_output_df}}. It imposes two additional
+conditions: \enumerate{
+\item{\code{Value_type} attribute equals \dQuote{count}}
+\item{Within year and sex, age must start at 0.}}
 It is intended as a class that can be used for the population
-counts produced by the CCMPP. There are methods for
-\code{\link{base::data.frame}}s and \code{link{ccmpp_input_list}}s.
+counts produced by the CCMPP.
+}
+\details{
+Methods for the creator function exist for
+\code{\link{base::data.frame}}s and
+\code{link{ccmpp_input_list}}s. The latter is a wrapper for
+\code{\link{project_ccmpp_loop_over_time}}; it implements cohort
+component projection on the input list and returns the projected
+counts as a \code{pop_count_age_sex}
+object. \code{get_projected_pop_counts} is a more descriptively
+name wrapper for \code{pop_count_age_sex.ccmpp_input_list(x,
+keep_baseline = FALSE)}. \code{ccmpp_input_list}s determine
+completely the population counts in subsequent times. As such, the
+\code{ccmpp_input_list} method can be viewed as a way of
+\dQuote{extracting} these counts from the input.
+
+\code{pop_count_age_sex.ccmpp_input_list} and
+\code{get_projected_pop_counts} return projected
+counts as an object of class \code{pop_count_age_sex}. For an
+alternative list output, see the underlying function
+\code{\link{project_ccmpp_loop_over_time}}.
 }
 \seealso{
-\code{\link{validate_ccmpp_object}} for object validation,
+\code{\link{validate_ccmppWPP_object}} for object validation,
     \code{\link{ccmpp_output_df}} for the class from which this one
     inherits.
 

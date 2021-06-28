@@ -22,7 +22,7 @@ new_death_count_age_sex <-
              non_zero_fert_ages = double(),
              dimensions = get_req_dimensions_for_ccmpp_in_out_classes("death_count_age_sex"),
              value_type = get_value_types_for_ccmpp_in_out_classes("death_count_age_sex"),
-             value_scale = NA,
+             value_scale = double(),
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
                            age_span = age_span,
@@ -43,32 +43,63 @@ new_death_count_age_sex <-
 #'   \item{\code{Value_type} attribute equals \dQuote{proportion}.}
 #'   \item{Within year and sex, age must start at 0.}}
 #'
+#' Methods are defined for \code{\link{data.frame}}s and
+#' \code{\link{ccmpp_input_list}}s, and possibly other objects as
+#' well. The \code{data.frame} method \dQuote{constructs} an object
+#' from \code{x}. The \code{ccmpp_input_list} method \dQuote{extracts}
+#' an object from \code{x}. There is also a replacement function which
+#' complements the extraction methods.
+#'
 #' @family ccmpp_input_objects
-#' @seealso \code{\link{validate_ccmpp_object}} for object validation,
+#' @seealso \code{\link{validate_ccmppWPP_object}} for object validation,
 #'     \code{\link{ccmpp_input_df}} for the class from which this one
 #'     inherits.
 #'
+#' @param x An object for which a method is defined (see \dQuote{Details}).
 #' @inheritParams demog_change_component_df
 #' @return An object of class \code{death_count_age_sex}.
 #' @author Mark Wheldon
 #' @export
-death_count_age_sex <-
-    function(x) {
+death_count_age_sex <- function(x, ...) {
+    UseMethod("death_count_age_sex")
+}
+
+#' @rdname death_count_age_sex
+#' @export
+death_count_age_sex.data.frame <- function(x,
+             value_scale = attr(x, "value_scale")) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
                            dimensions = get_req_dimensions_for_ccmpp_in_out_classes("death_count_age_sex"),
                            value_type = get_value_types_for_ccmpp_in_out_classes("death_count_age_sex"),
-                           value_scale = NA)
+                           value_scale = value_scale)
 
         ## Create/Validate
-        validate_ccmpp_object(
+        validate_ccmppWPP_object(
             new_death_count_age_sex(li$df,
                                age_span = li$age_span,
                                time_span = li$time_span,
-                               value_scale = NA)
+                               value_scale = li$value_scale)
         )
-    }
+}
 
+#' @rdname death_count_age_sex
+#' @export
+death_count_age_sex.life_table_age_sex <- function(x) {
+    death_count_component(x)
+}
+
+#' @rdname death_count_age_sex
+#' @export
+death_count_age_sex.ccmpp_input_list <- function(x) {
+    death_count_component(x)
+}
+
+#' @rdname death_count_age_sex
+#' @export
+`death_count_age_sex<-` <- function(x, value) {
+    `death_count_component<-`(x, value)
+}
 
 #' Coerce to a \code{death_count_age_sex}
 #'
@@ -116,7 +147,7 @@ as_death_count_age_sex.death_count_age_sex <- function(x, ...) {
     i <- match("death_count_age_sex", cl)
     if (i > 1L)
         class(x) <- cl[-(1L:(i - 1L))]
-    return(validate_ccmpp_object(x))
+    return(validate_ccmppWPP_object(x))
 }
 
 #' @rdname coerce_death_count_age_sex

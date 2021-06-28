@@ -41,17 +41,30 @@ new_srb <-
 #'   \item{There can be no 'age' dimension.}
 #'   \item{There can be no 'sex' dimension.}}
 #'
+#' Methods are defined for \code{\link{data.frame}}s and
+#' \code{\link{ccmpp_input_list}}s, and possibly other objects as
+#' well. The \code{data.frame} method \dQuote{constructs} an object
+#' from \code{x}. The \code{ccmpp_input_list} method \dQuote{extracts}
+#' an object from \code{x}. There is also a replacement function which
+#' complements the extraction methods.
+#'
 #' @family ccmpp_input_objects
-#' @seealso \code{\link{validate_ccmpp_object}} for object validation,
+#' @seealso \code{\link{validate_ccmppWPP_object}} for object validation,
 #'     \code{\link{ccmpp_input_df}} for the class from which this one
 #'     inherits.
 #'
+#' @param x An object for which a method is defined (see \dQuote{Details}).
 #' @inheritParams demog_change_component_df
 #' @return An object of class \code{srb}.
 #' @author Mark Wheldon
 #' @export
-srb <-
-    function(x,
+srb <- function(x, ...) {
+    UseMethod("srb")
+}
+
+#' @rdname srb
+#' @export
+srb.data.frame <- function(x,
              time_span = attr(x, "time_span")) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
@@ -60,12 +73,24 @@ srb <-
                             value_scale = NA)
 
         ## Create/Validate
-        validate_ccmpp_object(
+        validate_ccmppWPP_object(
             new_srb(li$df,
                     time_span = li$time_span,
                     value_scale = NA)
         )
     }
+
+#' @rdname srb
+#' @export
+srb.ccmpp_input_list <- function(x) {
+    srb_component(x)
+}
+
+#' @rdname srb
+#' @export
+`srb<-` <- function(x, value) {
+    `srb_component<-`(x, value)
+}
 
 
 #' Coerce to a \code{srb}
@@ -114,7 +139,7 @@ as_srb.srb <- function(x, ...) {
     i <- match("srb", cl)
     if (i > 1L)
         class(x) <- cl[-(1L:(i - 1L))]
-    return(validate_ccmpp_object(x))
+    return(validate_ccmppWPP_object(x))
 }
 
 #' @rdname coerce_srb

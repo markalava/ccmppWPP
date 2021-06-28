@@ -2,18 +2,27 @@
 % Please edit documentation in R/S3_classes_ccmpp_input_fert_rate_df.R
 \name{fert_rate_age_f}
 \alias{fert_rate_age_f}
+\alias{fert_rate_age_f.data.frame}
+\alias{fert_rate_age_f.ccmpp_input_list}
+\alias{fert_rate_age_f<-}
 \title{Constructor for class \code{fert_rate_age_f}}
 \usage{
-fert_rate_age_f(
+fert_rate_age_f(x, ...)
+
+\method{fert_rate_age_f}{data.frame}(
   x,
   non_zero_fert_ages = attr(x, "non_zero_fert_ages"),
   value_scale = attr(x, "value_scale")
 )
+
+\method{fert_rate_age_f}{ccmpp_input_list}(x)
+
+fert_rate_age_f(x) <- value
 }
 \arguments{
-\item{x}{For \code{demog_change_component_df}: A data frame with
-columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
-\dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.}
+\item{x}{An object for which a method is defined (see \dQuote{Details}).}
+
+\item{...}{Passed to the low-level constructor.}
 
 \item{non_zero_fert_ages}{Numeric vector of unique ages indicating
 the reproductive age range. See the \dQuote{Details} section.}
@@ -37,6 +46,13 @@ An object of class \code{fert_rate_age_f}.
   \code{age_start} values (see \dQuote{Details}).}}
 }
 \details{
+Methods are defined for \code{\link{data.frame}}s and
+\code{\link{ccmpp_input_list}}s, and possibly other objects as
+well. The \code{data.frame} method \dQuote{constructs} an object
+from \code{x}. The \code{ccmpp_input_list} method \dQuote{extracts}
+an object from \code{x}. There is also a replacement function which
+complements the extraction methods.
+
 An attempt will be made to guess \code{non_zero_fert_ages} if they
 are not explicitly specified using the \code{non_zero_fert_ages}
 argument.
@@ -50,7 +66,7 @@ listed in \code{non_zero_fert_ages} will be overwritten with zeros
 (specifically \code{as.double(0)}s).
 }
 \seealso{
-\code{\link{validate_ccmpp_object}} for object validation,
+\code{\link{validate_ccmppWPP_object}} for object validation,
     \code{\link{ccmpp_input_df}} for the class from which this one
     inherits.
 

@@ -27,18 +27,18 @@
 #'     \emph{sure}, always leave \code{TRUE} (default).
 #' @return Either an error or the object \code{x}.
 #' @author Mark Wheldon
-#' @name validate_ccmpp_object
+#' @name validate_ccmppWPP_object
 NULL
 
 #' @export
-#' @rdname validate_ccmpp_object
-validate_ccmpp_object <- function(x, ...) {
-    UseMethod("validate_ccmpp_object")
+#' @rdname validate_ccmppWPP_object
+validate_ccmppWPP_object <- function(x, ...) {
+    UseMethod("validate_ccmppWPP_object")
 }
 
 #' @export
-#' @rdname validate_ccmpp_object
-validate_ccmpp_object.default <- function(x, ...) {
+#' @rdname validate_ccmppWPP_object
+validate_ccmppWPP_object.default <- function(x, ...) {
     stop("'x' is not an object with a valid CCMPP object class. 'class(x) = ",
          class(x),
          "'. Valid classes are '",
@@ -47,9 +47,9 @@ validate_ccmpp_object.default <- function(x, ...) {
          "'.")
     }
 
-#' @rdname validate_ccmpp_object
+#' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmpp_object.demog_change_component_df <-
+validate_ccmppWPP_object.demog_change_component_df <-
     function(x, ...) {
 
         if (!inherits(x, "data.frame"))
@@ -156,28 +156,11 @@ validate_ccmpp_object.demog_change_component_df <-
                                             "'", req_cols[j], "' must be character."))
         }
 
-        ## attr_w_span_names <- get_all_dimensions_w_spans()
-        ## attr_w_span_names <-
-        ##     attr_w_span_names[attr_w_span_names %in% demog_change_component_dims_x]
-        ## for (att in attr_w_span_names) {
-        ##     ## Create names of the '_span' and '_start' variables for
-        ##     ## use later.
-        ##     span_name <- paste0(att, "_span")
-        ##     start_name <- paste0(att, "_start")
+        ## SPANS:
+        ## 1. Spans must be numeric (already tested above)
 
-        ##     ## Get the values of the attribute and column from x for
-        ##     ## use later.
-        ##     span_attr <- attr(x, span_name)
-        ##     start_col <- x[[start_name]]
-
-        ##     ## Do the tests now:
-        ##     if (!is.numeric(span_attr))
-        ##         stop("'", span_name, "' is not numeric.")
-
-        ##     if (!is.numeric(start_col))
-        ##         stop("'x$", start_name, "' is not numeric.")
-        ## }
-
+        ## SEX:
+        ## 1. Levels must be in allowed list
         if (is_by_sex(x)) {
             allowed_sexes <- get_all_allowed_sexes()
             if (!all(x$sex %in% c("female", "male", "both")))
@@ -186,14 +169,6 @@ validate_ccmpp_object.demog_change_component_df <-
                      paste0(allowed_sexes, collapse = "', '"),
                      "'; values other than these are not supported."))
         }
-
-        ## CHECK SQUARENESS
-        ## 1. Must be _one_ value per indicator * time * sex * age combination.
-
-        x_tbl <- tabulate_demog_change_component_df(x)
-        if (!identical(as.double(sum(x_tbl != 1)), 0))
-            stop(not_a_valid_object_msg("demog_change_component_df",
-                                        "'x' does not have exactly one 'value' per 'age' * 'sex' * 'time' * 'indicator' combination (see ?demog_change_component_df for class definition)."))
 
     return(x)
 }

@@ -81,7 +81,7 @@ ccmpp_input_df <-
                 value_scale = value_scale)
 
         ## Create/Validate
-        validate_ccmpp_object(
+        validate_ccmppWPP_object(
             new_ccmpp_input_df(li$df,
                                dimensions = li$dimensions,
                                age_span = li$age_span,
@@ -123,14 +123,15 @@ as_ccmpp_input_df.default <- function(x, ...) {
 
 #' @rdname coerce_ccmpp_input_df
 #' @export
-as_ccmpp_input_df.data.frame <- function(x, ...) {
-    ccmpp_input_df(as.data.frame(x))
+as_ccmpp_input_df.data.frame <- function(x, value_type = attr(x, "value_type"), value_scale = attr(x, "value_scale"), ...) {
+    ccmpp_input_df(as.data.frame(x), value_type = value_type, value_scale = value_scale)
 }
 
 #' @rdname coerce_ccmpp_input_df
 #' @export
-as_ccmpp_input_df.matrix <- function(x, ...) {
-    as_ccmpp_input_df(as_demog_change_component_df(x))
+as_ccmpp_input_df.matrix <- function(x, value_type = attr(x, "value_type"), value_scale = attr(x, "value_scale"), ...) {
+    as_ccmpp_input_df(as_demog_change_component_df(x, value_type = value_type, value_scale = value_scale),
+                      value_type = value_type, value_scale = value_scale)
 }
 
 #' @rdname coerce_ccmpp_input_df
@@ -141,7 +142,7 @@ as_ccmpp_input_df.ccmpp_input_df <- function(x, ...) {
     i <- match("ccmpp_input_df", cl)
     if (i > 1L)
         class(x) <- cl[-(1L:(i - 1L))]
-    return(validate_ccmpp_object(x))
+    return(validate_ccmppWPP_object(x))
 }
 
 #' @rdname coerce_ccmpp_input_df

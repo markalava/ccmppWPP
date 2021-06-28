@@ -7,7 +7,7 @@
 fert_net(fert_data_age, srb, nLx, byvar)
 }
 \arguments{
-\item{fert_data_age}{data frame. columns "age_start" and "age_span" describe age group of mother 
+\item{fert_data_age}{data frame. columns "age_start" and "age_span" describe age group of mother
 and "value" is age-specific fertility rates in births per woman.}
 
 \item{srb}{data frame. column "value" is the sex ratio at birth}
@@ -21,7 +21,7 @@ is the nLx column of the period life table for females}
 a data frame with net reproductive rate in the "value" field, computed by byvar columns.
 }
 \description{
-This function computes the net reproductive rate from the age-specific fertility rates 
+This function computes the net reproductive rate from the age-specific fertility rates
 and sex ratio at birth and female life table nLx of a given period.
 }
 \details{

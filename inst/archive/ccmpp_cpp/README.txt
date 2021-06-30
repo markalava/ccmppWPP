@@ -1,0 +1,1 @@
+This folder contains an archive of the C++ implementation of the CCMPP. This is currently not used but may be developed further later.

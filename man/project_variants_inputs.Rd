@@ -4,7 +4,15 @@
 \alias{project_variants_inputs}
 \title{Derive inputs needed for deterministic projection variants}
 \usage{
-project_variants_inputs(medium_variant_outputs)
+project_variants_inputs(
+  medium_variant_tfr,
+  medium_variant_e0,
+  medium_variant_mig,
+  past_pasfr,
+  last_mx,
+  projection_start_year = 2020,
+  projection_end_year = 2100
+)
 }
 \arguments{
 \item{medium_variant_outputs}{list of data frames. medium variant output from the ccmppWPP_workflow_one_country_variant function}

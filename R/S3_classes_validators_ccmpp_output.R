@@ -65,7 +65,7 @@ validate_ccmppWPP_object.ccmpp_output_df <- function(x, ...) {
                     sum(head(x[, span_name], -1) - diff(x[, start_name], differences = 1))
             }
             if (any(unlist(start_vs_span_diff) != 0))
-                stop(not_a_valid_object_msg("ccmpp_input_df",
+                stop(not_a_valid_object_msg("ccmpp_output_df",
                                         "Spacings between each 'x$", start_name,
                  "' do not equal the corresponding values of 'x$", span_name))
 
@@ -73,7 +73,7 @@ validate_ccmppWPP_object.ccmpp_output_df <- function(x, ...) {
         start_1st_diff <-
             diff(sort(unique(start_col)), differences = 1)
         if (!identical(as.double(sum(start_1st_diff != span_attr)), 0))
-            stop(not_a_valid_object_msg("ccmpp_input_df",
+            stop(not_a_valid_object_msg("ccmpp_output_df",
                                         "Spacings between each 'x$", start_name,
                  "' do not equal 'attr(x, \"", span_name, "\")'."))
 

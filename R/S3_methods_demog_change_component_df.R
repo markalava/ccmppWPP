@@ -474,34 +474,51 @@ print.summary_demog_change_component_df <-
 ###-----------------------------------------------------------------------------
 ### * Plot
 
+## Custom y-asix scales based on class. E.g., mortality rates get log y-axis.
+get_y_scale <- function(x) {
+    UseMethod("get_y_scale")
+}
+get_y_scale.demog_change_component_df <- function(x) {
+    stopifnot(requireNamespace("scales", quietly = TRUE))
+    if (identical("mortality_rate_age_sex", oldClass(x)[1]))
+        return(scales::log_trans())
+    else return(scales::identity_trans())
+}
+
+
 #' Plot \code{demog_change_component_df} objects
 #'
 #' This is the S3 method for the generic \code{\link{plot}}
 #' function. It requires \pkg{ggplot2}.
 #'
-#' @param x An object of class \code{demog_change_component_df}.
+#' @param x An object inheriting from class \code{demog_change_component_df}.
 #' @param type The type of plot to produce, e.g., \dQuote{line}.
-#' @param ... When \code{type} is \dQuote{ggplot2} (default) passed on
-#'     to \code{\link[ggplot2]{ggplot}}. Otherwise passed on to \code{\link{plot}}.
-#' @param plot Should the plot be printed?
-#' @return When \code{framework} is \dQuote{ggplot2}, a plot
-#'     object. Otherwise nothing. The function is mainly called for
+#' @param ... Passed on to \code{\link[ggplot2]{ggplot}}.
+#' @return A \code{ggplot2} plot object.The function is mainly called for
 #'     the side effect of producing a plot.
 #' @author Mark Wheldon
 #' @export
 plot.demog_change_component_df <-
-    function(x, type = c("point", "line", "both"), ...,
-             plot = TRUE
-             ) {
+    function(x, type = c("line", "point", "both"), ...) {
+
         type <- match.arg(type)
+
+        if (!all(requireNamespace("ggplot2", quietly = TRUE),
+                 requireNamespace("scales", quietly = TRUE))) {
+            message("Install 'ggplot2' and 'scales' packages for better plotting experience.")
+            return(NextMethod(type = substr(type, 1, 1)))
+        }
+
+        ## -------* Base Plot For Dimensions
+
         dcc_dims_x <- demog_change_component_dims(x)
 
         if ("non_zero_fert_ages" %in% names(attributes(x))) {
             nzf_ages_present <- TRUE
-                    x$fert_rate_ages <-
-                        factor(x$age_start %in% non_zero_fert_ages(x),
-                               levels = c(TRUE, FALSE),
-                               labels = c("Non-zero fertility", "Zero fertility"))
+            fert_rate_ages <-
+                factor(x$age_start %in% non_zero_fert_ages(x),
+                       levels = c(TRUE, FALSE),
+                       labels = c("Non-zero fertility", "Zero fertility"))
         } else nzf_ages_present <- FALSE
 
         if (identical("age", dcc_dims_x)) {
@@ -536,38 +553,52 @@ plot.demog_change_component_df <-
         } else stop("These dimensions not yet implemented.")
 
         if (!identical("sex", dcc_dims_x)) {
-            if (identical(type, "line"))
-                gp <- gp + ggplot2::geom_line()
-            else if (identical(type, "point")) {
+            if (identical(type, "line")) {
                 if (nzf_ages_present) {
-                    gp <- gp + ggplot2::geom_point(aes(shape = fert_rate_ages, col = fert_rate_ages)) +
+                    gp <- gp + ggplot2::geom_line(ggplot2::aes(col = fert_rate_ages)) +
+                        ggplot2::scale_colour_manual(name = "Reproductive\nage range",
+                                                     values = c("Non-zero fertility" = "black",
+                                                                "Zero fertility" = "grey"))
+                } else {
+                    gp <- gp + ggplot2::geom_line()
+                }
+            } else if (identical(type, "point")) {
+                if (nzf_ages_present) {
+                    gp <- gp + ggplot2::geom_point(ggplot2::aes(shape = fert_rate_ages, col = fert_rate_ages)) +
                         ggplot2::scale_shape_manual(name = "Reproductive\nage range",
                                                     values = c("Non-zero fertility" = 19,
                                                                "Zero fertility" = 1)) +
                         ggplot2::scale_colour_manual(name = "Reproductive\nage range",
-                                                    values = c("Non-zero fertility" = "black",
-                                                               "Zero fertility" = "grey"))
+                                                     values = c("Non-zero fertility" = "black",
+                                                                "Zero fertility" = "grey"))
                 } else {
                     gp <- gp + ggplot2::geom_point()
                 }
-            } else if (identical(type, "both"))
+            } else if (identical(type, "both")) {
                 if (nzf_ages_present) {
-                    gp <- gp + ggplot2::geom_point(aes(shape = fert_rate_ages, col = fert_rate_ages)) +
-                        ggplot2::geom_line(aes(col = fert_rate_ages)) +
-                        ggplot2::scale_shape_manual(name = "Reproductive age range",
+                    gp <- gp + ggplot2::geom_point(ggplot2::aes(shape = fert_rate_ages, col = fert_rate_ages)) +
+                        ggplot2::geom_line(ggplot2::aes(col = fert_rate_ages)) +
+                        ggplot2::scale_shape_manual(name = "Reproductive\nage range",
                                                     values = c("Non-zero fertility" = 19,
                                                                "Zero fertility" = 1)) +
                         ggplot2::scale_colour_manual(name = "Reproductive\nage range",
-                                                    values = c("Non-zero fertility" = "black",
-                                                               "Zero fertility" = "grey"))
+                                                     values = c("Non-zero fertility" = "black",
+                                                                "Zero fertility" = "grey"))
                 } else {
                     gp <- gp + ggplot2::geom_point() + ggplot2::geom_line()
                 }
+            }
         } else {
             gp <- gp + ggplot2::geom_bar()
         }
-        if (plot) print(gp)
-        return(invisible(gp))
+
+        ## -------* y-Axis Scale
+
+        gp <- gp + ggplot2::scale_y_continuous(trans = get_y_scale(x))
+
+        ## -------* RETURN
+
+        return(gp)
     }
 
 

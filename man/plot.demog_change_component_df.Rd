@@ -4,21 +4,17 @@
 \alias{plot.demog_change_component_df}
 \title{Plot \code{demog_change_component_df} objects}
 \usage{
-\method{plot}{demog_change_component_df}(x, type = c("point", "line", "both"), ..., plot = TRUE)
+\method{plot}{demog_change_component_df}(x, type = c("line", "point", "both"), ...)
 }
 \arguments{
-\item{x}{An object of class \code{demog_change_component_df}.}
+\item{x}{An object inheriting from class \code{demog_change_component_df}.}
 
 \item{type}{The type of plot to produce, e.g., \dQuote{line}.}
 
-\item{...}{When \code{type} is \dQuote{ggplot2} (default) passed on
-to \code{\link[ggplot2]{ggplot}}. Otherwise passed on to \code{\link{plot}}.}
-
-\item{plot}{Should the plot be printed?}
+\item{...}{Passed on to \code{\link[ggplot2]{ggplot}}.}
 }
 \value{
-When \code{framework} is \dQuote{ggplot2}, a plot
-    object. Otherwise nothing. The function is mainly called for
+A \code{ggplot2} plot object.The function is mainly called for
     the side effect of producing a plot.
 }
 \description{

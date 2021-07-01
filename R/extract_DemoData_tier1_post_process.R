@@ -292,6 +292,10 @@ get_pop_count_reference_times <- function(x, excl_baseline = FALSE) {
 DDextract_get_pop_count_age_sex_reference <- function(x,
                                                       times = c("all", "excl_baseline", "census",
                                                                 "census_excl_baseline")) {
+    op <- getOption("ccmppWPP.suppress_S3_class_messages")
+    options(ccmppWPP.suppress_S3_class_messages = TRUE)
+    on.exit(options(ccmppWPP.suppress_S3_class_messages = op))
+
     stopifnot(valid_DDextract_ccmppWPPinputs_tier1(x))
 
     ## 'times'

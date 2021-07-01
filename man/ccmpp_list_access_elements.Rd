@@ -19,13 +19,13 @@
 \alias{survival_ratio_component<-}
 \alias{survival_ratio_component<-.life_table_age_sex}
 \alias{survival_ratio_component<-.ccmpp_input_list}
-\alias{mortality_rate_component}
-\alias{mortality_rate_component.life_table_age_sex}
-\alias{mortality_rate_component.list}
-\alias{mortality_rate_component.ccmpp_input_list}
-\alias{mortality_rate_component<-}
-\alias{mortality_rate_component<-.life_table_age_sex}
-\alias{mortality_rate_component<-.ccmpp_input_list}
+\alias{mort_rate_component}
+\alias{mort_rate_component.life_table_age_sex}
+\alias{mort_rate_component.list}
+\alias{mort_rate_component.ccmpp_input_list}
+\alias{mort_rate_component<-}
+\alias{mort_rate_component<-.life_table_age_sex}
+\alias{mort_rate_component<-.ccmpp_input_list}
 \alias{death_probability_component}
 \alias{death_probability_component.life_table_age_sex}
 \alias{death_probability_component.list}
@@ -107,19 +107,19 @@ survival_ratio_component(x) <- value
 
 \method{survival_ratio_component}{ccmpp_input_list}(x) <- value
 
-mortality_rate_component(x)
+mort_rate_component(x)
 
-\method{mortality_rate_component}{life_table_age_sex}(x)
+\method{mort_rate_component}{life_table_age_sex}(x)
 
-\method{mortality_rate_component}{list}(x)
+\method{mort_rate_component}{list}(x)
 
-\method{mortality_rate_component}{ccmpp_input_list}(x)
+\method{mort_rate_component}{ccmpp_input_list}(x)
 
-mortality_rate_component(x) <- value
+mort_rate_component(x) <- value
 
-\method{mortality_rate_component}{life_table_age_sex}(x) <- value
+\method{mort_rate_component}{life_table_age_sex}(x) <- value
 
-\method{mortality_rate_component}{ccmpp_input_list}(x) <- value
+\method{mort_rate_component}{ccmpp_input_list}(x) <- value
 
 death_probability_component(x)
 

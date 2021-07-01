@@ -480,7 +480,7 @@ get_y_scale <- function(x) {
 }
 get_y_scale.demog_change_component_df <- function(x) {
     stopifnot(requireNamespace("scales", quietly = TRUE))
-    if (identical("mortality_rate_age_sex", oldClass(x)[1]))
+    if (identical("mort_rate_age_sex", oldClass(x)[1]))
         return(scales::log_trans())
     else return(scales::identity_trans())
 }

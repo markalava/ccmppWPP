@@ -79,11 +79,11 @@ test_that("'death_probability_age_sex' component can be changed", {
 })
 
 
-test_that("'mortality_rate_age_sex' component can be changed", {
+test_that("'mort_rate_age_sex' component can be changed", {
     z <- life_table_input_df_indicator_time_age_sex
-    x <- mortality_rate_age_sex(z)
-    expect_s3_class(x, "mortality_rate_age_sex")
-    expect_error(mortality_rate_age_sex(z) <- x, NA)
+    x <- mort_rate_age_sex(z)
+    expect_s3_class(x, "mort_rate_age_sex")
+    expect_error(mort_rate_age_sex(z) <- x, NA)
 })
 
 

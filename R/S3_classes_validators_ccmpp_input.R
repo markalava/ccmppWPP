@@ -211,20 +211,20 @@ validate_ccmppWPP_object.survival_ratio_age_sex <- function(x, check_sex_equalit
 
 #' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmppWPP_object.mortality_rate_age_sex <- function(x, check_sex_equality_by_time = FALSE, ...) {
+validate_ccmppWPP_object.mort_rate_age_sex <- function(x, check_sex_equality_by_time = FALSE, ...) {
 
     ## Base checks
     x <- NextMethod()
 
     ## 'value's all non-negative
     if (any(x$value < 0))
-        stop(not_a_valid_object_msg("mortality_rate_age_sex",
+        stop(not_a_valid_object_msg("mort_rate_age_sex",
                                     "'value' column has elements < 0."))
 
     ## value_type
-    val_type <- get_value_types_for_ccmpp_in_out_classes("mortality_rate_age_sex")
+    val_type <- get_value_types_for_ccmpp_in_out_classes("mort_rate_age_sex")
     if (!identical(value_type(x), val_type))
-        stop(not_a_valid_object_msg("mortality_rate_age_sex",
+        stop(not_a_valid_object_msg("mort_rate_age_sex",
                                     "'value_type' must be \"", val_type, "\"."))
 
     ## Check dimensions
@@ -232,7 +232,7 @@ validate_ccmppWPP_object.mortality_rate_age_sex <- function(x, check_sex_equalit
 
     ## Must have 'male' and 'female'
     if (!all(c("male", "female") %in% sexes(x)))
-        stop(not_a_valid_object_msg("mortality_rate_age_sex",
+        stop(not_a_valid_object_msg("mort_rate_age_sex",
                                     "'x' must have data on both 'male' and 'female'."))
 
     ## Check that male and female are not near-identical

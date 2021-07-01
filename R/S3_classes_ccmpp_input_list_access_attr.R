@@ -276,39 +276,39 @@ survival_ratio_component.ccmpp_input_list <- function(x) {
 ### ** Mortality rate
 
 #' @rdname ccmpp_list_access_elements
-mortality_rate_component <- function(x) {
-    UseMethod("mortality_rate_component")
+mort_rate_component <- function(x) {
+    UseMethod("mort_rate_component")
 }
 
 #' @rdname ccmpp_list_access_elements
-mortality_rate_component.life_table_age_sex <- function(x) {
-    as_mortality_rate_age_sex(x[x$indicator == "lt_nMx",
+mort_rate_component.life_table_age_sex <- function(x) {
+    as_mort_rate_age_sex(x[x$indicator == "lt_nMx",
                                 c("time_start", "time_span", "sex",
                                   "age_start", "age_span", "value")])
 }
 
 #' @rdname ccmpp_list_access_elements
-mortality_rate_component.list <- function(x) {
-    mortality_rate_component(as_ccmpp_input_list(x))
+mort_rate_component.list <- function(x) {
+    mort_rate_component(as_ccmpp_input_list(x))
 }
 #' @rdname ccmpp_list_access_elements
-mortality_rate_component.ccmpp_input_list <- function(x) {
-    mortality_rate_component(life_table_component(x))
+mort_rate_component.ccmpp_input_list <- function(x) {
+    mort_rate_component(life_table_component(x))
 }
 
 #' @rdname ccmpp_list_access_elements
-`mortality_rate_component<-` <- function(x, value) {
-    UseMethod("mortality_rate_component<-")
+`mort_rate_component<-` <- function(x, value) {
+    UseMethod("mort_rate_component<-")
 }
 #' @rdname ccmpp_list_access_elements
-`mortality_rate_component<-.life_table_age_sex` <- function(x, value) {
-    value <- as_mortality_rate_age_sex(value)
+`mort_rate_component<-.life_table_age_sex` <- function(x, value) {
+    value <- as_mort_rate_age_sex(value)
     x[x$indicator == "lt_nMx", colnames(value)] <- value
     as_life_table_age_sex(x)
     }
 #' @rdname ccmpp_list_access_elements
-`mortality_rate_component<-.ccmpp_input_list` <- function(x, value) {
-    mortality_rate_component(life_table_component(x)) <- value
+`mort_rate_component<-.ccmpp_input_list` <- function(x, value) {
+    mort_rate_component(life_table_component(x)) <- value
     as_ccmpp_input_list(x)
 }
 

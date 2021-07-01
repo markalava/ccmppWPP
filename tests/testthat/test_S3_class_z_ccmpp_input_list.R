@@ -187,11 +187,11 @@ test_that("'mig_parameter' component can be changed", {
 })
 
 
-test_that("'mortality_rate_age_sex' component can be changed", {
+test_that("'mort_rate_age_sex' component can be changed", {
     z <- ccmpp_input_list_example
-    x <- mortality_rate_age_sex(z)
-    expect_s3_class(x, "mortality_rate_age_sex")
-    expect_error(mortality_rate_age_sex(z) <- x, NA)
+    x <- mort_rate_age_sex(z)
+    expect_s3_class(x, "mort_rate_age_sex")
+    expect_error(mort_rate_age_sex(z) <- x, NA)
 })
 
 

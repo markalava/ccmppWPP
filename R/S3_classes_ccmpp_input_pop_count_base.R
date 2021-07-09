@@ -9,12 +9,15 @@
 #' This function is not exported. The user-level constructor is
 #' \code{\link{pop_count_age_sex_base}}.
 #'
+#' @section Note:
+#' There is no \code{age_span} argument. Baseline population counts
+#'     have time span 0.
+#'
 #' @seealso pop_count_age_sex_base
 #'
 #' @family pop_count_age_sex_base class non-exported functions
 #'
 #' @param age_span Scalar indicating the span of the age groups.
-#' @param time_span Scalar indicating the span of the time periods.
 #' @param value_scale \emph{Numeric} scalar indicating the value_scale of the
 #'     counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.
 #' @param dimensions Character vector listing the dimensions such as
@@ -26,14 +29,13 @@
 new_pop_count_age_sex_base <-
     function(x,
              age_span = double(),
-             time_span = double(),
              dimensions =  get_req_dimensions_for_ccmpp_in_out_classes("pop_count_age_sex_base"),
              value_type = get_value_types_for_ccmpp_in_out_classes("pop_count_age_sex_base"),
              value_scale = double(),
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
                            age_span = age_span,
-                           time_span = time_span,
+                           time_span = 0,
                            dimensions = dimensions,
                            value_type = value_type,
                            value_scale = value_scale,
@@ -75,7 +77,6 @@ pop_count_age_sex_base <- function(x, ...) {
 #' @export
 pop_count_age_sex_base.data.frame <- function(x,
              age_span = attr(x, "age_span"),
-             time_span = attr(x, "time_span"),
              value_scale = attr(x, "value_scale")) {
 
         if (is.null(value_scale)) value_scale <- 1
@@ -90,7 +91,6 @@ pop_count_age_sex_base.data.frame <- function(x,
         validate_ccmppWPP_object(
             new_pop_count_age_sex_base(li$df,
                                age_span = li$age_span,
-                               time_span = li$time_span,
                                value_scale = li$value_scale)
         )
     }

@@ -7,21 +7,6 @@ validate_ccmppWPP_object.ccmpp_input_df <- function(x, ...) {
 
     x <- NextMethod()
 
-    ## SQUARENESS:
-    ## Must be exactly _one_ value per indicator * sex * 'Lexis square' (i.e., age-time square).
-
-    x_tbl <- tabulate_lexis_squares(x)
-    if (!identical(as.double(sum(x_tbl != 1)), 0)) {
-        indx <- which(x_tbl != 1, arr.ind = TRUE)
-        errs <- apply(indx, 1, function(z) {
-            mapply(function(x, y) x[[y]],
-                   dimnames(x_tbl), as.list(z))
-        })
-        print(errs)
-        stop(not_a_valid_object_msg("demog_change_component_df",
-                                    "'x' does not have exactly one 'value' per 'age_start' * 'sex' * 'time_start' * 'indicator' combination. Either there are duplicates or some are missing. The combinations with more or less than 1 row are printed above. See ?demog_change_component_df for class definition."))
-    }
-
     ## VALUES:
     ## Cannot be 'NA':
     check_value_type_of_value_in_ccmpp_in_out_df(x$value)
@@ -34,8 +19,8 @@ validate_ccmppWPP_object.ccmpp_input_df <- function(x, ...) {
     if (!all(req_attr %in% names(attributes(x))))
         stop(not_a_valid_object_msg("ccmpp_input_df",
                                     "'x' must have attributes '",
-             paste(req_attr, collapse = "', '"),
-             "'; some are missing."))
+                                    paste(req_attr, collapse = "', '"),
+                                    "'; some are missing."))
 
     ## MUST BE SORTED:
     ## If not sorted, at least by age and sex within time, the
@@ -53,11 +38,16 @@ validate_ccmppWPP_object.ccmpp_input_df <- function(x, ...) {
 
     ## SPANS:
     ## 1. Span attributes must be of length 1
-    ## 2. Spans must all be equal
+    ## 2. Spans must equal row-wise differences between the '_start' columns
+    ## 3. Spans must all be equal
 
     attr_w_span_names <- get_all_dimensions_w_spans()
     attr_w_span_names <-
         attr_w_span_names[attr_w_span_names %in% demog_change_component_dims_x]
+
+    ## If time_span is zero remove it from 'attr_w_span_names'
+    if (has_time_span_zero(x))
+        attr_w_span_names <- attr_w_span_names[!attr_w_span_names %in% "time"]
 
     span_values <- numeric()
 
@@ -81,22 +71,22 @@ validate_ccmppWPP_object.ccmpp_input_df <- function(x, ...) {
         ## Spans must be consistent with the differences between the
         ## '_start' column values.
         by_col_names <- sapply(demog_change_component_dims_x,
-                                   FUN = "get_df_col_names_for_dimensions", spans = FALSE)
-            by_col_names <- by_col_names[!by_col_names %in% start_name]
-            if (length(by_col_names)) {
+                               FUN = "get_df_col_names_for_dimensions", spans = FALSE)
+        by_col_names <- by_col_names[!by_col_names %in% start_name]
+        if (length(by_col_names)) {
             start_vs_span_diff <-
                 lapply(split(x[, c(by_col_names, span_name, start_name)], x[, by_col_names]),
                        function(z) {
                     sum(head(z[, span_name], -1) - diff(z[, start_name], differences = 1))
                 })
-            } else {
-                start_vs_span_diff <-
-                    sum(head(x[, span_name], -1) - diff(x[, start_name], differences = 1))
-            }
-            if (any(unlist(start_vs_span_diff) != 0))
-                stop(not_a_valid_object_msg("ccmpp_input_df",
+        } else {
+            start_vs_span_diff <-
+                sum(head(x[, span_name], -1) - diff(x[, start_name], differences = 1))
+        }
+        if (any(unlist(start_vs_span_diff) != 0))
+            stop(not_a_valid_object_msg("ccmpp_input_df",
                                         "Spacings between each 'x$", start_name,
-                 "' do not equal the corresponding values of 'x$", span_name))
+                                        "' do not equal the corresponding values of 'x$", span_name))
 
         ## Diffs of '_start' column values must equal the value of span attribute
         start_1st_diff <-
@@ -104,7 +94,7 @@ validate_ccmppWPP_object.ccmpp_input_df <- function(x, ...) {
         if (!identical(as.double(sum(start_1st_diff != span_attr)), 0))
             stop(not_a_valid_object_msg("ccmpp_input_df",
                                         "Spacings between each 'x$", start_name,
-                 "' do not equal 'attr(x, \"", span_name, "\")'."))
+                                        "' do not equal 'attr(x, \"", span_name, "\")'."))
 
         ## Record span values
         span_values <- c(span_values,
@@ -113,8 +103,37 @@ validate_ccmppWPP_object.ccmpp_input_df <- function(x, ...) {
     if (!identical(length(unique(span_values)), 1L))
         stop(not_a_valid_object_msg("ccmpp_input_df",
                                     "Spans must all be equal; instead they are '",
-             paste0(span_values, collapse = "', '"),
-             "'."))
+                                    paste0(span_values, collapse = "', '"),
+                                    "'."))
+
+    ## If time_span is meant to be zero check that this is true
+    if (has_time_span_zero(x) && !all(x$time_span == 0))
+        stop(not_a_valid_object_msg("ccmpp_input_df",
+                                    "Objects of this class must have all 'time_span' values = 0."))
+
+    ## SQUARENESS:
+    ## Must be exactly _one_ value per indicator * sex * 'Lexis square' (i.e., age-time square).
+    ##
+    ## This could be checked with 'tabulate_lexis_squares()' but that
+    ## function is slow and, given the tests above, partly
+    ## redundant. All that remains is to check that there is a
+    ## complete set of time, age, sex cells as implied by '_start' and '_span' columns.
+
+    ## x_tbl <- tabulate_lexis_squares(x)
+    ## if (!identical(as.double(sum(x_tbl != 1)), 0)) {
+    ##     indx <- which(x_tbl != 1, arr.ind = TRUE)
+    ##     errs <- apply(indx, 1, function(z) {
+    ##         mapply(function(x, y) x[[y]],
+    ##                dimnames(x_tbl), as.list(z))
+    ##     })
+    ##     print(errs)
+    ##     stop(not_a_valid_object_msg("demog_change_component_df",
+    ##                                 "'x' does not have exactly one 'value' per 'age_start' * 'sex' * 'time_start' * 'indicator' combination. Either there are duplicates or some are missing. The combinations with more or less than 1 row are printed above. See ?demog_change_component_df for class definition."))
+    ## }
+
+    if (!verify_complete_time_age_sex_sequence(x))
+        stop(not_a_valid_object_msg("demog_change_component_df",
+                                    "'x' does not have exactly one 'value' per 'age_start' * 'sex' * 'time_start' * 'indicator' combination. Either there are duplicates or some are missing."))
 
     ## AGE:
     ## Must start at age 0 within indicator * time * sex

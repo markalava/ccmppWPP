@@ -40,6 +40,20 @@ get_all_dimensions_w_spans <- function() {
     c("time", "age")
 }
 
+## Classes with time_span == 0
+get_all_classes_time_span_zero <- function() {
+    classes <- "pop_count_age_sex_base"
+    stopifnot(all(classes %in% get_all_demog_change_component_df_class_names()))
+    return(classes)
+}
+
+has_time_span_zero <- function(x) {
+    has <- any(unlist(sapply(get_all_classes_time_span_zero(),
+                             function(z) inherits(x, z))))
+    if (has) stopifnot(is_by_time(x))
+    return(has)
+    }
+
 ## NOTE: See subsequent functions for convenient subsets of this
 ## master list.
 get_master_df_of_dimensions_colnames_coltypes <- function() {

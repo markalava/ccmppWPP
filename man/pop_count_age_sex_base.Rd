@@ -12,7 +12,6 @@ pop_count_age_sex_base(x, ...)
 \method{pop_count_age_sex_base}{data.frame}(
   x,
   age_span = attr(x, "age_span"),
-  time_span = attr(x, "time_span"),
   value_scale = attr(x, "value_scale")
 )
 

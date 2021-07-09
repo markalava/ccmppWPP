@@ -102,7 +102,23 @@ sexes_unequal <- function(x, x_name = "x", tolerance = 1e-6, scale = NULL,
 }
 
 
-## Tabulate Lexis squares.
+#' Tabulate lexis squares
+#'
+#' For each cell on the lexis plane (e.g., each age-time-sex 'year')
+#' tabulate the number of observations that provide information on
+#' it. This should be exactly 1 for a valid CCMPP input data frame
+#' because CCMPP requires one (and only one) value per cell.
+#'
+#' This function was written as a validation tool. It is currenlty not
+#' used because valid \code{\link{ccmpp_input_df}} objects require all
+#' spans to be the same and for them to equal the row-wise differences
+#' between the corresponding \dQuote{\code{_start}} columns (e.g.,
+#' \code{age_span[i]} must equal \code{age_start[i] - age_start[i-1]}
+#' for 1 < \code{i} <= \code{nrow(x)}). In this case, there
+#'
+#' @param x
+#' @return
+#' @author Mark Wheldon
 tabulate_lexis_squares <- function(x) {
     colnames_x <- colnames(x)
     coln_info_x <- subset_master_df_of_dimensions_colnames_coltypes(spans = FALSE)
@@ -115,8 +131,8 @@ tabulate_lexis_squares <- function(x) {
     dim_names_x_span_dims_only <-
         dims_names_x[dims_names_x %in% get_all_dimensions_w_spans()]
 
-    ## If no age or time then just tabulate sex * indicator
     if (!length(dim_names_x_span_dims_only)) {
+        ## If no age or time then just tabulate sex * indicator
         return(table(x[, colnames_x_no_spans]))
 
     } else {
@@ -127,71 +143,136 @@ tabulate_lexis_squares <- function(x) {
         if (!identical(length(span_col_names), length(start_col_names)))
             stop("Must have '_span' cols for all '_start' cols and vice versa.")
 
-        ## if all spans the same then don't need to expand out the Lexis squares
-        if (identical(length(unique(unlist(x[, span_col_names]))), 1L)) {
-            return(table(x[, colnames_x_no_spans]))
+        ## Expand using '_spans' ----
 
-        } else {
+        min_span <- min(x[, span_col_names])
 
-            ## Expand using '_spans' ----
-
-            min_span <- min(x[, span_col_names])
-
-            if ("age" %in% dims_names_x) {
-                x$age_span[x$age_span == 1000] <- 1
+        if ("age" %in% dims_names_x) {
+            x$age_span[x$age_span == 1000] <- 1
                                 # ^ TEMP as along as '1000' used to mark
                                 # open ended age group
-                x$age_span <- x$age_span / min_span # scale in case min span != 1
-            }
-            if ("time" %in% dims_names_x) {
-                x$time_span <- x$time_span / min_span
-            }
-
-            ## This is *slow*... needs speeding up! plyr::ddplyr shaves
-            ## off about 8% user time relative to base::by. Would using
-            ## '.parallel = TRUE' help?
-
-            ## x <- by(x, x[, colnames_x_no_spans], function(z) {
-            x <- plyr::ddply(x, colnames_x_no_spans, function(z) {
-                if (all(z[, span_col_names] == min_span)) {
-                    ## Don't need to expand anything
-                    return(z[, colnames_x_no_spans])
-                } else {
-                    ## Will need to expand using the spans.
-
-                    ## If there are multiple rows here it will
-                    ## end up being invalid so check.
-                    out_df <- data.frame()
-                    for (i in seq_len(nrow(z))) {
-                        ## lapply over the dims with spans
-                        grid_list <-
-                            lapply(setNames(seq_along(start_col_names), start_col_names),
-                                   function(j) {
-                                out <- vector(mode = "numeric")
-                                seq(from = z[i, start_col_names[j]],
-                                    length.out = z[i, span_col_names[j]],
-                                    by = min_span)
-                            })
-                        grid_list2 <- list()
-                        for (dn in setdiff(dims_names_x, dim_names_x_span_dims_only)) {
-                            grid_list2 <- c(grid_list2,
-                                            setNames(list(unique(z[i, dn])), dn))
-                        }
-                        grid_list <- c(grid_list, grid_list2)
-                        out_df <- rbind(out_df, expand.grid(grid_list))
-                    }
-                }
-                return(out_df)
-            })
-            ##x <- do.call(rbind, x)
-                         # ^ goes with the base::by version
-
-            ## Tabulate ----
-
-            return(table(x))
-            }
+            x$age_span <- x$age_span / min_span # scale in case min span != 1
         }
+        if ("time" %in% dims_names_x) {
+            x$time_span <- x$time_span / min_span
+        }
+
+        ## This is *slow*... needs speeding up! plyr::ddplyr shaves
+        ## off about 8% user time relative to base::by. Would using
+        ## '.parallel = TRUE' help?
+
+        ## x <- by(x, x[, colnames_x_no_spans], function(z) {
+        x <- plyr::ddply(x, colnames_x_no_spans, function(z) {
+                       if (all(z[, span_col_names] == min_span)) {
+                           ## Don't need to expand anything
+                           return(z[, colnames_x_no_spans])
+                       } else {
+                           ## Will need to expand using the spans.
+
+                           ## If there are multiple rows here it will
+                           ## end up being invalid so check.
+                           out_df <- data.frame()
+                           for (i in seq_len(nrow(z))) {
+                               ## lapply over the dims with spans
+                               grid_list <-
+                                   lapply(setNames(seq_along(start_col_names), start_col_names),
+                                          function(j) {
+                                       out <- vector(mode = "numeric")
+                                       seq(from = z[i, start_col_names[j]],
+                                           length.out = z[i, span_col_names[j]],
+                                           by = min_span)
+                                   })
+                               grid_list2 <- list()
+                               for (dn in setdiff(dims_names_x, dim_names_x_span_dims_only)) {
+                                   grid_list2 <- c(grid_list2,
+                                                   setNames(list(unique(z[i, dn])), dn))
+                               }
+                               grid_list <- c(grid_list, grid_list2)
+                               out_df <- rbind(out_df, expand.grid(grid_list))
+                           }
+                       }
+                       return(out_df)
+                   })
+        ##x <- do.call(rbind, x)
+                                # ^ goes with the base::by version
+
+        ## Tabulate ----
+
+        return(table(x))
     }
+}
+
+
+## Check that there is a complete sequence of time-age-sex
+## entries. The sequence to be checked is implied by the min and max
+## time_start and age_start, and their respective spans. E.g., if
+## min(time_start) == 1950, max(time_start) == 1959 and all time_spans
+## are 1 then there should be rows for all seq(from = 1950, to = 1959,
+## by = 1) for all ages and sexes. Similarly for age_start.
+##
+## This function is restricted to the case where all time_span are
+## identical and all age_span are identical (but not necessarily
+## mutually identical).
+verify_complete_time_age_sex_sequence <- function(x) {
+    ## Get info about demographic dimensions and corresponding columns in 'x'
+    demog_dims_x <- guess_dimensions_from_df_cols(x)
+    dims_w_spans <- demog_dims_x[demog_dims_x %in% get_all_dimensions_w_spans()]
+
+    ## Count the combinations (time x age x sex x indicator)
+    n_combinations_span_dims <-
+        Reduce("*",
+               unlist(vapply(X = dims_w_spans, FUN = function(z) {
+            ## Define column names for this 'z'
+            start_col_name <- paste0(z, "_start")
+            span_col_name <- paste0(z, "_span")
+            ## Ensure spans are all the same
+            stopifnot(identical(length(unique(x[[span_col_name]])), 1L))
+            ## Exclude e.g., time_span == 0
+            if (!identical(as.numeric(x[[span_col_name]][1]),
+                           as.numeric(0))) {
+                ## Only need the length of the sequence of times or ages
+                length(seq(from = min(x[[start_col_name]]),
+                            to = max(x[[start_col_name]]),
+                            by = x[[span_col_name]][1]    #< Assumes all spans are the same
+                            ))
+                } else return(1)
+        },
+        FUN.VALUE = integer(1), USE.NAMES = FALSE)))
+    ## dim_seq <- list()
+    ## for (dim in dims_w_spans) {
+    ##     ## Define column names for this 'dim'
+    ##     start_col_name <- paste0(dim, "_start")
+    ##     span_col_name <- paste0(dim, "_span")
+    ##     ## Ensure spans are all the same
+    ##     stopifnot(identical(length(unique(x[[span_col_name]])), 1L))
+    ##     ## Exclude e.g., time_span == 0
+    ##     if (!identical(as.numeric(x[[span_col_name]][1]),
+    ##                    as.numeric(0))) {
+    ##         ## How many years/ages/etc.?
+    ##         dim_seq <- c(dim_seq,
+    ##                      setNames(list(seq(from = min(x[[start_col_name]]),
+    ##                                        to = max(x[[start_col_name]]),
+    ##                                        by = x[[span_col_name]][1]    #< Assumes all spans are the same
+    ##                                        )),
+    ##                               dim))
+    ##     }
+    ## }
+    if (is_by_sex(x)) {
+        col_name <- get_df_col_names_for_dimensions(dimensions = "sex", spans = FALSE)
+        ## dim_seq <- c(dim_seq, list(sex = unique(x[[col_name]])))
+        n_combinations_span_dims <- n_combinations_span_dims * length(unique(x[[col_name]]))
+    }
+    if (is_by_indicator(x)) {
+        col_name <- get_df_col_names_for_dimensions(dimensions = "indicator", spans = FALSE)
+        ## dim_seq <- c(dim_seq, list(indicator = unique(x[[col_name]])))
+        n_combinations_span_dims <- n_combinations_span_dims * length(unique(x[[col_name]]))
+    }
+
+    if (identical(nrow(x), ## nrow(do.call("expand.grid", args = dim_seq)))
+        n_combinations_span_dims
+        )) return(TRUE)
+    else return(FALSE)
+}
 
 
 ## Get min age within each dimension

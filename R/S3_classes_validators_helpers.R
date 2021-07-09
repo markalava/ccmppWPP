@@ -238,39 +238,16 @@ verify_complete_time_age_sex_sequence <- function(x) {
                 } else return(1)
         },
         FUN.VALUE = integer(1), USE.NAMES = FALSE)))
-    ## dim_seq <- list()
-    ## for (dim in dims_w_spans) {
-    ##     ## Define column names for this 'dim'
-    ##     start_col_name <- paste0(dim, "_start")
-    ##     span_col_name <- paste0(dim, "_span")
-    ##     ## Ensure spans are all the same
-    ##     stopifnot(identical(length(unique(x[[span_col_name]])), 1L))
-    ##     ## Exclude e.g., time_span == 0
-    ##     if (!identical(as.numeric(x[[span_col_name]][1]),
-    ##                    as.numeric(0))) {
-    ##         ## How many years/ages/etc.?
-    ##         dim_seq <- c(dim_seq,
-    ##                      setNames(list(seq(from = min(x[[start_col_name]]),
-    ##                                        to = max(x[[start_col_name]]),
-    ##                                        by = x[[span_col_name]][1]    #< Assumes all spans are the same
-    ##                                        )),
-    ##                               dim))
-    ##     }
-    ## }
     if (is_by_sex(x)) {
         col_name <- get_df_col_names_for_dimensions(dimensions = "sex", spans = FALSE)
-        ## dim_seq <- c(dim_seq, list(sex = unique(x[[col_name]])))
         n_combinations_span_dims <- n_combinations_span_dims * length(unique(x[[col_name]]))
     }
     if (is_by_indicator(x)) {
         col_name <- get_df_col_names_for_dimensions(dimensions = "indicator", spans = FALSE)
-        ## dim_seq <- c(dim_seq, list(indicator = unique(x[[col_name]])))
         n_combinations_span_dims <- n_combinations_span_dims * length(unique(x[[col_name]]))
     }
 
-    if (identical(nrow(x), ## nrow(do.call("expand.grid", args = dim_seq)))
-        n_combinations_span_dims
-        )) return(TRUE)
+    if (identical(nrow(x), n_combinations_span_dims)) return(TRUE)
     else return(FALSE)
 }
 

@@ -168,23 +168,38 @@ is_pop_count_age_sex_base <- function(x) {
 #' @rdname subset_demog_change_component_df
 #' @export
 subset_time.pop_count_age_sex_base <- function(x, times, include = TRUE) {
-
+    ## HACK for now:
+    if ("time_span" %in% colnames(x)) {
+        x$time_span <- NULL
+        x <- suppressWarnings(as_ccmpp_input_df(x, time_span = 1))
+    }
     x <- NextMethod()
+    x$time_span <- 0
     return(pop_count_age_sex_base(x))
 }
 
 #' @rdname subset_demog_change_component_df
 #' @export
 subset_age.pop_count_age_sex_base <- function(x, ages, include = TRUE) {
-
+    ## HACK for now:
+    if ("time_span" %in% colnames(x)) {
+        x$time_span <- NULL
+        x <- suppressWarnings(as_ccmpp_input_df(x, time_span = 1))
+    }
     x <- NextMethod()
+    x$time_span <- 0
     return(pop_count_age_sex_base(x))
 }
 
 #' @rdname subset_demog_change_component_df
 #' @export
 subset_sex.pop_count_age_sex_base <- function(x, sexes, include = TRUE) {
-
+    ## HACK for now:
+    if ("time_span" %in% colnames(x)) {
+        x$time_span <- NULL
+        x <- suppressWarnings(as_ccmpp_input_df(x, time_span = 1))
+    }
     x <- NextMethod()
+    x$time_span <- 0
     return(pop_count_age_sex_base(x))
 }

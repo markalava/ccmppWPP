@@ -77,6 +77,7 @@ subset_time.demog_change_component_df <- function(x, times, include = TRUE, drop
     value_type_x <- value_type(x)
     value_scale_x <- value_scale(x)
     time_col_name <- get_df_col_names_for_dimensions(dimensions = "time", spans = FALSE)
+                                # TODO: should hard-code 'time_span'
 
     if (include) {
         time_x <- x[[time_col_name]] %in% times
@@ -128,6 +129,7 @@ subset_age.demog_change_component_df <- function(x, ages, include = TRUE, drop =
     value_type_x <- value_type(x)
     value_scale_x <- value_scale(x)
     age_col_name <- get_df_col_names_for_dimensions(dimensions = "age", spans = FALSE)
+                                # TODO: should hard-code 'age_span'
 
     if (include) {
     age_x <- x[[age_col_name]] %in% ages
@@ -167,6 +169,7 @@ subset_sex.demog_change_component_df <-
         value_type_x <- value_type(x)
         value_scale_x <- value_scale(x)
         sex_col_name <- get_df_col_names_for_dimensions(dimensions = "sex", spans = FALSE)
+                                # TODO: should hard-code 'sex'
 
         if (include) {
             sex_x <- x[[sex_col_name]] %in% sexes
@@ -205,6 +208,7 @@ subset_indicator.demog_change_component_df <-
         value_type_x <- value_type(x)
         value_scale_x <- value_scale(x)
         indicator_col_name <- get_df_col_names_for_dimensions(dimensions = "indicator", spans = FALSE)
+                                # TODO: should hard-code 'indicator'
 
         if (include) {
             indicator_x <- x[[indicator_col_name]] %in% indicators

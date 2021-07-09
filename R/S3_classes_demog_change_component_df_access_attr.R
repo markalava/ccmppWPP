@@ -50,6 +50,11 @@ demog_change_component_dims.demog_change_component_df <- function(x) {
     attr(x, "dimensions")
 }
 
+## DON'T export! Useful for internal use.
+demog_change_component_dims.data.frame <- function(x) {
+    guess_dimensions_from_df_cols(x)
+}
+
 
 #' Extract specific components
 #'

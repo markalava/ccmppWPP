@@ -185,6 +185,12 @@ guess_span_for_dimension_for_df <- function(x, dimension = get_all_dimensions_w_
                            get_df_col_names_for_dimensions(dimension),
                            value = TRUE)
     guess_span_from_start(x = x[, start_col_name])
+}
+
+get_is_by_function_for_dimension <- function(dimension) {
+    if (dimension %in% get_all_allowed_dimensions())
+        return(paste("is_by", dimension, sep = "_"))
+    else stop("Don't know what the 'is' function is for dimension '", dimension, "'.")
     }
 
 ###-----------------------------------------------------------------------------

@@ -104,6 +104,9 @@ sexes_unequal <- function(x, x_name = "x", tolerance = 1e-6, scale = NULL,
 
 ## Check that '_span' columns are consistent with first differences of
 ## corresponding '_start' columns.
+##
+## !! THIS IS NO LONGER USED AND MAY NOT BE VALID ANYMORE (2021-07-09)
+##
 verify_spans_equal_start_differences <- function(x) {
     demog_change_component_dims_x <- demog_change_component_dims(x)
     attr_w_span_names <- get_all_dimensions_w_spans()
@@ -168,6 +171,20 @@ verify_spans_equal_start_differences <- function(x) {
                                         "' do not equal 'attr(x, \"", span_name, "\")'."))
     }
     return(TRUE)
+}
+
+
+## Detect any missing indicator x sex x time x age combinations.
+check_all_demog_dimension_combinations <- function(x) {
+    no_combin <- Reduce("*",
+           vapply(demog_change_component_dims(x), FUN = function(z) {
+               if (do.call(get_is_by_function_for_dimension(z), list(x)))
+                   return(length(unique(x[[get_df_col_names_for_dimensions(
+                                              dimensions = z,
+                                              spans = FALSE)]])))
+               else return(1)
+           }, FUN.VALUE = numeric(1)))
+    return(identical(as.numeric(no_combin), as.numeric(nrow(x))))
 }
 
 

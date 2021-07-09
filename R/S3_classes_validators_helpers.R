@@ -104,10 +104,7 @@ sexes_unequal <- function(x, x_name = "x", tolerance = 1e-6, scale = NULL,
 
 ## Check that '_span' columns are consistent with first differences of
 ## corresponding '_start' columns.
-##
-## !! THIS IS NO LONGER USED AND MAY NOT BE VALID ANYMORE (2021-07-09)
-##
-verify_spans_equal_start_differences <- function(x) {
+verify_spans_equal_start_differences <- function(x, obj_class) {
     demog_change_component_dims_x <- demog_change_component_dims(x)
     attr_w_span_names <- get_all_dimensions_w_spans()
     attr_w_span_names <-
@@ -155,7 +152,7 @@ verify_spans_equal_start_differences <- function(x) {
                 sum(head(x[, span_name], -1) - diff(x[, start_name], differences = 1))
         }
         if (any(unlist(start_vs_span_diff) != 0))
-            stop(not_a_valid_object_msg("ccmpp_input_df",
+            stop(not_a_valid_object_msg(obj_class,
                                         "Spacings between each 'x$", start_name,
                                         "' do not equal the corresponding values of 'x$",
                                         span_name, "'."))
@@ -165,7 +162,7 @@ verify_spans_equal_start_differences <- function(x) {
         ## allowed so, for now, assume the attribute will just list
         ## the unique values.
         if (!identical(sort(as.numeric(unique(x[[span_name]]))), sort(as.numeric(span_attr))))
-            stop(not_a_valid_object_msg("ccmpp_input_df",
+            stop(not_a_valid_object_msg(obj_class,
                                         "The (sorted unique) spacings between each 'x$",
                                         start_name,
                                         "' do not equal 'attr(x, \"", span_name, "\")'."))
@@ -299,6 +296,9 @@ tabulate_lexis_squares <- function(x) {
 ## This function is restricted to the case where all time_span are
 ## identical and all age_span are identical (but not necessarily
 ## mutually identical).
+##
+## !! THIS IS NO LONGER USED AND MAY NOT BE VALID ANYMORE (2021-07-09)
+##
 verify_complete_time_age_sex_sequence <- function(x) {
     ## Get info about demographic dimensions and corresponding columns in 'x'
     demog_dims_x <- guess_dimensions_from_df_cols(x)

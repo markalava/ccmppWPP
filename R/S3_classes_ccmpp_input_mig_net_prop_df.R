@@ -107,14 +107,14 @@ mig_net_prop_age_sex.data.frame <-
 #' @export
 mig_net_prop_age_sex.ccmpp_input_list <-
     function(x, ...) {
-        pop_count_age_sex <-
-            rbind(x$pop_count_age_sex_base,
-                  data_reshape_ccmpp_output(
-                      project_ccmpp_loop_over_time(indata = x))$pop_count_age_sex)
-        pop_count_age_sex <-
-            pop_count_age_sex[pop_count_age_sex$sex %in% c("male", "female"),]
+        ## pop_count_age_sex <-
+        ##     rbind(x$pop_count_age_sex_base,
+        ##           data_reshape_ccmpp_output(
+        ##               project_ccmpp_loop_over_time(indata = x))$pop_count_age_sex)
+        ## pop_count_age_sex <-
+        ##     pop_count_age_sex[pop_count_age_sex$sex %in% c("male", "female"),]
         mig_net_prop_age_sex(x = mig_net_count_component(x),
-                             pop_count_age_sex = pop_count_age_sex,
+                             pop_count_age_sex = pop_count_age_sex(x),
                              ...)
     }
 
@@ -123,7 +123,7 @@ mig_net_prop_age_sex.ccmpp_input_list <-
 mig_net_prop_age_sex.mig_net_count_age_sex <-
     function(x, pop_count_age_sex,
              ...) {
-        pop_count_age_sex <- as_ccmpp_input_df(pop_count_age_sex,
+        pop_count_age_sex <- as_pop_count_age_sex(pop_count_age_sex,
                                             value_type = "count")
         mig_net_prop_age_sex(make_value_ratio(num = x,
                                               denom = pop_count_age_sex))

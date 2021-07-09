@@ -28,14 +28,15 @@ validate_ccmpp_in_out <- function(x, obj_class, ...) {
     if (!identical(x[, order_cols],
                    sort_demog_change_component_df(x)[, order_cols]))
         stop(not_a_valid_object_msg(obj_class,
-                                    "'x' must be sorted by indicator, time, rev(sex), age_start (see ?ccmpp_input_df for class definition)."))
+                                    "'x' must be sorted by indicator, time, rev(sex), age_start (see ?",
+                                    obj_class, "ccmpp_input_df for class definition)."))
 
     ## AGE:
     ## Must start at age 0 within indicator * time * sex
 
     if (is_by_age(x)) {
         min_age_start <- get_min_age_in_dims_in_df(x)
-        if (!all(min_age_start == 0))
+        if (!all(na.omit(min_age_start) == 0))
             stop(not_a_valid_object_msg(obj_class,
                                         "'age_start' does not start at '0' for each time * sex combination."))
     }
@@ -52,7 +53,7 @@ validate_ccmpp_in_out <- function(x, obj_class, ...) {
                                     "Objects of this class must have all 'time_span' values = 0."))
 
     ## Check spans against differences
-    stopifnot(verify_spans_equal_start_differences(x))
+    stopifnot(verify_spans_equal_start_differences(x, obj_class))
 
     ## Check that all spans are equal to a common value
     attr_w_span_names <- get_all_dimensions_w_spans()

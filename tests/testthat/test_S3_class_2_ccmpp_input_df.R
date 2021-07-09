@@ -213,8 +213,8 @@ test_that("dimensions are correctly detected", {
 test_that("Unequal spans are caught", {
     x <- S3_demog_change_component_time_age_sex_test_df
     omit_i <- which(x$time_start == 1951)
-    change_i <- which(x$time_start == 1950)
     y <- x[-omit_i, ]
+    change_i <- which(y$time_start == 1950)
     y[change_i, "time_span"] <- 2
     attr(y, "time_span") <- c(1, 2)
     expect_error(ccmpp_input_df(y),
@@ -242,7 +242,7 @@ test_that("Unequal spans are caught", {
 
 test_that("Inconsistency between spans and starts are detected", {
     x <- S3_demog_change_component_time_age_sex_test_df
-    x[1, "age_span"] <- 2
+    x[2, "age_span"] <- 2
     expect_error(ccmpp_input_df(x),
                  "Spacings between each 'x\\$age_start' do not equal the corresponding values of 'x\\$age_span")
 
@@ -256,23 +256,18 @@ test_that("Inconsistency between spans and starts are detected", {
 test_that("non-squareness is caught", {
     x <- S3_demog_change_component_time_age_sex_test_df
 
-    ## Cannot have missing
-
-    ## NOT OK to just remove one age-time-sex combination.
-    omit_i <- which(x$age_start == 0 & x$time_start == 1950 & x$sex == "male")
+    ## Remove 1950 just for 'male'.
+    omit_i <- which(x$time_start == 1950 & x$sex == "male")
     y <- x[-omit_i, ]
+
     ## 'y' has an entry for 1950, age 0, 'female', but the entry for
     ## 'male' is missing. This is invalid:
     expect_error(ccmpp_input_df(y),
                  "Some combinations of")
-    ## It's not enough to omit 'female' entry as well because there
-    ## are entries for age 5 for all other years and sexes. E.g.,
-    ## 1951, age 5, 'male' and 'female' exists; the absence of the
-    ## 1950 entry is invalid.
-    omit_i <- which(x$age_start == 0 & x$time_start == 1950)
-    y <- x[-omit_i, ]
-    expect_error(ccmpp_input_df(y),
-                 "Some combinations of")
+
+    ## The above example must use '1950', not any other year, because
+    ## then the spans would not equal the differences between the
+    ## time_start values and a different error would be triggered.
 })
 
 

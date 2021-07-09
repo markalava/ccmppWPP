@@ -48,7 +48,7 @@ test_that("Spans not all equal", {
     ## Not OK to have multiple age_spans
     z <- rbind(y, x[x$age_start == 1,])
     z[z$age_start == 0, "age_span"] <- 1
-    expect_error(pop_count_age_sex_base(z), "Spans must all be equal")
+    expect_error(pop_count_age_sex_base(z), "All spans must be equal to a \\*single\\* common value")
 })
 
 

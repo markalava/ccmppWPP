@@ -7,7 +7,6 @@
 new_pop_count_age_sex(
   x,
   age_span = double(),
-  time_span = double(),
   dimensions = get_req_dimensions_for_ccmpp_in_out_classes("pop_count_age_sex"),
   value_type = get_value_types_for_ccmpp_in_out_classes("pop_count_age_sex"),
   value_scale = double(),
@@ -42,6 +41,12 @@ checks are done; for interactive use see
 This function is not exported. The user-level constructor is
 \code{\link{pop_count_age_sex}}.
 }
+\section{Note}{
+
+There is no \code{age_span} argument. Population counts
+    have time span 0.
+}
+
 \seealso{
 pop_count_age_sex
 }

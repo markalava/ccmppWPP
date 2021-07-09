@@ -9,6 +9,10 @@
 #' This function is not exported. The user-level constructor is
 #' \code{\link{pop_count_age_sex}}.
 #'
+#' @section Note:
+#' There is no \code{age_span} argument. Population counts
+#'     have time span 0.
+#'
 #' @seealso pop_count_age_sex
 #'
 #' @inheritParams demog_change_component_df
@@ -17,14 +21,13 @@
 new_pop_count_age_sex <-
     function(x,
              age_span = double(),
-             time_span = double(),
              dimensions = get_req_dimensions_for_ccmpp_in_out_classes("pop_count_age_sex"),
              value_type = get_value_types_for_ccmpp_in_out_classes("pop_count_age_sex"),
              value_scale = double(),
              ..., class = character()) {
         new_ccmpp_output_df(x = x,
                            age_span = age_span,
-                           time_span = time_span,
+                           time_span = 0,
                            dimensions = dimensions,
                            value_type = value_type,
                            value_scale = value_scale,
@@ -96,7 +99,6 @@ pop_count_age_sex.data.frame <-
         validate_ccmppWPP_object(
             new_pop_count_age_sex(li$df,
                                age_span = li$age_span,
-                               time_span = li$time_span,
                                value_scale = li$value_scale)
         )
     }
@@ -124,7 +126,6 @@ pop_count_age_sex.ccmpp_input_list <-
         validate_ccmppWPP_object(
             new_pop_count_age_sex(pop_out$df,
                                age_span = pop_out$age_span,
-                               time_span = pop_out$time_span,
                                value_scale = pop_out$value_scale)
         )
     }

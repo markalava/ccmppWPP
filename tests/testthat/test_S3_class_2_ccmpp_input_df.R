@@ -210,22 +210,51 @@ test_that("dimensions are correctly detected", {
 })
 
 
+test_that("Unequal spans are caught", {
+    x <- S3_demog_change_component_time_age_sex_test_df
+    omit_i <- which(x$time_start == 1951)
+    change_i <- which(x$time_start == 1950)
+    y <- x[-omit_i, ]
+    y[change_i, "time_span"] <- 2
+    attr(y, "time_span") <- c(1, 2)
+    expect_error(ccmpp_input_df(y),
+                 "All spans must be equal to a \\*single\\* common value")
+
+    ## This will pass the 'unequal spans' test because time_span and
+    ## age_span both have values c(1,2). However it will fail the
+    ## requirement that all spans be equal to a single common value.
+    omit_i <- which(x$time_start == 1951)
+    y <- x[-omit_i, ]
+    change_i <- which(x$time_start == 1950)
+    y[change_i, "time_span"] <- 2
+    attr(y, "time_span") <- c(1, 2)
+
+    omit_j <- which(y$age_start == 1)
+    y <- y[-omit_j, ]
+    change_j <- which(y$age_start == 0)
+    y[change_j, "age_span"] <- 2
+    attr(y, "age_span") <- c(1, 2)
+
+    expect_error(ccmpp_input_df(y),
+                 "All spans must be equal to a \\*single\\* common value")
+})
+
+
+test_that("Inconsistency between spans and starts are detected", {
+    x <- S3_demog_change_component_time_age_sex_test_df
+    x[1, "age_span"] <- 2
+    expect_error(ccmpp_input_df(x),
+                 "Spacings between each 'x\\$age_start' do not equal the corresponding values of 'x\\$age_span")
+
+    x <- S3_demog_change_component_time_age_sex_test_df
+    x <- x[!x$age_start == 1, ]
+    expect_error(ccmpp_input_df(x),
+                 "Spacings between each 'x\\$age_start' do not equal the corresponding values of 'x\\$age_span")
+})
+
+
 test_that("non-squareness is caught", {
     x <- S3_demog_change_component_time_age_sex_test_df
-
-    ## OK to omit a whole time, or sex group. NB: omitting only the
-    ## first time or age here because otherwise would have to also
-    ## adjust the '_span' columns. Also only test time and sex because
-    ## omitting age_start '0' triggers a different error.
-    omit_i <- which(x$time_start == 1950)
-    y <- x[-omit_i, ]
-    expect_s3_class(ccmpp_input_df(y),
-                    "ccmpp_input_df")
-
-    omit_i <- which(x$sex == "male")
-    y <- x[-omit_i, ]
-    expect_s3_class(ccmpp_input_df(y),
-                    "ccmpp_input_df")
 
     ## NOT OK to just remove one age-time-sex combination.
     omit_i <- which(x$age_start == 5 & x$time_start == 1950 & x$sex == "male")

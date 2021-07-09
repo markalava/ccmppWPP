@@ -37,87 +37,119 @@ validate_ccmppWPP_object.ccmpp_input_df <- function(x, ...) {
                                     "'x' must be sorted by indicator, time, rev(sex), age_start (see ?ccmpp_input_df for class definition)."))
 
     ## SPANS:
-    ## 1. Span attributes must be of length 1
-    ## 2. Spans must equal row-wise differences between the '_start' columns
-    ## 3. Spans must all be equal
-
-    attr_w_span_names <- get_all_dimensions_w_spans()
-    attr_w_span_names <-
-        attr_w_span_names[attr_w_span_names %in% demog_change_component_dims_x]
-
-    ## If time_span is zero remove it from 'attr_w_span_names'
-    if (has_time_span_zero(x))
-        attr_w_span_names <- attr_w_span_names[!attr_w_span_names %in% "time"]
-
-    span_values <- numeric()
-
-    for (att in attr_w_span_names) {
-
-        ## Create names of the '_span' and '_start' variables for
-        ## use later.
-        span_name <- paste0(att, "_span")
-        start_name <- paste0(att, "_start")
-
-        ## Get the values of the attribute and column from x for
-        ## use later.
-        span_attr <- attr(x, span_name)
-        start_col <- x[[start_name]]
-
-        ## Check length of attribute
-        if (!identical(length(span_attr), 1L))
-            stop(not_a_valid_object_msg("ccmpp_input_df",
-                                        "'", span_name, "' is not of length 1."))
-
-        ## Spans must be consistent with the differences between the
-        ## '_start' column values.
-        by_col_names <- sapply(demog_change_component_dims_x,
-                               FUN = "get_df_col_names_for_dimensions", spans = FALSE)
-        by_col_names <- by_col_names[!by_col_names %in% start_name]
-        if (length(by_col_names)) {
-            start_vs_span_diff <-
-                lapply(split(x[, c(by_col_names, span_name, start_name)], x[, by_col_names]),
-                       function(z) {
-                    sum(head(z[, span_name], -1) - diff(z[, start_name], differences = 1))
-                })
-        } else {
-            start_vs_span_diff <-
-                sum(head(x[, span_name], -1) - diff(x[, start_name], differences = 1))
-        }
-        if (any(unlist(start_vs_span_diff) != 0))
-            stop(not_a_valid_object_msg("ccmpp_input_df",
-                                        "Spacings between each 'x$", start_name,
-                                        "' do not equal the corresponding values of 'x$", span_name))
-
-        ## Diffs of '_start' column values must equal the value of span attribute
-        start_1st_diff <-
-            diff(sort(unique(start_col)), differences = 1)
-        if (!identical(as.double(sum(start_1st_diff != span_attr)), 0))
-            stop(not_a_valid_object_msg("ccmpp_input_df",
-                                        "Spacings between each 'x$", start_name,
-                                        "' do not equal 'attr(x, \"", span_name, "\")'."))
-
-        ## Record span values
-        span_values <- c(span_values,
-                         c(span_name = span_attr))
-    }
-    if (!identical(length(unique(span_values)), 1L))
-        stop(not_a_valid_object_msg("ccmpp_input_df",
-                                    "Spans must all be equal; instead they are '",
-                                    paste0(span_values, collapse = "', '"),
-                                    "'."))
+    ## 1. Check 'has_time_span_zero'
+    ## 2. Span attributes must be of length 1
+    ## 3. Spans must equal row-wise differences between the '_start' columns
+    ## 4. Spans must all be equal (row- and column-wise)
 
     ## If time_span is meant to be zero check that this is true
     if (has_time_span_zero(x) && !all(x$time_span == 0))
         stop(not_a_valid_object_msg("ccmpp_input_df",
                                     "Objects of this class must have all 'time_span' values = 0."))
 
-    ## SQUARENESS:
-    ## Must be exactly _one_ value per indicator * sex * 'Lexis square' (i.e., age-time square).
+    ## Check spans against differences
+    stopifnot(verify_spans_equal_start_differences(x))
+
+    attr_w_span_names <- get_all_dimensions_w_spans()
+    attr_w_span_names <-
+        attr_w_span_names[attr_w_span_names %in% demog_change_component_dims_x]
+
+    ## ## If time_span is zero remove it from 'attr_w_span_names': This
+    ## ## span _not_ be checked for consistency with first
+    ## ## differences of time_start.
+    ## if (has_time_span_zero(x))
+    ##     attr_w_span_names <- attr_w_span_names[!attr_w_span_names %in% "time"]
+
+    ## ## Check that the spans equal the first differences of the
+    ## ## corresponding '_start' columns. The set-up here is to check the
+    ## ## differences first, and then check that all spans are equal
+    ## ## second. The hope is that this will make it easier to relax the
+    ## ## 'all spans equal' assumption if decided upon later.
+
+    ## span_values <- check_list()
+
+    ## for (att in attr_w_span_names) {
+
+    ##     ## Create names of the '_span' and '_start' variables for
+    ##     ## use later.
+    ##     span_name <- paste0(att, "_span")
+    ##     start_name <- paste0(att, "_start")
+
+    ##     ## Get the values of the attribute and column from x for
+    ##     ## use later.
+    ##     span_attr <- attr(x, span_name)
+    ##     start_col <- x[[start_name]]
+
+    ##     ## ## Check length of attribute
+    ##     ## if (!identical(length(span_attr), 1L))
+    ##     ##     stop(not_a_valid_object_msg("ccmpp_input_df",
+    ##     ##                                 "'", span_name, "' is not of length 1."))
+
+    ##     ## Spans must be consistent with the differences between the
+    ##     ## '_start' column values.
+
+    ##     ## Any 'sex' or 'indicator' cols?
+    ##     by_col_names <- sapply(demog_change_component_dims_x,
+    ##                            FUN = "get_df_col_names_for_dimensions", spans = FALSE)
+    ##     by_col_names <- by_col_names[!by_col_names %in% start_name]
+    ##     if (length(by_col_names)) {
+    ##         ## E.g., have to do it by 'sex' or by 'indicator'
+    ##         start_vs_span_diff <-
+    ##             lapply(split(x[, c(by_col_names, span_name, start_name)], x[, by_col_names]),
+    ##                    function(z) {
+    ##                 sum(head(z[, span_name], -1) - diff(z[, start_name], differences = 1))
+    ##             })
+    ##     } else {
+    ##         start_vs_span_diff <-
+    ##             sum(head(x[, span_name], -1) - diff(x[, start_name], differences = 1))
+    ##     }
+    ##     if (any(unlist(start_vs_span_diff) != 0))
+    ##         stop(not_a_valid_object_msg("ccmpp_input_df",
+    ##                                     "Spacings between each 'x$", start_name,
+    ##                                     "' do not equal the corresponding values of 'x$",
+    ##                                     span_name, "'."))
+
+    ##     ## Check the span *attribute* as well. Not sure how the
+    ##     ## attribute would be defined if non-constant spans are
+    ##     ## allowed so, for now, assume the attribute will just list
+    ##     ## the unique values.
+    ##     if (!identical(sort(as.numeric(unique(x[[span_name]]))), sort(as.numeric(span_attr))))
+    ##         stop(not_a_valid_object_msg("ccmpp_input_df",
+    ##                                     "The (sorted unique) spacings between each 'x$",
+    ##                                     start_name,
+    ##                                     "' do not equal 'attr(x, \"", span_name, "\")'."))
+
+    ##     ## Record span values for checking and error message
+    ##     span_values <- c(span_values,
+    ##                      setNames(list(unique(x[[span_name]])), span_name))
+    ## }
+
+    ## Check that all spans are equal to a common value
+    if (!identical(length(unique(unlist(x[, paste0(attr_w_span_names, "_span")]))), 1L)) {
+        msg <- not_a_valid_object_msg("ccmpp_input_df",
+                                      "All spans must be equal to a *single* common value; instead they are:")
+        for (att in attr_w_span_names) {
+            span_name <- paste0(att, "_span")
+            msg <- c(msg,
+                     "\n\t", span_name, ":\n",
+                     "\t\t",
+                     toString(unique(x[, span_name])))
+        }
+        stop(msg)
+    }
+
+    ## --- END 'SPANS'
+
+
+    ## SQUARENESS: Must not be imbalance in indicator * sex * time *
+    ## age combinations. E.g., if 1951, age 5, 'male' exists, _and_
+    ## there are other rows for 'female', 1951, age 5 must exist for
+    ## 'female' (same for all times, ages, and indicators if present).
     ##
     ## This could be checked with 'tabulate_lexis_squares()' but that
     ## function is slow and, given the tests above, partly
     ## redundant. All that remains is to check that there is a
-    ## complete set of time, age, sex cells as implied by '_start' and '_span' columns.
+    ## complete set of time, age, sex cells as implied by unique values.
 
     ## x_tbl <- tabulate_lexis_squares(x)
     ## if (!identical(as.double(sum(x_tbl != 1)), 0)) {
@@ -131,9 +163,9 @@ validate_ccmppWPP_object.ccmpp_input_df <- function(x, ...) {
     ##                                 "'x' does not have exactly one 'value' per 'age_start' * 'sex' * 'time_start' * 'indicator' combination. Either there are duplicates or some are missing. The combinations with more or less than 1 row are printed above. See ?demog_change_component_df for class definition."))
     ## }
 
-    if (!verify_complete_time_age_sex_sequence(x))
-        stop(not_a_valid_object_msg("demog_change_component_df",
-                                    "'x' does not have exactly one 'value' per 'age_start' * 'sex' * 'time_start' * 'indicator' combination. Either there are duplicates or some are missing."))
+    ## if (!verify_complete_time_age_sex_sequence(x))
+    ##     stop(not_a_valid_object_msg("demog_change_component_df",
+    ##                                 "'x' does not have exactly one 'value' per 'age_start' * 'sex' * 'time_start' * 'indicator' combination. Either there are duplicates or some are missing."))
 
     ## AGE:
     ## Must start at age 0 within indicator * time * sex

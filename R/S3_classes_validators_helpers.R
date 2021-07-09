@@ -102,6 +102,75 @@ sexes_unequal <- function(x, x_name = "x", tolerance = 1e-6, scale = NULL,
 }
 
 
+## Check that '_span' columns are consistent with first differences of
+## corresponding '_start' columns.
+verify_spans_equal_start_differences <- function(x) {
+    demog_change_component_dims_x <- demog_change_component_dims(x)
+    attr_w_span_names <- get_all_dimensions_w_spans()
+    attr_w_span_names <-
+        attr_w_span_names[attr_w_span_names %in% demog_change_component_dims_x]
+
+    ## If time_span is zero remove it from 'attr_w_span_names': This
+    ## span _not_ be checked for consistency with first
+    ## differences of time_start.
+    if (has_time_span_zero(x))
+        attr_w_span_names <- attr_w_span_names[!attr_w_span_names %in% "time"]
+
+    for (att in attr_w_span_names) {
+
+        ## Create names of the '_span' and '_start' variables for
+        ## use later.
+        span_name <- paste0(att, "_span")
+        start_name <- paste0(att, "_start")
+
+        ## Get the values of the attribute and column from x for
+        ## use later.
+        span_attr <- attr(x, span_name)
+        start_col <- x[[start_name]]
+
+        ## ## Check length of attribute
+        ## if (!identical(length(span_attr), 1L))
+        ##     stop(not_a_valid_object_msg("ccmpp_input_df",
+        ##                                 "'", span_name, "' is not of length 1."))
+
+        ## Spans must be consistent with the differences between the
+        ## '_start' column values.
+
+        ## Any 'sex' or 'indicator' cols?
+        by_col_names <- sapply(demog_change_component_dims_x,
+                               FUN = "get_df_col_names_for_dimensions", spans = FALSE)
+        by_col_names <- by_col_names[!by_col_names %in% start_name]
+        if (length(by_col_names)) {
+            ## E.g., have to do it by 'sex' or by 'indicator'
+            start_vs_span_diff <-
+                lapply(split(x[, c(by_col_names, span_name, start_name)], x[, by_col_names]),
+                       function(z) {
+                    sum(head(z[, span_name], -1) - diff(z[, start_name], differences = 1))
+                })
+        } else {
+            start_vs_span_diff <-
+                sum(head(x[, span_name], -1) - diff(x[, start_name], differences = 1))
+        }
+        if (any(unlist(start_vs_span_diff) != 0))
+            stop(not_a_valid_object_msg("ccmpp_input_df",
+                                        "Spacings between each 'x$", start_name,
+                                        "' do not equal the corresponding values of 'x$",
+                                        span_name, "'."))
+
+        ## Check the span *attribute* as well. Not sure how the
+        ## attribute would be defined if non-constant spans are
+        ## allowed so, for now, assume the attribute will just list
+        ## the unique values.
+        if (!identical(sort(as.numeric(unique(x[[span_name]]))), sort(as.numeric(span_attr))))
+            stop(not_a_valid_object_msg("ccmpp_input_df",
+                                        "The (sorted unique) spacings between each 'x$",
+                                        start_name,
+                                        "' do not equal 'attr(x, \"", span_name, "\")'."))
+    }
+    return(TRUE)
+}
+
+
 #' Tabulate lexis squares
 #'
 #' For each cell on the lexis plane (e.g., each age-time-sex 'year')
@@ -221,23 +290,25 @@ verify_complete_time_age_sex_sequence <- function(x) {
     ## Count the combinations (time x age x sex x indicator)
     n_combinations_span_dims <-
         Reduce("*",
-               unlist(vapply(X = dims_w_spans, FUN = function(z) {
-            ## Define column names for this 'z'
-            start_col_name <- paste0(z, "_start")
-            span_col_name <- paste0(z, "_span")
-            ## Ensure spans are all the same
-            stopifnot(identical(length(unique(x[[span_col_name]])), 1L))
-            ## Exclude e.g., time_span == 0
-            if (!identical(as.numeric(x[[span_col_name]][1]),
-                           as.numeric(0))) {
-                ## Only need the length of the sequence of times or ages
-                length(seq(from = min(x[[start_col_name]]),
-                            to = max(x[[start_col_name]]),
-                            by = x[[span_col_name]][1]    #< Assumes all spans are the same
-                            ))
-                } else return(1)
-        },
-        FUN.VALUE = integer(1), USE.NAMES = FALSE)))
+               vapply(X = dims_w_spans, FUN = function(z) {
+                   ## Define column names for this 'z'
+                   start_col_name <- paste0(z, "_start")
+                   span_col_name <- paste0(z, "_span")
+                   ## Ensure spans are all the same
+                   stopifnot(identical(length(unique(x[[span_col_name]])), 1L))
+                   if (!identical(as.numeric(x[[span_col_name]][1]),
+                                  as.numeric(0))) {
+                       ## For spans > 0 measure length of sequence based on min, max, and span:
+                       length(seq(from = min(x[[start_col_name]]),
+                                  to = max(x[[start_col_name]]),
+                                  by = x[[span_col_name]][1]    #< Assumes all spans are the same
+                                  ))
+                   } else {
+                       ## If span == 0 count the
+                       return(1L)
+                   }
+               },
+               FUN.VALUE = integer(1), USE.NAMES = FALSE))
     if (is_by_sex(x)) {
         col_name <- get_df_col_names_for_dimensions(dimensions = "sex", spans = FALSE)
         n_combinations_span_dims <- n_combinations_span_dims * length(unique(x[[col_name]]))

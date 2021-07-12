@@ -60,13 +60,6 @@ test_that("Reference population data can be created", {
 })
 
 
-test_that("DDextract can be coerced to ccmpp_input_df objects", {
-    x <- lapply(france_wpp_1950_2020_population_data$ccmppWPP_inputs,
-                function(z) is_ccmpp_input_df(as_ccmpp_input_df(z)))
-    expect_true(all(unlist(x)))
-    })
-
-
 
 test_that("Raw data can be coerced to ccmpp_input_list objects", {
     x <- DDextract_get_ccmpp_input_list(france_wpp_1950_2020_population_data)

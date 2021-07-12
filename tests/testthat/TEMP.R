@@ -28,3 +28,47 @@ debug(verify_complete_time_age_sex_sequence)
 verify_complete_time_age_sex_sequence(test)
 verify_complete_time_age_sex_sequence(test1)
 verify_complete_time_age_sex_sequence(test2)
+
+
+
+
+
+
+
+
+
+data(canada_wpp_1950_2020_ccmpp_inputs_1x1)
+
+canada_wpp_1950_2020_ccmpp_inputs_1x1$pop_count_age_sex_base$time_span <- 0
+save(canada_wpp_1950_2020_ccmpp_inputs_1x1,
+     file = here::here("data/canada_wpp_1950_2020_ccmpp_inputs_1x1.rda"))
+
+
+france_wpp_1950_2020_population_data$ccmppWPP_inputs$pop_count_age_sex_base$time_span <- 0
+france_wpp_1950_2020_population_data$pop_count_age_sex_reference$time_span <- 0
+save(france_wpp_1950_2020_population_data,
+     file = here::here("data/france_wpp_1950_2020_population_data.rda"))
+
+
+data(kuwait_wpp_1950_2020_ccmpp_inputs_1x1)
+
+kuwait_wpp_1950_2020_ccmpp_inputs_1x1$pop_count_age_sex_base$time_span <- 0
+save(kuwait_wpp_1950_2020_ccmpp_inputs_1x1,
+     file = here::here("data/kuwait_wpp_1950_2020_ccmpp_inputs_1x1.rda"))
+
+
+data(mexico_wpp_1950_2020_ccmpp_inputs_1x1)
+
+mexico_wpp_1950_2020_ccmpp_inputs_1x1$pop_count_age_sex_base$time_span <- 0
+save(mexico_wpp_1950_2020_ccmpp_inputs_1x1,
+     file = here::here("data/mexico_wpp_1950_2020_ccmpp_inputs_1x1.rda"))
+
+
+data(sweden_1993_Preston_5x5)
+
+sweden_1993_Preston_5x5
+
+
+
+data(wpp_input_example)
+wpp_input_example

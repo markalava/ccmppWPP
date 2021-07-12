@@ -348,14 +348,13 @@ demog_change_component_df <-
         ## Create/Validate
         validate_ccmppWPP_object(
             new_demog_change_component_df(li$df,
-                              dimensions = li$dimensions,
-                              ## age_span = (if (is.null(age_span)) double() else age_span),
-                              ## time_span = (if (is.null(time_span)) double() else time_span),
-                              value_type = li$value_type,
-                              value_scale = li$value_scale,
-                              ...
-                              )
-        )
+                                          dimensions = li$dimensions,
+                                          ## age_span = (if (is.null(age_span)) double() else age_span),
+                                          ## time_span = (if (is.null(time_span)) double() else time_span),
+                                          value_type = li$value_type,
+                                          value_scale = li$value_scale,
+                                          ...
+                                          ))
     }
 
 

@@ -71,15 +71,18 @@ validate_ccmppWPP_object.demog_change_component_df <-
                  paste(get_all_allowed_dimensions(), collapse = ", "),
                  "' and cannot be missing or duplicated. See ?demog_change_component_df for class definition."))
 
-        req_attr <- get_req_attr_names_for_dimensions(demog_change_component_dims_x)
+        req_attr <- get_req_attr_names()
         if (!all(req_attr %in% names(attributes(x))))
             stop(not_a_valid_object_msg("demog_change_component_df",
                                         "'x' must have attributes '",
                  paste(req_attr, collapse = "', '"),
                  "'; some are missing."))
 
+        ## Check mode of attributes
+        stopifnot(check_mode_of_attributes(x))
+
         value_type <- attr(x, "value_type")
-        if (!identical(length(value_type), 1L) || !is.character(value_type)) {
+        if (!identical(length(value_type), 1L)) {
             stop(not_a_valid_object_msg("demog_change_component_df",
                                         "'value_type' must be a single character string."))
         }
@@ -91,9 +94,7 @@ validate_ccmppWPP_object.demog_change_component_df <-
                  "'."))
 
         value_scale <- attr(x, "value_scale")
-        if (!identical(length(value_scale), 1L) ||
-            !(is.numeric(value_scale) || is.na(value_scale))
-        ) {
+        if (!identical(length(value_scale), 1L)) {
             stop(not_a_valid_object_msg("demog_change_component_df",
                                         "'value_scale' must be a numeric scalar or 'NA'."))
         }

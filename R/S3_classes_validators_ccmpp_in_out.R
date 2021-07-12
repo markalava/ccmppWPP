@@ -16,6 +16,10 @@ validate_ccmpp_in_out <- function(x, obj_class, ...) {
                                     paste(req_attr, collapse = "', '"),
                                     "'; some are missing."))
 
+    ## Check mode of attributes
+    stopifnot(check_mode_of_attributes(x,
+        modes_df = get_master_df_of_attr_modes_for_ccmpp_in_out_dfs(special_subset = "extra_only")))
+
     ## MUST BE SORTED:
     ## If not sorted, at least by age and sex within time, the
     ## single-step ccmpp function will turn out incorrect

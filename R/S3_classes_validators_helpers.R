@@ -407,3 +407,29 @@ check_value_type_of_value_in_df <- function(value, type) {
         }
     }
 }
+
+## Check mode of attributes
+check_mode_of_attributes <- function(x, modes_df = get_master_df_of_attr_modes()) {
+    lapply(names(attributes(x)), function(attr_nm, modes_df) {
+        if (attr_nm %in% modes_df$name) {
+            mode_is <- mode(attr(x, attr_nm))
+            mode_should_be <- modes_df[modes_df$name == attr_nm, "mode"]
+            NA_OK <- modes_df[modes_df$name == attr_nm, "NA_OK"]
+            err <- FALSE
+            if (NA_OK) {
+                if (!is.na(attr(x, attr_nm)) && !identical(mode_is, mode_should_be))
+                    err <- TRUE
+            } else if (!identical(mode_is, mode_should_be)) {
+                err <- TRUE
+            }
+            if (err)
+                stop("'", attr_nm, "' should have 'mode' '",
+                     mode_should_be,
+                     "' but instead has 'mode' '",
+                     mode_is, "'.")
+            return(invisible())
+        }
+    },
+    modes_df = modes_df)
+    return(TRUE)
+}

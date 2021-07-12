@@ -2,12 +2,22 @@
 ### * dimensions
 
 get_req_attr_names_for_ccmpp_in_out_dfs_for_dimensions <- function(dimensions) {
-    out <- get_req_attr_names_for_dimensions(dimensions)
+    out <- get_req_attr_names()
     for (dim_w_span in get_all_dimensions_w_spans()) {
         if (dim_w_span %in% dimensions)
             out <- c(out, paste0(dim_w_span, "_span"))
     }
     return(out)
+}
+
+get_master_df_of_attr_modes_for_ccmpp_in_out_dfs <- function(special_subset = c("all", "extra_only")) {
+    special_subset <- match.arg(special_subset, several.ok = FALSE)
+    extra <- data.frame(name = c("value_scale", "age_span", "time_span",
+                              "non_zero_fert_ages"),
+                     mode = c("numeric", "numeric", "numeric", "numeric"),
+                     NA_OK = c(TRUE, rep(FALSE, 3)))
+    if (identical(special_subset, "extra_only")) return(extra)
+    else return(rbind(get_master_df_of_attr_modes(), extra))
 }
 
 get_dimensions_info_for_ccmpp_in_out_classes <-

@@ -103,9 +103,19 @@ get_as_function_for_class <- function(class) {
 ### * Attributes
 
 ## Define required attributes
-get_req_attr_names_for_dimensions <- function(dimensions) {
+get_req_attr_names <- function() {
     c(names(attributes(data.frame())), "dimensions", "value_type")
 }
+
+get_master_df_of_attr_modes <- function() {
+    data.frame(name = c(names(attributes(data.frame())),
+                        "dimensions", "value_type"),
+               mode = c(sapply(attributes(data.frame()),
+                                 "mode", USE.NAMES = FALSE),
+                        "character", "character"),
+               NA_OK = FALSE)
+}
+
 
 ## Manage 'class' attribute
 strip_demog_change_component_df_classes_attribute <- function(class_att) {

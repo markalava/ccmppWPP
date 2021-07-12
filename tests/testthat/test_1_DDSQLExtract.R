@@ -74,3 +74,21 @@ test_that("Raw data can be coerced to ccmpp_input_list objects", {
                        2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014,
                        2015, 2016, 2017, 2018))
 })
+
+
+test_that("Data can be downloaded from DemoData and cast as ccmpp input", {
+    france_test <- DDextract_ccmppWPPinputs_tier1(LocID = 250,
+                                                  times = 1950:2020,
+                                                  times_censored_common = FALSE,
+                                                  data_source_pop = c("HMD", "EuroStat"),
+                                                  data_source_mort = c("HMD", "EuroStat"),
+                                                  data_source_fert = c("HFD", "EuroStat","HFC-STAT"),
+                                                  data_source_year_hmd = 2020,
+                                                  data_source_year_hfd = 2020,
+                                                  data_source_year_eurostat = 2020,
+                                                  data_source_year_hfc = c(2012,2014,2015),
+                                                  revision = "test",
+                                                  variant = "estimates")
+    expect_s3_class(DDextract_get_ccmpp_input_list(france_test),
+                    "ccmpp_input_list")
+})

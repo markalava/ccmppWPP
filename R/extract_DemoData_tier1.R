@@ -160,7 +160,7 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
       dplyr::mutate(data_source = DataSourceShortName,
              time_reference = TimeStart,
              time_start = floor(TimeMid),
-             time_span = 1,
+             time_span = 0,
              age_start = AgeStart,
              age_span = AgeSpan,
              sex = ifelse(SexID == 1, "male", "female"),
@@ -219,7 +219,7 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
       dplyr::mutate(data_source = DataSourceShortName,
              time_reference = TimeStart,
              time_start = floor(TimeMid),
-             time_span = 1,
+             time_span = 0,
              age_start = AgeStart,
              age_span = AgeSpan,
              sex = ifelse(SexID == 1, "male", "female"),
@@ -228,7 +228,7 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
       dplyr::arrange(data_source, time_start, time_reference, sex, age_start)
 
     pop_eur$age_span[pop_eur$age_start == 100] <- 1000
-    
+
   } else {
 
     pop_eur <- NULL
@@ -275,7 +275,7 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
     dplyr::mutate(maxValue = max(DataValue)) %>%
     dplyr::ungroup() %>%
     dplyr::filter(DataValue == maxValue) %>%
-    dplyr::select(TimeStart, TimeMid, SexName, DataValue) %>% 
+    dplyr::select(TimeStart, TimeMid, SexName, DataValue) %>%
     # transform into standard srb data frame needed for inputs
     tidyr::spread(SexName, DataValue) %>%
     dplyr::mutate(time_start = floor(TimeMid),
@@ -309,7 +309,7 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
            value = replace(value,
                            is.na(value) & time_start > latest_obs,
                            srb$value[time_start == latest_obs]))
- 
+
 
 # extract ferility rates by single year of age from HFD
 
@@ -354,7 +354,7 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
    fert_hfd <- fert_hfd %>%
      dplyr::bind_rows(yrage) %>%
      dplyr::arrange(time_start, age_start)
-   
+
    fert_hfd$age_span[fert_hfd$age_start == 100] <- 1000
 
   } else {
@@ -409,7 +409,7 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
     fert_eur <- fert_eur %>%
       dplyr::bind_rows(yrage) %>%
       dplyr::arrange(time_start, age_start)
-    
+
     fert_eur$age_span[fert_eur$age_start == 100] <- 1000
 
    } else {
@@ -464,7 +464,7 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
      fert_hfc <- fert_hfc %>%
        dplyr::bind_rows(yrage) %>%
        dplyr::arrange(time_start, age_start)
-     
+
      fert_hfc$age_span[fert_hfc$age_start == 100] <- 1000
 
    } else {
@@ -606,7 +606,7 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
            age_start = as.numeric(Age),
            age_span = 1) %>%
     dplyr::select(indicator, time_start, time_span, sex, age_start, age_span, value)
-  
+
   lt$age_span[lt$age_start == 100] <- 1000
 
 if (times_censored_common == TRUE) {

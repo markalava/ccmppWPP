@@ -316,7 +316,7 @@ DDextract_get_pop_count_age_sex_reference <- function(x,
     }
 
     ## Subset and return
-    return(subset_time(as_demog_change_component_df(x$pop_count_age_sex_reference,
+    return(subset_time(as_demog_change_component_df(as.data.frame(x$pop_count_age_sex_reference),
                                                     value_type =  "count"),
                        times))
 }

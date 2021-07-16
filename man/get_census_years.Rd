@@ -2,9 +2,23 @@
 % Please edit documentation in R/extract_DemoData_tier1_post_process.R
 \name{get_census_years}
 \alias{get_census_years}
+\alias{get_census_years.list}
+\alias{get_census_years.numeric}
+\alias{get_census_years.character}
 \title{Get years in which censuses were conducted}
 \usage{
-get_census_years(loc_id)
+get_census_years(x)
+
+\method{get_census_years}{list}(x)
+
+\method{get_census_years}{numeric}(x)
+
+\method{get_census_years}{character}(x)
+}
+\arguments{
+\item{x}{A numeric location code or location name as a character
+string, or a list of the form returned by
+\code{\link{DDextract_ccmppWPPinputs_tier1}}.}
 }
 \value{
 A \emph{character} vector of years.
@@ -27,12 +41,10 @@ United Nations (2021). Standard country or area codes for
     (retrieved 1 April 2021).
 }
 \seealso{
-Other DDSQL_extract: 
-\code{\link{DDextract_get_pop_count_age_sex_reference}()},
-\code{\link{DDextract_get_pop_count_reference_times}()},
-\code{\link{parse_pop_count_reference_times_ranges}()}
+Other DDSQL_census_years: 
+\code{\link{parse_census_years_ranges}()}
 }
 \author{
 Mark Wheldon
 }
-\concept{DDSQL_extract}
+\concept{DDSQL_census_years}

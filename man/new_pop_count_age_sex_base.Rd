@@ -7,7 +7,6 @@
 new_pop_count_age_sex_base(
   x,
   age_span = double(),
-  time_span = double(),
   dimensions = get_req_dimensions_for_ccmpp_in_out_classes("pop_count_age_sex_base"),
   value_type = get_value_types_for_ccmpp_in_out_classes("pop_count_age_sex_base"),
   value_scale = double(),
@@ -17,8 +16,6 @@ new_pop_count_age_sex_base(
 }
 \arguments{
 \item{age_span}{Scalar indicating the span of the age groups.}
-
-\item{time_span}{Scalar indicating the span of the time periods.}
 
 \item{dimensions}{Character vector listing the dimensions such as
 \dQuote{age}, \dQuote{sex}.}
@@ -40,6 +37,12 @@ checks are done; for interactive use see
 This function is not exported. The user-level constructor is
 \code{\link{pop_count_age_sex_base}}.
 }
+\section{Note}{
+
+There is no \code{age_span} argument. Baseline population counts
+    have time span 0.
+}
+
 \seealso{
 pop_count_age_sex_base
 }

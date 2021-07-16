@@ -1,134 +1,8 @@
 #' @rdname validate_ccmppWPP_object
 #' @export
 validate_ccmppWPP_object.ccmpp_input_df <- function(x, ...) {
-
-    ## BASE CHECKS:
-    ## Run the inherited checks
-
-    x <- NextMethod()
-
-    ## SQUARENESS:
-    ## Must be exactly _one_ value per indicator * sex * 'Lexis square' (i.e., age-time square).
-
-    x_tbl <- tabulate_lexis_squares(x)
-    if (!identical(as.double(sum(x_tbl != 1)), 0)) {
-        indx <- which(x_tbl != 1, arr.ind = TRUE)
-        errs <- apply(indx, 1, function(z) {
-            mapply(function(x, y) x[[y]],
-                   dimnames(x_tbl), as.list(z))
-        })
-        print(errs)
-        stop(not_a_valid_object_msg("demog_change_component_df",
-                                    "'x' does not have exactly one 'value' per 'age_start' * 'sex' * 'time_start' * 'indicator' combination. Either there are duplicates or some are missing. The combinations with more or less than 1 row are printed above. See ?demog_change_component_df for class definition."))
-    }
-
-    ## VALUES:
-    ## Cannot be 'NA':
-    check_value_type_of_value_in_ccmpp_in_out_df(x$value)
-
-    ## ATTRIBUTES:
-    ## Extra attributes required
-
-    req_attr <-
-        get_req_attr_names_for_ccmpp_in_out_dfs_for_dimensions(demog_change_component_dims(x))
-    if (!all(req_attr %in% names(attributes(x))))
-        stop(not_a_valid_object_msg("ccmpp_input_df",
-                                    "'x' must have attributes '",
-             paste(req_attr, collapse = "', '"),
-             "'; some are missing."))
-
-    ## MUST BE SORTED:
-    ## If not sorted, at least by age and sex within time, the
-    ## single-step ccmpp function will turn out incorrect
-    ## results. The class imposes full sorting.
-
-    demog_change_component_dims_x <- demog_change_component_dims(x)
-
-    order_cols <-
-        subset_master_df_of_dimensions_colnames_coltypes(dimensions = demog_change_component_dims_x)$colname
-    if (!identical(x[, order_cols],
-                   sort_demog_change_component_df(x)[, order_cols]))
-        stop(not_a_valid_object_msg("ccmpp_input_df",
-                                    "'x' must be sorted by indicator, time, rev(sex), age_start (see ?ccmpp_input_df for class definition)."))
-
-    ## SPANS:
-    ## 1. Span attributes must be of length 1
-    ## 2. Spans must all be equal
-
-    attr_w_span_names <- get_all_dimensions_w_spans()
-    attr_w_span_names <-
-        attr_w_span_names[attr_w_span_names %in% demog_change_component_dims_x]
-
-    span_values <- numeric()
-
-    for (att in attr_w_span_names) {
-
-        ## Create names of the '_span' and '_start' variables for
-        ## use later.
-        span_name <- paste0(att, "_span")
-        start_name <- paste0(att, "_start")
-
-        ## Get the values of the attribute and column from x for
-        ## use later.
-        span_attr <- attr(x, span_name)
-        start_col <- x[[start_name]]
-
-        ## Check length of attribute
-        if (!identical(length(span_attr), 1L))
-            stop(not_a_valid_object_msg("ccmpp_input_df",
-                                        "'", span_name, "' is not of length 1."))
-
-        ## Spans must be consistent with the differences between the
-        ## '_start' column values.
-        by_col_names <- sapply(demog_change_component_dims_x,
-                                   FUN = "get_df_col_names_for_dimensions", spans = FALSE)
-            by_col_names <- by_col_names[!by_col_names %in% start_name]
-            if (length(by_col_names)) {
-            start_vs_span_diff <-
-                lapply(split(x[, c(by_col_names, span_name, start_name)], x[, by_col_names]),
-                       function(z) {
-                    sum(head(z[, span_name], -1) - diff(z[, start_name], differences = 1))
-                })
-            } else {
-                start_vs_span_diff <-
-                    sum(head(x[, span_name], -1) - diff(x[, start_name], differences = 1))
-            }
-            if (any(unlist(start_vs_span_diff) != 0))
-                stop(not_a_valid_object_msg("ccmpp_input_df",
-                                        "Spacings between each 'x$", start_name,
-                 "' do not equal the corresponding values of 'x$", span_name))
-
-        ## Diffs of '_start' column values must equal the value of span attribute
-        start_1st_diff <-
-            diff(sort(unique(start_col)), differences = 1)
-        if (!identical(as.double(sum(start_1st_diff != span_attr)), 0))
-            stop(not_a_valid_object_msg("ccmpp_input_df",
-                                        "Spacings between each 'x$", start_name,
-                 "' do not equal 'attr(x, \"", span_name, "\")'."))
-
-        ## Record span values
-        span_values <- c(span_values,
-                         c(span_name = span_attr))
-    }
-    if (!identical(length(unique(span_values)), 1L))
-        stop(not_a_valid_object_msg("ccmpp_input_df",
-                                    "Spans must all be equal; instead they are '",
-             paste0(span_values, collapse = "', '"),
-             "'."))
-
-    ## AGE:
-    ## Must start at age 0 within indicator * time * sex
-
-    if (is_by_age(x)) {
-        min_age_start <- get_min_age_in_dims_in_df(x)
-        if (!all(min_age_start == 0))
-            stop(not_a_valid_object_msg("ccmpp_input_df",
-                                        "'age_start' does not start at '0' for each time * sex combination."))
-    }
-
-    ## -------* Return
-
-    return(x)
+    ## Common validation for 'ccmpp_input_df' and 'ccmpp_output_df'
+    return(validate_ccmpp_in_out(NextMethod(), obj_class = "ccmpp_input_df", ...))
 }
 
 
@@ -211,20 +85,20 @@ validate_ccmppWPP_object.survival_ratio_age_sex <- function(x, check_sex_equalit
 
 #' @rdname validate_ccmppWPP_object
 #' @export
-validate_ccmppWPP_object.mortality_rate_age_sex <- function(x, check_sex_equality_by_time = FALSE, ...) {
+validate_ccmppWPP_object.mort_rate_age_sex <- function(x, check_sex_equality_by_time = FALSE, ...) {
 
     ## Base checks
     x <- NextMethod()
 
     ## 'value's all non-negative
     if (any(x$value < 0))
-        stop(not_a_valid_object_msg("mortality_rate_age_sex",
+        stop(not_a_valid_object_msg("mort_rate_age_sex",
                                     "'value' column has elements < 0."))
 
     ## value_type
-    val_type <- get_value_types_for_ccmpp_in_out_classes("mortality_rate_age_sex")
+    val_type <- get_value_types_for_ccmpp_in_out_classes("mort_rate_age_sex")
     if (!identical(value_type(x), val_type))
-        stop(not_a_valid_object_msg("mortality_rate_age_sex",
+        stop(not_a_valid_object_msg("mort_rate_age_sex",
                                     "'value_type' must be \"", val_type, "\"."))
 
     ## Check dimensions
@@ -232,7 +106,7 @@ validate_ccmppWPP_object.mortality_rate_age_sex <- function(x, check_sex_equalit
 
     ## Must have 'male' and 'female'
     if (!all(c("male", "female") %in% sexes(x)))
-        stop(not_a_valid_object_msg("mortality_rate_age_sex",
+        stop(not_a_valid_object_msg("mort_rate_age_sex",
                                     "'x' must have data on both 'male' and 'female'."))
 
     ## Check that male and female are not near-identical
@@ -675,17 +549,19 @@ validate_ccmppWPP_object.ccmpp_input_list <- function(x, .validate_elements = TR
 
     ## Check age and time spans are identical and scalar
     if (!identical(length(unique(age_span_attrs)), 1L)) {
-        print(age_spans_df)
+        print(age_span_attrs)
         stop(not_a_valid_object_msg("ccmpp_input_list",
                                     "All 'age_span's must be equal among elements of 'x'. Actual 'age_span's are printed above."))
     }
-    if (!identical(length(unique(time_span_attrs)), 1L)) {
-        print(time_spans_df)
-        stop(not_a_valid_object_msg("ccmpp_input_list","All 'time_span's must be equal among elements of 'x'. Actual 'time_span's are printed above."))
+    time_span_attrs_not_pop <-
+        time_span_attrs[!grepl("pop_count_age_sex_base", names(time_span_attrs))]
+    if (!identical(length(unique(time_span_attrs_not_pop)), 1L)) {
+        print(time_span_attrs)
+        stop(not_a_valid_object_msg("ccmpp_input_list","All 'time_span's except 'pop_count_age_sex_base must be equal among elements of 'x'. Actual 'time_span's are printed above."))
     }
-    if (!identical(time_span_attrs[1], age_span_attrs[1])) {
-        print(time_spans_df)
-        print(age_spans_df)
+    if (!identical(unique(time_span_attrs_not_pop), unique(age_span_attrs))) {
+        print(age_span_attrs)
+        print(time_span_attrs)
         stop(not_a_valid_object_msg("ccmpp_input_list",
                                     "'time_span' must equal 'age_span'. Actual 'time_span' and 'age_span' are printed above."))
     }

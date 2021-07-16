@@ -77,6 +77,7 @@ subset_time.demog_change_component_df <- function(x, times, include = TRUE, drop
     value_type_x <- value_type(x)
     value_scale_x <- value_scale(x)
     time_col_name <- get_df_col_names_for_dimensions(dimensions = "time", spans = FALSE)
+                                # TODO: should hard-code 'time_span'
 
     if (include) {
         time_x <- x[[time_col_name]] %in% times
@@ -128,6 +129,7 @@ subset_age.demog_change_component_df <- function(x, ages, include = TRUE, drop =
     value_type_x <- value_type(x)
     value_scale_x <- value_scale(x)
     age_col_name <- get_df_col_names_for_dimensions(dimensions = "age", spans = FALSE)
+                                # TODO: should hard-code 'age_span'
 
     if (include) {
     age_x <- x[[age_col_name]] %in% ages
@@ -167,6 +169,7 @@ subset_sex.demog_change_component_df <-
         value_type_x <- value_type(x)
         value_scale_x <- value_scale(x)
         sex_col_name <- get_df_col_names_for_dimensions(dimensions = "sex", spans = FALSE)
+                                # TODO: should hard-code 'sex'
 
         if (include) {
             sex_x <- x[[sex_col_name]] %in% sexes
@@ -205,6 +208,7 @@ subset_indicator.demog_change_component_df <-
         value_type_x <- value_type(x)
         value_scale_x <- value_scale(x)
         indicator_col_name <- get_df_col_names_for_dimensions(dimensions = "indicator", spans = FALSE)
+                                # TODO: should hard-code 'indicator'
 
         if (include) {
             indicator_x <- x[[indicator_col_name]] %in% indicators
@@ -239,12 +243,18 @@ subset_indicator.demog_change_component_df <-
 #' merged on columns named \code{by_vars_names} and these columns are
 #' in the output, which is also a data frame.
 #'
+#' When \code{by_vars_names} is \code{NULL}, if \code{denom} has
+#' column \code{time_span} and all entries are 0, \dQuote{time_span}
+#' will be omitted from \code{by_vars_names}. \emph{Note:} This only
+#' happens if \code{by_vars_names} is \code{NULL}.
+#'
 #' @param num A data frame with columns \dQuote{\code{by_vars_names}}
 #'     and \dQuote{value}, holding the numerator values.
 #' @param denom Similar to \code{num} but holding the denominator
 #'     values.
 #' @param by_vars_names Character vector of names of columns to merge
-#'     by. By default, all columns except \dQuote{value}.
+#'     by. By default, all columns except \dQuote{value}. See also
+#'     \dQuote{Details}.
 #' @inheritParams base::merge
 #' @return A data frame with columns \dQuote{\code{by_vars_names}} and
 #'     \dQuote{value}, where the latter holds the ratio of
@@ -259,6 +269,12 @@ make_value_ratio <- function(num, denom,
     if (is.null(by_vars_names)) {
         by_vars_names <- intersect(names(num), names(denom))
         by_vars_names <- by_vars_names[!by_vars_names == "value"]
+        ## Handle 'time_span == 0', eg when 'denom' is a
+        ## 'pop_count_age_sex[_base]' object.
+        if ("time_span" %in% colnames(denom)) {
+            if (all(denom$time_span == 0))
+                by_vars_names <- by_vars_names[!by_vars_names == "time_span"]
+            }
     }
     if (!length(by_vars_names))
         stop("'No 'by_vars' variables in common.")
@@ -293,11 +309,16 @@ make_value_ratio <- function(num, denom,
 #' \code{y} are first merged on columns named \code{by_vars_names}
 #' and these columns are in the output, which is also a data frame.
 #'
+#' When \code{by_vars_names} is \code{NULL}, if either \code{x} or
+#' \code{y} has column \code{time_span} and all entries are 0,
+#' \dQuote{time_span} will be omitted from
+#' \code{by_vars_names}. \emph{Note:} This only happens if
+#' \code{by_vars_names} is \code{NULL}.
+#'
 #' @param x,y Data frames with columns \dQuote{\code{by_vars_names}}
 #'     and \dQuote{value}.
-#' @param by_vars_names Character vector of names of columns to merge
-#'     by. By default, all columns except \dQuote{value}.
 #' @inheritParams base::merge
+#' @inheritParams make_value_ratio
 #' @return A data frame with columns \dQuote{\code{by_vars_names}} and
 #'     \dQuote{value}, where the latter holds the product of
 #'     \dQuote{value}s in \code{x} and \code{y}.
@@ -306,11 +327,21 @@ make_value_ratio <- function(num, denom,
 make_value_product <- function(x, y,
                              by_vars_names = NULL,
                              all.x = TRUE, all.y = FALSE) {
-    num <- as.data.frame(x)
+    x <- as.data.frame(x)
     y <- as.data.frame(y)
     if (is.null(by_vars_names)) {
         by_vars_names <- intersect(names(x), names(y))
         by_vars_names <- by_vars_names[!by_vars_names == "value"]
+        ## Handle 'time_span == 0', eg when 'x' or 'y' are a
+        ## 'pop_count_age_sex[_base]' objects.
+        if ("time_span" %in% colnames(x)) {
+            if (all(x$time_span == 0))
+                by_vars_names <- by_vars_names[!by_vars_names == "time_span"]
+        }
+        if ("time_span" %in% colnames(y)) {
+            if (all(y$time_span == 0))
+                by_vars_names <- by_vars_names[!by_vars_names == "time_span"]
+        }
     }
     if (!length(by_vars_names))
         stop("'No 'by_vars' variables in common.")

@@ -15,7 +15,8 @@ and \dQuote{value}, holding the numerator values.}
 values.}
 
 \item{by_vars_names}{Character vector of names of columns to merge
-by. By default, all columns except \dQuote{value}.}
+by. By default, all columns except \dQuote{value}. See also
+\dQuote{Details}.}
 
 \item{all.x}{logical; if \code{TRUE}, then extra rows will be added to
     the output, one for each row in \code{x} that has no matching row in
@@ -37,6 +38,12 @@ The ratio of the \dQuote{value} columns in the numerator
 calculated and returned. \code{num} and \code{denom} are first
 merged on columns named \code{by_vars_names} and these columns are
 in the output, which is also a data frame.
+}
+\details{
+When \code{by_vars_names} is \code{NULL}, if \code{denom} has
+column \code{time_span} and all entries are 0, \dQuote{time_span}
+will be omitted from \code{by_vars_names}. \emph{Note:} This only
+happens if \code{by_vars_names} is \code{NULL}.
 }
 \author{
 Mark Wheldon

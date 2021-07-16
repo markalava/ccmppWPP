@@ -12,7 +12,6 @@ pop_count_age_sex_base(x, ...)
 \method{pop_count_age_sex_base}{data.frame}(
   x,
   age_span = attr(x, "age_span"),
-  time_span = attr(x, "time_span"),
   value_scale = attr(x, "value_scale")
 )
 
@@ -62,7 +61,7 @@ Other ccmpp_input_objects:
 \code{\link{coerce_mig_net_prop_age_sex}},
 \code{\link{coerce_mig_net_rate_age_sex}},
 \code{\link{coerce_mig_parameter}},
-\code{\link{coerce_mortality_rate_age_sex}},
+\code{\link{coerce_mort_rate_age_sex}},
 \code{\link{coerce_pop_count_age_sex_base}},
 \code{\link{coerce_srb}},
 \code{\link{coerce_survival_ratio_age_sex}},
@@ -75,7 +74,7 @@ Other ccmpp_input_objects:
 \code{\link{mig_net_prop_age_sex}()},
 \code{\link{mig_net_rate_age_sex}()},
 \code{\link{mig_parameter}()},
-\code{\link{mortality_rate_age_sex}()},
+\code{\link{mort_rate_age_sex}()},
 \code{\link{srb}()},
 \code{\link{survival_ratio_age_sex}()}
 }

@@ -211,7 +211,28 @@ test_that("'NA's are allowed", {
     x[1, "value"] <- NA
     expect_warning(demog_change_component_df(x),
                    "'value' column has some 'NA' entries")
-    })
+})
+
+
+test_that("Attribute types are checked", {
+    x <- ccmpp_input_df(S3_demog_change_component_time_age_sex_test_df,
+                                   dimensions = c("time", "age", "sex"))
+    attr(x, "time_span") <- "test"
+    expect_error(validate_ccmppWPP_object(x),
+                 "'time_span' should have 'mode' 'numeric'")
+
+    x <- ccmpp_input_df(S3_demog_change_component_time_age_sex_test_df,
+                                   dimensions = c("time", "age", "sex"))
+    attr(x, "age_span") <- "test"
+    expect_error(validate_ccmppWPP_object(x),
+                 "'age_span' should have 'mode' 'numeric'")
+
+    x <- ccmpp_input_df(S3_demog_change_component_time_age_sex_test_df,
+                                   dimensions = c("time", "age", "sex"))
+    attr(x, "value_scale") <- "test"
+    expect_error(validate_ccmppWPP_object(x),
+                 "'value_scale' should have 'mode' 'numeric'")
+})
 
 
 test_that("'subset_times' works as expected", {

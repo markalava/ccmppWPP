@@ -9,7 +9,7 @@
 %   R/S3_classes_ccmpp_input_mig_net_prop_df.R,
 %   R/S3_classes_ccmpp_input_mig_net_rate_df.R,
 %   R/S3_classes_ccmpp_input_mig_parameter_df.R,
-%   R/S3_classes_ccmpp_input_mortality_rate_df.R,
+%   R/S3_classes_ccmpp_input_mort_rate_df.R,
 %   R/S3_classes_ccmpp_input_pop_count_base.R,
 %   R/S3_classes_ccmpp_input_srb_df.R,
 %   R/S3_classes_ccmpp_input_survival_ratio_df.R,
@@ -45,9 +45,9 @@
 \alias{subset_sex.mig_net_rate_age_sex}
 \alias{subset_time.mig_parameter}
 \alias{subset_indicator.mig_parameter}
-\alias{subset_time.mortality_rate_age_sex}
-\alias{subset_age.mortality_rate_age_sex}
-\alias{subset_sex.mortality_rate_age_sex}
+\alias{subset_time.mort_rate_age_sex}
+\alias{subset_age.mort_rate_age_sex}
+\alias{subset_sex.mort_rate_age_sex}
 \alias{subset_time.pop_count_age_sex_base}
 \alias{subset_age.pop_count_age_sex_base}
 \alias{subset_sex.pop_count_age_sex_base}
@@ -129,11 +129,11 @@
 
 \method{subset_indicator}{mig_parameter}(x, times, include = TRUE)
 
-\method{subset_time}{mortality_rate_age_sex}(x, times, include = TRUE)
+\method{subset_time}{mort_rate_age_sex}(x, times, include = TRUE)
 
-\method{subset_age}{mortality_rate_age_sex}(x, ages, include = TRUE)
+\method{subset_age}{mort_rate_age_sex}(x, ages, include = TRUE)
 
-\method{subset_sex}{mortality_rate_age_sex}(x, sexes, include = TRUE)
+\method{subset_sex}{mort_rate_age_sex}(x, sexes, include = TRUE)
 
 \method{subset_time}{pop_count_age_sex_base}(x, times, include = TRUE)
 

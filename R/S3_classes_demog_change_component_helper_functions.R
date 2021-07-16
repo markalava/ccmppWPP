@@ -14,7 +14,7 @@ get_all_demog_change_component_df_class_names <- function() {
       "mig_net_rate_age_sex", "mig_net_prop_age_sex",
       "srb", "pop_count_age_sex_base",
       "survival_ratio_age_sex",
-      "mortality_rate_age_sex",
+      "mort_rate_age_sex",
       "death_probability_age_sex",
       "death_count_age_sex",
       "fert_rate_age_f",
@@ -39,6 +39,20 @@ get_all_allowed_dimensions <- function() {
 get_all_dimensions_w_spans <- function() {
     c("time", "age")
 }
+
+## Classes with time_span == 0
+get_all_classes_time_span_zero <- function() {
+    classes <- c("pop_count_age_sex_base", "pop_count_age_sex")
+    stopifnot(all(classes %in% get_all_demog_change_component_df_class_names()))
+    return(classes)
+}
+
+has_time_span_zero <- function(x) {
+    has <- any(unlist(sapply(get_all_classes_time_span_zero(),
+                             function(z) inherits(x, z))))
+    if (has) stopifnot(is_by_time(x))
+    return(has)
+    }
 
 ## NOTE: See subsequent functions for convenient subsets of this
 ## master list.
@@ -89,9 +103,19 @@ get_as_function_for_class <- function(class) {
 ### * Attributes
 
 ## Define required attributes
-get_req_attr_names_for_dimensions <- function(dimensions) {
+get_req_attr_names <- function() {
     c(names(attributes(data.frame())), "dimensions", "value_type")
 }
+
+get_master_df_of_attr_modes <- function() {
+    data.frame(name = c(names(attributes(data.frame())),
+                        "dimensions", "value_type"),
+               mode = c(sapply(attributes(data.frame()),
+                                 "mode", USE.NAMES = FALSE),
+                        "character", "character"),
+               NA_OK = FALSE)
+}
+
 
 ## Manage 'class' attribute
 strip_demog_change_component_df_classes_attribute <- function(class_att) {
@@ -171,6 +195,12 @@ guess_span_for_dimension_for_df <- function(x, dimension = get_all_dimensions_w_
                            get_df_col_names_for_dimensions(dimension),
                            value = TRUE)
     guess_span_from_start(x = x[, start_col_name])
+}
+
+get_is_by_function_for_dimension <- function(dimension) {
+    if (dimension %in% get_all_allowed_dimensions())
+        return(paste("is_by", dimension, sep = "_"))
+    else stop("Don't know what the 'is' function is for dimension '", dimension, "'.")
     }
 
 ###-----------------------------------------------------------------------------

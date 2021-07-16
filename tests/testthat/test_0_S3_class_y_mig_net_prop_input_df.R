@@ -18,6 +18,19 @@ ccmpp_input_list_example <-
 
 ## })
 
+
+test_that("Can create 'mig_net_prop' from 'mig_net_count'", {
+    x <- mig_net_count_age_sex(ccmpp_input_list_example)
+    y <- pop_count_age_sex(ccmpp_input_list_example)
+    expect_s3_class(mig_net_prop_age_sex(x, y), "mig_net_prop_age_sex")
+})
+
+
+test_that("Can create 'mig_net_prop' from 'ccmpp_input_list'", {
+    expect_s3_class(mig_net_prop_age_sex(ccmpp_input_list_example), "mig_net_prop_age_sex")
+    })
+
+
 test_that("subsetting works", {
     x <- ccmpp_input_list_example
     x <- mig_net_prop_age_sex(x)
@@ -46,3 +59,12 @@ test_that("unusual values trigger warning", {
 
     ## mig_net_count_component(ccmpp_input_list_example)
 })
+
+
+
+test_that("'mig_net_count' can be created from 'mig_net_prop'", {
+    prop <- mig_net_prop_age_sex(ccmpp_input_list_example)
+    pop_count <- pop_count_age_sex(ccmpp_input_list_example)
+    expect_s3_class(mig_net_count_age_sex(prop, pop_count),
+                    "mig_net_count_age_sex")
+    })

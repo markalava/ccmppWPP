@@ -1,11 +1,11 @@
-#' Return the \dQuote{span} of a \code{ccmpp_input_df}
+#' Return the \dQuote{span} of a \code{ccmpp_input_df} or \code{ccmpp_output_df}
 #'
 #' Returns the common \dQuote{age_span} and \dQuote{time_span} of
-#' objects inheriting from \code{ccmpp_input_df}. To be a valid member
-#' of this class, these two spans must be equal. This function
-#' provides both a convenient check for this equality and a more
-#' logical way of accessing the common span. To change the span, see
-#' \code{\link{span<-}}.
+#' objects inheriting from \code{ccmpp_input_df} or
+#' \code{ccmpp_output_df}. To be a valid member of this class, these
+#' two spans must be equal. This function provides both a convenient
+#' check for this equality and a more logical way of accessing the
+#' common span. To change the span, see \code{\link{span<-}}.
 #'
 #' @param x An object inheriting from \code{ccmpp_input_df}.
 #' @param ...
@@ -28,6 +28,14 @@ span.ccmpp_input_df <- function(x, ...) {
     return(age_span(x))
 }
 
+#' @rdname extract_ccmpp_output_df_span
+#' @export
+span.ccmpp_output_df <- function(x, ...) {
+    if (!identical(age_span(x), time_span(x)))
+        stop("'age_span' and 'time_span' of 'x' are different. This is not a valid 'ccmpp_output_df' object.")
+    return(age_span(x))
+}
+
 
 
 #' @rdname extract_demog_change_component_attributes
@@ -39,6 +47,14 @@ age_span <- function(x) {
 #' @rdname extract_demog_change_component_attributes
 #' @export
 age_span.ccmpp_input_df <- function(x) {
+    if (!is_by_age(x))
+        stop("'age' is not a dimension of 'x'.")
+    attr(x, "age_span")
+}
+
+#' @rdname extract_demog_change_component_attributes
+#' @export
+age_span.ccmpp_output_df <- function(x) {
     if (!is_by_age(x))
         stop("'age' is not a dimension of 'x'.")
     attr(x, "age_span")
@@ -58,6 +74,14 @@ time_span.ccmpp_input_df <- function(x) {
     attr(x, "time_span")
 }
 
+#' @rdname extract_demog_change_component_attributes
+#' @export
+time_span.ccmpp_output_df <- function(x) {
+    if (!is_by_time(x))
+        stop("'time' is not a dimension of 'x'.")
+    attr(x, "time_span")
+}
+
 
 
 #' @rdname extract_demog_change_component_attributes
@@ -71,6 +95,19 @@ time_span.ccmpp_input_df <- function(x) {
              oldClass(x)[1],
              "'.")
     as_ccmpp_input_df(NextMethod())
+}
+
+#' @rdname extract_demog_change_component_attributes
+#' @export
+`value_type<-.ccmpp_output_df` <- function(x, value, ...) {
+    vtx <- get_value_types_for_ccmpp_in_out_classes(oldClass(x)[1])
+    if (!is.na(vtx))
+        stop("'value_type' of 'x' cannot be changed; it must always be '",
+             value_type(x),
+             "' for 'x' to remain a valid member of class '",
+             oldClass(x)[1],
+             "'.")
+    as_ccmpp_output_df(NextMethod())
 }
 
 

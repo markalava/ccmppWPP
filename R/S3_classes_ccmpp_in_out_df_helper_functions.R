@@ -2,12 +2,22 @@
 ### * dimensions
 
 get_req_attr_names_for_ccmpp_in_out_dfs_for_dimensions <- function(dimensions) {
-    out <- get_req_attr_names_for_dimensions(dimensions)
+    out <- get_req_attr_names()
     for (dim_w_span in get_all_dimensions_w_spans()) {
         if (dim_w_span %in% dimensions)
             out <- c(out, paste0(dim_w_span, "_span"))
     }
     return(out)
+}
+
+get_master_df_of_attr_modes_for_ccmpp_in_out_dfs <- function(special_subset = c("all", "extra_only")) {
+    special_subset <- match.arg(special_subset, several.ok = FALSE)
+    extra <- data.frame(name = c("value_scale", "age_span", "time_span",
+                              "non_zero_fert_ages"),
+                     mode = c("numeric", "numeric", "numeric", "numeric"),
+                     NA_OK = c(TRUE, rep(FALSE, 3)))
+    if (identical(special_subset, "extra_only")) return(extra)
+    else return(rbind(get_master_df_of_attr_modes(), extra))
 }
 
 get_dimensions_info_for_ccmpp_in_out_classes <-
@@ -19,7 +29,7 @@ get_dimensions_info_for_ccmpp_in_out_classes <-
                        ensure_these_dimensions_correctly_ordered(c("time", "age")),
                    survival_ratio_age_sex =
                        ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
-                   mortality_rate_age_sex =
+                   mort_rate_age_sex =
                        ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
                    death_probability_age_sex =
                        ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
@@ -101,7 +111,7 @@ get_value_type_info_for_ccmpp_in_out_classes <- function(class = get_all_demog_c
                        value_type = "rate"),
                      c(class = "survival_ratio_age_sex",
                        value_type = "proportion"), #proportion!
-                     c(class = "mortality_rate_age_sex",
+                     c(class = "mort_rate_age_sex",
                        value_type = "rate"),
                      c(class = "death_probability_age_sex",
                        value_type = "proportion"),  #proportion!
@@ -146,7 +156,7 @@ get_value_scale_annotations_info_for_ccmpp_in_out_classes <- function(class = ge
                        annotation = NA),
                      c(class = "survival_ratio_age_sex",
                        annotation = NA),
-                     c(class = "mortality_rate_age_sex",
+                     c(class = "mort_rate_age_sex",
                        annotation = NA),
                      c(class = "death_probability_age_sex",
                        annotation = NA),

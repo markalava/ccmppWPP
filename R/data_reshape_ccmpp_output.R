@@ -21,42 +21,44 @@ data_reshape_ccmpp_output <- function(ccmpp_output) {
                                         time_start = time_start+time_span, time_end = time_end, time_span = time_span,
                                         ids    = age_start)
     pop_m$sex <- "male"
-    
+
     pop <- rbind(pop_f, pop_m)
-    
+
     pop_b <- sum_last_column(pop[, c("time_start", "age_start", "value")])
     pop_b$sex <- "both"
-    
+
     pop <- rbind(pop, pop_b)
     pop$age_span <- pop$time_span <- time_span
     pop$age_span[which(pop$age_start == oag)] <- 1000
-    pop_count_age_sex <- pop[order(pop$time_start, pop$sex, pop$age_start), 
+    pop_count_age_sex <- pop[order(pop$time_start, pop$sex, pop$age_start),
                              c("time_start", "time_span", "sex", "age_start", "age_span", "value")]
-    
-   
+
+    ## Set 'time_span' to '0'
+    pop_count_age_sex$time_span <- 0
+
   # cohort deaths by age and sex, including aggregation to both sexes combined
     dth_f <- data_gather_ccmpp_output(ccmpp_output=ccmpp_output, object ="death_count_cohort_f",
                                       time_start = time_start, time_end = time_end-time_span, time_span = time_span,
                                       ids    = age_start)
     dth_f$sex <- "female"
-    
+
     dth_m <- data_gather_ccmpp_output(ccmpp_output=ccmpp_output, object ="death_count_cohort_m",
                                       time_start = time_start, time_end = time_end-time_span, time_span = time_span,
                                       ids    = age_start)
     dth_m$sex <- "male"
-    
+
     dth <- rbind(dth_f, dth_m)
     dth_b <- sum_last_column(dth[, c("time_start", "age_start", "value")])
     dth_b$sex <- "both"
-    
+
     dth <- rbind(dth, dth_b)
-    
+
     dth$age_span <- dth$time_span <- time_span
     dth$age_span[which(dth$age_start == oag)] <- 1000
     death_count_cohort_sex <- dth[order(dth$time_start, dth$sex, dth$age_start),
                                 c("time_start", "time_span", "sex", "age_start", "age_span", "value")]
 
-    
+
   # births by age of mother
     bth           <- data_gather_ccmpp_output(ccmpp_output=ccmpp_output, object ="birth_count_age_b",
                                                   time_start = time_start, time_end = time_end-time_span, time_span = time_span,
@@ -69,15 +71,15 @@ data_reshape_ccmpp_output <- function(ccmpp_output) {
 
   # total births by sex
     bth_f <- data.frame(time_start = seq(time_start, time_end-time_span, time_span),
-                        sex = "female", 
+                        sex = "female",
                         value = sapply(ccmpp_output, "[[", "birth_count_tot_f"),
                         stringsAsFactors = FALSE)
     bth_m <- data.frame(time_start = seq(time_start, time_end-time_span, time_span),
-                        sex = "male", 
+                        sex = "male",
                         value = sapply(ccmpp_output, "[[", "birth_count_tot_m"),
                         stringsAsFactors = FALSE)
     bth_b <- data.frame(time_start = seq(time_start, time_end-time_span, time_span),
-                        sex = "both", 
+                        sex = "both",
                         value = sapply(ccmpp_output, "[[", "birth_count_tot_b"),
                         stringsAsFactors = FALSE)
 
@@ -91,24 +93,24 @@ data_reshape_ccmpp_output <- function(ccmpp_output) {
                                       time_start = time_start, time_end = time_end-time_span, time_span = time_span,
                                       ids    = age_start)
     mig_f$sex <- "female"
-    
+
     mig_m <- data_gather_ccmpp_output(ccmpp_output=ccmpp_output, object ="mig_net_count_age_m",
                                       time_start = time_start, time_end = time_end-time_span, time_span = time_span,
                                       ids    = age_start)
     mig_m$sex <- "male"
-    
+
     mig <- rbind(mig_f, mig_m)
     mig_b <- sum_last_column(mig[, c("time_start", "age_start", "value")])
     mig_b$sex <- "both"
-    
+
     mig <- rbind(mig, mig_b)
-    
+
     mig$age_span <- mig$time_span <- time_span
     mig$age_span[which(mig$age_start == oag)] <- 1000
     mig_net_count_age_sex <- mig[order(mig$time_start, mig$sex, mig$age_start),
                                   c("time_start", "time_span", "sex", "age_start", "age_span", "value")]
-    
-    
+
+
 ccmpp_reshaped <- list(pop_count_age_sex = pop_count_age_sex,
                      death_count_cohort_sex = death_count_cohort_sex,
                      birth_count_age_b = birth_count_age_b,

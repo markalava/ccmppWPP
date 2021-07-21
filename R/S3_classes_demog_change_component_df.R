@@ -62,7 +62,7 @@ new_demog_change_component_df <-
         stopifnot(is.data.frame(x))
         stopifnot(is.character(class))
         structure(x,
-                  dimensions = dimensions,
+                  dimensions = ensure_these_dimensions_correctly_ordered(dimensions),
                   ## age_span = age_span,
                   ## time_span = time_span,
                   value_type = value_type,

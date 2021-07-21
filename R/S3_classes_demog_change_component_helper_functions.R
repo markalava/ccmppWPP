@@ -153,10 +153,56 @@ get_df_col_names_for_dimensions <- function(...) {
     subset_master_df_of_dimensions_colnames_coltypes(...)$colname
 }
 
-## Sexes
+###-----------------------------------------------------------------------------
+### ** Sexes, including ordering
+
+## Define the labels for sex groupings and their order.
+## Provide converters among numeric, character, and factors.
+##
+## Use DemoData mapping:
+## '1' = 'male'
+## '2' = 'female'
+## '3' = 'both'
+
+## sexes
 get_all_allowed_sexes <- function() {
-    c("female", "male", "both")
+    ## *Do not change the order*
+    c("male", "female", "both")
 }
+
+## Sex as factor
+sex_as_factor <- function(x) {
+    allowed_sexes_in_order <- get_all_allowed_sexes()
+    if (is.factor(x)) x <- as.numeric(x)
+    if (is.numeric(x)) {
+        if (!all(unique(x) %in% c(1, 2, 3)))
+            stop("sex must only take values '1', '2', or '3', which will be mapped to sexes ",
+                 toString(allowed_sexes_in_order),
+                 "respectively.")
+        return(droplevels(factor(x, levels = c(1, 2, 3),
+                      labels = allowed_sexes_in_order, ordered = TRUE)))
+    } else if (is.character(x)) {
+        if (!all(unique(x) %in% allowed_sexes_in_order))
+            stop("sex must only take values ", toString(allowed_sexes_in_order))
+        return(droplevels(factor(x, levels = allowed_sexes_in_order,
+                      labels = allowed_sexes_in_order, ordered = TRUE)[, drop = TRUE]))
+    } else stop("sex must be numeric, character, or factor. 'x' has type '", typeof(x), "'.")
+}
+
+## Return allowed sexes as an ordered factor
+sex_as_character <- function(x) {
+    x <- sex_as_factor(x)
+    return(levels(x)[x])
+}
+
+## Sex as numeric index. This uses the ordering defined in
+## 'get_all_allowed_sexes'
+sex_as_numeric <- function(x) {
+    as.integer(sex_as_factor(x))
+}
+
+###-----------------------------------------------------------------------------
+### ** Spans
 
 ## Guess spans.
 
@@ -269,12 +315,13 @@ sort_demog_change_component_df <- function(x) {
     sort_factors <-
         unname(as.data.frame(lapply(dims_names_x, "get_x_col")))
 
+    ## The underlying CCMPP projection functions map '1' to 'male' and
+    ## '2' to 'female'. This *must* be preserved throughout to defend
+    ## against mis-ordering.
     sex_col <- which(dims_names_x == "sex")
     if (length(sex_col)) {
         sort_factors[, sex_col] <-
-            factor(sort_factors[, sex_col],
-                   levels = c("male", "female"),
-                   ordered = TRUE)
+            sex_as_factor(sort_factors[, sex_col])
     }
 
     return(x[do.call("order", sort_factors), ])

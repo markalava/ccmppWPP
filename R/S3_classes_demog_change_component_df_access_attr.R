@@ -148,7 +148,7 @@ sexes <- function(x) {
 sexes.demog_change_component_df <- function(x) {
     if (!is_by_sex(x))
         stop("'sex' is not a dimension of 'x'.")
-    levels(factor(x$sex))
+    levels(sex_as_factor(x$sex))
 }
 
 #' @rdname extract_demog_change_component_attributes

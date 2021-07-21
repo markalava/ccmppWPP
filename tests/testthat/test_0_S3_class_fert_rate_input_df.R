@@ -137,7 +137,9 @@ test_that("erroneous sex dimension detected", {
     expect_error(check_dimensions_for_ccmpp_in_out_df(z),
                  "that correspond to dimensions")
 
-    attr(z, "dimensions") <- unique(c(attr(z, "dimensions"), "sex"))
+    attr(z, "dimensions") <-
+        ccmppWPP:::ensure_these_dimensions_correctly_ordered(
+                       unique(c(attr(z, "dimensions"), "sex")))
     expect_error(validate_ccmppWPP_object(z),
                  "must have dimensions")
 
@@ -158,7 +160,9 @@ test_that("indicator dimension detected", {
     z <- ccmppWPP:::new_fert_rate_age_f(z, time_span = time_span(y),
                                 age_span = age_span(y), value_scale = 1,
                                 non_zero_fert_ages = non_zero_fert_ages(y))
-    attr(z, "dimensions") <- unique(c(attr(z, "dimensions"), "indicator"))
+    attr(z, "dimensions") <-
+        ccmppWPP:::ensure_these_dimensions_correctly_ordered(
+    unique(c(attr(z, "dimensions"), "indicator")))
 
     expect_error(validate_ccmppWPP_object(z),
                  "must have dimensions")

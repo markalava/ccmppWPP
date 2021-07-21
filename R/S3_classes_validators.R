@@ -71,6 +71,13 @@ validate_ccmppWPP_object.demog_change_component_df <-
                  paste(get_all_allowed_dimensions(), collapse = ", "),
                  "' and cannot be missing or duplicated. See ?demog_change_component_df for class definition."))
 
+        if (!identical(demog_change_component_dims_x,
+                       ensure_these_dimensions_correctly_ordered(demog_change_component_dims_x)))
+            stop(not_a_valid_object_msg("demog_change_component_df",
+                                        "'dimensions' attribute of 'x' is not correctly ordered. Must be ",
+                                        toString(ensure_these_dimensions_correctly_ordered(demog_change_component_dims_x)),
+                                        "."))
+
         req_attr <- get_req_attr_names()
         if (!all(req_attr %in% names(attributes(x))))
             stop(not_a_valid_object_msg("demog_change_component_df",

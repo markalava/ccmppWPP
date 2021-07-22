@@ -5,8 +5,7 @@ devtools::load_all(helpers = FALSE)
 
 source("tests/testthat/helper_S3_class_demog_change_component_df.R")
 
-testthat::test_dir("tests/testthat/", filter = "^S3_")
-testthat::test_dir("tests/testthat/", filter = "^[^S][^3][^_]")
+testthat::test_dir("tests/testthat/")
 
 
 

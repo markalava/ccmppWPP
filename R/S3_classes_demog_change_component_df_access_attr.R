@@ -47,6 +47,7 @@ demog_change_component_dims <- function(x) {
 #' @rdname demog_change_component_dims
 #' @export
 demog_change_component_dims.demog_change_component_df <- function(x) {
+    ## NOTE: do _not_ use 'ensure_these_dimensions_correctly_ordered' here.
     attr(x, "dimensions")
 }
 
@@ -148,6 +149,14 @@ sexes <- function(x) {
 sexes.demog_change_component_df <- function(x) {
     if (!is_by_sex(x))
         stop("'sex' is not a dimension of 'x'.")
+    ## Ordering is arbitrary and would (probably) be alphabetical if
+    ## left unspecified. So enforce the DemoData order.
+    ##
+    ## Do _not_ rely on this to give the correct order of sex
+    ## labels. If some levels are not present, direct conversion of
+    ## the result to numeric will be incorrect. Explicitly call
+    ## 'sex_as_factor', 'sex_as_numeric', etc., if you need to the
+    ## order.
     levels(sex_as_factor(x$sex))
 }
 

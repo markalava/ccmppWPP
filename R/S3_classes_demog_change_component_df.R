@@ -98,9 +98,6 @@ prepare_df_for_demog_change_component_df <- function(x,
 
     if (is.null(dimensions)) {
         dimensions <- guess_dimensions_from_df_cols(x)
-        S3_class_message("Argument 'dimensions' is 'NULL'; setting 'dimensions' to '",
-                paste(dimensions, collapse = ", "),
-                "' based on column names of 'x'.")
     } else {
         ## Check 'dimensions'
         allowed_dimensions <- get_all_allowed_dimensions()
@@ -322,8 +319,6 @@ prepare_df_for_demog_change_component_df <- function(x,
 #' @param x For \code{demog_change_component_df}: A data frame with
 #'     columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
 #'     \dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.
-#' @param dimensions Character vector listing the dimensions such as
-#'     \dQuote{time}, \dQuote{age}, \dQuote{sex}.
 #' @param value_type Scalar indicating the type of the \dQuote{value}
 #'     column (e.g., \dQuote{count}, \dQuote{rate}, etc.).
 #' @param value_scale \emph{Numeric} scalar indicating the value_scale of the
@@ -334,7 +329,6 @@ prepare_df_for_demog_change_component_df <- function(x,
 #' @export
 demog_change_component_df <-
     function(x,
-             dimensions = attr(x, "dimensions"),
              value_type = attr(x, "value_type"),
              value_scale = attr(x, "value_scale"),
              ...) {
@@ -342,7 +336,7 @@ demog_change_component_df <-
         li <-
             prepare_df_for_demog_change_component_df(
                 x,
-                dimensions = dimensions,
+                dimensions = attr(x, "dimensions"),
                 value_type = value_type,
                 value_scale = value_scale)
 

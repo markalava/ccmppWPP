@@ -3,8 +3,7 @@
 ### OBJECTS NEEDED (tested already)
 
 dcc_df_time_age_sex <-
-    demog_change_component_df(S3_demog_change_component_time_age_sex_test_df,
-                              dimensions = c("time", "age", "sex"))
+    demog_change_component_df(S3_demog_change_component_time_age_sex_test_df)
 
 
 test_that("subsetting works properly", {
@@ -118,8 +117,7 @@ test_that("'value_scale' is set properly", {
 
 
 test_that("dimensions are correctly detected", {
-    y <- demog_change_component_df(S3_demog_change_component_time_age_sex_test_df,
-                                   dimensions = c("time", "age", "sex"))
+    y <- demog_change_component_df(S3_demog_change_component_time_age_sex_test_df)
     expect_true(is_by_time(y))
     expect_true(is_by_age(y))
     expect_true(is_by_sex(y))
@@ -165,8 +163,7 @@ test_that("collapse_demog_dimension  works", {
 
 ## ### MAKE OBJECT AVAILABLE TO REMAINDER OF TESTS
 
-## ccmpp_input_df_test <- ccmpp_input_df(S3_demog_change_component_time_age_sex_test_df,
-##                                       dimensions = c("time", "age", "sex"))
+## ccmpp_input_df_test <- ccmpp_input_df(S3_demog_change_component_time_age_sex_test_df)
 
 ## test_that("Abridging works for 'ccmpp_input_df's", {
 ##     ## Just by age

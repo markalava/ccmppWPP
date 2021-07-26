@@ -96,7 +96,6 @@ subset_time.demog_change_component_df <- function(x, times, include = TRUE, drop
         }
 
     return(suppressMessages(demog_change_component_df(x,
-                                                      dimensions = NULL,
                                                       value_type = value_type_x,
                                                       value_scale = value_scale_x
                                                       )))
@@ -148,7 +147,6 @@ subset_age.demog_change_component_df <- function(x, ages, include = TRUE, drop =
         }
 
     return(suppressMessages(demog_change_component_df(x,
-                                                      dimensions = NULL,
                                                       value_type = value_type_x,
                                                       value_scale = value_scale_x)))
 }
@@ -188,7 +186,6 @@ subset_sex.demog_change_component_df <-
             }
 
         return(suppressMessages(demog_change_component_df(x,
-                                                          dimensions = NULL,
                                                           value_type = value_type_x,
                                                           value_scale = value_scale_x)))
     }
@@ -227,7 +224,6 @@ subset_indicator.demog_change_component_df <-
         }
 
         return(suppressMessages(demog_change_component_df(x,
-                                                          dimensions = NULL,
                                                           value_type = value_type_x,
                                                           value_scale = value_scale_x)))
     }

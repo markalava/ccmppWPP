@@ -123,8 +123,7 @@ test_that("'fert_rate_age_f' component can be changed", {
     x <- fert_rate_age_f(z)
     expect_s3_class(x, "fert_rate_age_f")
 
-    suppressWarnings({values(x) <- 0.999})
-    expect_s3_class(x, "fert_rate_age_f")
+    suppressWarnings({x$value <- 0.999})
 
     expect_error(fert_rate_age_f(z) <- x, NA)
     expect_equal(values(fert_rate_age_f(z)), rep(0.999, nrow(x)))
@@ -199,10 +198,9 @@ test_that("'pop_count_age_sex_base' component can be changed", {
     x <- pop_count_age_sex_base(ccmpp_input_list_example)
     expect_s3_class(x, "pop_count_age_sex_base")
 
-    suppressWarnings({values(x) <- 1})
-    expect_s3_class(x, "pop_count_age_sex_base")
+    suppressWarnings({x$value <- 1})
 
-    expect_equal(values(x), rep(1, nrow(x)))
+    expect_equal(x$value, rep(1, nrow(x)))
 })
 
 
@@ -210,17 +208,16 @@ test_that("'srb' component can be changed", {
     x <- srb(ccmpp_input_list_example)
     expect_s3_class(x, "srb")
 
-    suppressWarnings({values(x) <- 1})
-    expect_s3_class(x, "srb")
+    suppressWarnings({x$value <- 1})
 
-    expect_equal(values(x), rep(1, nrow(x)))
+    expect_equal(x$value, rep(1, nrow(x)))
 })
 
 
 test_that("survival ratio component can be changed", {
     suppressWarnings({
     x <- survival_ratio_input_df_time_age_sex
-    values(x) <- 1
+    x$value <- 1
 
     y <- life_table_age_sex(ccmpp_input_list_example)
     expect_false(isTRUE(

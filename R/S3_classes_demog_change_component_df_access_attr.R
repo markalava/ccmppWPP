@@ -98,12 +98,6 @@ values.demog_change_component_df <- function(x) {
 
 #' @rdname extract_demog_change_component_attributes
 #' @export
-`values<-` <- function(x, value) {
-    UseMethod("values<-")
-}
-
-#' @rdname extract_demog_change_component_attributes
-#' @export
 `values<-.demog_change_component_df` <- function(x, value) {
     as_fn <- get_as_function_for_class(oldClass(x)[1])
     x$value <- value

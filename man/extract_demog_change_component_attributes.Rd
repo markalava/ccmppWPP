@@ -19,7 +19,6 @@
 \alias{extract_demog_change_component_attributes}
 \alias{values}
 \alias{values.demog_change_component_df}
-\alias{values<-}
 \alias{values<-.demog_change_component_df}
 \alias{ages}
 \alias{ages.demog_change_component_df}
@@ -65,9 +64,7 @@ values(x)
 
 \method{values}{demog_change_component_df}(x)
 
-values(x) <- value
-
-\method{values}{demog_change_component_df}(x) <- value
+values.demog_change_component_df(x) <- value
 
 ages(x)
 

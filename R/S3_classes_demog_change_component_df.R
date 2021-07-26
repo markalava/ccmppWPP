@@ -309,12 +309,13 @@ prepare_df_for_demog_change_component_df <- function(x,
 #' inputs are sorted by sex first (varying slowest) but with 'male'
 #' first, so in reverse alphabetical order.
 #'
-#' FACTORS vs CHARACHTERS:
+#' FACTORS vs CHARACTERS:
 #' -----------------------
 #'
 #' 'sex' is a categorical variable and encoding it as a factor could
 #' be justified. However it may be easier to encode as character and
-#' have methods convert to factor when advantageous.
+#' have methods convert to factor when advantageous. NOTE that
+#' ordering is important; see 'sex_as_factor()' and friends.
 #'
 #' @family demog_change_component_df constructor functions
 #'

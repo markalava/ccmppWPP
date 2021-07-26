@@ -210,6 +210,27 @@ test_that("dimensions are correctly detected", {
 })
 
 
+test_that("Attribute types are checked", {
+    x <- ccmpp_input_df(S3_demog_change_component_time_age_sex_test_df,
+                                   dimensions = c("time", "age", "sex"))
+    attr(x, "time_span") <- "test"
+    expect_error(validate_ccmppWPP_object(x),
+                 "'time_span' should have 'mode' 'numeric'")
+
+    x <- ccmpp_input_df(S3_demog_change_component_time_age_sex_test_df,
+                                   dimensions = c("time", "age", "sex"))
+    attr(x, "age_span") <- "test"
+    expect_error(validate_ccmppWPP_object(x),
+                 "'age_span' should have 'mode' 'numeric'")
+
+    x <- ccmpp_input_df(S3_demog_change_component_time_age_sex_test_df,
+                                   dimensions = c("time", "age", "sex"))
+    attr(x, "value_scale") <- "test"
+    expect_error(validate_ccmppWPP_object(x),
+                 "'value_scale' should have 'mode' 'numeric'")
+})
+
+
 test_that("Unequal spans are caught", {
     x <- S3_demog_change_component_time_age_sex_test_df
     omit_i <- which(x$time_start == 1951)

@@ -318,10 +318,9 @@ drop_zero_fert_ages <- function(x, ...) {
 #' @rdname drop_zero_fert_ages
 #' @export
 drop_zero_fert_ages.fert_rate_age_f <- function(x) {
-    nzfa <- non_zero_fert_ages(x)
-    x <- as_demog_change_component_df(x)
-    subset_age(x, nzfa)
+    subset_age(as_demog_change_component_df(x), non_zero_fert_ages(x))
 }
+
 
 #' Calculate total fertility rates
 #'

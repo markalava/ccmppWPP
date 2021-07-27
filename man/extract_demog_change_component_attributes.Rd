@@ -19,6 +19,7 @@
 \alias{extract_demog_change_component_attributes}
 \alias{values}
 \alias{values.demog_change_component_df}
+\alias{values<-}
 \alias{values<-.demog_change_component_df}
 \alias{ages}
 \alias{ages.demog_change_component_df}
@@ -64,7 +65,9 @@ values(x)
 
 \method{values}{demog_change_component_df}(x)
 
-values.demog_change_component_df(x) <- value
+values(x) <- value
+
+\method{values}{demog_change_component_df}(x) <- value
 
 ages(x)
 
@@ -100,20 +103,24 @@ The \dQuote{levels} of the extracted component
 \description{
 These functions extract specific components (attributes, factor
 levels, values, etc.) from objects inheriting from
-\code{demog_change_component_df}s. In general they return the
-\emph{\dQuote{levels}} of the component, not the whole column from the data
-frame; see \dQuote{Details} for an important exception.
+\code{demog_change_component_df}s. They return the
+\emph{\dQuote{levels}} of the component, not the whole column from
+the data frame. If the whole column is required use the usual
+subsetting functions such as \code{\link{base::[}}. See
+\dQuote{Extracting and replacing values} for the operation of
+\code{values} and \code{values<-}, which are a bit different.
 }
-\details{
-All functions will attempt to return the unique values, or
-\dQuote{levels}, of the component being extracted. If the whole
-column is required use the usual subsetting functions such as
-\code{\link{base::[}}.
+\section{Extracting and replacing values}{
 
-An important exception is that \code{values} will return the whole
-column if \code{\link{value_type}} does not return
-\code{"categorical"}.
+If \code{\link{value_type(x)}} is \emph{not} \code{"categorical"}
+then \code{value(x)} will return \code{x$value} as it is assumed
+all are unique. The replacement function \code{values<-} replaces
+the \code{"value"} column, using the usual recycling rules (see
+\code{\link{data.frame}}), and attempts to return an object the
+same class as \code{x}. If the replacement renders the object
+invalid as a member of the class an error will be signaled.
 }
+
 \seealso{
 Other extract_attributes: 
 \code{\link{extract_ccmpp_input_list_attributes}},

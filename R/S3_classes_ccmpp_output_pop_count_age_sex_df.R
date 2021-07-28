@@ -52,7 +52,7 @@ new_pop_count_age_sex <-
 #' \code{\link{project_ccmpp_loop_over_time}}; it implements cohort
 #' component projection on the input list and returns the projected
 #' counts as a \code{pop_count_age_sex}
-#' object. \code{get_projected_pop_counts} is a more descriptively
+#' object. \code{get_pop_count_projected} is a more descriptively
 #' name wrapper for \code{pop_count_age_sex.ccmpp_input_list(x,
 #' keep_baseline = FALSE)}. \code{ccmpp_input_list}s determine
 #' completely the population counts in subsequent times. As such, the
@@ -60,7 +60,7 @@ new_pop_count_age_sex <-
 #' \dQuote{extracting} these counts from the input.
 #'
 #' \code{pop_count_age_sex.ccmpp_input_list} and
-#' \code{get_projected_pop_counts} return projected
+#' \code{get_pop_count_projected} return projected
 #' counts as an object of class \code{pop_count_age_sex}. For an
 #' alternative list output, see the underlying function
 #' \code{\link{project_ccmpp_loop_over_time}}.
@@ -131,16 +131,16 @@ pop_count_age_sex.ccmpp_input_list <-
     }
 
 #' @rdname pop_count_age_sex
-#' @aliases get_projected_pop_counts
+#' @aliases get_pop_count_projected
 #' @export
-get_projected_pop_counts <- function(x, ...) {
-    UseMethod("get_projected_pop_counts")
+get_pop_count_projected <- function(x, ...) {
+    UseMethod("get_pop_count_projected")
 }
 
 #' @rdname pop_count_age_sex
-#' @aliases get_projected_pop_counts
+#' @aliases get_pop_count_projected
 #' @export
-get_projected_pop_counts.ccmpp_input_list <- function(x) {
+get_pop_count_projected.ccmpp_input_list <- function(x) {
     pop_count_age_sex.ccmpp_input_list(x, keep_baseline = FALSE)
 }
 

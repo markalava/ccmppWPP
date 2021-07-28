@@ -9,7 +9,8 @@ collapse_demog_dimension(
   x,
   FUN = "sum",
   ...,
-  by_dimension = get_all_allowed_dimensions(),
+  by_dimensions = demog_change_component_dims(x),
+  collapse_dimensions = NULL,
   out_class = class(x)[1]
 )
 }
@@ -24,7 +25,7 @@ of \code{x}; found by \code{\link{match.fun}}.}
 \code{\link[stats]{aggregate.data.frame}}. Must not include
 arguments named \code{X}, \code{by}, or \code{FUN}.}
 
-\item{by_dimension}{A \emph{character vector} (not a list) of
+\item{by_dimensions}{A \emph{character vector} (not a list) of
 demographic \dQuote{dimensions} to aggregate over; see
 \dQuote{Details}).}
 }
@@ -33,19 +34,19 @@ A data frame.
 }
 \description{
 This function conveniently collapses objects across the demographic
-dimension(s) specified in \code{by_dimension}. The \dQuote{value}
+dimension(s) specified in \code{by_dimensions}. The \dQuote{value}
 column is aggregated using function \code{FUN}. Columns
-corresponding to \code{by_dimension} are dropped. If you want to
+corresponding to \code{by_dimensions} are dropped. If you want to
 aggregate other columns, or complete collapsing over a dimension is
 not desired, use \code{\link[stats]{aggregate}}, or similar.
 }
 \details{
-Argument \code{by_dimension} is a character vector and can be any
+Argument \code{by_dimensions} is a character vector and can be any
 of the allowed demographic \dQuote{dimensions} such as
 \dQuote{age}, \dQuote{time}, \dQuote{sex} (you can see the full
 list by calling \code{ccmppWPP:::get_all_allowed_dimensions}). The
 result will have values completely collapsed over the given
-dimension. E.g., if \code{by_dimension = "age"} then column
+dimension. E.g., if \code{by_dimensions = "age"} then column
 \code{value} in the result will contain the original \code{value}s
 aggregated over all remaining dimensions, where aggregation is done
 by function \code{FUN}.
@@ -59,7 +60,7 @@ signalled.
 \examples{
 x1 <- ccmpp_input_df(expand.grid(age_start = 0:5, time_start = 1950:1954, value = 1),
                    value_type = "count")
-x1_agg <- collapse_demog_dimension(x1, by_dimension = "time")
+x1_agg <- collapse_demog_dimension(x1, by_dimensions = "time")
 stopifnot("ccmpp_input_df" \%in\% class(x1_agg))
 
 
@@ -72,23 +73,23 @@ x2 <- demog_change_component_df(x2, value_type = "count", value_scale = 1)
 # Force an invalid object (do not try this at home!):
 class(x2) <- c("ccmpp_input_df", "demog_change_component_df", "data.frame")
 \dontrun{
-x2_agg <- collapse_demog_dimension(x2, by_dimension = "age") # exits with an error message
+x2_agg <- collapse_demog_dimension(x2, by_dimensions = "age") # exits with an error message
 }
 
 # Coerce object
 x2_dcc <- demog_change_component_df(x2, value_type = "count", value_scale = 1)
-x2_dcc_agg <- collapse_demog_dimension(x2_dcc, by_dimension = "age") # OK
+x2_dcc_agg <- collapse_demog_dimension(x2_dcc, by_dimensions = "age") # OK
 stopifnot(identical(class(x2_dcc_agg), c("demog_change_component_df", "data.frame")))
 
 # Specify 'out_class'
-x2_dcc_agg <- collapse_demog_dimension(x2, by_dimension = "age", out_class = "demog_change_component_df") # OK
+x2_dcc_agg <- collapse_demog_dimension(x2, by_dimensions = "age", out_class = "demog_change_component_df") # OK
 stopifnot(identical(class(x2_dcc_agg), c("demog_change_component_df", "data.frame")))
 
 
 ## Coercing 'x' to a data.frame.
 
 x3 <- as.data.frame(x1) # will issue a warning that class is dropped
-x3_agg <- collapse_demog_dimension(x3, by_dimension = "time")
+x3_agg <- collapse_demog_dimension(x3, by_dimensions = "time")
 stopifnot(identical(class(x3_agg, "data.frame"))
 
 # Can re-cast as a 'demog_change_component_df'

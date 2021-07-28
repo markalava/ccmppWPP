@@ -599,7 +599,7 @@ validate_ccmppWPP_object.ccmpp_input_list <- function(x, .validate_elements = TR
     }
 
     ## Check that mig_count_age_sex and mig_count_tot_b are consistent with each other
-    mig_tot_agg <- collapse_demog_dimension(x$mig_net_count_age_sex, by_dimension = "time",
+    mig_tot_agg <- collapse_demog_dimension(x$mig_net_count_age_sex, by_dimensions = "time",
                              out_class = "data.frame")
     mig_check <- base::merge(x$mig_net_count_tot_b,
                              mig_tot_agg,

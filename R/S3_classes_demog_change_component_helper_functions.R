@@ -208,17 +208,20 @@ sex_as_numeric <- function(x) {
 
 #' Guess the \dQuote{span} for a demographic dimension
 #'
+#' \code{guess_span_from_start} takes a
+#' vector of \dQuote{\code{_start}} values as first argument;
+#' \code{guess_span_for_dimension_for_df} is a convenience wrapper
+#' that takes a data frame with such a column instead.
+#'
 #' Certain demographic dimensions, such as \dQuote{time} and
 #' \dQuote{age} have associated spans. These should ordinarily be
 #' supplied by the user when calling, e.g.,
 #' \code{\link{demog_change_component_df}}, but a very simple guess
-#' will be attempted if not. Currently, the smallest difference
+#' will be attempted if not. Generally, the smallest difference
 #' between successive values in the corresponding
-#' \dQuote{\code{_start}} column is
-#' returned. \code{guess_span_from_start} takes a
-#' vector of \dQuote{\code{_start}} values as first argument;
-#' \code{guess_span_for_dimension_for_df} is a convenience wrapper
-#' that takes a data frame with such a column instead.
+#' \dQuote{\code{_start}} column will be returned. However, if there
+#' is only one unique \dQuote{\code{_start}} value, all \code{1} will
+#' be returned and a warning issued.
 #'
 #' @param x Vector of \dQuote{start} values (e.g., the
 #'     \code{time_start} or \code{age_start} column from a
@@ -228,13 +231,17 @@ sex_as_numeric <- function(x) {
 #' @return Guessed span.
 #' @author Mark Wheldon
 #' @name guess_span_for_dimension
-#' @export
-guess_span_from_start <- function(x) {
-    min(diff(unique(as.numeric(x)), differences = 1))
+guess_span_from_start <- function(x, span_name = character()) {
+    unique_x <- unique(as.numeric(x))
+    if (identical(length(unique_x), 1L)) {
+        S3_class_warning("Cannot determine ", span_name, " span; setting it to '1'.")
+        return(1)
+    } else {
+        min(diff(unique_x, differences = 1))
+    }
 }
 
 #' @rdname guess_span_for_dimension
-#' @export
 guess_span_for_dimension_for_df <- function(x, dimension = get_all_dimensions_w_spans()) {
     dimension <- match.arg(dimension, several.ok = FALSE)
     start_col_name <- grep("_start",

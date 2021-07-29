@@ -100,6 +100,19 @@ test_that("replacement with valid columns drops class (time, sex)", {
 })
 
 
+test_that("rownames and colnames drop class", {
+    x <- dcc_df_time_age_sex
+    rownames(x) <-
+        gsub("value", "test", rownames(x))
+    expect_not_s3_class(x, "demog_change_component_df")
+
+    x <- dcc_df_time_age_sex
+    colnames(x) <-
+        gsub("value", "test", colnames(x))
+    expect_not_s3_class(x, "demog_change_component_df")
+})
+
+
 test_that("'rbind()' drops class", {
     z <- rbind(dcc_df_time_age_sex, dcc_df_time_age_sex)
     expect_not_s3_class(z, "demog_change_component_df")

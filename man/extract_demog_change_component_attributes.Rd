@@ -30,6 +30,7 @@
 \alias{time_span}
 \alias{time_span.ccmpp_input_df}
 \alias{time_span.ccmpp_output_df}
+\alias{time_span.pop_count_age_sex_reference}
 \alias{value_type<-.ccmpp_input_df}
 \alias{value_type<-.ccmpp_output_df}
 \alias{print.ccmpp_input_df_value_scale}
@@ -86,6 +87,8 @@ time_span(x)
 \method{time_span}{ccmpp_input_df}(x)
 
 \method{time_span}{ccmpp_output_df}(x)
+
+\method{time_span}{pop_count_age_sex_reference}(x)
 
 \method{value_type}{ccmpp_input_df}(x, ...) <- value
 

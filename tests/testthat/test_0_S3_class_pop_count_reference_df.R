@@ -20,6 +20,13 @@ test_that("time_span not zero detected", {
 })
 
 
+test_that("time_span attribute set", {
+    x <- pop_count_reference_input_df_time_age_sex
+    expect_identical(as.numeric(time_span(x)),
+                     as.numeric(0))
+})
+
+
 test_that("Spans not all equal", {
     x <- pop_count_reference_input_df_time_age_sex
 

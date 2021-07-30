@@ -82,6 +82,14 @@ time_span.ccmpp_output_df <- function(x) {
     attr(x, "time_span")
 }
 
+#' @rdname extract_demog_change_component_attributes
+#' @export
+time_span.pop_count_age_sex_reference <- function(x) {
+    if (!is_by_time(x))
+        stop("'time' is not a dimension of 'x'.")
+    attr(x, "time_span")
+}
+
 
 
 #' @rdname extract_demog_change_component_attributes

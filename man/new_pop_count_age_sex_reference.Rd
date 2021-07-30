@@ -8,6 +8,7 @@
 new_pop_count_age_sex_reference(
   x,
   dimensions = character(),
+  time_span = 0,
   value_type = get_value_types_for_subclass_classes("pop_count_age_sex_reference"),
   value_scale = double(),
   ...,

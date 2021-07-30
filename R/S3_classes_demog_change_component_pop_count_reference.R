@@ -17,11 +17,13 @@
 new_pop_count_age_sex_reference <-
     function(x,
              dimensions = character(),
+             time_span = 0,
              value_type = get_value_types_for_subclass_classes("pop_count_age_sex_reference"),
              value_scale = double(),
              ..., class = character()) {
         new_demog_change_component_df(x = x,
                            dimensions = dimensions,
+                           time_span = time_span,
                            value_type = value_type,
                            value_scale = value_scale,
                            ...,

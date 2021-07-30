@@ -10,7 +10,7 @@
 %   R/S3_classes_ccmpp_input_mig_net_rate_df.R,
 %   R/S3_classes_ccmpp_input_mig_parameter_df.R,
 %   R/S3_classes_ccmpp_input_mort_rate_df.R,
-%   R/S3_classes_ccmpp_input_pop_count_base.R,
+%   R/S3_classes_ccmpp_input_pop_count_base_df.R,
 %   R/S3_classes_ccmpp_input_srb_df.R,
 %   R/S3_classes_ccmpp_input_survival_ratio_df.R,
 %   R/S3_classes_ccmpp_ouput_df_utility_functions.R,

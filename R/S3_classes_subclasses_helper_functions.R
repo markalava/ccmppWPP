@@ -106,7 +106,7 @@ check_value_type_of_value_in_subclass_df <- function(value) {
 ### * 'value_type' attribute
 
 get_value_type_info_for_subclass_classes <- function(class = get_all_demog_change_component_df_class_names()) {
-    ## NOTE: Make sure anything added here is also added to 'get_all_demog_change_component_df_class_names()'
+    ## NOTE: Make sure anything added here is also added to 'get_all_demog_change_component_df_class_names()' in file 'S3_classes_demog_change_component_helper_functions.R'
     db <- data.frame(rbind(c(class = "fert_rate_age_f",
                        value_type = "rate"),
                      c(class = "survival_ratio_age_sex",
@@ -134,6 +134,8 @@ get_value_type_info_for_subclass_classes <- function(class = get_all_demog_chang
                      c(class = "life_table_age_sex",
                        value_type = "real"),
                      c(class = "pop_count_age_sex",
+                       value_type = "count"),
+                     c(class = "pop_count_age_sex_reference",
                        value_type = "count")
                      ), stringsAsFactors = FALSE)
     return(db[db$class %in% class,])
@@ -150,6 +152,7 @@ get_value_types_for_subclass_classes <- function(classes) {
 ### * 'value_scale' attribute
 
 get_value_scale_annotations_info_for_subclass_classes <- function(class = get_all_demog_change_component_df_class_names()) {
+    ## NOTE: Make sure anything added here is also added to 'get_all_demog_change_component_df_class_names()' in file 'S3_classes_demog_change_component_helper_functions.R'
     db <- data.frame(rbind(c(class = "ccmpp_input_df",
                              annotation = NA),
                            c(class = "fert_rate_age_f",
@@ -177,6 +180,8 @@ get_value_scale_annotations_info_for_subclass_classes <- function(class = get_al
                      c(class = "life_table_age_sex",
                        annotation = "radix"),
                      c(class = "pop_count_age_sex",
+                       annotation = NA),
+                     c(class = "pop_count_age_sex_reference",
                        annotation = NA)
         ), stringsAsFactors = FALSE)
     return(db[db$class %in% class,])

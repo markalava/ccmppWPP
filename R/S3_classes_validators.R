@@ -182,3 +182,36 @@ validate_ccmppWPP_object.demog_change_component_df <-
 }
 
 
+#' @rdname validate_ccmppWPP_object
+#' @export
+validate_ccmppWPP_object.pop_count_age_sex_reference <- function(x, check_sex_equality_by_time = FALSE, ...) {
+
+    ## Base checks
+    x <- NextMethod()
+
+    ## 'value's all non-negative
+    if (any(x$value < 0))
+        stop(not_a_valid_object_msg("pop_count_age_sex_reference",
+                                    "'value' column has negative elements."))
+
+    ## value_type
+    val_type <- get_value_types_for_subclass_classes("pop_count_age_sex_reference")
+    if (!identical(value_type(x), val_type))
+        stop(not_a_valid_object_msg("pop_count_age_sex_reference",
+                                    "'value_type' must be \"", val_type, "\"."))
+
+    ## If time_span is meant to be zero check that this is true
+    if (!all(x$time_span == 0))
+        stop(not_a_valid_object_msg("pop_count_age_sex_reference",
+                                    "Objects of this class must have all 'time_span' values = 0."))
+
+    ## Check that male and female are not near-identical
+    if (is_by_sex(x)) {
+        test_tol <- 0.5 / 100
+        test <- sexes_unequal(x, x_name = "reference population counts", tolerance = test_tol,
+                              check_by_time = check_sex_equality_by_time)
+        if(!isTRUE(test)) warning(test)
+    }
+
+    return(x)
+}

@@ -21,13 +21,14 @@
 new_pop_count_age_sex <-
     function(x,
              age_span = double(),
+             time_span = 0,
              dimensions = get_req_dimensions_for_subclass_classes("pop_count_age_sex"),
              value_type = get_value_types_for_subclass_classes("pop_count_age_sex"),
              value_scale = double(),
              ..., class = character()) {
         new_ccmpp_output_df(x = x,
                            age_span = age_span,
-                           time_span = 0,
+                           time_span = time_span,
                            dimensions = dimensions,
                            value_type = value_type,
                            value_scale = value_scale,

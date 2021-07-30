@@ -21,6 +21,7 @@ get_all_demog_change_component_df_class_names <- function() {
       "ccmpp_input_df",
       "pop_count_age_sex",
       "ccmpp_output_df",
+      "pop_count_age_sex_reference",
       "demog_change_component_df")
 }
 

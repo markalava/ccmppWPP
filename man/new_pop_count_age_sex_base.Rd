@@ -7,6 +7,7 @@
 new_pop_count_age_sex_base(
   x,
   age_span = double(),
+  time_span = 0,
   dimensions = get_req_dimensions_for_subclass_classes("pop_count_age_sex_base"),
   value_type = get_value_types_for_subclass_classes("pop_count_age_sex_base"),
   value_scale = double(),

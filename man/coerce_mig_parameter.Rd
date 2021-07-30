@@ -55,6 +55,7 @@ Other ccmpp_input_objects:
 \code{\link{coerce_mig_net_rate_age_sex}},
 \code{\link{coerce_mort_rate_age_sex}},
 \code{\link{coerce_pop_count_age_sex_base}},
+\code{\link{coerce_pop_count_age_sex_reference}},
 \code{\link{coerce_srb}},
 \code{\link{coerce_survival_ratio_age_sex}},
 \code{\link{death_count_age_sex}()},

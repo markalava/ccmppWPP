@@ -89,7 +89,7 @@ and \code{value_type} return lists, with one element per element of
 }
 \seealso{
 Other extract_attributes: 
-\code{\link{age_span}()},
+\code{\link{non_zero_fert_ages}()},
 \code{\link{value_scale}()}
 }
 \author{

@@ -292,32 +292,30 @@ get_pop_count_reference_times <- function(x, excl_baseline = FALSE) {
 DDextract_get_pop_count_age_sex_reference <- function(x,
                                                       times = c("all", "excl_baseline", "census",
                                                                 "census_excl_baseline")) {
-    op <- getOption("ccmppWPP.suppress_S3_class_messages")
-    options(ccmppWPP.suppress_S3_class_messages = TRUE)
-    on.exit(options(ccmppWPP.suppress_S3_class_messages = op))
+    op <- options(ccmppWPP.suppress_S3_class_messages = TRUE,
+                  ccmppWPP.suppress_S3_class_warnings = TRUE)
+    reset_op <- function() options(op)
+    on.exit(reset_op())
 
+    times <- match.arg(times)
     stopifnot(valid_DDextract_ccmppWPPinputs_tier1(x))
 
-    ## 'times'
-    if (!is.numeric(times)) {
-        times <- match.arg(times)
-        if (identical(times, "all"))
-            return(demog_change_component_df(x$pop_count_age_sex_reference))
-        else if (identical(times, "excl_baseline"))
-            times <- get_pop_count_reference_times(x, excl_baseline = TRUE)
-        else if (identical(times, "census"))
-            times <- parse_census_years_ranges(get_census_years(x))
-        else if (identical(times, "census_excl_baseline"))
-            times <-
-                exclude_baseline_pop_count_times(x,
-                    parse_census_years_ranges(get_census_years(x)))
-    } else {
-        stop("'times' is not valid.")
+    ## Early returns:
+    if (identical(times, "all")) {
+        return(pop_count_age_sex_reference(x$pop_count_age_sex_reference))
     }
 
+    ## 'times' subsets
+    if (identical(times, "excl_baseline"))
+        times <- get_pop_count_reference_times(x, excl_baseline = TRUE)
+    else if (identical(times, "census"))
+        times <- parse_census_years_ranges(get_census_years(x))
+    else if (identical(times, "census_excl_baseline"))
+        times <-
+            exclude_baseline_pop_count_times(x,
+                                             parse_census_years_ranges(get_census_years(x)))
     ## Subset and return
-    return(subset_time(as_demog_change_component_df(as.data.frame(x$pop_count_age_sex_reference),
-                                                    value_type =  "count"),
+    return(subset_time(pop_count_age_sex_reference(as.data.frame(x$pop_count_age_sex_reference)),
                        times))
 }
 

@@ -15,6 +15,7 @@
 %   R/S3_classes_ccmpp_input_survival_ratio_df.R,
 %   R/S3_classes_ccmpp_ouput_df_utility_functions.R,
 %   R/S3_classes_ccmpp_output_pop_count_age_sex_df.R,
+%   R/S3_classes_demog_change_component_pop_count_reference.R,
 %   R/S3_classes_demog_change_component_utility_functions.R
 \name{subset_time.death_count_age_sex}
 \alias{subset_time.death_count_age_sex}
@@ -62,6 +63,9 @@
 \alias{subset_time.pop_count_age_sex}
 \alias{subset_age.pop_count_age_sex}
 \alias{subset_sex.pop_count_age_sex}
+\alias{subset_time.pop_count_age_sex_reference}
+\alias{subset_age.pop_count_age_sex_reference}
+\alias{subset_sex.pop_count_age_sex_reference}
 \alias{subset_demog_change_component_df}
 \alias{subset_time}
 \alias{subset_time.demog_change_component_df}
@@ -162,6 +166,12 @@
 \method{subset_age}{pop_count_age_sex}(x, ages, include = TRUE)
 
 \method{subset_sex}{pop_count_age_sex}(x, sexes, include = TRUE)
+
+\method{subset_time}{pop_count_age_sex_reference}(x, times, include = TRUE)
+
+\method{subset_age}{pop_count_age_sex_reference}(x, ages, include = TRUE)
+
+\method{subset_sex}{pop_count_age_sex_reference}(x, sexes, include = TRUE)
 
 subset_time(x, times, include = TRUE, ...)
 

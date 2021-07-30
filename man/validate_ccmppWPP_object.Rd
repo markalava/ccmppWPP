@@ -6,6 +6,7 @@
 \alias{validate_ccmppWPP_object}
 \alias{validate_ccmppWPP_object.default}
 \alias{validate_ccmppWPP_object.demog_change_component_df}
+\alias{validate_ccmppWPP_object.pop_count_age_sex_reference}
 \alias{validate_ccmppWPP_object.ccmpp_input_df}
 \alias{validate_ccmppWPP_object.fert_rate_age_f}
 \alias{validate_ccmppWPP_object.survival_ratio_age_sex}
@@ -30,6 +31,8 @@ validate_ccmppWPP_object(x, ...)
 \method{validate_ccmppWPP_object}{default}(x, ...)
 
 \method{validate_ccmppWPP_object}{demog_change_component_df}(x, ...)
+
+\method{validate_ccmppWPP_object}{pop_count_age_sex_reference}(x, check_sex_equality_by_time = FALSE, ...)
 
 \method{validate_ccmppWPP_object}{ccmpp_input_df}(x, ...)
 

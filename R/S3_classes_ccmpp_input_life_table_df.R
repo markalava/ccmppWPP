@@ -14,6 +14,11 @@ get_life_table_radix_from_li <- function(li) {
         else return(NA)
 }
 
+get_all_life_table_subclasses <- function() {
+    c("mort_rate_age_sex", "survival_ratio_age_sex", "ccmpp_input_death_count",
+      "ccmpp_input_death_probability")
+    }
+
 ###-----------------------------------------------------------------------------
 ### * Class constructors
 

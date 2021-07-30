@@ -164,6 +164,12 @@ NULL
 
 #' @rdname col_row_names
 #' @export
+`rownames<-.default` <- function(x, value) {
+    base::`rownames<-`(x = x, value = value)
+}
+
+#' @rdname col_row_names
+#' @export
 `rownames<-.demog_change_component_df` <- function(x, value) {
     if (identical(parent.frame(), .GlobalEnv)) {
         S3_class_warning("changing the 'rownames' of a '",
@@ -173,13 +179,19 @@ NULL
     base::`rownames<-`(x = as.data.frame(x), value = value)
 }
 
-#' @rdname col_col_names
+#' @rdname col_row_names
 #' @export
 `colnames<-` <- function(x, value) {
     UseMethod("colnames<-")
 }
 
-#' @rdname col_col_names
+#' @rdname col_row_names
+#' @export
+`colnames<-.default` <- function(x, value) {
+    base::`colnames<-`(x = x, value = value)
+}
+
+#' @rdname col_row_names
 #' @export
 `colnames<-.demog_change_component_df` <- function(x, value) {
     if (identical(parent.frame(), .GlobalEnv)) {

@@ -37,8 +37,8 @@ new_life_table_age_sex <-
     function(x,
              age_span = double(),
              time_span = double(),
-             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("life_table_age_sex"),
-             value_type = get_value_types_for_ccmpp_in_out_classes("life_table_age_sex"),
+             dimensions = get_req_dimensions_for_subclass_classes("life_table_age_sex"),
+             value_type = get_value_types_for_subclass_classes("life_table_age_sex"),
              value_scale = double(),
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
@@ -88,8 +88,8 @@ life_table_age_sex.data.frame <- function(x,
              value_scale = attr(x, "value_scale")) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
-                            dimensions = get_req_dimensions_for_ccmpp_in_out_classes("life_table_age_sex"),
-                            value_type = get_value_types_for_ccmpp_in_out_classes("life_table_age_sex"),
+                            dimensions = get_req_dimensions_for_subclass_classes("life_table_age_sex"),
+                            value_type = get_value_types_for_subclass_classes("life_table_age_sex"),
                             value_scale = value_scale)
 
         ## Set 'value_scale' to the radix

@@ -8,8 +8,8 @@ new_srb(
   x,
   age_span = double(),
   time_span = double(),
-  dimensions = get_req_dimensions_for_ccmpp_in_out_classes("srb"),
-  value_type = get_value_types_for_ccmpp_in_out_classes("srb"),
+  dimensions = get_req_dimensions_for_subclass_classes("srb"),
+  value_type = get_value_types_for_subclass_classes("srb"),
   value_scale = NA,
   ...,
   class = character()

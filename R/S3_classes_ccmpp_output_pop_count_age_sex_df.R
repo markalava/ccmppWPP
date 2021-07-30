@@ -21,8 +21,8 @@
 new_pop_count_age_sex <-
     function(x,
              age_span = double(),
-             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("pop_count_age_sex"),
-             value_type = get_value_types_for_ccmpp_in_out_classes("pop_count_age_sex"),
+             dimensions = get_req_dimensions_for_subclass_classes("pop_count_age_sex"),
+             value_type = get_value_types_for_subclass_classes("pop_count_age_sex"),
              value_scale = double(),
              ..., class = character()) {
         new_ccmpp_output_df(x = x,
@@ -91,8 +91,8 @@ pop_count_age_sex.data.frame <-
              value_scale = attr(x, "value_scale"), ...) {
 
         li <- prepare_df_for_ccmpp_output_df(x,
-                            dimensions = get_req_dimensions_for_ccmpp_in_out_classes("pop_count_age_sex"),
-                            value_type = get_value_types_for_ccmpp_in_out_classes("pop_count_age_sex"),
+                            dimensions = get_req_dimensions_for_subclass_classes("pop_count_age_sex"),
+                            value_type = get_value_types_for_subclass_classes("pop_count_age_sex"),
                             value_scale = value_scale)
 
         ## Create/Validate
@@ -118,8 +118,8 @@ pop_count_age_sex.ccmpp_input_list <-
             pop_out <- rbind(x$pop_count_age_sex_base, pop_out)
 
         pop_out <- prepare_df_for_ccmpp_output_df(pop_out,
-                            dimensions = get_req_dimensions_for_ccmpp_in_out_classes("pop_count_age_sex"),
-                            value_type = get_value_types_for_ccmpp_in_out_classes("pop_count_age_sex"),
+                            dimensions = get_req_dimensions_for_subclass_classes("pop_count_age_sex"),
+                            value_type = get_value_types_for_subclass_classes("pop_count_age_sex"),
                             value_scale = val_scale_x)
 
         ## Create/Validate

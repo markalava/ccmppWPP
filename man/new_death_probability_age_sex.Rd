@@ -9,8 +9,8 @@ new_death_probability_age_sex(
   age_span = double(),
   time_span = double(),
   non_zero_fert_ages = double(),
-  dimensions = get_req_dimensions_for_ccmpp_in_out_classes("death_probability_age_sex"),
-  value_type = get_value_types_for_ccmpp_in_out_classes("death_probability_age_sex"),
+  dimensions = get_req_dimensions_for_subclass_classes("death_probability_age_sex"),
+  value_type = get_value_types_for_subclass_classes("death_probability_age_sex"),
   value_scale = NA,
   ...,
   class = character()

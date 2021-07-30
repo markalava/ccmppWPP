@@ -68,8 +68,8 @@ new_fert_rate_age_f <-
     function(x,
              age_span = double(),
              time_span = double(),
-             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("fert_rate_age_f"),
-             value_type = get_value_types_for_ccmpp_in_out_classes("fert_rate_age_f"),
+             dimensions = get_req_dimensions_for_subclass_classes("fert_rate_age_f"),
+             value_type = get_value_types_for_subclass_classes("fert_rate_age_f"),
              value_scale = double(),
              non_zero_fert_ages = double(),
              ..., class = character()) {
@@ -141,8 +141,8 @@ fert_rate_age_f.data.frame <-
              value_scale = attr(x, "value_scale")) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
-                            dimensions = get_req_dimensions_for_ccmpp_in_out_classes("fert_rate_age_f"),
-                            value_type = get_value_types_for_ccmpp_in_out_classes("fert_rate_age_f"),
+                            dimensions = get_req_dimensions_for_subclass_classes("fert_rate_age_f"),
+                            value_type = get_value_types_for_subclass_classes("fert_rate_age_f"),
                             value_scale = value_scale)
 
         if (is.null(non_zero_fert_ages)) {

@@ -20,8 +20,8 @@ new_death_count_age_sex <-
              age_span = double(),
              time_span = double(),
              non_zero_fert_ages = double(),
-             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("death_count_age_sex"),
-             value_type = get_value_types_for_ccmpp_in_out_classes("death_count_age_sex"),
+             dimensions = get_req_dimensions_for_subclass_classes("death_count_age_sex"),
+             value_type = get_value_types_for_subclass_classes("death_count_age_sex"),
              value_scale = double(),
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
@@ -70,8 +70,8 @@ death_count_age_sex.data.frame <- function(x,
              value_scale = attr(x, "value_scale")) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
-                           dimensions = get_req_dimensions_for_ccmpp_in_out_classes("death_count_age_sex"),
-                           value_type = get_value_types_for_ccmpp_in_out_classes("death_count_age_sex"),
+                           dimensions = get_req_dimensions_for_subclass_classes("death_count_age_sex"),
+                           value_type = get_value_types_for_subclass_classes("death_count_age_sex"),
                            value_scale = value_scale)
 
         ## Create/Validate

@@ -20,8 +20,8 @@ new_mort_rate_age_sex <-
              age_span = double(),
              time_span = double(),
              non_zero_fert_ages = double(),
-             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("mort_rate_age_sex"),
-             value_type = get_value_types_for_ccmpp_in_out_classes("mort_rate_age_sex"),
+             dimensions = get_req_dimensions_for_subclass_classes("mort_rate_age_sex"),
+             value_type = get_value_types_for_subclass_classes("mort_rate_age_sex"),
              value_scale = NA,
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
@@ -68,8 +68,8 @@ mort_rate_age_sex <- function(x, ...) {
 #' @export
 mort_rate_age_sex.data.frame <- function(x) {
         li <- prepare_df_for_ccmpp_input_df(x,
-                           dimensions = get_req_dimensions_for_ccmpp_in_out_classes("mort_rate_age_sex"),
-                           value_type = get_value_types_for_ccmpp_in_out_classes("mort_rate_age_sex"),
+                           dimensions = get_req_dimensions_for_subclass_classes("mort_rate_age_sex"),
+                           value_type = get_value_types_for_subclass_classes("mort_rate_age_sex"),
                            value_scale = NA)
 
         ## Create/Validate

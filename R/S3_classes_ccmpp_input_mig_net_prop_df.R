@@ -20,8 +20,8 @@ new_mig_net_prop_age_sex <-
     function(x,
              age_span = double(),
              time_span = double(),
-             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("mig_net_prop_age_sex"),
-             value_type = get_value_types_for_ccmpp_in_out_classes("mig_net_prop_age_sex"),
+             dimensions = get_req_dimensions_for_subclass_classes("mig_net_prop_age_sex"),
+             value_type = get_value_types_for_subclass_classes("mig_net_prop_age_sex"),
              value_scale = NA,
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
@@ -91,8 +91,8 @@ mig_net_prop_age_sex.data.frame <-
     function(x, ...) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
-                            dimensions = get_req_dimensions_for_ccmpp_in_out_classes("mig_net_prop_age_sex"),
-                            value_type = get_value_types_for_ccmpp_in_out_classes("mig_net_prop_age_sex"),
+                            dimensions = get_req_dimensions_for_subclass_classes("mig_net_prop_age_sex"),
+                            value_type = get_value_types_for_subclass_classes("mig_net_prop_age_sex"),
                             value_scale = NA)
 
         ## Create/Validate

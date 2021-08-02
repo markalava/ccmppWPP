@@ -155,6 +155,30 @@ subset.demog_change_component_df <- function(x, ...) {
 #' @name col_row_names
 NULL
 
+#' @rdname col_row_names
+#' @export
+`names<-` <- function(x, value) {
+    UseMethod("names<-")
+}
+
+#' @rdname col_row_names
+#' @export
+`names<-.default` <- function(x, value) {
+    base::`names<-`(x = x, value = value)
+}
+
+#' @rdname col_row_names
+#' @export
+`names<-.demog_change_component_df` <- function(x, value) {
+    if (identical(parent.frame(), .GlobalEnv)) {
+        S3_class_warning("changing the 'names' of a '",
+                         oldClass(x)[1],
+                         "' will not preserve the class or attributes.")
+    }
+    ## Using base::`names<-` causes "infinite recursion" error.
+    `colnames<-`(x, value = value)
+}
+
 
 #' @rdname col_row_names
 #' @export
@@ -179,6 +203,7 @@ NULL
     base::`rownames<-`(x = as.data.frame(x), value = value)
 }
 
+
 #' @rdname col_row_names
 #' @export
 `colnames<-` <- function(x, value) {
@@ -200,6 +225,30 @@ NULL
                 "' will not preserve the class or attributes.")
     }
     base::`colnames<-`(x = as.data.frame(x), value = value)
+}
+
+
+#' @rdname col_row_names
+#' @export
+`dimnames<-` <- function(x, value) {
+    UseMethod("dimnames<-")
+}
+
+#' @rdname col_row_names
+#' @export
+`dimnames<-.default` <- function(x, value) {
+    base::`dimnames<-`(x = x, value = value)
+}
+
+#' @rdname col_row_names
+#' @export
+`dimnames<-.demog_change_component_df` <- function(x, value) {
+    if (identical(parent.frame(), .GlobalEnv)) {
+        S3_class_warning("changing the 'dimnames' of a '",
+                         oldClass(x)[1],
+                         "' will not preserve the class or attributes.")
+    }
+    base::`dimnames<-`(x = as.data.frame(x), value = value)
 }
 
 

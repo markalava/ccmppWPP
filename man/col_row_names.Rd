@@ -2,14 +2,26 @@
 % Please edit documentation in R/S3_methods_demog_change_component_df.R
 \name{col_row_names}
 \alias{col_row_names}
+\alias{names<-}
+\alias{names<-.default}
+\alias{names<-.demog_change_component_df}
 \alias{rownames<-}
 \alias{rownames<-.default}
 \alias{rownames<-.demog_change_component_df}
 \alias{colnames<-}
 \alias{colnames<-.default}
 \alias{colnames<-.demog_change_component_df}
+\alias{dimnames<-}
+\alias{dimnames<-.default}
+\alias{dimnames<-.demog_change_component_df}
 \title{Change column and row names of a \code{demog_change_component_df}}
 \usage{
+names(x) <- value
+
+\method{names}{default}(x) <- value
+
+\method{names}{demog_change_component_df}(x) <- value
+
 rownames(x) <- value
 
 \method{rownames}{default}(x) <- value
@@ -21,6 +33,12 @@ colnames(x) <- value
 \method{colnames}{default}(x) <- value
 
 \method{colnames}{demog_change_component_df}(x) <- value
+
+dimnames(x) <- value
+
+\method{dimnames}{default}(x) <- value
+
+\method{dimnames}{demog_change_component_df}(x) <- value
 }
 \arguments{
 \item{x}{a matrix-like \R object, with at least two dimensions for

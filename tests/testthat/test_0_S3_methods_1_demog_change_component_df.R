@@ -100,7 +100,17 @@ test_that("replacement with valid columns drops class (time, sex)", {
 })
 
 
-test_that("rownames and colnames drop class", {
+test_that("names, rownames and colnames drop class", {
+    x <- dcc_df_time_age_sex
+    names(x) <-
+        gsub("value", "test", names(x))
+    expect_not_s3_class(x, "demog_change_component_df")
+
+    x <- dcc_df_time_age_sex
+    dimnames(x)[[2]] <-
+        gsub("value", "test", dimnames(x)[[2]])
+    expect_not_s3_class(x, "demog_change_component_df")
+
     x <- dcc_df_time_age_sex
     rownames(x) <-
         gsub("value", "test", rownames(x))

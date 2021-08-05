@@ -99,11 +99,13 @@ lt_summary <- function(lt_data, byvar) {
 #'
 #' @param mx data frame. "value" column contains age-specific mortality rates by time_start and age_start for one sex. 
 #' @param sex character. string indicating "m" male, "f" female, or "b" both sexes.
+#' @param a0rule character. string "ak" for andreev-kinkaid and "cd" for coale-demeny estimation of 1a0.
+#' @param OAnew numeric. The starting age for the new open age group.
 #'
 #' @return a data frame with "indicator" labeling the life table column name and "value" containing the value of 
 #' that measure, by single year of age_start and time_start
 #' @export
-lt_complete_loop_over_time <- function(mx, sex) {
+lt_complete_loop_over_time <- function(mx, sex, a0rule = "ak", OAnew = 130) {
   
   # initialize output list
   lt_output_list <- list()
@@ -120,7 +122,10 @@ lt_complete_loop_over_time <- function(mx, sex) {
     
     lt <- DemoTools::lt_single_mx(nMx = mx$value[which(mx$time_start == time)],
                                   Age = mx$age_start[which(mx$time_start == time)],
-                                  sex = substr(sex,1,1))
+                                  sex = substr(sex,1,1),
+                                  a0rule = a0rule,
+                                  OAnew = OAnew,
+                                  extrapLaw = "kannisto", extrapFit = 80:99, parS = c(A = 0.005, B = 0.13)) # here we set starting parameters for kannisto
     
     # The above gives a warning message and I'm not sure why.  Still seems to work though:
     # Warning message:

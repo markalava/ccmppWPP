@@ -2,9 +2,9 @@
 % Please edit documentation in R/S3_methods_demog_change_component_df.R
 \name{col_row_names}
 \alias{col_row_names}
-\alias{names<-}
-\alias{names<-.default}
-\alias{names<-.demog_change_component_df}
+\alias{row.names<-}
+\alias{row.names<-.default}
+\alias{row.names<-.demog_change_component_df}
 \alias{rownames<-}
 \alias{rownames<-.default}
 \alias{rownames<-.demog_change_component_df}
@@ -16,11 +16,11 @@
 \alias{dimnames<-.demog_change_component_df}
 \title{Change column and row names of a \code{demog_change_component_df}}
 \usage{
-names(x) <- value
+row.names(x) <- value
 
-\method{names}{default}(x) <- value
+\method{row.names}{default}(x) <- value
 
-\method{names}{demog_change_component_df}(x) <- value
+\method{row.names}{demog_change_component_df}(x) <- value
 
 rownames(x) <- value
 

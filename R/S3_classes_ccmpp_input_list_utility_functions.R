@@ -65,13 +65,3 @@ subset_age.ccmpp_input_list <- function(x, ages, include = TRUE) {
     return(as_ccmpp_input_list(as.list(x)))
 }
 
-###-----------------------------------------------------------------------------
-### * Transformations
-
-#' @rdname fert_rate_tot_f
-#' @export
-fert_rate_tot_f.ccmpp_input_list <- function(x) {
-    fert_rate_tot_f(fert_rate_component(x))
-}
-
-

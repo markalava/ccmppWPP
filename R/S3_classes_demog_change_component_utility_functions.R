@@ -308,8 +308,7 @@ make_value_ratio <- function(num, denom,
 #' When \code{by_vars_names} is \code{NULL}, if either \code{x} or
 #' \code{y} has column \code{time_span} and all entries are 0,
 #' \dQuote{time_span} will be omitted from
-#' \code{by_vars_names}. \emph{Note:} This only happens if
-#' \code{by_vars_names} is \code{NULL}.
+#' \code{by_vars_names}.
 #'
 #' @param x,y Data frames with columns \dQuote{\code{by_vars_names}}
 #'     and \dQuote{value}.

@@ -356,3 +356,10 @@ fert_rate_tot_f.fert_rate_age_f <- function(x) {
     return(demog_change_component_df(out))
 }
 
+#' @rdname fert_rate_tot_f
+#' @export
+fert_rate_tot_f.ccmpp_input_list <- function(x) {
+    fert_rate_tot_f(fert_rate_component(x))
+}
+
+

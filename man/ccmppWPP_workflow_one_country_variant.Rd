@@ -4,7 +4,7 @@
 \alias{ccmppWPP_workflow_one_country_variant}
 \title{Full ccmppWPP implementation for one country and variant}
 \usage{
-ccmppWPP_workflow_one_country_variant(wpp_input)
+ccmppWPP_workflow_one_country_variant(wpp_input, intermediate_output_folder)
 }
 \arguments{
 \item{wpp_input}{list of input objects required for one country-variant}

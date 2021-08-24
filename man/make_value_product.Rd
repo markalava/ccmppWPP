@@ -39,8 +39,7 @@ and these columns are in the output, which is also a data frame.
 When \code{by_vars_names} is \code{NULL}, if either \code{x} or
 \code{y} has column \code{time_span} and all entries are 0,
 \dQuote{time_span} will be omitted from
-\code{by_vars_names}. \emph{Note:} This only happens if
-\code{by_vars_names} is \code{NULL}.
+\code{by_vars_names}.
 }
 \author{
 Mark Wheldon

@@ -4,12 +4,16 @@
 \alias{lt_complete_loop_over_time}
 \title{Compute complete life tables for multiple time periods}
 \usage{
-lt_complete_loop_over_time(mx, sex)
+lt_complete_loop_over_time(mx, sex, a0rule = "ak", OAnew = 130)
 }
 \arguments{
 \item{mx}{data frame. "value" column contains age-specific mortality rates by time_start and age_start for one sex.}
 
 \item{sex}{character. string indicating "m" male, "f" female, or "b" both sexes.}
+
+\item{a0rule}{character. string "ak" for andreev-kinkaid and "cd" for coale-demeny estimation of 1a0.}
+
+\item{OAnew}{numeric. The starting age for the new open age group.}
 }
 \value{
 a data frame with "indicator" labeling the life table column name and "value" containing the value of 

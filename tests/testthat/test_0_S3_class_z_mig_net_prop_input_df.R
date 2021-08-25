@@ -61,10 +61,25 @@ test_that("unusual values trigger warning", {
 })
 
 
-
 test_that("'mig_net_count' can be created from 'mig_net_prop'", {
     prop <- mig_net_prop_age_sex(ccmpp_input_list_example)
     pop_count <- pop_count_age_sex(ccmpp_input_list_example)
     expect_s3_class(mig_net_count_age_sex(prop, pop_count),
                     "mig_net_count_age_sex")
     })
+
+
+## test_that("'mig_net_prop' can be replaced in a 'ccmpp_input_list'", {
+##     prop_new <- mig_net_prop_age_sex(ccmpp_input_list_example)
+##     values(prop_new) <- values(prop_new) * 0.8
+
+##     x <- ccmpp_input_list_example
+
+
+
+
+##     debug(data_reshape_ccmpp_output)
+##     debug(data_gather_ccmpp_output)
+
+##     mig_net_prop_age_sex(x) <- prop_new
+

@@ -1,7 +1,6 @@
 
 #' Low-level constructor for class \code{pop_count_age_sex_base}.
 #'
-#' @description
 #' Creates an object of class \code{pop_count_age_sex_base}. Minimal
 #' checks are done; for interactive use see
 #' \code{\link{pop_count_age_sex_base}}.

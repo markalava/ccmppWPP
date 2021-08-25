@@ -305,10 +305,12 @@ make_value_ratio <- function(num, denom,
 #' \code{y} are first merged on columns named \code{by_vars_names}
 #' and these columns are in the output, which is also a data frame.
 #'
-#' When \code{by_vars_names} is \code{NULL}, if either \code{x} or
-#' \code{y} has column \code{time_span} and all entries are 0,
-#' \dQuote{time_span} will be omitted from
-#' \code{by_vars_names}.
+#' Special processing occurs when \code{by_vars_names} is \code{NULL}
+#' and either \code{x} or \code{y} has column \code{time_span} and all
+#' entries are 0. In this case, before merging, \dQuote{time_span} is
+#' omitted from \code{by_vars_names} and the \code{time_span} column
+#' is dropped from \code{y}. This ensures the result has only one
+#' \code{time_span} column, namely the one from \code{x}.
 #'
 #' @param x,y Data frames with columns \dQuote{\code{by_vars_names}}
 #'     and \dQuote{value}.
@@ -334,8 +336,12 @@ make_value_product <- function(x, y,
                 by_vars_names <- by_vars_names[!by_vars_names == "time_span"]
         }
         if ("time_span" %in% colnames(y)) {
-            if (all(y$time_span == 0))
+            if (all(y$time_span == 0)) {
                 by_vars_names <- by_vars_names[!by_vars_names == "time_span"]
+                ## Also need to remove the 'time_span' column
+                ## otherwise it will appear in the result.
+                y <- y[, -which(colnames(y) == "time_span")]
+            }
         }
     }
     if (!length(by_vars_names))
@@ -396,7 +402,7 @@ make_value_product <- function(x, y,
 #'     \dQuote{Details}).
 #' @param out_class The first element of the class of \code{x}
 #'     \emph{after} aggregation. It will be expanded by adding
-#'     elements 2, 3, ... of \code{class(x)}} if \code{out_class} is
+#'     elements 2, 3, ... of \code{class(x)} if \code{out_class} is
 #'     an element of \class{x} and not the last element. Otherwise,
 #'     \code{out_class} is left as-is.
 #' @param FUN A function to use to aggregate the \dQuote{value} column

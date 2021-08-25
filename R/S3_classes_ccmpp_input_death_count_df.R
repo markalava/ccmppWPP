@@ -1,7 +1,7 @@
 
 #' Low-level constructor for class \code{death_count_age_sex}.
 #'
-#' @description
+#' q@description
 #' Creates an object of class \code{death_count_age_sex}. Minimal
 #' checks are done; for interactive use see
 #' \code{\link{death_count_age_sex}}.

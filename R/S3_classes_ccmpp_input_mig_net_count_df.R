@@ -48,10 +48,23 @@ new_mig_net_count_age_sex <-
 #' an object from \code{x}. There is also a replacement function which
 #' complements the extraction methods.
 #'
+#' @section Transformation of migration proportions:
+#' The \code{mig_net_prop_age_sex} method has the mandatory argument
+#' \code{pop_count_age_sex}. It is assumed that these already include
+#' migration, and that this migration is that given by the proportions
+#' passed in as argument \code{x}. The function then simply multiplies
+#' the proportions (\code{x}) by the population counts
+#' (\code{pop_count_age_sex}). Contrast this with the
+#' \code{\link{mig_net_prop_age_sex}} replacement method for
+#' \code{ccmpp_input_list}s which replaces the migration \emph{counts}
+#' in the CCMPP input list such that they yield the specified
+#' proportions.
+#'
 #' @family ccmpp_input_objects
-#' @seealso \code{\link{validate_ccmppWPP_object}} for object validation,
-#'     \code{\link{ccmpp_input_df}} for the class from which this one
-#'     inherits.
+#' @seealso \code{\link{validate_ccmppWPP_object}} for object
+#'     validation, \code{\link{ccmpp_input_df}} for the class from
+#'     which this one inherits. See \code{\link{mig_net_prop_age_sex}}
+#'     for conversion between migration counts and proportions.
 #'
 #' @param x An object for which a method is defined (see \dQuote{Details}).
 #' @param pop_count_age_sex For the \code{mig_net_prop_age_sex}
@@ -74,7 +87,7 @@ mig_net_count_age_sex <- function(x, ...) {
     UseMethod("mig_net_count_age_sex")
 }
 
-#' @rdname
+#' @rdname mig_net_count_age_sex
 #' @export
 mig_net_count_age_sex.data.frame <-
     function(x,
@@ -94,7 +107,7 @@ mig_net_count_age_sex.data.frame <-
         )
     }
 
-#' @rdname
+#' @rdname mig_net_count_age_sex
 #' @export
 mig_net_count_age_sex.mig_net_prop_age_sex <-
     function(x, pop_count_age_sex,
@@ -107,13 +120,13 @@ mig_net_count_age_sex.mig_net_prop_age_sex <-
                               value_scale = value_scale_pop_count)
     }
 
-#' @rdname
+#' @rdname mig_net_count_age_sex
 #' @export
 mig_net_count_age_sex.ccmpp_input_list <- function(x) {
     mig_net_count_component(x)
 }
 
-#' @rdname
+#' @rdname mig_net_count_age_sex
 #' @export
 `mig_net_count_age_sex<-`  <- function(x, value) {
     `mig_net_count_component<-`(x, value)

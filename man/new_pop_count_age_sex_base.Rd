@@ -34,7 +34,8 @@ An object of class \code{pop_count_age_sex_base}.
 Creates an object of class \code{pop_count_age_sex_base}. Minimal
 checks are done; for interactive use see
 \code{\link{pop_count_age_sex_base}}.
-
+}
+\details{
 This function is not exported. The user-level constructor is
 \code{\link{pop_count_age_sex_base}}.
 }

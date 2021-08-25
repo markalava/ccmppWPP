@@ -52,13 +52,24 @@ new_mig_net_prop_age_sex <-
 #' counts by population counts, matched by age, sex, and
 #' time. Population counts are supplied as a data frame via argument
 #' \code{pop_count_age_sex}. The method for \code{ccmpp_input_list}s
-#' uses \code{\link{project_ccmpp_loop_over_time}} to generate the
+#' uses \code{\link{pop_count_age_sex}} to generate the
 #' population counts from the inputs supplied via argument \code{x}.
+#'
+#' @section Replacement in ccmpp_input_list s:
+#' The replacement method for \code{ccmpp_input_list}s replaces the
+#' migration \emph{count} component of the list such that a subsequent
+#' application of \code{mig_net_prop_age_sex} on the result will
+#' return the proportions supplied as the replacement. Compare this
+#' with the \code{mig_net_prop_age_sex} method for function
+#' \code{\link{mig_net_count_age_sex}} which simply transforms the
+#' proportions into counts by multiplying them by the same-year
+#' population counts.
 #'
 #' @family ccmpp_input_objects
 #' @seealso \code{\link{validate_ccmppWPP_object}} for object validation,
 #'     \code{\link{ccmpp_input_df}} for the class from which this one
-#'     inherits.
+#'     inherits. See \code{\link{mig_net_count_age_sex}}
+#'     for conversion between migration counts and proportions.
 #'
 #' @param x Depending on the method
 #' \describe{
@@ -107,12 +118,6 @@ mig_net_prop_age_sex.data.frame <-
 #' @export
 mig_net_prop_age_sex.ccmpp_input_list <-
     function(x, ...) {
-        ## pop_count_age_sex <-
-        ##     rbind(x$pop_count_age_sex_base,
-        ##           data_reshape_ccmpp_output(
-        ##               project_ccmpp_loop_over_time(indata = x))$pop_count_age_sex)
-        ## pop_count_age_sex <-
-        ##     pop_count_age_sex[pop_count_age_sex$sex %in% c("male", "female"),]
         mig_net_prop_age_sex(x = mig_net_count_component(x),
                              pop_count_age_sex = pop_count_age_sex(x),
                              ...)
@@ -128,6 +133,87 @@ mig_net_prop_age_sex.mig_net_count_age_sex <-
         mig_net_prop_age_sex(make_value_ratio(num = x,
                                               denom = pop_count_age_sex))
     }
+
+
+#' @rdname mig_net_prop_age_sex
+#' @export
+`mig_net_prop_age_sex<-` <- function(x, value) {
+    UseMethod("mig_net_prop_age_sex<-")
+}
+
+#' @rdname mig_net_prop_age_sex
+#' @export
+`mig_net_prop_age_sex<-.ccmpp_input_list` <- function(x, value) {
+
+    ## Check that replacement is possible. At present, 'value' must
+    ## supply _all_ times and ages that are in 'x'. In future could
+    ## make it so that subsets of the age-time-sexes can be
+    ## replaced.
+    if (!identical(times(x), times(value)))
+        stop("'times(value)' is not the same as 'times(x)'. You must supply a replacement for all times.")
+    if (!identical(ages(x), ages(value)))
+        stop("'ages(value)' is not the same as 'ages(x)'. You must supply a replacement for all ages.")
+    if (!identical(sexes(x), sexes(value)))
+        stop("'sexes(value)' is not the same as 'sexes(x)'. You must supply a replacement for all sexes.")
+
+    ## Constants
+    times_x <- times(x) # times_x[1] is the baseline year
+
+    ## Create template for new _migration_ counts. Have ensured that
+    ## 'value' argument has the same times, ages, and sexes as 'x'.
+    mig_net_count_age_sex <-
+        data.frame(value[, colnames(value)[!colnames(value) == "value"]],
+                   value = NA)
+
+    ## Create template for temporary _population_ counts.
+    pop_count_age_sex <- as.data.frame(pop_count_age_sex(x))
+    pop_count_age_sex$value <- NA
+##:ess-bp-start::browser@nil:##
+browser(expr=is.null(.ESSBP.[["@4@"]]));##:ess-bp-end:##
+
+    ## First year's counts
+    t1_idx <- mig_net_count_age_sex$time_start == times(x)[1]
+    mig_net_count_age_sex[t1_idx, ] <-
+        make_value_product(x = value[t1_idx, ],
+                           y = pop_count_age_sex_base(x))
+    pop_count_age_sex[t1_idx, ] <-
+        pop_count_age_sex(subset_time(x, times_x[1]), keep_baseline = FALSE)
+
+    ## Subsequent counts, year-by-year. Use the low level function for
+    ## projection otherwise it will be vveerryy slow bc of all the
+    ## validation.
+    for (t in seq_along(head(times_x, -1))) {
+            t_idx_pop_t <-
+                pop_count_age_sex$time_start == times_x[t]
+            t_idx_pop_t_plus_1 <-
+                pop_count_age_sex$time_start == times_x[t + 1]
+            t_idx_mig_t <- mig_net_count_age_sex$time_start == times_x[t]
+            t_idx_mig_t_plus_1 <- mig_net_count_age_sex$time_start == times_x[t + 1]
+
+            pop_count_age_sex[t_idx_pop_t_plus_1, ] <-
+                project_ccmpp_z_by_z(z = 1,
+                             pop_count_age_m_start = subset_sex(pop_count_age_sex[t_idx_pop_t, ], "male"),
+                             pop_count_age_f_start = subset_sex(pop_count_age_sex[t_idx_pop_t, ], "female"),
+                             survival_ratio_age_m = subset_sex(subset_time(survival_ratio_age_sex(x),
+                                                                         times_x[t]), "male"),
+                             survival_ratio_age_f = subset_sex(subset_time(survival_ratio_age_sex(x),
+                                                                         times_x[t]), "female"),
+                             fert_rate_age_f = subset_time(fert_rate_age_f(x), times_x[t]),
+                             srb = subset_time(srb(x), times_x[t]),
+                             mig_net_count_age_m = mig_net_count_age_sex[t_idx_mig_t & mig_net_count_age_sex$sex == "male", ],
+                             mig_net_count_age_f = mig_net_count_age_sex[t_idx_mig_t & mig_net_count_age_sex$sex == "female", ],
+                             mig_assumption = subset_time(mig_assumption(x), times_x[t]))
+
+            mig_net_count_age_sex[t_idx_mig_t_plus_1, ] <-
+                make_value_product(x = value[t_idx_mig_t_plus_1, ],
+                                   y = pop_count_age_sex[t_idx_pop_t_plus_1, ])
+    }
+
+    ## Set the mig counts to those implied by the given proportions
+    ## and return the list.
+    mig_net_count_age_sex(x) <- mig_net_count_age_sex
+    return(x)
+}
 
 
 #' Coerce to a \code{mig_net_prop_age_sex}

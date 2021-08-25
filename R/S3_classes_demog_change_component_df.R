@@ -35,7 +35,6 @@
 
 #' Low-level constructor for class \code{demog_change_component_df}.
 #'
-#' @description
 #' Creates an object of class \code{demog_change_component_df}. Minimal
 #' checks are done; for interactive use see
 #' \code{\link{demog_change_component_df}}.

@@ -251,8 +251,30 @@ test_that("mig assumption can be changed", {
     expect_false(identical(z, mig_assumption(y)))
 
     x <- ccmpp_input_list_example
+    mig_a_x <- mig_assumption(x)
     mig_assumption(x) <-
         switch(mig_assumption(x), end = "even", even = "end")
+    expect_false(identical(mig_a_x, mig_assumption(x)))
+    })
+})
+
+
+test_that("mig type can be changed", {
+    suppressWarnings({
+    expect_error(mig_type(ccmpp_input_list_example) <- "test",
+                 "is not TRUE")
+
+    y <- mig_parameter(ccmpp_input_list_example)
+    z <- mig_type(y)
+    mig_type(y) <-
+        switch(z, counts = "rates", rates = "counts")
+    expect_false(identical(z, mig_type(y)))
+
+    x <- ccmpp_input_list_example
+    mig_a_x <- mig_type(x)
+    mig_type(x) <-
+        switch(mig_type(x), counts = "rates", rates = "counts")
+    expect_false(identical(mig_a_x, mig_type(x)))
     })
 })
 

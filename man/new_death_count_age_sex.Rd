@@ -30,10 +30,12 @@ counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
 An object of class \code{death_count_age_sex}.
 }
 \description{
+q@description
 Creates an object of class \code{death_count_age_sex}. Minimal
 checks are done; for interactive use see
 \code{\link{death_count_age_sex}}.
-
+}
+\details{
 This function is not exported. The user-level constructor is
 \code{\link{death_count_age_sex}}.
 }

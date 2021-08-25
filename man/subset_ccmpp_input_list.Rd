@@ -13,11 +13,12 @@
 \arguments{
 \item{x}{An object to subset.}
 
-\item{time, age}{Vectors indicating the levels of
+\item{times, ages}{Vectors indicating the levels of
 time, age, or sex to retain.}
 
-\item{drop}{Logical; should demographic change component dimensions
-with only one level be dropped?}
+\item{include}{Logical; should the rows corresponding to the values
+supplied in the previous argument be those that are kept or
+discarded?}
 }
 \value{
 The object after subsetting if a valid member of the class;

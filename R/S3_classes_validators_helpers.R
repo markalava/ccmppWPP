@@ -199,8 +199,8 @@ check_all_demog_dimension_combinations <- function(x) {
 #' \code{age_span[i]} must equal \code{age_start[i] - age_start[i-1]}
 #' for 1 < \code{i} <= \code{nrow(x)}). In this case, there
 #'
-#' @param x
-#' @return
+#' @param x A data frame.
+#' @return A table.
 #' @author Mark Wheldon
 tabulate_lexis_squares <- function(x) {
     colnames_x <- colnames(x)

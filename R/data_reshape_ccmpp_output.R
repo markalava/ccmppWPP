@@ -6,10 +6,12 @@ data_reshape_ccmpp_output <- function(ccmpp_output) {
 
   times <- sapply(ccmpp_output, "[[", "time_start")
   time_start             <- min(times)
-  time_span              <- diff(times)[1]
+    if (identical(length(times), 1L)) time_span <- 1
+    else time_span       <- diff(times)[1]
   time_end               <- max(times) + time_span
   age_start              <- ccmpp_output[[1]]$age_start
   oag                    <- max(age_start)
+
 
   # population by age and sex, including aggregation to both sexes combined
     pop_f   <- data_gather_ccmpp_output(ccmpp_output=ccmpp_output, object ="pop_count_age_f_end",

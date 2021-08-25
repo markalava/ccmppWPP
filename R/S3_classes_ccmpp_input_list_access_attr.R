@@ -573,3 +573,22 @@ mig_assumption.ccmpp_input_list <- function(x) {
     mig_assumption(mig_parameter_component(x)) <- value #runs 'as_ccmpp_input_list'
     return(x)
 }
+
+#' @rdname ccmpp_list_access_elements
+#' @export
+mig_type.list <- function(x) {
+    mig_type(as_ccmpp_input_list(x))
+}
+#' @rdname mig_assumption_extract_and_set
+#' @export
+mig_type.ccmpp_input_list <- function(x) {
+    mig_type(mig_parameter_component(x))
+}
+
+#' @rdname mig_assumption_extract_and_set
+#' @export
+`mig_type<-.ccmpp_input_list` <- function(x, value) {
+    stopifnot(value %in% get_allowed_mig_types_mig_parameter())
+    mig_type(mig_parameter_component(x)) <- value #runs 'as_ccmpp_input_list'
+    return(x)
+}

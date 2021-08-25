@@ -4,8 +4,8 @@
 \alias{pop_count_age_sex}
 \alias{pop_count_age_sex.data.frame}
 \alias{pop_count_age_sex.ccmpp_input_list}
-\alias{get_pop_count_projected}
-\alias{get_pop_count_projected.ccmpp_input_list}
+\alias{pop_count_age_sex_projected}
+\alias{pop_count_age_sex_projected.ccmpp_input_list}
 \title{Constructor for class \code{pop_count_age_sex}}
 \usage{
 pop_count_age_sex(x, ...)
@@ -14,9 +14,9 @@ pop_count_age_sex(x, ...)
 
 \method{pop_count_age_sex}{ccmpp_input_list}(x, keep_baseline = TRUE, ...)
 
-get_pop_count_projected(x, ...)
+pop_count_age_sex_projected(x, ...)
 
-\method{get_pop_count_projected}{ccmpp_input_list}(x)
+\method{pop_count_age_sex_projected}{ccmpp_input_list}(x)
 }
 \arguments{
 \item{x}{A \code{\link{base::data.frame}} or
@@ -50,7 +50,7 @@ Methods for the creator function exist for
 \code{\link{project_ccmpp_loop_over_time}}; it implements cohort
 component projection on the input list and returns the projected
 counts as a \code{pop_count_age_sex}
-object. \code{get_pop_count_projected} is a more descriptively
+object. \code{pop_count_age_sex_projected} is a more descriptively
 name wrapper for \code{pop_count_age_sex.ccmpp_input_list(x,
 keep_baseline = FALSE)}. \code{ccmpp_input_list}s determine
 completely the population counts in subsequent times. As such, the
@@ -58,7 +58,7 @@ completely the population counts in subsequent times. As such, the
 \dQuote{extracting} these counts from the input.
 
 \code{pop_count_age_sex.ccmpp_input_list} and
-\code{get_pop_count_projected} return projected
+\code{pop_count_age_sex_projected} return projected
 counts as an object of class \code{pop_count_age_sex}. For an
 alternative list output, see the underlying function
 \code{\link{project_ccmpp_loop_over_time}}.

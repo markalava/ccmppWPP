@@ -29,10 +29,11 @@
 #'     \code{demog_change_component_df}.
 #'
 #' @param x An object to subset.
-#' @param time,age Vectors indicating the levels of
+#' @param times,ages Vectors indicating the levels of
 #'     time, age, or sex to retain.
-#' @param drop Logical; should demographic change component dimensions
-#'     with only one level be dropped?
+#' @param include Logical; should the rows corresponding to the values
+#'     supplied in the previous argument be those that are kept or
+#'     discarded?
 #' @return The object after subsetting if a valid member of the class;
 #'     otherwise an error.
 #' @author Mark Wheldon

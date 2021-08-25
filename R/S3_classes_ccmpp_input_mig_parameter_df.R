@@ -187,17 +187,19 @@ subset_indicator.mig_parameter <- function(x, times, include = TRUE) {
 ###-----------------------------------------------------------------------------
 ### * Extraction
 
-#' Extract or set the migration assumption
+#' Extract or set the migration assumption or migration type
 #'
 #' Returns or sets the migration assumption for a
 #' \code{\link{mig_parameter}} object. Migration assumption is stored
 #' in the \value{column} in rows where \code{indicator} =
-#' \dQuote{mig_assumption}.
+#' \dQuote{mig_assumption}. Migration type is stored
+#' in the \value{column} in rows where \code{indicator} =
+#' \dQuote{mig_type}.
 #'
 #' @param x An object inheriting from \code{\link{mig_parameter}}.
-#' @return A character string with the assumption for the extraction
-#'     function, or \code{x} (invisibly) with the assumption set to
-#'     \code{value} for the replacement function.
+#' @return For the extraction function, a character string with the
+#'     assumption or type; for the replacement function, \code{x}
+#'     (invisibly) with the assumption or type to set to \code{value}.
 #' @author Mark Wheldon
 #' @name mig_assumption_extract_and_set
 #' @export
@@ -225,4 +227,28 @@ mig_assumption.mig_parameter <- function(x) {
     as_mig_parameter(x)
 }
 
+#' @rdname mig_assumption_extract_and_set
+#' @export
+mig_type <- function(x) {
+    UseMethod("mig_type")
+}
 
+#' @rdname mig_assumption_extract_and_set
+#' @export
+mig_type.mig_parameter <- function(x) {
+    unique(x[x$indicator == "mig_type", "value"])
+}
+
+#' @rdname mig_assumption_extract_and_set
+#' @export
+`mig_type<-` <- function(x, value) {
+    UseMethod("mig_type<-")
+}
+
+#' @rdname mig_assumption_extract_and_set
+#' @export
+`mig_type<-.mig_parameter` <- function(x, value) {
+    stopifnot(value %in% get_allowed_mig_types_mig_parameter())
+    x[x$indicator == "mig_type", "value"] <- value
+    as_mig_parameter(x)
+}

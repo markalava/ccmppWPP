@@ -8,7 +8,7 @@
 #' common span. To change the span, see \code{\link{span<-}}.
 #'
 #' @param x An object inheriting from \code{ccmpp_input_df}.
-#' @param ...
+#' @param ... Passed to other methods.
 #' @return The span of \code{x}.
 #' @author Mark Wheldon
 #' @seealso \code{\link{extract_demog_change_component_attributes}},

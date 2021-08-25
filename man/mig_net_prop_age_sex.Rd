@@ -5,6 +5,8 @@
 \alias{mig_net_prop_age_sex.data.frame}
 \alias{mig_net_prop_age_sex.ccmpp_input_list}
 \alias{mig_net_prop_age_sex.mig_net_count_age_sex}
+\alias{mig_net_prop_age_sex<-}
+\alias{mig_net_prop_age_sex<-.ccmpp_input_list}
 \title{Constructor for class \code{mig_net_prop_age_sex}}
 \usage{
 mig_net_prop_age_sex(x, ...)
@@ -14,6 +16,10 @@ mig_net_prop_age_sex(x, ...)
 \method{mig_net_prop_age_sex}{ccmpp_input_list}(x, ...)
 
 \method{mig_net_prop_age_sex}{mig_net_count_age_sex}(x, pop_count_age_sex, ...)
+
+mig_net_prop_age_sex(x) <- value
+
+\method{mig_net_prop_age_sex}{ccmpp_input_list}(x) <- value
 }
 \arguments{
 \item{x}{An object for which a method is defined (see \dQuote{Usage}).}
@@ -48,13 +54,26 @@ migration and a baseline population by simple division of migration
 counts by population counts, matched by age, sex, and
 time. Population counts are supplied as a data frame via argument
 \code{pop_count_age_sex}. The method for \code{ccmpp_input_list}s
-uses \code{\link{project_ccmpp_loop_over_time}} to generate the
+uses \code{\link{pop_count_age_sex}} to generate the
 population counts from the inputs supplied via argument \code{x}.
 }
+\section{Replacement in ccmpp_input_list s}{
+
+The replacement method for \code{ccmpp_input_list}s replaces the
+migration \emph{count} component of the list such that a subsequent
+application of \code{mig_net_prop_age_sex} on the result will
+return the proportions supplied as the replacement. Compare this
+with the \code{mig_net_prop_age_sex} method for function
+\code{\link{mig_net_count_age_sex}} which simply transforms the
+proportions into counts by multiplying them by the same-year
+population counts.
+}
+
 \seealso{
 \code{\link{validate_ccmppWPP_object}} for object validation,
     \code{\link{ccmpp_input_df}} for the class from which this one
-    inherits.
+    inherits. See \code{\link{mig_net_count_age_sex}}
+    for conversion between migration counts and proportions.
 
 Other ccmpp_input_objects: 
 \code{\link{ccmpp_input_df}()},

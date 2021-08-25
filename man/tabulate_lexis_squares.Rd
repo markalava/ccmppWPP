@@ -6,8 +6,11 @@
 \usage{
 tabulate_lexis_squares(x)
 }
+\arguments{
+\item{x}{A data frame.}
+}
 \value{
-
+A table.
 }
 \description{
 For each cell on the lexis plane (e.g., each age-time-sex 'year')

@@ -12,6 +12,8 @@ span(x, ...)
 }
 \arguments{
 \item{x}{An object inheriting from \code{ccmpp_input_df}.}
+
+\item{...}{Passed to other methods.}
 }
 \value{
 The span of \code{x}.

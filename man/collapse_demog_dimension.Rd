@@ -28,6 +28,12 @@ arguments named \code{X}, \code{by}, or \code{FUN}.}
 \item{by_dimensions}{A \emph{character vector} (not a list) of
 demographic \dQuote{dimensions} to aggregate over; see
 \dQuote{Details}).}
+
+\item{out_class}{The first element of the class of \code{x}
+\emph{after} aggregation. It will be expanded by adding
+elements 2, 3, ... of \code{class(x)} if \code{out_class} is
+an element of \class{x} and not the last element. Otherwise,
+\code{out_class} is left as-is.}
 }
 \value{
 A data frame.

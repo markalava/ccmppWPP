@@ -71,6 +71,7 @@
 \alias{mig_parameter_component<-}
 \alias{mig_parameter_component<-.ccmpp_input_list}
 \alias{mig_assumption.list}
+\alias{mig_type.list}
 \title{Access the \code{ccmpp_input_df} components of a list}
 \usage{
 pop_count_base_component(x)
@@ -210,6 +211,8 @@ mig_parameter_component(x) <- value
 \method{mig_parameter_component}{ccmpp_input_list}(x) <- value
 
 \method{mig_assumption}{list}(x)
+
+\method{mig_type}{list}(x)
 }
 \arguments{
 \item{x}{An object of class \code{ccmpp_input_list}}

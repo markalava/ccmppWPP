@@ -277,6 +277,15 @@ validate_ccmppWPP_object.mig_net_rate_age_sex <- function(x, ...) {
         stop(not_a_valid_object_msg("mig_net_rate_age_sex",
                                     "'x' must have data on both 'male' and 'female'."))
 
+    ## Sanity check magnitudes
+    large_vals <- abs(x$value) > get_mig_net_rate_value_warning_threshold()
+    if (sum(large_vals))
+        warning("'x' has unusually large values for a net migration rates; absolute values are larger than ",
+                get_mig_net_rate_value_warning_threshold(),
+                " in rows:\n\t",
+                toString(which(large_vals), width = 40)
+                )
+
     return(x)
 }
 
@@ -329,37 +338,6 @@ validate_ccmppWPP_object.mig_net_count_tot_b <- function(x, ...) {
                                         "'x' must have data only on 'both' sexes."))
     }
 
-    return(x)
-}
-
-
-#' @rdname validate_ccmppWPP_object
-#' @export
-validate_ccmppWPP_object.mig_net_prop_age_sex <- function(x, ...) {
-
-    ## Base checks
-    x <- NextMethod()
-
-    ## value_type
-    val_type <- get_value_types_for_subclass_classes("mig_net_prop_age_sex")
-    if (!identical(value_type(x), val_type))
-        stop(not_a_valid_object_msg("mig_net_prop_age_sex",
-                                    "'value_type' must be \"", val_type, "\"."))
-
-     ## Check dimensions
-    check_dimensions_for_subclass_df(x)
-
-    ## Must have 'male' and 'female'
-    if (!all(c("male", "female") %in% sexes(x)))
-        stop(not_a_valid_object_msg("mig_net_prop_age_sex",
-                                    "'x' must have data on both 'male' and 'female'."))
-
-    ## Sanity check magnitudes
-    large_vals <- abs(x$value) > get_mig_net_prop_value_warning_threshold()
-    if (sum(large_vals))
-        warning("'x' has unusually large values for a net migration proportions; absolute values are larger than 0.5 in rows:\n\t",
-                toString(which(large_vals), width = 40)
-                )
     return(x)
 }
 

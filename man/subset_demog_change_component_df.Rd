@@ -6,7 +6,6 @@
 %   R/S3_classes_ccmpp_input_life_table_df.R,
 %   R/S3_classes_ccmpp_input_mig_net_count_df.R,
 %   R/S3_classes_ccmpp_input_mig_net_count_tot_df.R,
-%   R/S3_classes_ccmpp_input_mig_net_prop_df.R,
 %   R/S3_classes_ccmpp_input_mig_net_rate_df.R,
 %   R/S3_classes_ccmpp_input_mig_parameter_df.R,
 %   R/S3_classes_ccmpp_input_mort_rate_df.R,
@@ -38,9 +37,6 @@
 \alias{subset_age.mig_net_count_age_sex}
 \alias{subset_sex.mig_net_count_age_sex}
 \alias{subset_time.mig_net_count_tot_b}
-\alias{subset_time.mig_net_prop_age_sex}
-\alias{subset_age.mig_net_prop_age_sex}
-\alias{subset_sex.mig_net_prop_age_sex}
 \alias{subset_time.mig_net_rate_age_sex}
 \alias{subset_age.mig_net_rate_age_sex}
 \alias{subset_sex.mig_net_rate_age_sex}
@@ -116,12 +112,6 @@
 \method{subset_sex}{mig_net_count_age_sex}(x, sexes, include = TRUE)
 
 \method{subset_time}{mig_net_count_tot_b}(x, times, include = TRUE)
-
-\method{subset_time}{mig_net_prop_age_sex}(x, times, include = TRUE)
-
-\method{subset_age}{mig_net_prop_age_sex}(x, ages, include = TRUE)
-
-\method{subset_sex}{mig_net_prop_age_sex}(x, sexes, include = TRUE)
 
 \method{subset_time}{mig_net_rate_age_sex}(x, times, include = TRUE)
 

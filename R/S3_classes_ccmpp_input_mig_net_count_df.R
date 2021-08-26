@@ -48,31 +48,12 @@ new_mig_net_count_age_sex <-
 #' an object from \code{x}. There is also a replacement function which
 #' complements the extraction methods.
 #'
-#' @section Transformation of migration proportions:
-#' The \code{mig_net_prop_age_sex} method has the mandatory argument
-#' \code{pop_count_age_sex}. It is assumed that these already include
-#' migration, and that this migration is that given by the proportions
-#' passed in as argument \code{x}. The function then simply multiplies
-#' the proportions (\code{x}) by the population counts
-#' (\code{pop_count_age_sex}). Contrast this with the
-#' \code{\link{mig_net_prop_age_sex}} replacement method for
-#' \code{ccmpp_input_list}s which replaces the migration \emph{counts}
-#' in the CCMPP input list such that they yield the specified
-#' proportions.
-#'
 #' @family ccmpp_input_objects
 #' @seealso \code{\link{validate_ccmppWPP_object}} for object
 #'     validation, \code{\link{ccmpp_input_df}} for the class from
-#'     which this one inherits. See \code{\link{mig_net_prop_age_sex}}
-#'     for conversion between migration counts and proportions.
+#'     which this one inherits.
 #'
 #' @param x An object for which a method is defined (see \dQuote{Details}).
-#' @param pop_count_age_sex For the \code{mig_net_prop_age_sex}
-#'     method, an object that can be coreced to a
-#'     \code{\link{ccmpp_input_df}} object (e.g., a
-#'     \code{data.frame}), holding population counts from which to
-#'     calculate the migration counts. The \code{value_type} must be
-#'     \dQuote{count} and the \code{value_scale}s must match.#'
 #' @param value_scale_pop_count The scale of the \code{value} column
 #'     in \code{pop_count_age_sex}. If unspecified, defaults to the
 #'     \dQuote{value_scale} attribute of \code{pop_count_age_sex} if
@@ -105,19 +86,6 @@ mig_net_count_age_sex.data.frame <-
                                time_span = li$time_span,
                                value_scale = li$value_scale)
         )
-    }
-
-#' @rdname mig_net_count_age_sex
-#' @export
-mig_net_count_age_sex.mig_net_prop_age_sex <-
-    function(x, pop_count_age_sex,
-             value_scale_pop_count = attr(pop_count_age_sex, "value_scale"),
-             ...) {
-        pop_count_age_sex <- as_pop_count_age_sex(pop_count_age_sex,
-                                            value_type = "count")
-        mig_net_count_age_sex(make_value_product(x = x,
-                                                 y = pop_count_age_sex),
-                              value_scale = value_scale_pop_count)
     }
 
 #' @rdname mig_net_count_age_sex

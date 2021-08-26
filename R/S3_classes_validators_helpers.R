@@ -4,7 +4,7 @@ not_a_valid_object_msg <- function(class, ...) {
 }
 
 ## Unusual values
-get_mig_net_prop_value_warning_threshold <- function() {
+get_mig_net_rate_value_warning_threshold <- function() {
     0.5
 }
 

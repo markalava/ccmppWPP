@@ -41,8 +41,6 @@ get_dimensions_info_for_subclass_classes <-
                        ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
                    mig_net_rate_age_sex =
                        ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
-                   mig_net_prop_age_sex =
-                       ensure_these_dimensions_correctly_ordered(c("time", "sex", "age")),
                    mig_net_count_tot_b =
                        ensure_these_dimensions_correctly_ordered(c("time")),
                    mig_parameter =
@@ -127,8 +125,6 @@ get_value_type_info_for_subclass_classes <- function(class = get_all_demog_chang
                        value_type = "count"),
                      c(class = "mig_net_count_tot_b",
                        value_type = "count"),
-                     c(class = "mig_net_prop_age_sex",
-                       value_type = "ratio"), #ratio! can be negative or > 1
                      c(class = "mig_parameter",
                        value_type = "categorical"),
                      c(class = "life_table_age_sex",

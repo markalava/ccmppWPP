@@ -490,14 +490,26 @@ mig_net_rate_component.ccmpp_input_list <- function(x) {
 }
 
 #' @rdname ccmpp_list_access_elements
-`mig_net_rate_component<-` <- function(x, value) {
+`mig_net_rate_component<-` <- function(x, value, ...) {
     UseMethod("mig_net_rate_component<-")
 }
 #' @rdname ccmpp_list_access_elements
-`mig_net_rate_component<-.ccmpp_input_list` <- function(x, value) {
-    x[["mig_net_rate_age_sex"]] <- value
-    as_ccmpp_input_list(x)
-}
+`mig_net_rate_component<-.ccmpp_input_list` <-
+    function(x, value, set_mig_type = TRUE, reset_mig_counts = FALSE) {
+        stopifnot(is.logical(set_mig_type) && is.logical(reset_mig_counts))
+        value <- as_mig_net_rate_age_sex(value)
+        x[["mig_net_rate_age_sex"]] <- value
+        if (reset_mig_counts) {
+            tmp <- as_ccmpp_input_list(x)
+            mig_type(tmp) <- "rates"
+            tmp <- data_reshape_ccmpp_output(
+                project_ccmpp_loop_over_time(indata = tmp))$mig_net_count_age_sex
+            x[["mig_net_count_age_sex"]] <- tmp
+        }
+        x <- as_ccmpp_input_list(x)
+        if (set_mig_type) mig_type(x) <- "rates"
+        return(x)
+    }
 
 ###-----------------------------------------------------------------------------
 ### ** mig net count total

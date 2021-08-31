@@ -100,7 +100,6 @@ ccmpp_input_df <-
 #' \code{ccmpp_input_df} if possible, or check if it is
 #' one.
 #'
-#' @family ccmpp_input_objects
 #' @seealso \code{\link{coerce_demog_change_component_df}}
 #'
 #' @inheritParams coerce_demog_change_component_df

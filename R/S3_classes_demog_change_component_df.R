@@ -365,7 +365,6 @@ demog_change_component_df <-
 #'     functions; a logical for the \code{is_...} functions.
 #' @author Mark Wheldon
 #'
-#' @family ccmpp_input_objects
 #' @name coerce_demog_change_component_df
 #' @export
 as_demog_change_component_df <- function(x, ...) {

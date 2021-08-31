@@ -144,7 +144,6 @@ ccmpp_input_list <-
 #' \code{names} of the single argument match the arguments to
 #' \code{link{ccmpp_input_list}}.
 #'
-#' @family ccmpp_input_objects
 #' @seealso \code{\link{coerce_demog_change_component_df}} for an important note on validation.
 #'
 #' @inheritParams coerce_demog_change_component_df

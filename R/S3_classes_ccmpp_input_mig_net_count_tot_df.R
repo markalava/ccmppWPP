@@ -99,7 +99,6 @@ mig_net_count_tot_b.ccmpp_input_list <- function(x) {
 #' \code{mig_net_count_tot_b} if possible, or check if it is
 #' one.
 #'
-#' @family ccmpp_input_objects
 #' @seealso \code{\link{coerce_demog_change_component_df}}
 #'
 #' @inheritParams coerce_demog_change_component_df

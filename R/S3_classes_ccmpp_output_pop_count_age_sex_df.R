@@ -152,7 +152,6 @@ pop_count_age_sex_projected.ccmpp_input_list <- function(x) {
 #' \code{pop_count_age_sex} if possible, or check if it is
 #' one.
 #'
-#' @family ccmpp_output_objects
 #' @seealso \code{\link{coerce_demog_change_component_df}}
 #'
 #' @inheritParams coerce_demog_change_component_df

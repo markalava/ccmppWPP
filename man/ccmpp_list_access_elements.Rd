@@ -186,9 +186,9 @@ mig_net_rate_component(x)
 
 \method{mig_net_rate_component}{ccmpp_input_list}(x)
 
-mig_net_rate_component(x) <- value
+mig_net_rate_component(x, ...) <- value
 
-\method{mig_net_rate_component}{ccmpp_input_list}(x) <- value
+\method{mig_net_rate_component}{ccmpp_input_list}(x, set_mig_type = TRUE, reset_mig_counts = FALSE) <- value
 
 mig_net_count_tot_component(x)
 

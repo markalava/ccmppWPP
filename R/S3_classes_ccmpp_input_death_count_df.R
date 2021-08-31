@@ -107,7 +107,6 @@ death_count_age_sex.ccmpp_input_list <- function(x) {
 #' \code{death_count_age_sex} if possible, or check if it is
 #' one.
 #'
-#' @family ccmpp_input_objects
 #' @seealso \code{\link{coerce_demog_change_component_df}} for an important note on validation.
 #'
 #' @inheritParams coerce_demog_change_component_df

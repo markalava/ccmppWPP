@@ -193,7 +193,6 @@ fert_rate_age_f.ccmpp_input_list <- function(x) {
 #' \code{fert_rate_age_f} if possible, or check if it is
 #' one.
 #'
-#' @family ccmpp_input_objects
 #' @seealso \code{\link{coerce_demog_change_component_df}}
 #'
 #' @inheritParams coerce_demog_change_component_df

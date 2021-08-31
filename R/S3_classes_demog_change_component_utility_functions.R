@@ -389,22 +389,21 @@ make_value_product <- function(x, y,
 #' aggregated over all remaining dimensions, where aggregation is done
 #' by function \code{FUN}.
 #'
-#' The function will try to return an object of the class given in
-#' \code{out_class}, which is just \code{\class{x}} by default (see
-#' the argument description for how to specify it). If a valid object
-#' of this class cannot be created from the result an error is
-#' signalled.
+#' @section Setting the class of the output:
+#' Collapsing a \code{demog_change_component_df} object will likely
+#' make it an invalid member of its class. By default, the function
+#' will attempt to return a
+#' \code{\link{demog_change_component_df}}. If this fails a
+#' \code{\link{data.frame}} will be returned with a warning.
 #'
 #' @param x An object inheriting from
 #'     \code{demog_change_component_df}.
 #' @param by_dimensions A \emph{character vector} (not a list) of
 #'     demographic \dQuote{dimensions} to aggregate over; see
 #'     \dQuote{Details}).
-#' @param out_class The first element of the class of \code{x}
-#'     \emph{after} aggregation. It will be expanded by adding
-#'     elements 2, 3, ... of \code{class(x)} if \code{out_class} is
-#'     an element of \class{x} and not the last element. Otherwise,
-#'     \code{out_class} is left as-is.
+#' @param out_class The class of the object to be returned
+#'     (specifically the first element of the vector returned by
+#'     \code{\link{class}}). See \dQuote{Setting the class of the output}.
 #' @param FUN A function to use to aggregate the \dQuote{value} column
 #'     of \code{x}; found by \code{\link{match.fun}}.
 #' @param ... Passed to
@@ -414,52 +413,15 @@ make_value_product <- function(x, y,
 #' @author Mark Wheldon
 #' @seealso \code{\link[stats]{aggregate}}, \code{link{abridge}}
 #'     \code{\link{demog_change_component_df}}
-#' @examples
-#' x1 <- ccmpp_input_df(expand.grid(age_start = 0:5, time_start = 1950:1954, value = 1),
-#'                    value_type = "count")
-#' x1_agg <- collapse_demog_dimension(x1, by_dimensions = "time")
-#' stopifnot("ccmpp_input_df" %in% class(x1_agg))
-#'
-#'
-#' ## When the result is not a valid member of the class:
-#'
-#' x2 <- subset(x1, age_start != 0)
-#' stopifnot(identical(class(x2), "data.frame"))
-#'
-#' x2 <- demog_change_component_df(x2, value_type = "count", value_scale = 1)
-#' # Force an invalid object (do not try this at home!):
-#' class(x2) <- c("ccmpp_input_df", "demog_change_component_df", "data.frame")
-#' \dontrun{
-#' x2_agg <- collapse_demog_dimension(x2, by_dimensions = "age") # exits with an error message
-#' }
-#'
-#' # Coerce object
-#' x2_dcc <- demog_change_component_df(x2, value_type = "count", value_scale = 1)
-#' x2_dcc_agg <- collapse_demog_dimension(x2_dcc, by_dimensions = "age") # OK
-#' stopifnot(identical(class(x2_dcc_agg), c("demog_change_component_df", "data.frame")))
-#'
-#' # Specify 'out_class'
-#' x2_dcc_agg <- collapse_demog_dimension(x2, by_dimensions = "age", out_class = "demog_change_component_df") # OK
-#' stopifnot(identical(class(x2_dcc_agg), c("demog_change_component_df", "data.frame")))
-#'
-#'
-#' ## Coercing 'x' to a data.frame.
-#'
-#' x3 <- as.data.frame(x1) # will issue a warning that class is dropped
-#' x3_agg <- collapse_demog_dimension(x3, by_dimensions = "time")
-#' stopifnot(identical(class(x3_agg, "data.frame"))
-#'
-#' # Can re-cast as a 'demog_change_component_df'
-#' x_agg_dcc <- as_demog_change_component_df(x3_agg)
 #'
 #' @export
 collapse_demog_dimension <- function(x, FUN = "sum", ...,
                                      by_dimensions = demog_change_component_dims(x),
                                      collapse_dimensions = NULL,
-                                     out_class = class(x)[1]) {
+                                     out_class = c("demog_change_component_df", "data.frame")) {
     ## Check arguments
     FUN <- match.fun(FUN)
-    stopifnot(identical(length(out_class), 1L))
+    out_class <- match.arg(out_class)
     if (!is.null(collapse_dimensions)) {
         if (!is.character(collapse_dimensions))
             stop("'collapse_dimensions' must be a 'character' vector.")
@@ -471,15 +433,6 @@ collapse_demog_dimension <- function(x, FUN = "sum", ...,
     }
     by_dimensions <- get_all_req_col_names_excl_spans_for_dimensions(by_dimensions)
     by_dimensions <- by_dimensions[by_dimensions != "value"]
-    class_x <- class(x)
-    if (length(class_x) > 1) {
-        i <- match(out_class, class_x)
-        if (!is.na(i) && i < length(class_x)) out_class <- c(out_class, tail(class_x, -i))
-    }
-    if (!all(out_class %in% c(get_all_demog_change_component_df_class_names(), "data.frame")))
-        stop("'out_class' must only use classes in this list '",
-             toString(c(get_all_demog_change_component_df_class_names(), "data.frame")),
-             "'.")
 
     ## Make sure 'x' can be collapsed: only certain 'value_type's can be collapsed:
     value_type_x <- value_type(x)
@@ -493,24 +446,12 @@ collapse_demog_dimension <- function(x, FUN = "sum", ...,
     out <- stats::aggregate.data.frame(x = x[, "value", drop = FALSE],
                                        by = x[, by_dimensions, drop = FALSE],
                                        FUN = FUN, ...)
-    tryout <- try(do.call(get_as_function_for_class(out_class[1]),
-                          list(x = out, value_type = value_type_x, value_scale = value_scale_x)),
-                  silent = TRUE)
-    if (!identical(class(tryout), "try-error") && identical(class(tryout), out_class)) return(tryout)
-    else {
-        class_orig <- class_x
-        while(identical(class(tryout), "try-error") && length(class_x[-1])) {
-            class_x <- class_x[-1]
-            tryout <- try(do.call(get_as_function_for_class(class_x[1]),
-                                  list(x = out, value_type = value_type_x, value_scale = value_scale_x)),
-                          silent = TRUE)
-            if (!identical(class(tryout), "try-error")) {
-                msg <- paste0("The result of collapsing 'x' cannot be coerced to the class in argument 'out_class' (i.e., '", toString(out_class), "').\n\tIf you want to collapse 'x', set 'out_class' to '", class_x[1], "' or coerce it to a '", class_x[1], "' object and use 'collapse_demog_dimension' again (see examples in '?collapse_demog_dimension').")
-                stop(msg)
-            }
-        }
-        stop("Could not collapse 'x'. Try coercing it to a 'data.frame' via 'as.data.frame(x)' and re-applying the function on that, or use 'stats::aggregate'. Note that the result will not have the same class as 'x' until you re-cast it.")
-    }
+    if (identical(out_class, "demog_change_component_df")) {
+        tryout <- try(demog_change_component_df(out, value_type = value_type_x, value_scale = value_scale_x),
+                      silent = TRUE)
+        if (!identical(class(tryout), "try-error")) return(tryout)
+        else warning("Returning a 'data.frame'.")
+    } else return(out)
 }
 
 

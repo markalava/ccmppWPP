@@ -11,7 +11,7 @@ collapse_demog_dimension(
   ...,
   by_dimensions = demog_change_component_dims(x),
   collapse_dimensions = NULL,
-  out_class = class(x)[1]
+  out_class = c("demog_change_component_df", "data.frame")
 )
 }
 \arguments{
@@ -29,11 +29,9 @@ arguments named \code{X}, \code{by}, or \code{FUN}.}
 demographic \dQuote{dimensions} to aggregate over; see
 \dQuote{Details}).}
 
-\item{out_class}{The first element of the class of \code{x}
-\emph{after} aggregation. It will be expanded by adding
-elements 2, 3, ... of \code{class(x)} if \code{out_class} is
-an element of \class{x} and not the last element. Otherwise,
-\code{out_class} is left as-is.}
+\item{out_class}{The class of the object to be returned
+(specifically the first element of the vector returned by
+\code{\link{class}}). See \dQuote{Setting the class of the output}.}
 }
 \value{
 A data frame.
@@ -56,52 +54,16 @@ dimension. E.g., if \code{by_dimensions = "age"} then column
 \code{value} in the result will contain the original \code{value}s
 aggregated over all remaining dimensions, where aggregation is done
 by function \code{FUN}.
-
-The function will try to return an object of the class given in
-\code{out_class}, which is just \code{\class{x}} by default (see
-the argument description for how to specify it). If a valid object
-of this class cannot be created from the result an error is
-signalled.
 }
-\examples{
-x1 <- ccmpp_input_df(expand.grid(age_start = 0:5, time_start = 1950:1954, value = 1),
-                   value_type = "count")
-x1_agg <- collapse_demog_dimension(x1, by_dimensions = "time")
-stopifnot("ccmpp_input_df" \%in\% class(x1_agg))
+\section{Setting the class of the output}{
 
-
-## When the result is not a valid member of the class:
-
-x2 <- subset(x1, age_start != 0)
-stopifnot(identical(class(x2), "data.frame"))
-
-x2 <- demog_change_component_df(x2, value_type = "count", value_scale = 1)
-# Force an invalid object (do not try this at home!):
-class(x2) <- c("ccmpp_input_df", "demog_change_component_df", "data.frame")
-\dontrun{
-x2_agg <- collapse_demog_dimension(x2, by_dimensions = "age") # exits with an error message
+Collapsing a \code{demog_change_component_df} object will likely
+make it an invalid member of its class. By default, the function
+will attempt to return a
+\code{\link{demog_change_component_df}}. If this fails a
+\code{\link{data.frame}} will be returned with a warning.
 }
 
-# Coerce object
-x2_dcc <- demog_change_component_df(x2, value_type = "count", value_scale = 1)
-x2_dcc_agg <- collapse_demog_dimension(x2_dcc, by_dimensions = "age") # OK
-stopifnot(identical(class(x2_dcc_agg), c("demog_change_component_df", "data.frame")))
-
-# Specify 'out_class'
-x2_dcc_agg <- collapse_demog_dimension(x2, by_dimensions = "age", out_class = "demog_change_component_df") # OK
-stopifnot(identical(class(x2_dcc_agg), c("demog_change_component_df", "data.frame")))
-
-
-## Coercing 'x' to a data.frame.
-
-x3 <- as.data.frame(x1) # will issue a warning that class is dropped
-x3_agg <- collapse_demog_dimension(x3, by_dimensions = "time")
-stopifnot(identical(class(x3_agg, "data.frame"))
-
-# Can re-cast as a 'demog_change_component_df'
-x_agg_dcc <- as_demog_change_component_df(x3_agg)
-
-}
 \seealso{
 \code{\link[stats]{aggregate}}, \code{link{abridge}}
     \code{\link{demog_change_component_df}}

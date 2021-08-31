@@ -31,3 +31,10 @@ test_that("indicator column removed", {
     z <- mig_net_count_tot_b(z)
     expect_false("indicator" %in% colnames(z))
 })
+
+
+test_that("total migration counts can be calculated from age- sex-specific counts", {
+    x <- mig_net_count_tot_b(
+        mig_net_count_age_sex(wpp_input_example$mig_net_count_age_sex))
+    expect_s3_class(x, "mig_net_count_tot_b")
+    })

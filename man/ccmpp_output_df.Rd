@@ -34,7 +34,6 @@ An object of class \code{ccmpp_output_df}.
 \seealso{
 Other ccmpp_output_objects: 
 \code{\link{coerce_ccmpp_output_df}},
-\code{\link{coerce_pop_count_age_sex}},
 \code{\link{pop_count_age_sex}()}
 }
 \author{

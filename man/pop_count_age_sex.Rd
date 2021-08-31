@@ -70,8 +70,7 @@ alternative list output, see the underlying function
 
 Other ccmpp_output_objects: 
 \code{\link{ccmpp_output_df}()},
-\code{\link{coerce_ccmpp_output_df}},
-\code{\link{coerce_pop_count_age_sex}}
+\code{\link{coerce_ccmpp_output_df}}
 }
 \author{
 Mark Wheldon

@@ -504,7 +504,10 @@ mig_net_rate_component.ccmpp_input_list <- function(x) {
             mig_type(tmp) <- "rates"
             tmp <- data_reshape_ccmpp_output(
                 project_ccmpp_loop_over_time(indata = tmp))$mig_net_count_age_sex
-            x[["mig_net_count_age_sex"]] <- tmp
+            x[["mig_net_count_age_sex"]] <- mig_net_count_age_sex(tmp)
+            x[["mig_net_count_tot_b"]] <-
+                collapse_demog_dimension(x[["mig_net_count_age_sex"]],
+                                         by_dimensions = "time", out_class = "data.frame")
         }
         x <- as_ccmpp_input_list(x)
         if (set_mig_type) mig_type(x) <- "rates"

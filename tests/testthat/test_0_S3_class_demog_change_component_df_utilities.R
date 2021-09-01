@@ -136,14 +136,14 @@ test_that("collapse_demog_dimension  works", {
     expect_identical(sort(colnames(x)), sort(c("age_start", "age_span", "value")))
 
     x <- collapse_demog_dimension(as_ccmpp_input_df(dcc_df_time_age_sex), by_dimensions = "time")
-    expect_s3_class(x, "ccmpp_input_df")
+    expect_s3_class(x, "demog_change_component_df")
     x <- collapse_demog_dimension(as_ccmpp_input_df(dcc_df_time_age_sex), by_dimensions = "age")
-    expect_s3_class(x, "ccmpp_input_df")
+    expect_s3_class(x, "demog_change_component_df")
 
     x <- subset_age(dcc_df_time_age_sex, ages = 2:10)
     class(x) <- c("ccmpp_input_df", class(x))
-    expect_error(collapse_demog_dimension(x, by_dimensions = "age"),
-                 "The result of collapsing 'x' cannot be coerced to the class in argument 'out_class'")
+    expect_s3_class(collapse_demog_dimension(x, by_dimensions = "age"),
+                    "demog_change_component_df")
     expect_s3_class(collapse_demog_dimension(as_demog_change_component_df(x),
                                              by_dimensions = "time"),
                     "demog_change_component_df")
@@ -161,7 +161,7 @@ test_that("collapse_demog_dimension  works", {
 
     expect_error(collapse_demog_dimension(dcc_df_time_age_sex,
                                           by_dimensions = "age", out_class = "matrix"),
-                 "'out_class' must only use classes in this list")
+                 "'arg' should be one of")
 
 
     ## SPECIFY 'collapse_dimensions'

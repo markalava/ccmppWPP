@@ -1,17 +1,16 @@
 
 # read ccmppWPP inputs from country-specific excel input files
-# root_dir <- "C:/Users/SARAH/OneDrive - United Nations/WPP2021/MLT/test input excel files/"
-# input_file_path = paste0(root_dir,"JAM_R21.xlsx")
-# inputs_test <- ccmppWPP_input_file_estimates(input_file_path = input_file_path)
-# inputs_test_ext <- ccmppWPP_input_file_extend(inputs_test, OAnew = 130, a0rule = attributes(inputs_test)$a0rule)
 
-
-
-ccmppWPP_input_file_estimates <- function(input_file_path, base_year = 1950, begin_proj_year = 2021) {
+ccmppWPP_input_file_estimates <- function(input_file_path) {
   
+  
+  # read metadata from parameters sheet of excel input file
   meta <-   readxl::read_xlsx(path = input_file_path,
-                              sheet = "parameters",
-                              range = "A1:B10")
+                              sheet = "parameters")
+  
+  meta <- meta %>% 
+    dplyr::select(parameter, value) %>% 
+    dplyr::filter(!is.na(parameter))
   
   meta.list <- list()
   for (i in 1:nrow(meta)) {
@@ -19,6 +18,9 @@ ccmppWPP_input_file_estimates <- function(input_file_path, base_year = 1950, beg
     names(meta.list)[i] <- gsub(" ", "_", meta$parameter[i])
   }
   rm(meta)
+  
+  base_year <- as.numeric(meta.list$Base_Year)
+  begin_proj_year <- as.numeric(meta.list$Projection_First_Year)
 
   # base year population by sex and single year of age from 0:100
   pop_count_age_sex_base <- readxl::read_xlsx(path = input_file_path,
@@ -334,9 +336,9 @@ ccmppWPP_input_file_extend <- function(ccmppWPP_inputs, OAnew = 130, a0rule = "a
 
 # THIS FUNCTION COMPILES THE INPUT FILE NEEDED FOR MEDIUM VARIANT PROJECTIONS
 
-ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from bayesian model - numeric vector named with years
+ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from bayesian model 
                                        srb_median_all_locs, # projected srb
-                                       e0_median_all_locs, # medium male e0 from bayesian model - numeric vector named with years
+                                       e0_median_all_locs, # medium e0 from bayesian model 
                                        mig_net_count_proj_all_locs, # projected net migration by age and sex
   
                                        PasfrGlobalNorm, # pasfr global norm from pasfr_global_model() function
@@ -344,10 +346,13 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
                                        input_file_path, # file path name for Excel input file
                                        ccmpp_estimates_130_folder) { # file path to folder where ccmpp intermediate outputs for ages 0 to 130 are stored
   
-  # location-specific metadata                                  
+  # read metadata from parameters sheet of excel input file
   meta <-   readxl::read_xlsx(path = input_file_path,
-                              sheet = "parameters",
-                              range = "A1:B10")
+                              sheet = "parameters")
+  
+  meta <- meta %>% 
+    dplyr::select(parameter, value) %>% 
+    dplyr::filter(!is.na(parameter))
   
   meta.list <- list()
   for (i in 1:nrow(meta)) {

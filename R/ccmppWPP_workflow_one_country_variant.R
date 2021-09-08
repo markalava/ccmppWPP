@@ -34,6 +34,8 @@ ccmppWPP_workflow_one_country_variant <- function(wpp_input,
   ccmpp_output <- ccmppWPP_project_one_country_variant(ccmpp_input = ccmpp_input, atr = atr)
   
   # store projection outputs for all ages 0 to 130
+  # we only publish 0 to 100+, but we need to store the original results to 130+ to use for deterministic projection variants
+  # and also aggregates?
   save(ccmpp_output, file = paste0(intermediate_output_folder,atr$locid,"_ccmpp_output.RData"))
 
   # truncate back to open age group 100+
@@ -46,8 +48,9 @@ ccmppWPP_workflow_one_country_variant <- function(wpp_input,
   wpp_output$mig_parameter <- ccmpp_input$mig_parameter
   
   # generate warning messages to alert analysts to when migration counts have been modified from inputs to avoid non-negative population
-  wpp_output$mig_net_count_age_sex_override <- ccmppWPP_migration_override(ccmpp_input = ccmpp_input, 
-                                                                           ccmpp_output = ccmpp_output_100)
+  override <- ccmppWPP_migration_override(ccmpp_input = ccmpp_input, ccmpp_output = ccmpp_output_100)
+  wpp_output$mig_net_count_age_sex_override <- ifelse(!is.null(override), override, NA)
+  rm(override)
 
 
   return(wpp_output)
@@ -267,9 +270,13 @@ ccmppWPP_compute_WPP_outputs <- function(ccmpp_output, atr) {
   birth_count_age_1x1        <- ccmpp_output$birth_count_age_b
   birth_count_age_1x1$sex    <- "both"
   
+  # ensure population counts as integer
+  pop_count_age_sex_1x1 <- ccmpp_output$pop_count_age_sex
+  pop_count_age_sex_1x1$value <- round(pop_count_age_sex_1x1$value, 0)
+  
   # sum to five-year age groups
   # population
-  pop_count_age_sex_5x1      <- sum_five_year_age_groups(indata = ccmpp_output$pop_count_age_sex,
+  pop_count_age_sex_5x1      <- sum_five_year_age_groups(indata = pop_count_age_sex_1x1,
                                                          byvar = c("time_start","time_span","sex"))
   
   # births
@@ -297,7 +304,7 @@ ccmppWPP_compute_WPP_outputs <- function(ccmpp_output, atr) {
   
   # sum to totals
   # population
-  pop_count_tot_sex        <- sum_last_column(ccmpp_output$pop_count_age_sex[, c("time_start", "time_span", "sex", "value")])
+  pop_count_tot_sex        <- sum_last_column(pop_count_age_sex_1x1[, c("time_start", "time_span", "sex", "value")])
   # exposures
   exposure_count_tot_sex   <- sum_last_column(ccmpp_output$exposure_count_age_sex[, c("time_start", "time_span", "sex", "value")])
   # births
@@ -310,7 +317,7 @@ ccmppWPP_compute_WPP_outputs <- function(ccmpp_output, atr) {
   # compute population percentage distributions by age
   
   # single year of age
-  pop_pct_age_sex <- merge(ccmpp_output$pop_count_age_sex, pop_count_tot_sex, by=c("time_start", "time_span", "sex"))
+  pop_pct_age_sex <- merge(pop_count_age_sex_1x1, pop_count_tot_sex, by=c("time_start", "time_span", "sex"))
   pop_pct_age_sex$value <- pop_pct_age_sex$value.x/pop_pct_age_sex$value.y * 100
   pop_pct_age_sex       <- pop_pct_age_sex[, !(names(pop_pct_age_sex) %in% c("value.x", "value.y"))]
   
@@ -354,12 +361,12 @@ ccmppWPP_compute_WPP_outputs <- function(ccmpp_output, atr) {
                                         time_span  = pop_count_tot_b$time_span,
                                         value      = pop_count_tot_sex$value[pop_count_tot_sex$sex == "male"] / 
                                           pop_count_tot_sex$value[pop_count_tot_sex$sex == "female"] * 100)
-  pop_sex_ratio_age_1x1   <- data.frame(time_start = ccmpp_output$pop_count_age_sex$time_start[ccmpp_output$pop_count_age_sex$sex=="male"],
-                                        time_span  = ccmpp_output$pop_count_age_sex$time_span[ccmpp_output$pop_count_age_sex$sex=="male"],
-                                        age_start  = ccmpp_output$pop_count_age_sex$age_start[ccmpp_output$pop_count_age_sex$sex=="male"],
-                                        age_span   = ccmpp_output$pop_count_age_sex$age_span[ccmpp_output$pop_count_age_sex$sex=="male"],
-                                        value      = ccmpp_output$pop_count_age_sex$value[ccmpp_output$pop_count_age_sex$sex == "male"] / 
-                                          ccmpp_output$pop_count_age_sex$value[ccmpp_output$pop_count_age_sex$sex == "female"] * 100)
+  pop_sex_ratio_age_1x1   <- data.frame(time_start = pop_count_age_sex_1x1$time_start[pop_count_age_sex_1x1$sex=="male"],
+                                        time_span  = pop_count_age_sex_1x1$time_span[pop_count_age_sex_1x1$sex=="male"],
+                                        age_start  = pop_count_age_sex_1x1$age_start[pop_count_age_sex_1x1=="male"],
+                                        age_span   = pop_count_age_sex_1x1$age_span[pop_count_age_sex_1x1$sex=="male"],
+                                        value      = pop_count_age_sex_1x1$value[pop_count_age_sex_1x1$sex == "male"] / 
+                                          pop_count_age_sex_1x1$value[pop_count_age_sex_1x1$sex == "female"] * 100)
   pop_sex_ratio_age_5x1   <- data.frame(time_start = pop_count_age_sex_5x1$time_start[pop_count_age_sex_5x1$sex=="male"],
                                         time_span  = pop_count_age_sex_5x1$time_span[pop_count_age_sex_5x1$sex=="male"],
                                         age_start  = pop_count_age_sex_5x1$age_start[pop_count_age_sex_5x1$sex=="male"],
@@ -405,7 +412,7 @@ ccmppWPP_compute_WPP_outputs <- function(ccmpp_output, atr) {
   
   # compile output list and return
   # assemble all estimates to send to Eagle
-  ccmppWPP_output <- list(pop_count_age_sex_1x1      = ccmpp_output$pop_count_age_sex,
+  ccmppWPP_output <- list(pop_count_age_sex_1x1      = pop_count_age_sex_1x1,
                           pop_count_age_sex_5x1      = pop_count_age_sex_5x1,
                           pop_count_tot_sex          = pop_count_tot_sex,
                           pop_pct_age_sex_1x1        = pop_pct_age_sex,
@@ -479,7 +486,8 @@ ccmppWPP_migration_override <- function(ccmpp_input, ccmpp_output) {
                                          by = c("time_start", "age_start",  "sex"),
                                          all.x = TRUE, all.y = FALSE)
   mig_net_count_age_sex_override <- mig_net_count_age_sex_compare[mig_net_count_age_sex_compare$value.x != 
-                                                                    mig_net_count_age_sex_compare$value.y,]
+                                                                    mig_net_count_age_sex_compare$value.y & 
+                                                                    mig_net_count_age_sex_compare$value >=1,]
   names(mig_net_count_age_sex_override)[c(6,7)] <- c("value.input", "value.output")
   
   if (nrow(mig_net_count_age_sex_override) > 0) {

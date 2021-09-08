@@ -108,6 +108,24 @@ times.ccmpp_input_list <- function(x) {
 
 #' @rdname extract_ccmpp_input_list_attributes
 #' @export
+proj_times <- function(x) {
+    UseMethod("proj_times")
+}
+
+#' @rdname extract_ccmpp_input_list_attributes
+#' @export
+proj_times.list <- function(x) {
+    proj_times(as_ccmpp_input_list(x))
+}
+
+#' @rdname extract_ccmpp_input_list_attributes
+#' @export
+proj_times.list <- function(x) {
+    times(x) + time_span(x)
+}
+
+#' @rdname extract_ccmpp_input_list_attributes
+#' @export
 sexes.list <- function(x) {
     sexes(as_ccmpp_input_list(x))
 }

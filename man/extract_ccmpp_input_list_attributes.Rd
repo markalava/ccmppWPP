@@ -13,6 +13,8 @@
 \alias{non_zero_fert_ages<-.ccmpp_input_list}
 \alias{times.list}
 \alias{times.ccmpp_input_list}
+\alias{proj_times}
+\alias{proj_times.list}
 \alias{sexes.list}
 \alias{sexes.ccmpp_input_list}
 \alias{indicators.list}
@@ -44,6 +46,12 @@
 \method{times}{list}(x)
 
 \method{times}{ccmpp_input_list}(x)
+
+proj_times(x)
+
+\method{proj_times}{list}(x)
+
+\method{proj_times}{list}(x)
 
 \method{sexes}{list}(x)
 

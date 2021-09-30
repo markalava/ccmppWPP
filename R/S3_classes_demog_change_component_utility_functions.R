@@ -473,7 +473,7 @@ collapse_demog_dimension <- function(x, FUN = "sum", ...,
 #' \dQuote{indicators} if \code{x} has those dimensions.
 #'
 #' This function calls
-#' \code{\link{aggregate.demog_change_component_df}} to do the actual
+#' \code{\link{aggregate.data.frame}} to do the actual
 #' abridging.
 #'
 #' If you get an error along the lines of \dQuote{result is invalid as
@@ -603,6 +603,11 @@ abridge.demog_change_component_df <- function(x,
     value_scale_x <- value_scale(x)
     out <- stats::aggregate(data.frame(value = x$value), by = by_list, FUN = "sum")
 
+    ## Deal with pop counts and zero time spans
+
+    if (is_by_time(x) && has_time_span_zero(x) && is.null(time_span_abridged) && is.null(time_start_abridged))
+        out$time_span <- 0
+
     ## Check the class
     tryout <- try(do.call(get_as_function_for_class(out_class[1]),
                           list(x = out, value_type = value_type_x, value_scale = value_scale_x)),
@@ -616,6 +621,9 @@ abridge.demog_change_component_df <- function(x,
                           silent = TRUE)
             if (!identical(class(tryout), "try-error")) {
                 msg <- paste0("The result of abridging 'x' cannot be coerced to the class in argument 'out_class' (i.e., '", toString(out_class), "').\n\tIf you want to abridge 'x', set 'out_class' to '", class_x[1], "' or coerce it to a '", class_x[1], "' object and use 'abridge' again (see examples in '?abridge').")
+                if (is_by_time(x) && has_time_span_zero(x) &&
+                    (!is.null(time_span_abridged) || is.null(time_start_abridged)))
+                    msg <- c(msg, "\nNote: 'x' inherits from a class with time_span == 0 but time has been abridged over.")
                 stop(msg)
             }
         }

@@ -311,7 +311,7 @@ ccmppWPP_input_file_extend <- function(ccmppWPP_inputs, OAnew = 130, a0rule = "a
 
   } else {
     mig_net_count_age_sex <- mig_in
-    mig_net_rate_age_sex <- ccmppWPP_inputs$mig_net_count_rate_sex
+    mig_net_rate_age_sex <- ccmppWPP_inputs$mig_net_rate_age_sex
   }
   rm(ages,maxage)
 

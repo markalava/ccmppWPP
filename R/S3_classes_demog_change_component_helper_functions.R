@@ -43,7 +43,7 @@ get_all_dimensions_w_spans <- function() {
 
 ## Classes with time_span == 0
 get_all_classes_time_span_zero <- function() {
-    classes <- c("pop_count_age_sex_base", "pop_count_age_sex")
+    classes <- c("pop_count_age_sex_base", "pop_count_age_sex_reference", "pop_count_age_sex")
     stopifnot(all(classes %in% get_all_demog_change_component_df_class_names()))
     return(classes)
 }

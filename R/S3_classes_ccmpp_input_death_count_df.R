@@ -1,7 +1,7 @@
 
 #' Low-level constructor for class \code{death_count_age_sex}.
 #'
-#' @description
+#' q@description
 #' Creates an object of class \code{death_count_age_sex}. Minimal
 #' checks are done; for interactive use see
 #' \code{\link{death_count_age_sex}}.
@@ -20,8 +20,8 @@ new_death_count_age_sex <-
              age_span = double(),
              time_span = double(),
              non_zero_fert_ages = double(),
-             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("death_count_age_sex"),
-             value_type = get_value_types_for_ccmpp_in_out_classes("death_count_age_sex"),
+             dimensions = get_req_dimensions_for_subclass_classes("death_count_age_sex"),
+             value_type = get_value_types_for_subclass_classes("death_count_age_sex"),
              value_scale = double(),
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
@@ -70,8 +70,8 @@ death_count_age_sex.data.frame <- function(x,
              value_scale = attr(x, "value_scale")) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
-                           dimensions = get_req_dimensions_for_ccmpp_in_out_classes("death_count_age_sex"),
-                           value_type = get_value_types_for_ccmpp_in_out_classes("death_count_age_sex"),
+                           dimensions = get_req_dimensions_for_subclass_classes("death_count_age_sex"),
+                           value_type = get_value_types_for_subclass_classes("death_count_age_sex"),
                            value_scale = value_scale)
 
         ## Create/Validate
@@ -107,7 +107,6 @@ death_count_age_sex.ccmpp_input_list <- function(x) {
 #' \code{death_count_age_sex} if possible, or check if it is
 #' one.
 #'
-#' @family ccmpp_input_objects
 #' @seealso \code{\link{coerce_demog_change_component_df}} for an important note on validation.
 #'
 #' @inheritParams coerce_demog_change_component_df

@@ -1,7 +1,6 @@
 
 #' Low-level constructor for class \code{pop_count_age_sex_base}.
 #'
-#' @description
 #' Creates an object of class \code{pop_count_age_sex_base}. Minimal
 #' checks are done; for interactive use see
 #' \code{\link{pop_count_age_sex_base}}.
@@ -29,13 +28,14 @@
 new_pop_count_age_sex_base <-
     function(x,
              age_span = double(),
-             dimensions =  get_req_dimensions_for_ccmpp_in_out_classes("pop_count_age_sex_base"),
-             value_type = get_value_types_for_ccmpp_in_out_classes("pop_count_age_sex_base"),
+             time_span = 0,
+             dimensions =  get_req_dimensions_for_subclass_classes("pop_count_age_sex_base"),
+             value_type = get_value_types_for_subclass_classes("pop_count_age_sex_base"),
              value_scale = double(),
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
                            age_span = age_span,
-                           time_span = 0,
+                           time_span = time_span,
                            dimensions = dimensions,
                            value_type = value_type,
                            value_scale = value_scale,
@@ -83,8 +83,8 @@ pop_count_age_sex_base.data.frame <- function(x,
         else if (!is.numeric(value_scale)) stop("'value_scale' must be numeric.")
 
         li <- prepare_df_for_ccmpp_input_df(x,
-                            dimensions =  get_req_dimensions_for_ccmpp_in_out_classes("pop_count_age_sex_base"),
-                            value_type = get_value_types_for_ccmpp_in_out_classes("pop_count_age_sex_base"),
+                            dimensions =  get_req_dimensions_for_subclass_classes("pop_count_age_sex_base"),
+                            value_type = get_value_types_for_subclass_classes("pop_count_age_sex_base"),
                             value_scale = value_scale)
 
         ## Create/Validate
@@ -114,7 +114,6 @@ pop_count_age_sex_base.ccmpp_input_list <- function(x) {
 #' \code{pop_count_age_sex_base} if possible, or check if it is
 #' one.
 #'
-#' @family ccmpp_input_objects
 #' @seealso \code{\link{coerce_demog_change_component_df}}
 #'
 #' @inheritParams coerce_demog_change_component_df

@@ -36,11 +36,12 @@ and \code{y} is calculated and returned. \code{x} and
 and these columns are in the output, which is also a data frame.
 }
 \details{
-When \code{by_vars_names} is \code{NULL}, if either \code{x} or
-\code{y} has column \code{time_span} and all entries are 0,
-\dQuote{time_span} will be omitted from
-\code{by_vars_names}. \emph{Note:} This only happens if
-\code{by_vars_names} is \code{NULL}.
+Special processing occurs when \code{by_vars_names} is \code{NULL}
+and either \code{x} or \code{y} has column \code{time_span} and all
+entries are 0. In this case, before merging, \dQuote{time_span} is
+omitted from \code{by_vars_names} and the \code{time_span} column
+is dropped from \code{y}. This ensures the result has only one
+\code{time_span} column, namely the one from \code{x}.
 }
 \author{
 Mark Wheldon

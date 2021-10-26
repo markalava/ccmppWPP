@@ -38,13 +38,7 @@ one.
 }
 \seealso{
 \code{\link{coerce_demog_change_component_df}}
-
-Other ccmpp_output_objects: 
-\code{\link{ccmpp_output_df}()},
-\code{\link{coerce_ccmpp_output_df}},
-\code{\link{pop_count_age_sex}()}
 }
 \author{
 Mark Wheldon
 }
-\concept{ccmpp_output_objects}

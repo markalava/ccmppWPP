@@ -19,7 +19,7 @@ validate_ccmppWPP_object.ccmpp_output_df <- function(x, ...) {
     ## ## 1. Extra attributes required
 
     ## req_attr <-
-    ##     get_req_attr_names_for_ccmpp_in_out_dfs_for_dimensions(demog_change_component_dims_x)
+    ##     get_req_attr_names_for_subclass_dfs_for_dimensions(demog_change_component_dims_x)
     ## if (!all(req_attr %in% names(attributes(x))))
     ##     stop(not_a_valid_object_msg("ccmpp_output_df",
     ##                                 "'x' must have attributes '",
@@ -113,13 +113,13 @@ validate_ccmppWPP_object.pop_count_age_sex <- function(x, ...) {
                                     "'value' column has negative elements."))
 
     ## value_type
-    val_type <- get_value_types_for_ccmpp_in_out_classes("pop_count_age_sex")
+    val_type <- get_value_types_for_subclass_classes("pop_count_age_sex")
     if (!identical(value_type(x), val_type))
         stop(not_a_valid_object_msg("pop_count_age_sex",
                                     "'value_type' must be \"", val_type, "\"."))
 
     ## Check dimensions
-    check_dimensions_for_ccmpp_in_out_df(x)
+    check_dimensions_for_subclass_df(x)
 
     return(x)
 

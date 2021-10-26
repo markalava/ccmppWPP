@@ -134,10 +134,12 @@ test_that("erroneous sex dimension detected", {
     z <- cbind(y, sex = "female")
     z <- ccmppWPP:::new_fert_rate_age_f(z, non_zero_fert_ages = non_zero_fert_ages(y),
                                 time_span = 1, age_span = 1, value_scale = 1)
-    expect_error(check_dimensions_for_ccmpp_in_out_df(z),
+    expect_error(check_dimensions_for_subclass_df(z),
                  "that correspond to dimensions")
 
-    attr(z, "dimensions") <- unique(c(attr(z, "dimensions"), "sex"))
+    attr(z, "dimensions") <-
+        ccmppWPP:::ensure_these_dimensions_correctly_ordered(
+                       unique(c(attr(z, "dimensions"), "sex")))
     expect_error(validate_ccmppWPP_object(z),
                  "must have dimensions")
 
@@ -158,7 +160,9 @@ test_that("indicator dimension detected", {
     z <- ccmppWPP:::new_fert_rate_age_f(z, time_span = time_span(y),
                                 age_span = age_span(y), value_scale = 1,
                                 non_zero_fert_ages = non_zero_fert_ages(y))
-    attr(z, "dimensions") <- unique(c(attr(z, "dimensions"), "indicator"))
+    attr(z, "dimensions") <-
+        ccmppWPP:::ensure_these_dimensions_correctly_ordered(
+    unique(c(attr(z, "dimensions"), "indicator")))
 
     expect_error(validate_ccmppWPP_object(z),
                  "must have dimensions")
@@ -195,16 +199,16 @@ test_that("zero fertility rate ages that are non-zero are caught", {
     y <- new_fert_rate_age_f(y,
              age_span = 1,
              time_span = 1,
-             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("fert_rate_age_f"),
-             value_type = get_value_types_for_ccmpp_in_out_classes("fert_rate_age_f"),
+             dimensions = get_req_dimensions_for_subclass_classes("fert_rate_age_f"),
+             value_type = get_value_types_for_subclass_classes("fert_rate_age_f"),
              value_scale = 1,
              non_zero_fert_ages = 0:5)
     expect_s3_class(validate_ccmppWPP_object(y), "fert_rate_age_f")
     y <- new_fert_rate_age_f(y,
              age_span = 1,
              time_span = 1,
-             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("fert_rate_age_f"),
-             value_type = get_value_types_for_ccmpp_in_out_classes("fert_rate_age_f"),
+             dimensions = get_req_dimensions_for_subclass_classes("fert_rate_age_f"),
+             value_type = get_value_types_for_subclass_classes("fert_rate_age_f"),
              value_scale = 1,
              non_zero_fert_ages = 2)
     expect_error(validate_ccmppWPP_object(y), "have non-zero 'value' for at least some 'time_start's")

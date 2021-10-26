@@ -8,7 +8,6 @@
 \usage{
 demog_change_component_df(
   x,
-  dimensions = attr(x, "dimensions"),
   value_type = attr(x, "value_type"),
   value_scale = attr(x, "value_scale"),
   ...
@@ -20,9 +19,6 @@ demog_change_component_df(
 \item{x}{For \code{demog_change_component_df}: A data frame with
 columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
 \dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.}
-
-\item{dimensions}{Character vector listing the dimensions such as
-\dQuote{time}, \dQuote{age}, \dQuote{sex}.}
 
 \item{value_type}{Scalar indicating the type of the \dQuote{value}
 column (e.g., \dQuote{count}, \dQuote{rate}, etc.).}
@@ -79,12 +75,13 @@ the ccmpp functions (right?) What about by 'sex'? The sample
 inputs are sorted by sex first (varying slowest) but with 'male'
 first, so in reverse alphabetical order.
 
-FACTORS vs CHARACHTERS:
+FACTORS vs CHARACTERS:
 -----------------------
 
 'sex' is a categorical variable and encoding it as a factor could
 be justified. However it may be easier to encode as character and
-have methods convert to factor when advantageous.
+have methods convert to factor when advantageous. NOTE that
+ordering is important; see 'sex_as_factor()' and friends.
 }
 
 \author{

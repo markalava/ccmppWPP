@@ -8,8 +8,8 @@ new_fert_rate_age_f(
   x,
   age_span = double(),
   time_span = double(),
-  dimensions = get_req_dimensions_for_ccmpp_in_out_classes("fert_rate_age_f"),
-  value_type = get_value_types_for_ccmpp_in_out_classes("fert_rate_age_f"),
+  dimensions = get_req_dimensions_for_subclass_classes("fert_rate_age_f"),
+  value_type = get_value_types_for_subclass_classes("fert_rate_age_f"),
   value_scale = double(),
   non_zero_fert_ages = double(),
   ...,
@@ -20,9 +20,6 @@ new_fert_rate_age_f(
 \item{x}{For \code{demog_change_component_df}: A data frame with
 columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
 \dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.}
-
-\item{dimensions}{Character vector listing the dimensions such as
-\dQuote{time}, \dQuote{age}, \dQuote{sex}.}
 
 \item{value_type}{Scalar indicating the type of the \dQuote{value}
 column (e.g., \dQuote{count}, \dQuote{rate}, etc.).}

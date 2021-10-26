@@ -8,7 +8,7 @@
 #' common span. To change the span, see \code{\link{span<-}}.
 #'
 #' @param x An object inheriting from \code{ccmpp_input_df}.
-#' @param ...
+#' @param ... Passed to other methods.
 #' @return The span of \code{x}.
 #' @author Mark Wheldon
 #' @seealso \code{\link{extract_demog_change_component_attributes}},
@@ -82,12 +82,20 @@ time_span.ccmpp_output_df <- function(x) {
     attr(x, "time_span")
 }
 
+#' @rdname extract_demog_change_component_attributes
+#' @export
+time_span.pop_count_age_sex_reference <- function(x) {
+    if (!is_by_time(x))
+        stop("'time' is not a dimension of 'x'.")
+    attr(x, "time_span")
+}
+
 
 
 #' @rdname extract_demog_change_component_attributes
 #' @export
 `value_type<-.ccmpp_input_df` <- function(x, value, ...) {
-    vtx <- get_value_types_for_ccmpp_in_out_classes(oldClass(x)[1])
+    vtx <- get_value_types_for_subclass_classes(oldClass(x)[1])
     if (!is.na(vtx))
         stop("'value_type' of 'x' cannot be changed; it must always be '",
              value_type(x),
@@ -100,7 +108,7 @@ time_span.ccmpp_output_df <- function(x) {
 #' @rdname extract_demog_change_component_attributes
 #' @export
 `value_type<-.ccmpp_output_df` <- function(x, value, ...) {
-    vtx <- get_value_types_for_ccmpp_in_out_classes(oldClass(x)[1])
+    vtx <- get_value_types_for_subclass_classes(oldClass(x)[1])
     if (!is.na(vtx))
         stop("'value_type' of 'x' cannot be changed; it must always be '",
              value_type(x),
@@ -117,7 +125,7 @@ print.ccmpp_input_df_value_scale <- function(x, ...) {
     msg <- c("value_scale: ")
     if (!is.na(x)) {
         pref <- get_value_scale_prefixes_for_value_types(attr(x, "value_type"))
-        ann <- get_value_scale_annotations_for_ccmpp_in_out_classes(attr(x, "class_of_df"))
+        ann <- get_value_scale_annotations_for_subclass_classes(attr(x, "class_of_df"))
         msg <- c("value_scale: ")
         if (!is.na(pref)) msg <- paste0(msg, pref, " ")
         msg <- paste0(msg, as.character(x))

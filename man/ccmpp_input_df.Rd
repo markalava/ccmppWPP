@@ -6,7 +6,6 @@
 \usage{
 ccmpp_input_df(
   x,
-  dimensions = attr(x, "dimensions"),
   value_type = attr(x, "value_type"),
   value_scale = attr(x, "value_scale"),
   ...
@@ -16,9 +15,6 @@ ccmpp_input_df(
 \item{x}{For \code{demog_change_component_df}: A data frame with
 columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
 \dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.}
-
-\item{dimensions}{Character vector listing the dimensions such as
-\dQuote{time}, \dQuote{age}, \dQuote{sex}.}
 
 \item{value_type}{Scalar indicating the type of the \dQuote{value}
 column (e.g., \dQuote{count}, \dQuote{rate}, etc.).}
@@ -37,29 +33,13 @@ An object of class \code{ccmpp_input_df}.
 \seealso{
 Other ccmpp_input_objects: 
 \code{\link{ccmpp_input_list}()},
-\code{\link{coerce_ccmpp_input_df}},
-\code{\link{coerce_ccmpp_input_list}},
-\code{\link{coerce_death_count_age_sex}},
-\code{\link{coerce_death_probability_age_sex}},
-\code{\link{coerce_demog_change_component_df}},
-\code{\link{coerce_fert_rate_age_f}},
-\code{\link{coerce_life_table_age_sex}},
-\code{\link{coerce_mig_net_count_age_sex}},
-\code{\link{coerce_mig_net_count_tot_b}},
-\code{\link{coerce_mig_net_prop_age_sex}},
-\code{\link{coerce_mig_net_rate_age_sex}},
-\code{\link{coerce_mig_parameter}},
-\code{\link{coerce_mort_rate_age_sex}},
-\code{\link{coerce_pop_count_age_sex_base}},
-\code{\link{coerce_srb}},
-\code{\link{coerce_survival_ratio_age_sex}},
+\code{\link{coerce_pop_count_age_sex_reference}},
 \code{\link{death_count_age_sex}()},
 \code{\link{death_probability_age_sex}()},
 \code{\link{fert_rate_age_f}()},
 \code{\link{life_table_age_sex}()},
 \code{\link{mig_net_count_age_sex}()},
 \code{\link{mig_net_count_tot_b}()},
-\code{\link{mig_net_prop_age_sex}()},
 \code{\link{mig_net_rate_age_sex}()},
 \code{\link{mig_parameter}()},
 \code{\link{mort_rate_age_sex}()},

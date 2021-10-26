@@ -3,13 +3,13 @@ validate_ccmpp_in_out <- function(x, obj_class, ...) {
 
     ## VALUES:
     ## Cannot be 'NA':
-    check_value_type_of_value_in_ccmpp_in_out_df(x$value)
+    check_value_type_of_value_in_subclass_df(x$value)
 
     ## ATTRIBUTES:
     ## Extra attributes required
 
     req_attr <-
-        get_req_attr_names_for_ccmpp_in_out_dfs_for_dimensions(demog_change_component_dims(x))
+        get_req_attr_names_for_subclass_dfs_for_dimensions(demog_change_component_dims(x))
     if (!all(req_attr %in% names(attributes(x))))
         stop(not_a_valid_object_msg(obj_class,
                                     "'x' must have attributes '",
@@ -18,7 +18,7 @@ validate_ccmpp_in_out <- function(x, obj_class, ...) {
 
     ## Check mode of attributes
     stopifnot(check_mode_of_attributes(x,
-        modes_df = get_master_df_of_attr_modes_for_ccmpp_in_out_dfs(special_subset = "extra_only")))
+        modes_df = get_master_df_of_attr_modes_for_subclass_dfs(special_subset = "extra_only")))
 
     ## MUST BE SORTED:
     ## If not sorted, at least by age and sex within time, the

@@ -108,6 +108,24 @@ times.ccmpp_input_list <- function(x) {
 
 #' @rdname extract_ccmpp_input_list_attributes
 #' @export
+proj_times <- function(x) {
+    UseMethod("proj_times")
+}
+
+#' @rdname extract_ccmpp_input_list_attributes
+#' @export
+proj_times.list <- function(x) {
+    proj_times(as_ccmpp_input_list(x))
+}
+
+#' @rdname extract_ccmpp_input_list_attributes
+#' @export
+proj_times.list <- function(x) {
+    times(x) + time_span(x)
+}
+
+#' @rdname extract_ccmpp_input_list_attributes
+#' @export
 sexes.list <- function(x) {
     sexes(as_ccmpp_input_list(x))
 }
@@ -490,14 +508,29 @@ mig_net_rate_component.ccmpp_input_list <- function(x) {
 }
 
 #' @rdname ccmpp_list_access_elements
-`mig_net_rate_component<-` <- function(x, value) {
+`mig_net_rate_component<-` <- function(x, value, ...) {
     UseMethod("mig_net_rate_component<-")
 }
 #' @rdname ccmpp_list_access_elements
-`mig_net_rate_component<-.ccmpp_input_list` <- function(x, value) {
-    x[["mig_net_rate_age_sex"]] <- value
-    as_ccmpp_input_list(x)
-}
+`mig_net_rate_component<-.ccmpp_input_list` <-
+    function(x, value, set_mig_type = TRUE, reset_mig_counts = FALSE) {
+        stopifnot(is.logical(set_mig_type) && is.logical(reset_mig_counts))
+        value <- as_mig_net_rate_age_sex(value)
+        x[["mig_net_rate_age_sex"]] <- value
+        if (reset_mig_counts) {
+            tmp <- as_ccmpp_input_list(x)
+            mig_type(tmp) <- "rates"
+            tmp <- data_reshape_ccmpp_output(
+                project_ccmpp_loop_over_time(indata = tmp))$mig_net_count_age_sex
+            x[["mig_net_count_age_sex"]] <- mig_net_count_age_sex(tmp)
+            x[["mig_net_count_tot_b"]] <-
+                collapse_demog_dimension(x[["mig_net_count_age_sex"]],
+                                         by_dimensions = "time", out_class = "data.frame")
+        }
+        x <- as_ccmpp_input_list(x)
+        if (set_mig_type) mig_type(x) <- "rates"
+        return(x)
+    }
 
 ###-----------------------------------------------------------------------------
 ### ** mig net count total
@@ -571,5 +604,24 @@ mig_assumption.ccmpp_input_list <- function(x) {
 `mig_assumption<-.ccmpp_input_list` <- function(x, value) {
     stopifnot(value %in% get_allowed_mig_assumptions_mig_parameter())
     mig_assumption(mig_parameter_component(x)) <- value #runs 'as_ccmpp_input_list'
+    return(x)
+}
+
+#' @rdname ccmpp_list_access_elements
+#' @export
+mig_type.list <- function(x) {
+    mig_type(as_ccmpp_input_list(x))
+}
+#' @rdname mig_assumption_extract_and_set
+#' @export
+mig_type.ccmpp_input_list <- function(x) {
+    mig_type(mig_parameter_component(x))
+}
+
+#' @rdname mig_assumption_extract_and_set
+#' @export
+`mig_type<-.ccmpp_input_list` <- function(x, value) {
+    stopifnot(value %in% get_allowed_mig_types_mig_parameter())
+    mig_type(mig_parameter_component(x)) <- value #runs 'as_ccmpp_input_list'
     return(x)
 }

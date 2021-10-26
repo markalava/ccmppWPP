@@ -18,8 +18,8 @@ new_mig_net_count_age_sex <-
     function(x,
              age_span = double(),
              time_span = double(),
-             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("mig_net_count_age_sex"),
-             value_type = get_value_types_for_ccmpp_in_out_classes("mig_net_count_age_sex"),
+             dimensions = get_req_dimensions_for_subclass_classes("mig_net_count_age_sex"),
+             value_type = get_value_types_for_subclass_classes("mig_net_count_age_sex"),
              value_scale = double(),
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
@@ -49,17 +49,11 @@ new_mig_net_count_age_sex <-
 #' complements the extraction methods.
 #'
 #' @family ccmpp_input_objects
-#' @seealso \code{\link{validate_ccmppWPP_object}} for object validation,
-#'     \code{\link{ccmpp_input_df}} for the class from which this one
-#'     inherits.
+#' @seealso \code{\link{validate_ccmppWPP_object}} for object
+#'     validation, \code{\link{ccmpp_input_df}} for the class from
+#'     which this one inherits.
 #'
 #' @param x An object for which a method is defined (see \dQuote{Details}).
-#' @param pop_count_age_sex For the \code{mig_net_prop_age_sex}
-#'     method, an object that can be coreced to a
-#'     \code{\link{ccmpp_input_df}} object (e.g., a
-#'     \code{data.frame}), holding population counts from which to
-#'     calculate the migration counts. The \code{value_type} must be
-#'     \dQuote{count} and the \code{value_scale}s must match.#'
 #' @param value_scale_pop_count The scale of the \code{value} column
 #'     in \code{pop_count_age_sex}. If unspecified, defaults to the
 #'     \dQuote{value_scale} attribute of \code{pop_count_age_sex} if
@@ -74,15 +68,15 @@ mig_net_count_age_sex <- function(x, ...) {
     UseMethod("mig_net_count_age_sex")
 }
 
-#' @rdname
+#' @rdname mig_net_count_age_sex
 #' @export
 mig_net_count_age_sex.data.frame <-
     function(x,
              value_scale = attr(x, "value_scale"), ...) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
-                            dimensions = get_req_dimensions_for_ccmpp_in_out_classes("mig_net_count_age_sex"),
-                            value_type = get_value_types_for_ccmpp_in_out_classes("mig_net_count_age_sex"),
+                            dimensions = get_req_dimensions_for_subclass_classes("mig_net_count_age_sex"),
+                            value_type = get_value_types_for_subclass_classes("mig_net_count_age_sex"),
                             value_scale = value_scale)
 
         ## Create/Validate
@@ -94,26 +88,13 @@ mig_net_count_age_sex.data.frame <-
         )
     }
 
-#' @rdname
-#' @export
-mig_net_count_age_sex.mig_net_prop_age_sex <-
-    function(x, pop_count_age_sex,
-             value_scale_pop_count = attr(pop_count_age_sex, "value_scale"),
-             ...) {
-        pop_count_age_sex <- as_pop_count_age_sex(pop_count_age_sex,
-                                            value_type = "count")
-        mig_net_count_age_sex(make_value_product(x = x,
-                                                 y = pop_count_age_sex),
-                              value_scale = value_scale_pop_count)
-    }
-
-#' @rdname
+#' @rdname mig_net_count_age_sex
 #' @export
 mig_net_count_age_sex.ccmpp_input_list <- function(x) {
     mig_net_count_component(x)
 }
 
-#' @rdname
+#' @rdname mig_net_count_age_sex
 #' @export
 `mig_net_count_age_sex<-`  <- function(x, value) {
     `mig_net_count_component<-`(x, value)
@@ -126,7 +107,6 @@ mig_net_count_age_sex.ccmpp_input_list <- function(x) {
 #' \code{mig_net_count_age_sex} if possible, or check if it is
 #' one.
 #'
-#' @family ccmpp_input_objects
 #' @seealso \code{\link{coerce_demog_change_component_df}}
 #'
 #' @inheritParams coerce_demog_change_component_df

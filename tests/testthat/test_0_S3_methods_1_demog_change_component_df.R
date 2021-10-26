@@ -3,8 +3,7 @@
 ### OBJECTS NEEDED (tested already)
 
 dcc_df_time_age_sex <-
-    demog_change_component_df(S3_demog_change_component_time_age_sex_test_df,
-                              dimensions = c("time", "age", "sex"))
+    demog_change_component_df(S3_demog_change_component_time_age_sex_test_df)
 
 
 test_that("subsetting works as desired", {
@@ -98,6 +97,36 @@ test_that("replacement with valid columns drops class (time, sex)", {
     z <- dcc_df_time_age_sex
     z[["sex"]] <- z$sex
     expect_not_s3_class(z, "demog_change_component_df")
+})
+
+
+test_that("names, rownames and colnames drop class", {
+    ## Currently, cannot figure out how to make 'names' work without
+    ## infinite recursion errors.
+    x <- dcc_df_time_age_sex
+    names(x) <-
+        gsub("value", "test", names(x))
+    expect_s3_class(x, "demog_change_component_df")
+
+    x <- dcc_df_time_age_sex
+    dimnames(x)[[2]] <-
+        gsub("value", "test", dimnames(x)[[2]])
+    expect_not_s3_class(x, "demog_change_component_df")
+
+    x <- dcc_df_time_age_sex
+    row.names(x) <-
+        gsub("value", "test", row.names(x))
+    expect_not_s3_class(x, "demog_change_component_df")
+
+    x <- dcc_df_time_age_sex
+    rownames(x) <-
+        gsub("value", "test", rownames(x))
+    expect_not_s3_class(x, "demog_change_component_df")
+
+    x <- dcc_df_time_age_sex
+    colnames(x) <-
+        gsub("value", "test", colnames(x))
+    expect_not_s3_class(x, "demog_change_component_df")
 })
 
 

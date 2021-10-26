@@ -1,5 +1,5 @@
 ###
-### Methods for *existing* generics. See '..._utility_functions.R' for new generics and methods.
+### Methods for *existing* generics and functions. See '..._utility_functions.R' for new generics and methods.
 ###
 
 ###-----------------------------------------------------------------------------
@@ -130,7 +130,126 @@ subset.demog_change_component_df <- function(x, ...) {
                 "' will not preserve the class or attributes.")
     }
     return(NextMethod())
+}
+
+###-----------------------------------------------------------------------------
+### * Col and Row names
+
+#' Change column and row names of a \code{demog_change_component_df}
+#'
+#' Changing row or columns names of \code{demog_change_component_df}s
+#' may result in invalid members of the class. Therefore, the changed
+#' object will no longer inherit from class
+#' \code{demog_change_component_df} (or subclasses) and the attributes
+#' specific to those classes will be lost.
+#'
+#' @seealso \code{\link{demog_change_component_df}} for class
+#'     definitions.
+#'
+#' @inheritParams base::colnames
+#' @return A \code{data.frame},
+#'     one-dimensional vector, or scalar depending on the dimensions
+#'     of the extracted values.
+#' @author Mark Wheldon
+#'
+#' @name col_row_names
+NULL
+
+
+#' @rdname col_row_names
+#' @export
+`row.names<-` <- function(x, value) {
+    UseMethod("row.names<-")
+}
+
+#' @rdname col_row_names
+#' @export
+`row.names<-.default` <- function(x, value) {
+    base::`row.names<-`(x = x, value = value)
+}
+
+#' @rdname col_row_names
+#' @export
+`row.names<-.demog_change_component_df` <- function(x, value) {
+    if (identical(parent.frame(), .GlobalEnv)) {
+        S3_class_warning("changing the 'row.names' of a '",
+                oldClass(x)[1],
+                "' will not preserve the class or attributes.")
     }
+    base::`row.names<-`(x = as.data.frame(x), value = value)
+}
+
+
+#' @rdname col_row_names
+#' @export
+`rownames<-` <- function(x, value) {
+    UseMethod("rownames<-")
+}
+
+#' @rdname col_row_names
+#' @export
+`rownames<-.default` <- function(x, value) {
+    base::`rownames<-`(x = x, value = value)
+}
+
+#' @rdname col_row_names
+#' @export
+`rownames<-.demog_change_component_df` <- function(x, value) {
+    if (identical(parent.frame(), .GlobalEnv)) {
+        S3_class_warning("changing the 'rownames' of a '",
+                oldClass(x)[1],
+                "' will not preserve the class or attributes.")
+    }
+    base::`rownames<-`(x = as.data.frame(x), value = value)
+}
+
+
+#' @rdname col_row_names
+#' @export
+`colnames<-` <- function(x, value) {
+    UseMethod("colnames<-")
+}
+
+#' @rdname col_row_names
+#' @export
+`colnames<-.default` <- function(x, value) {
+    base::`colnames<-`(x = x, value = value)
+}
+
+#' @rdname col_row_names
+#' @export
+`colnames<-.demog_change_component_df` <- function(x, value) {
+    if (identical(parent.frame(), .GlobalEnv)) {
+        S3_class_warning("changing the 'colnames' of a '",
+                oldClass(x)[1],
+                "' will not preserve the class or attributes.")
+    }
+    base::`colnames<-`(x = as.data.frame(x), value = value)
+}
+
+
+#' @rdname col_row_names
+#' @export
+`dimnames<-` <- function(x, value) {
+    UseMethod("dimnames<-")
+}
+
+#' @rdname col_row_names
+#' @export
+`dimnames<-.default` <- function(x, value) {
+    base::`dimnames<-`(x = x, value = value)
+}
+
+#' @rdname col_row_names
+#' @export
+`dimnames<-.demog_change_component_df` <- function(x, value) {
+    if (identical(parent.frame(), .GlobalEnv)) {
+        S3_class_warning("changing the 'dimnames' of a '",
+                         oldClass(x)[1],
+                         "' will not preserve the class or attributes.")
+    }
+    base::`dimnames<-`(x = as.data.frame(x), value = value)
+}
 
 
 ###-----------------------------------------------------------------------------

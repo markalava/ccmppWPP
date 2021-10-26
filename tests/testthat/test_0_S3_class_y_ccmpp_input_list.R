@@ -123,8 +123,7 @@ test_that("'fert_rate_age_f' component can be changed", {
     x <- fert_rate_age_f(z)
     expect_s3_class(x, "fert_rate_age_f")
 
-    suppressWarnings({values(x) <- 0.999})
-    expect_s3_class(x, "fert_rate_age_f")
+    suppressWarnings({x$value <- 0.999})
 
     expect_error(fert_rate_age_f(z) <- x, NA)
     expect_equal(values(fert_rate_age_f(z)), rep(0.999, nrow(x)))
@@ -171,14 +170,6 @@ test_that("'mig_net_count_tot_b' component can be changed", {
 })
 
 
-test_that("'mig_net_rate_age_sex' component can be changed", {
-    z <- ccmpp_input_list_example
-    x <- mig_net_rate_age_sex(z)
-    expect_s3_class(x, "mig_net_rate_age_sex")
-    expect_error(mig_net_rate_age_sex(z) <- x, NA)
-})
-
-
 test_that("'mig_parameter' component can be changed", {
     z <- ccmpp_input_list_example
     x <- mig_parameter(z)
@@ -199,10 +190,9 @@ test_that("'pop_count_age_sex_base' component can be changed", {
     x <- pop_count_age_sex_base(ccmpp_input_list_example)
     expect_s3_class(x, "pop_count_age_sex_base")
 
-    suppressWarnings({values(x) <- 1})
-    expect_s3_class(x, "pop_count_age_sex_base")
+    suppressWarnings({x$value <- 1})
 
-    expect_equal(values(x), rep(1, nrow(x)))
+    expect_equal(x$value, rep(1, nrow(x)))
 })
 
 
@@ -210,17 +200,16 @@ test_that("'srb' component can be changed", {
     x <- srb(ccmpp_input_list_example)
     expect_s3_class(x, "srb")
 
-    suppressWarnings({values(x) <- 1})
-    expect_s3_class(x, "srb")
+    suppressWarnings({x$value <- 1})
 
-    expect_equal(values(x), rep(1, nrow(x)))
+    expect_equal(x$value, rep(1, nrow(x)))
 })
 
 
 test_that("survival ratio component can be changed", {
     suppressWarnings({
     x <- survival_ratio_input_df_time_age_sex
-    values(x) <- 1
+    x$value <- 1
 
     y <- life_table_age_sex(ccmpp_input_list_example)
     expect_false(isTRUE(
@@ -242,6 +231,8 @@ test_that("survival ratio component can be changed", {
 })
 
 
+### Migration details
+
 test_that("mig assumption can be changed", {
     suppressWarnings({
     expect_error(mig_assumption(ccmpp_input_list_example) <- "test",
@@ -254,10 +245,64 @@ test_that("mig assumption can be changed", {
     expect_false(identical(z, mig_assumption(y)))
 
     x <- ccmpp_input_list_example
+    mig_a_x <- mig_assumption(x)
     mig_assumption(x) <-
         switch(mig_assumption(x), end = "even", even = "end")
+    expect_false(identical(mig_a_x, mig_assumption(x)))
+    })
+})
+
+
+test_that("mig type can be changed", {
+    suppressWarnings({
+    expect_error(mig_type(ccmpp_input_list_example) <- "test",
+                 "is not TRUE")
+
+    y <- mig_parameter(ccmpp_input_list_example)
+    z <- mig_type(y)
+    mig_type(y) <-
+        switch(z, counts = "rates", rates = "counts")
+    expect_false(identical(z, mig_type(y)))
+
+    x <- ccmpp_input_list_example
+    mig_a_x <- mig_type(x)
+    mig_type(x) <-
+        switch(mig_type(x), counts = "rates", rates = "counts")
+    expect_false(identical(mig_a_x, mig_type(x)))
     })
 })
 
 
 
+
+test_that("'mig_net_rate_age_sex' component can be changed", {
+    z <- ccmpp_input_list_example
+    expect_false(all(values(mig_net_rate_age_sex(z)) == 0))
+    x <- mig_net_rate_age_sex(z)
+    values(x) <- 0
+    expect_s3_class(x, "mig_net_rate_age_sex")
+    expect_error(mig_net_rate_age_sex(z) <- x, NA)
+    expect_true(all(values(mig_net_rate_age_sex(z)) == 0))
+
+    ## Reset counts
+    z <- ccmpp_input_list_example
+    expect_false(all(values(mig_net_count_age_sex(z)) == 0))
+    expect_false(all(values(mig_net_rate_age_sex(z)) == 0))
+
+    x <- mig_net_rate_age_sex(z)
+    values(x) <- 0
+    expect_error(mig_net_rate_age_sex(z, reset_mig_counts = TRUE) <- x, NA)
+    expect_true(all(values(mig_net_rate_age_sex(z)) == 0))
+    expect_true(all(values(mig_net_count_age_sex(z)) == 0))
+
+    ## Manually reset
+    z <- ccmpp_input_list_example
+    expect_false(all(values(mig_net_rate_age_sex(z)) == 0))
+    x <- mig_net_rate_age_sex(z)
+    values(x) <- 0
+    expect_s3_class(x, "mig_net_rate_age_sex")
+    expect_error(mig_net_rate_age_sex(z) <- x, NA)
+    z <- make_mig_counts_match_rates(z)
+    expect_true(all(values(mig_net_rate_age_sex(z)) == 0))
+    expect_true(all(values(mig_net_count_age_sex(z)) == 0))
+})

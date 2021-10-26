@@ -209,6 +209,7 @@ ccmppWPP_input_file_extend <- function(ccmppWPP_inputs, OAnew = 130, a0rule = "a
                              Redistribute_from = maxage,
                              OAnew = OAnew,
                              method = "mono")
+    ext_f$Pop_out <- ifelse(is.na(ext_f$Pop_out), 0, ext_f$Pop_out)
     ext_f <- DemoTools::graduate_mono(ext_f$Pop_out, Age = ext_f$Age_out, AgeInt = DemoTools::age2int(ext_f$Age_out), OAG = TRUE)
 
     pop_count_age_sex_f <- c(pop_in$value[pop_in$sex == "female" & pop_in$age_start < maxage], ext_f[as.numeric(names(ext_f)) >= maxage])
@@ -223,6 +224,7 @@ ccmppWPP_input_file_extend <- function(ccmppWPP_inputs, OAnew = 130, a0rule = "a
                              Redistribute_from = maxage,
                              OAnew = OAnew,
                              method = "mono")
+    ext_m$Pop_out <- ifelse(is.na(ext_m$Pop_out), 0, ext_m$Pop_out)
     ext_m <- DemoTools::graduate_mono(ext_m$Pop_out, Age = ext_m$Age_out, AgeInt = DemoTools::age2int(ext_m$Age_out), OAG = TRUE)
 
     pop_count_age_sex_m <- c(pop_in$value[pop_in$sex == "male" & pop_in$age_start < maxage], ext_m[as.numeric(names(ext_m)) >= maxage])

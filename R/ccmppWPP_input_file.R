@@ -132,7 +132,7 @@ ccmppWPP_input_file_extend <- function(ccmppWPP_inputs, OAnew = 130, a0rule = "a
       mxM <- lt_in$value[lt_in$indicator == "lt_nMx" & lt_in$sex == "male" & lt_in$time_start == i]
       names(mxM) <- ages
       mxF <- lt_in$value[lt_in$indicator == "lt_nMx" & lt_in$sex == "female" & lt_in$time_start == i]
-      names(mxM) <- ages
+      names(mxF) <- ages
 
       # extend to new OA using two sex coherent kannisto
       # use sex coherent kannisto to extend rather than sex-independent extension in lt_single_mx

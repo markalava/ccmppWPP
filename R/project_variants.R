@@ -10,8 +10,8 @@
 #'
 #' @author Sara Hertog
 #'
-#' @param tfr_all_locs character. file path to RData file with annual TFR; countries in rows, years in columns
-#' @param pasfr_all_locs character. file path to RData file with 1x1 PASFR; countries and ages from 10 to 54 in rows, years in columns
+#' @param tfr_all_locs character. file path to RData file with annual TFR; long format with LocID, time_start and value
+#' @param pasfr_all_locs character. file path to RData file with 1x1 PASFR; long format with LocID, time_start and value, age_start from 10 to 54
 #' @param pasfr_pattern character. file path to RData file with 1 record per LocID; country_code = LocID, PASFRNorm = "Global Norm", 
 #' PasfrGlobalNorm is c(0,1)flag indicating whether the countrys data should be used in computing global norm.
 #' @param present_year numeric. Last year of observed data?
@@ -22,32 +22,38 @@
 #' @export
 #' 
 
-pasfr_global_model <- function(tfr_all_locs = "data/tfr_estimates_projections_for_pasfr_global_norm.RData",
-                               pasfr_all_locs = "data/pasfr_estimates_for_pasfr_global_norm.RData",
-                               pasfr_pattern = "data/PASFRpattern.RData",
-                               present_year = 2019) {
+pasfr_global_model <- function(tfr_all_locs,
+                               pasfr_all_locs,
+                               pasfr_pattern_locs,
+                               present_year = 2020) {
   
 
   load(tfr_all_locs)   # tfr estimates and projections
   load(pasfr_all_locs)  # 1x1 pasfr estimates
-  load(pasfr_pattern)  # flags which countries are included for global norm computation
+  load(pasfr_pattern_locs)  # flags which countries are included for global norm computation
   
-  # reshape TFR estimates and projections to long data frame with year, country_code and TFR value
-  TFRpred <- reshape(tfr_estimates_projections, direction = "long", 
-                     varying = list(names(tfr_estimates_projections)[3:153]),
-                     times = as.factor(names(tfr_estimates_projections)[3:153]),
-                     timevar = "year",
-                     v.names = "value")
-  TFRpred <- TFRpred[,c("year", "country_code", "value")]
+  # TFR estimates and projections as a long data frame with year, country_code and TFR value
+  TFRpred <- as.data.frame(tfr_est_proj[,c("time_start", "LocID", "value")])
+  names(TFRpred) <- c("year", "country_code", "value") # this is required by bayesPop
+  
+  # reshape pasfr estimates to the wide matrix form required by bayesPop
+  pasfr_est <- pasfr_est[pasfr_est$LocID != 566 & pasfr_est$age_start %in% 10:54, ] # temporarily exclude Nigeria because of weird dup values
+  pasfr_est <- as.data.frame(pasfr_est[order(pasfr_est$LocID, pasfr_est$time_start, pasfr_est$age_start),])
+
+  pasfr_estimates <- reshape(pasfr_est[,c("LocID","time_start","age_start","value")], 
+                             direction = "wide", idvar = c("LocID", "age_start"), timevar = "time_start" )
+  names(pasfr_estimates) <- c("country_code","age",unique(pasfr_est$time_start))
+  pasfr_estimates$country_code <- as.integer(pasfr_estimates$country_code)
   
   # compile inputs to bayesPop:::compute.pasfr.global.norms function (this is "kant" from Hana's code)
-  inputs <- list(end.year = 2020,
-                      observed = list(PASFR = pasfr_estimates[, names(pasfr_estimates) != "name"]),
+  inputs <- list(end.year = present_year + 1,
+                      observed = list(PASFR = pasfr_estimates),
                       PASFR = NULL,
                       PASFRnorms = NULL,
-                      PASFRpattern = PASFRpattern,
-                      present.year = 2019,
-                      TFRpred = TFRpred)
+                      PASFRpattern = pasfr_pattern,
+                      present.year = present_year,
+                      TFRpred = TFRpred,
+                      annual = TRUE)
   pasfr_global_norm <- bayesPop:::compute.pasfr.global.norms(inputs = inputs)$PasfrGlobalNorm
   
   rownames(pasfr_global_norm) <- 10:54
@@ -71,7 +77,7 @@ pasfr_global_model <- function(tfr_all_locs = "data/tfr_estimates_projections_fo
 #'
 #' @details accesses the global model in the data frame "pasfr_global_model"
 #'
-#' @return a data frame with the inferred pasfr in the "value" field.
+#' @return a matrix of pasfr with age in rows and years in columns
 #' @export
 #' 
 #' 
@@ -95,7 +101,7 @@ pasfr_given_tfr <- function(PasfrGlobalNorm, pasfr_observed, tfr_observed_projec
                                       nr.est.points = num_points)
   
   # as percentage
-  pasfr <- round(pasfr*100, 2)
+  pasfr <- pasfr*100
   
   # set time as column names and age as row names
   colnames(pasfr) <- years_projection
@@ -104,6 +110,206 @@ pasfr_given_tfr <- function(PasfrGlobalNorm, pasfr_observed, tfr_observed_projec
   return(pasfr)
   
 }
+
+
+mx_given_e0 <- function(mx_mat_m, # matrix of mx estimates (age in rows, years in columns)
+                        mx_mat_f,
+                        e0m, # vector of projected e0 (named with years)
+                        e0f,
+                        Age_Mort_Proj_Method1 = c("lc","pmd","mlt"),
+                        Age_Mort_Proj_Method2 = "mlt",  # only used if first method is "pmd"
+                        Age_Mort_Proj_Pattern = c("CD_West", "CD_North", "CD_South", "CD_East", 
+                                        "UN_Far_Eastern", "UN_South_Asian", "UN_General"),
+                        Age_Mort_Proj_Method_Weights = c(1,0.5),
+                        Age_Mort_Proj_Adj_SR = TRUE,
+                        Latest_Age_Mortality_Pattern = FALSE,
+                        Smooth_Latest_Age_Mortality_Pattern = FALSE) {
+  
+  methods.allowed <- list(lc = "MortCast::mortcast", mlt = "MortCast::mltj", pmd = "MortCast::copmd", blend = "MortCast::mortcast.blend")
+  
+  method <- ifelse(Age_Mort_Proj_Method1 == "pmd" & (!is.na(Age_Mort_Proj_Method2) & Age_Mort_Proj_Method2 == "mlt"), "blend", Age_Mort_Proj_Method1)
+  
+  # Lee - Carter
+  if (method == "lc") {
+    
+    # define whether using only latest mortality pattern and whether to smooth it
+    if (Latest_Age_Mortality_Pattern == TRUE) {
+      
+      ax.index  <- ncol(mx_mat_f) # use only the last column in estimating lc parameters
+      ax.smooth <- Smooth_Latest_Age_Mortality_Pattern # logical whether to smooth latest age pattern
+      
+    }  else {
+      ax.index <- NULL
+      ax.smooth <- FALSE
+    }                        
+    
+    # estimate lee-carter parameters using the lileecarter.estimate() function from MortCast
+    lee_carter_parameters <- MortCast:::lileecarter.estimate(mxM = mx_mat_m, 
+                                                             mxF = mx_mat_f,
+                                                             ax.index = ax.index, # which columns of mx matrices to use in estimation (default is all of them)
+                                                             ax.smooth = ax.smooth) # smooth.spline(ax, df = ceiling(length(ax)/2))$y  ## NEED TO CONSIDER WHETHER THIS IS APPROPRIATE LEVEL OF SMOOTHING FOR BOTH n=1 AND n=5
+    
+    method.args <- list(e0m,
+                        e0f,
+                        lc.pars = lee_carter_parameters,
+                        rotate = TRUE,
+                        keep.lt = FALSE,
+                        constrain.all.ages = FALSE)
+  
+    
+  # Model life table   
+  } else if (method == "mlt") {
+    
+    method.args <- list(e0m,
+                        e0f,
+                        type = Age_Mort_Proj_Pattern,
+                        nx = 1)
+    
+  # Proportionate mortality decline
+  } else if (method == "pmd") {
+    
+    method.args <- list(e0m,
+                        e0f,
+                        mxm0 = mx_mat_m[0:101,ncol(mx_mat_m)], # pmd only accepts age groups <= 100
+                        mxf0 = mx_mat_f[0:101,ncol(mx_mat_f)],
+                        nx = 1,
+                        keep.lt = FALSE,
+                        adjust.sr.if.needed = Age_Mort_Proj_Adj_SR) # This is #3 in bayesPop, performed dynamically using sex ratio in previous time point
+
+  # Blend of PMD with MLT
+  } else if (method == "blend") {
+    
+    method.args <- list(e0m,
+                        e0f,
+                        meth1 = "pmd",
+                        meth2 = "mlt",
+                        weights = Age_Mort_Proj_Method_Weights,
+                        nx = 1,
+                        apply.kannisto = TRUE,
+                        min.age.groups = 131, # triggers kannisto extension if last age group is less than 100+
+                        match.e0 = TRUE,
+                        meth1.args = list(mxm0 = mx_mat_m[0:101,ncol(mx_mat_m)], mxf0 = mx_mat_f[0:101,ncol(mx_mat_f)], nx=1, keep.lt = FALSE, adjust.sr.if.needed = Age_Mort_Proj_Adj_SR),
+                        meth2.args = list(type = Age_Mort_Proj_Pattern, nx = 1),
+                        kannisto.args = list(est.ages = seq(80, 95, by=1), proj.ages = seq(100,130, by=1)))
+  }
+  
+  # write a small function that allows us to call functions exported from packages
+  getfun<-function(x) {
+    if(length(grep("::", x))>0) {
+      parts<-strsplit(x, "::")[[1]]
+      getExportedValue(parts[1], parts[2])
+    } else {
+      x
+    }
+  }
+  mx_proj <- do.call(getfun(methods.allowed[[method]]), method.args)
+  
+  if (method == "blend") {
+    mx_proj <- mx_proj[1:2]  # retain only the mx matrices from the blended results
+  }
+  
+  return(mx_proj) # list of two sex-specific mx matrices
+  
+}
+
+# testlc1 <- mx_given_e0(mx_mat_m = mxM_mat, # matrix of mx estimates (age in rows, years in columns)
+#                        mx_mat_f = mxF_mat,
+#                        e0m = e0M, # vector of projected e0 (named with years)
+#                        e0f = e0F,
+#                        Age_Mort_Proj_Method1 = "lc",
+#                        Age_Mort_Proj_Method2 = NA,  # only used if first method is "pmd"
+#                        Age_Mort_Proj_Pattern = NULL,
+#                        Age_Mort_Proj_Method_Weights = c(1,0.5),
+#                        Age_Mort_Proj_Adj_SR = TRUE,
+#                        Latest_Age_Mortality_Pattern = FALSE,
+#                        Smooth_Latest_Age_Mortality_Pattern = FALSE)
+
+# testlc2 <- mx_given_e0(mx_mat_m = mxM_mat, # matrix of mx estimates (age in rows, years in columns)
+#                        mx_mat_f = mxF_mat,
+#                        e0m = e0M, # vector of projected e0 (named with years)
+#                        e0f = e0F,
+#                        Age_Mort_Proj_Method1 = "lc",
+#                        Age_Mort_Proj_Method2 = NA,  # only used if first method is "pmd"
+#                        Age_Mort_Proj_Pattern = NULL,
+#                        Age_Mort_Proj_Method_Weights = c(1,0.5),
+#                        Age_Mort_Proj_Adj_SR = TRUE,
+#                        Latest_Age_Mortality_Pattern = TRUE,
+#                        Smooth_Latest_Age_Mortality_Pattern = FALSE)
+
+# testlc3 <- mx_given_e0(mx_mat_m = mxM_mat, # matrix of mx estimates (age in rows, years in columns)
+#                        mx_mat_f = mxF_mat,
+#                        e0m = e0M, # vector of projected e0 (named with years)
+#                        e0f = e0F,
+#                        Age_Mort_Proj_Method1 = "lc",
+#                        Age_Mort_Proj_Method2 = NA,  # only used if first method is "pmd"
+#                        Age_Mort_Proj_Pattern = NULL,
+#                        Age_Mort_Proj_Method_Weights = c(1,0.5),
+#                        Age_Mort_Proj_Adj_SR = TRUE,
+#                        Latest_Age_Mortality_Pattern = TRUE,
+#                        Smooth_Latest_Age_Mortality_Pattern = TRUE)
+
+# testmlt1 <- mx_given_e0(mx_mat_m = mxM_mat, # matrix of mx estimates (age in rows, years in columns)
+#                         mx_mat_f = mxF_mat,
+#                         e0m = e0M, # vector of projected e0 (named with years)
+#                         e0f = e0F,
+#                         Age_Mort_Proj_Method1 = "mlt",
+#                         Age_Mort_Proj_Method2 = NA,  # only used if first method is "pmd"
+#                         Age_Mort_Proj_Pattern = "CD_North",
+#                         Age_Mort_Proj_Method_Weights = c(1,0.5),
+#                         Age_Mort_Proj_Adj_SR = NA,
+#                         Latest_Age_Mortality_Pattern = NA,
+#                         Smooth_Latest_Age_Mortality_Pattern = NA)
+# 
+# testmlt2 <- mx_given_e0(mx_mat_m = mxM_mat, # matrix of mx estimates (age in rows, years in columns)
+#                         mx_mat_f = mxF_mat,
+#                         e0m = e0M, # vector of projected e0 (named with years)
+#                         e0f = e0F,
+#                         Age_Mort_Proj_Method1 = "mlt",
+#                         Age_Mort_Proj_Method2 = NA,  # only used if first method is "pmd"
+#                         Age_Mort_Proj_Pattern = "CD_West",
+#                         Age_Mort_Proj_Method_Weights = c(1,0.5),
+#                         Age_Mort_Proj_Adj_SR = NA,
+#                         Latest_Age_Mortality_Pattern = NA,
+#                         Smooth_Latest_Age_Mortality_Pattern = NA)
+# 
+# testpmd1 <- mx_given_e0(mx_mat_m = mxM_mat, # matrix of mx estimates (age in rows, years in columns)
+#                         mx_mat_f = mxF_mat,
+#                         e0m = e0M, # vector of projected e0 (named with years)
+#                         e0f = e0F,
+#                         Age_Mort_Proj_Method1 = "pmd",
+#                         Age_Mort_Proj_Method2 = NA,  # only used if first method is "pmd"
+#                         Age_Mort_Proj_Pattern = NA,
+#                         Age_Mort_Proj_Method_Weights = NA,
+#                         Age_Mort_Proj_Adj_SR = TRUE,
+#                         Latest_Age_Mortality_Pattern = NA,
+#                         Smooth_Latest_Age_Mortality_Pattern = NA)
+# 
+# testpmd2 <- mx_given_e0(mx_mat_m = mxM_mat, # matrix of mx estimates (age in rows, years in columns)
+#                         mx_mat_f = mxF_mat,
+#                         e0m = e0M, # vector of projected e0 (named with years)
+#                         e0f = e0F,
+#                         Age_Mort_Proj_Method1 = "pmd",
+#                         Age_Mort_Proj_Method2 = NA,  # only used if first method is "pmd"
+#                         Age_Mort_Proj_Pattern = NA,
+#                         Age_Mort_Proj_Method_Weights = NA,
+#                         Age_Mort_Proj_Adj_SR = FALSE,
+#                         Latest_Age_Mortality_Pattern = NA,
+#                         Smooth_Latest_Age_Mortality_Pattern = NA)
+
+# testbld1 <- mx_given_e0(mx_mat_m = mxM_mat, # matrix of mx estimates (age in rows, years in columns)
+#                         mx_mat_f = mxF_mat,
+#                         e0m = e0M, # vector of projected e0 (named with years)
+#                         e0f = e0F,
+#                         Age_Mort_Proj_Method1 = "pmd",
+#                         Age_Mort_Proj_Method2 = "mlt",  # only used if first method is "pmd"
+#                         Age_Mort_Proj_Pattern = "CD_West",
+#                         Age_Mort_Proj_Method_Weights = c(1,0.5),
+#                         Age_Mort_Proj_Adj_SR = TRUE,
+#                         Latest_Age_Mortality_Pattern = NA,
+#                         Smooth_Latest_Age_Mortality_Pattern = NA)
+
+
+
 
 #' Derive inputs needed for deterministic projection variants
 #'
@@ -124,134 +330,161 @@ pasfr_given_tfr <- function(PasfrGlobalNorm, pasfr_observed, tfr_observed_projec
 #' 
 
 
+# # PasfrGlobalNorm <- pasfr_global_model()
+# # 
+# locid <- 840
+# 
+# data("tfr_estimates_projections_for_pasfr_global_norm")
+# tfr_df <- tfr_estimates_projections[tfr_estimates_projections$country_code == locid,c(3:ncol(tfr_estimates_projections))]
+# tfr <- as.vector(t(tfr_df))
+# names(tfr) <- names(tfr_df)
+# # 
+# # 
+# data("pasfr_estimates_for_pasfr_global_norm")
+# pasfr_estimates_df <-  pasfr_estimates[pasfr_estimates$country_code == locid,]
+# pasfr_estimates_mat <- as.matrix(pasfr_estimates_df[,c(4:ncol(pasfr_estimates_df))])
+# rownames(pasfr_estimates_mat) <-pasfr_estimates_df$age
+# colnames(pasfr_estimates_mat) <- names(pasfr_estimates_df)[4:ncol(pasfr_estimates_df)]
 
-project_variants_inputs <- function(medium_variant_tfr,
-                                    medium_variant_e0,
-                                    medium_variant_mig,
-                                    past_pasfr,
-                                    last_mx,
-                                    projection_start_year = 2020,
-                                    projection_end_year = 2100) {
+## TEST DATA FOR PROJECTING AGE PATTERNS OF MORTALITY
+
+# # we need the mx from the estimates input file
+# load("C:/Users/SARAH/OneDrive - United Nations/PEPS/Engine/testData/WPP19 1x1 inputs/Estimates 1950-2020/840_1950_2020.RData")
+# inputs_estimates <- inputs
+# 
+# life_table_age_sex_mx <- inputs_estimates$life_table_age_sex[inputs_estimates$life_table_age_sex$indicator=="lt_nMx", ]
+
+# # and we need the sex-specific e0 projections from the bayesian model (temporarily taken from medium variant estimate test files)
+# load("C:/Users/SARAH/OneDrive - United Nations/PEPS/Engine/testData/WPP19 1x1 inputs/Medium variant 2020-2100/840_2020_2100.RData")
+# inputs_medium <- inputs
+# e0m <- inputs_medium$life_table_age_sex$value[inputs_medium$life_table_age_sex$indicator=="lt_ex" &
+#                                                 inputs_medium$life_table_age_sex$age_start ==0 &
+#                                                 inputs_medium$life_table_age_sex$sex == "male"]
+# names(e0m) <- unique(inputs_medium$life_table_age_sex$time_start)
+# 
+# e0f <- inputs_medium$life_table_age_sex$value[inputs_medium$life_table_age_sex$indicator=="lt_ex" &
+#                                                 inputs_medium$life_table_age_sex$age_start ==0 &
+#                                                 inputs_medium$life_table_age_sex$sex == "female"]
+# names(e0f) <- unique(inputs_medium$life_table_age_sex$time_start)
+# 
+# Age_Mort_Proj_Method1 <- "lc"
+# Age_Mort_Proj_Method2 <- NA
+# Age_Mort_Proj_Pattern <- NA
+# Age_Mort_Proj_Method_Weights <- NA
+# Age_Mort_Proj_Adj_SR <- NA
+# Latest_Age_Mortality_Pattern <- FALSE
+# Smooth_Latest_Age_Mortality_Pattern <- FALSE
+# 
+# Age_Mort_Proj_arguments <- list(Age_Mort_Proj_Method1 = Age_Mort_Proj_Method1,
+#                                 Age_Mort_Proj_Method2 = Age_Mort_Proj_Method2,
+#                                 Age_Mort_Proj_Pattern = Age_Mort_Proj_Pattern,
+#                                 Age_Mort_Proj_Method_Weights = Age_Mort_Proj_Method_Weights,
+#                                 Age_Mort_Proj_Adj_SR = Age_Mort_Proj_Adj_SR,
+#                                 Latest_Age_Mortality_Pattern = Latest_Age_Mortality_Pattern,
+#                                 Smooth_Latest_Age_Mortality_Pattern = Latest_Age_Mortality_Pattern)
+# 
+# ccmppWPP_estimates <- wpp_output_example
+
+project_variants_inputs_deterministic <- function(ccmppWPP_estimates,
+                                                  ccmppWPP_medium,
+                                                  PasfrGlobalNorm) {
   
   
-
-    # 
-    # data("wpp_tfr_med")
-    # data("wpp_pasfr_med")
-    # medium_variant_tfr <- wpp_tfr_med[wpp_tfr_med$LocID == 4,]
-    # load("C:/Users/SARAH/OneDrive - United Nations/PEPS/Engine/testData/WPP19 1x1 inputs/Estimates 1950-2020/4_1950_2020.RData")
-    # 
-    # past_pasfr <- inputs$fert_rate_age_f %>% 
-    #   group_by(time_start) %>% 
-    #   mutate(value = value/sum(value)) %>% # convert asfr to pasfr
-    #   ungroup() %>% 
-    #   pivot_wider(names_from = "time_start", values_from = "value") %>% 
-    #   filter(age_start %in% 10:54) %>% 
-    #   select(-time_span, -age_span, -age_start) 
-    # past_pasfr <- as.matrix(past_pasfr)
-    # rownames(past_pasfr) <- 10:54
-    # 
-    
-    
   # create vector of projection time_starts
-  projection_times <- projection_start_year:projection_end_year
+  projection_times <- unique(ccmppWPP_medium$fert_rate_tot$time_start)
+  projection_start_year <- projection_times[1]
   
-  ############################
-  ############################
-  # compute asfr inputs for medium variant
-  tfr_med <- medium_variant_tfr$value[medium_variant_tfr$time_start %in% projection_times]
-  names(tfr_med) <- projection_times
+  # extract pasfr estimates
+  pasfr_df <- ccmppWPP_estimates$fert_pct_age_1x1[ccmppWPP_estimates$fert_pct_age_1x1$age_start %in% c(10:54),
+                                                  c("time_start", "age_start", "value")]
+  pasfr_estimates <- reshape(pasfr_df, idvar = "age_start", timevar = "time_start", direction = "wide")
+  pasfr_estimates <- as.matrix(pasfr_estimates[,c(2:ncol(pasfr_estimates))])
+  rownames(pasfr_estimates) <- unique(pasfr_df$age_start)
+  colnames(pasfr_estimates) <- unique(pasfr_df$time_start)
   
-  # assemble the inputs
-  country.inputs <- list(PASFRpattern = data.frame(PasfrNorm = "Global Norm"),
-                         # observed pasfr can be overwritten here if different from the initial pasfr file
-                         observed = list(PASFR=past_pasfr))
+  # extract tfr estimates
+  tfr_est <- ccmppWPP_estimates$fert_rate_tot$value
+  names(tfr_est) <- colnames(pasfr_estimates)
   
-  # computation
-  #############
-  pasfr <- bayesPop:::kantorova.pasfr(tfr = tfr_med, 
-                                      country.inputs, 
-                                      norms = PASFRnorms, 
-                                      proj.years = projection_times, 
-                                      tfr.med = tfr_med[length(tfr_med)], 
-                                      annual = TRUE, 
-                                      nr.est.points = 15)
-  
-  # as percentage
-  pasfr <- round(pasfr*100, 2)
-  
-  PASFRpattern <- data.frame(PasfrNorm = "Global Norm")
-  
+  # fill-in zeros for ages < 10 and > 54
+  asfr_0_9 <- matrix(0.0, nrow=length(0:9), ncol = length(projection_times), dimnames = list(0:9, projection_times))
+  asfr_55_100 <- matrix(0.0, nrow=length(55:100), length(projection_times), dimnames = list(55:100, projection_times))
   
   ############################
   ############################
   # compute asfr inputs for low/high fertility variants
   
+  # extract medium variant tfr
+  tfr_med <- ccmppWPP_medium$fert_rate_tot$value
+  names(tfr_med) <- projection_times
   
-  #    for tfr subtract/add 0.25 children in first five years, 0.4 children in next five years, 0.5 children thereafter
+  #    for tfr adjustment, subtract/add 0.25 children in first five years, 0.4 children in next five years, 0.5 children thereafter
   tfr_adj <- rep(0.5, length(projection_times))
-  tfr_adj[which(projection_times >= proj_start & projection_times < proj_start+5)] <- 0.25
-  tfr_adj[which(projection_times >= proj_start+5 & projection_times < proj_start+10)] <- 0.40
+  tfr_adj[which(projection_times >= projection_start_year & projection_times < projection_start_year+5)] <- 0.25
+  tfr_adj[which(projection_times >= projection_start_year+5 & projection_times < projection_start_year+10)] <- 0.40
   
   #    compute asfr for low-fertility variant
-  tfr_low             <- df$fert_rate_tot_f
-  tfr_low$value       <- df$fert_rate_tot_f$value - tfr_adj
-  fert_rate_age_f_low <- list()
-  for (i in 1:length(projection_times)) {
-
-    fert_pct_age_f_time              <- pasfr_given_tfr(pasfr_initial = df$fert_pct_age_f_1x1[df$fert_pct_age_f_1x1$time_start == proj_start,], 
-                                                        tfr_initial   = df$fert_rate_tot_f$value[df$fert_rate_tot_f$time_start == proj_start], 
-                                                        tfr_given     = tfr_low$value[i])
-    fert_pct_age_f_time$time_start   <- projection_times[i]
-    fert_pct_age_f_time$time_span    <- diff(projection_times)[1]
-    fert_pct_age_f_time$age_start    <- df$fert_pct_age_f_1x1$age_start[df$fert_pct_age_f_1x1$time_start == proj_start]
-    fert_pct_age_f_time$age_span     <- df$fert_pct_age_f_1x1$age_span[df$fert_pct_age_f_1x1$time_start == proj_start]
-    fert_rate_age_f_time             <- fert_pct_age_f_time[,c("time_start", "time_span", "age_start", "age_span")]
-    fert_rate_age_f_time$value       <- fert_pct_age_f_time$value * tfr_low$value[i]
-    fert_rate_age_f_low[[i]]         <- fert_rate_age_f_time
-
-    
-  }
-  fert_rate_age_f_low <- do.call(rbind, fert_rate_age_f_low)
-
- 
-  #    compute asfr for high-fertility variant
-  tfr_high             <- df$fert_rate_tot_f
-  tfr_high$value       <-  df$fert_rate_tot_f$value + tfr_adj
-  fert_rate_age_f_high <- list()
-  for (i in 1:length(projection_times)) {
-    
-    fert_pct_age_f_time               <- pasfr_given_tfr(pasfr_initial = df$fert_pct_age_f_1x1[df$fert_pct_age_f_1x1$time_start == proj_start,], 
-                                                         tfr_initial   = df$fert_rate_tot_f$value[df$fert_rate_tot_f$time_start == proj_start], 
-                                                         tfr_given     = tfr_high$value[i])
-    fert_pct_age_f_time$time_start   <- projection_times[i]
-    fert_pct_age_f_time$time_span    <- diff(projection_times)[1]
-    fert_pct_age_f_time$age_start    <- df$fert_pct_age_f_1x1$age_start[df$fert_pct_age_f_1x1$time_start == proj_start]
-    fert_pct_age_f_time$age_span     <- df$fert_pct_age_f_1x1$age_span[df$fert_pct_age_f_1x1$time_start == proj_start]
-    fert_rate_age_f_time             <- fert_pct_age_f_time[,c("time_start", "time_span", "age_start", "age_span")]
-    fert_rate_age_f_time$value       <- fert_pct_age_f_time$value * tfr_high$value[i]
-    fert_rate_age_f_high[[i]]        <- fert_rate_age_f_time
-    
-    
-  }
-  fert_rate_age_f_high <- do.call(rbind, fert_rate_age_f_high)
-
-
-  ############################
-  ############################
-  # extract asfr inputs for constant-fertility variant
+  tfr_low <- tfr_med - tfr_adj
   
-  fert_rate_age_f_proj_start <- df$fert_pct_age_f_1x1[which(df$fert_pct_age_f_1x1$time_start == proj_start),]
-  fert_rate_age_f_constant <- list()
-  for (i in 1:length(projection_times)) {
-    
-    fert_rate_age_f_time            <- fert_rate_age_f_proj_start
-    fert_rate_age_f_time$time_start <- projection_times[i]
-    fert_rate_age_f_constant[[i]]   <- fert_rate_age_f_time
-    
-  }
-  fert_rate_age_f_constant <- do.call(rbind, fert_rate_age_f_constant)
+  pasfr_low <- pasfr_given_tfr(PasfrGlobalNorm = PasfrGlobalNorm,
+                               pasfr_observed = pasfr_estimates,
+                               tfr_observed_projected = c(tfr_est, tfr_low),
+                               years_projection = projection_times,
+                               num_points = 15)
+  
+  asfr_low <- t(tfr_low * t(pasfr_low/100))
+  asfr_low <- rbind(asfr_0_9,  asfr_low, asfr_55_100)
+  
+  # transform to long data frame
+  fert_rate_age_f_low <- as.data.frame(asfr_low)
+  fert_rate_age_f_low$age_start <- as.numeric(row.names(asfr_low))
+  fert_rate_age_f_low <- reshape(fert_rate_age_f_low, 
+                         idvar = "age_start", 
+                         direction = "long", 
+                         varying = list(names(fert_rate_age_f_low)[1:(ncol(fert_rate_age_f_low)-1)]), 
+                         times = names(fert_rate_age_f_low)[1:(ncol(fert_rate_age_f_low)-1)], 
+                         timevar = "time_start",
+                         v.names = "value")
+  fert_rate_age_f_low$age_span <- ifelse(fert_rate_age_f_low$age_start < 100, 1, 1000)
+  fert_rate_age_f_low$time_span <- 1
+  
 
+   #    compute asfr for high-fertility variant
+  tfr_high <- tfr_med + tfr_adj
+  
+  pasfr_high <- pasfr_given_tfr(PasfrGlobalNorm = PasfrGlobalNorm,
+                                pasfr_observed = pasfr_estimates,
+                                tfr_observed_projected = c(tfr_est, tfr_high),
+                                years_projection = projection_times,
+                                num_points = 15)
+  
+  asfr_high <- t(tfr_high * t(pasfr_high/100))
+  asfr_high <- rbind(asfr_0_9,  asfr_high, asfr_55_100)
+  
+  # transform to long data frame
+  fert_rate_age_f_high <- as.data.frame(asfr_high)
+  fert_rate_age_f_high$age_start <- as.numeric(row.names(asfr_high))
+  fert_rate_age_f_high <- reshape(fert_rate_age_f_high, 
+                                 idvar = "age_start", 
+                                 direction = "long", 
+                                 varying = list(names(fert_rate_age_f_high)[1:(ncol(fert_rate_age_f_high)-1)]), 
+                                 times = names(fert_rate_age_f_high)[1:(ncol(fert_rate_age_f_high)-1)], 
+                                 timevar = "time_start",
+                                 v.names = "value")
+  fert_rate_age_f_high$age_span <- ifelse(fert_rate_age_f_high$age_start < 100, 1, 1000)
+  fert_rate_age_f_high$time_span <- 1
+  
+  ############################
+  ############################
+  # extract asfr inputs for constant-fertility variant (constant at last estimated)
+  
+  asfr_last_observed <- ccmppWPP_estimates$fert_rate_age_1x1[ccmppWPP_estimates$fert_rate_age_1x1$time_start == projection_start_year-1,]
+  fert_rate_age_f_constant <- NULL
+  for (i in 1:length(projection_times)) {
+    asfr_add <- asfr_last_observed
+    asfr_add$time_start <- projection_times[i]
+    fert_rate_age_f_constant <- rbind(fert_rate_age_f_constant, asfr_add)
+  }
   
   ############################
   ############################
@@ -260,11 +493,11 @@ project_variants_inputs <- function(medium_variant_tfr,
   fert_rate_age_f_instant <- list()
   for (i in 1:length(projection_times)) {
     
-    srb_time              <- df$srb[df$srb$time_start == projection_times[i],]
-    fert_rate_age_f_time  <- df$fert_rate_age_f_1x1[df$fert_rate_age_f_1x1$time_start == projection_times[i],]
-    lx_f_time             <- df$lt_complete_age_sex[df$lt_complete_age_sex$time_start == projection_times[i] & 
-                                                      df$lt_complete_age_sex$indicator == "lt_lx" & 
-                                                      df$lt_complete_age_sex$sex == "female",]
+    srb_time              <- ccmppWPP_medium$srb[ccmppWPP_medium$srb$time_start == projection_times[i],]
+    fert_rate_age_f_time  <- ccmppWPP_medium$fert_rate_age_1x1[ccmppWPP_medium$fert_rate_age_1x1$time_start == projection_times[i],]
+    lx_f_time             <- ccmppWPP_medium$lt_complete_age_sex[ccmppWPP_medium$lt_complete_age_sex$time_start == projection_times[i] & 
+                                                                   ccmppWPP_medium$lt_complete_age_sex$indicator == "lt_lx" & 
+                                                                   ccmppWPP_medium$lt_complete_age_sex$sex == "female",]
     # interpolate lx to middle of each age group
     lx_f_mid           <- (lx_f_time$value + c(lx_f_time$value[2:length(lx_f_time$value)],NA))/2
     # compute female births implied by lx_f_mid, period asfr and period srb
@@ -283,21 +516,21 @@ project_variants_inputs <- function(medium_variant_tfr,
   ############################
   # extract life table inputs for constant-mortality variant
   
-  # take sex-specific life tables from first period of medium-variant projection
-  lt_proj_start <- df$lt_complete_age_sex[df$lt_complete_age_sex$time_start == proj_start & 
-                                            df$lt_complete_age_sex$sex %in% c("male","female"),]
+  # take sex-specific life tables from last observed period
+  lt_last_observed <- ccmppWPP_estimates$lt_complete_age_sex[ccmppWPP_estimates$lt_complete_age_sex$time_start == projection_start_year-1 & 
+                                                            ccmppWPP_estimates$lt_complete_age_sex$sex %in% c("male","female"),]
   # initialize constant-mortality output
   lt_constant <- list()
   # repeat starting period sex-specific life table for each period in projection horizon
   for (i in 1:length(projection_times)) {
     
-    lt_time            <- lt_proj_start
+    lt_time            <- lt_last_observed
     lt_time$time_start <- projection_times[i]
     lt_constant[[i]]   <- lt_time
     
   }
   # assemble life table outputs into one data frame
-  lt_complete_age_sex_constant <- do.call(rbind, lt_constant)
+  life_table_age_sex_constant <- do.call(rbind, lt_constant)
 
   ############################
   ############################
@@ -306,11 +539,11 @@ project_variants_inputs <- function(medium_variant_tfr,
   fert_rate_age_f_momentum <- list()
   for (i in 1:length(projection_times)) {
     
-    srb_time              <- df$srb[df$srb$time_start == projection_times[i],]
-    fert_rate_age_f_time  <- df$fert_rate_age_f_1x1[df$fert_rate_age_f_1x1$time_start == projection_times[i],]
-    lx_f_time             <- lt_complete_age_sex_constant[lt_complete_age_sex_constant$time_start == projection_times[i] & 
-                                                            lt_complete_age_sex_constant$indicator=="lt_lx" & 
-                                                            lt_complete_age_sex_constant$sex=="female",]
+    srb_time              <- ccmppWPP_medium$srb[ccmppWPP_medium$srb$time_start == projection_times[i],]
+    fert_rate_age_f_time  <- ccmppWPP_medium$fert_rate_age_1x1[ccmppWPP_medium$fert_rate_age_1x1$time_start == projection_times[i],]
+    lx_f_time             <- life_table_age_sex_constant[life_table_age_sex_constant$time_start == projection_times[i] & 
+                                                           life_table_age_sex_constant$indicator=="lt_lx" & 
+                                                           life_table_age_sex_constant$sex=="female",]
     # interpolate lx to middle of each age group
     lx_f_mid            <- (lx_f_time$value + c(lx_f_time$value[2:length(lx_f_time$value)],NA))/2
     # compute female births implied by lx_mid, period asfr and period srb
@@ -327,19 +560,111 @@ project_variants_inputs <- function(medium_variant_tfr,
 
   ### QUESTION: DO WE HOLD SRB CONSTANT AT 2020 LEVEL OVER INSTANT REPLACEMENT AND MOMENTUM SCENARIOS
   ### OR USE MEDIUM VARIANT SRB EVEN IF IT CHANGES OVER THE PROJECTION HORIZON?
+  ### CURRENT IMPLEMENTATION IS USING THE MEDIUM VARIANT SRB
   
-  variant_inputs <- list(fert_rate_age_f_low          = fert_rate_age_f_low,
-                         fert_rate_age_f_high         = fert_rate_age_f_high,
-                         fert_rate_age_f_constant     = fert_rate_age_f_constant,
-                         fert_rate_age_f_instant      = fert_rate_age_f_instant,
-                         fert_rate_age_f_momentum     = fert_rate_age_f_momentum,
-                         lt_complete_age_sex_constant = lt_complete_age_sex_constant)
+  # assemble the ccmppWPP input objects needed for deterministic variants
+  
+  pop_count_age_sex_base <- ccmppWPP_estimates$pop_count_age_sex_1x1[ccmppWPP_estimates$pop_count_age_sex_1x1$time_start == projection_start_year &
+                                                                       ccmppWPP_estimates$pop_count_age_sex_1x1$sex %in% c("male", "female"),]
+  
+  # make a dummy filler for migration rates since these are not operationalized yet
+  mig_net_rate_age_sex = ccmppWPP_medium$mig_net_count_age_sex_1x1[ccmppWPP_medium$mig_net_count_age_sex_1x1$sex %in% c("male","female"),]
+  mig_net_rate_age_sex$value <- 0
+  mig_net_count_tot_b <- ccmppWPP_medium$mig_net_count_tot_sex[ccmppWPP_medium$mig_net_count_tot_sex$sex == "both", 
+                                                               names(ccmppWPP_medium$mig_net_count_tot_sex) != "sex"]
+  
+  # all inputs same as medium variant, except asfr, which are low
+  inputs_low <- list(pop_count_age_sex_base = pop_count_age_sex_base,
+                     life_table_age_sex = ccmppWPP_medium$lt_complete_age_sex[ccmppWPP_medium$lt_complete_age_sex$sex %in% c("male","female"),],
+                     fert_rate_age_f = fert_rate_age_f_low,
+                     srb = ccmppWPP_medium$srb,
+                     mig_net_count_age_sex = ccmppWPP_medium$mig_net_count_age_sex_1x1[ccmppWPP_medium$mig_net_count_age_sex_1x1$sex %in% c("male","female"),],
+                     mig_net_rate_age_sex = mig_net_rate_age_sex,
+                     mig_net_count_tot_b = mig_net_count_tot_b,
+                     mig_parameter = ccmppWPP_medium$mig_parameter)
+  
+    # assign attributes
+    attr(inputs_low, "revision") <- attributes(ccmppWPP_estimates)$revision
+    attr(inputs_low, "locid") <- attributes(ccmppWPP_estimates)$locid
+    attr(inputs_low, "variant") <- "low fertility"
+  
+  
+  # same as medium variant, but with high asfr
+  inputs_high <- inputs_low
+  inputs_high$fert_rate_age_f <- fert_rate_age_f_high
+    # assign attributes
+    attr(inputs_high, "revision") <- attributes(ccmppWPP_estimates)$revision
+    attr(inputs_high, "locid") <- attributes(ccmppWPP_estimates)$locid
+    attr(inputs_high, "variant") <- "high fertility"
+  
+  # same as medium variant, but with constant asfr
+  inputs_constant <- inputs_low
+  inputs_constant$fert_rate_age_f <- fert_rate_age_f_constant
+    # assign attributes
+    attr(inputs_constant, "revision") <- attributes(ccmppWPP_estimates)$revision
+    attr(inputs_constant, "locid") <- attributes(ccmppWPP_estimates)$locid
+    attr(inputs_constant, "variant") <- "constant fertility"
+  
+  # instant replacement same as medium variant, but with instant replacement asfr
+  inputs_instant <- inputs_low
+  inputs_instant$fert_rate_age_f <- fert_rate_age_f_instant
+    # assign attributes
+    attr(inputs_instant, "revision") <- attributes(ccmppWPP_estimates)$revision
+    attr(inputs_instant, "locid") <- attributes(ccmppWPP_estimates)$locid
+    attr(inputs_instant, "variant") <- "instant replacement"
+  
+  # momentum is instant replacement asfr, constant mortality, zero migration
+  inputs_momentum <- inputs_instant
+  inputs_instant$life_table_age_sex <- life_table_age_sex_constant
+  inputs_instant$mig_net_count_age_sex$value <- 0
+  inputs_instant$mig_net_count_tot_b$value <- 0
+    # assign attributes
+    attr(inputs_momentum, "revision") <- attributes(ccmppWPP_estimates)$revision
+    attr(inputs_momentum, "locid") <- attributes(ccmppWPP_estimates)$locid
+    attr(inputs_momentum, "variant") <- "momentum"
+  
+  # no change is medium inputs with constant fertility and constant mortality
+  inputs_nochange <- inputs_constant
+  inputs_nochange$life_table_age_sex <- life_table_age_sex_constant
+    # assign attributes
+    attr(inputs_nochange, "revision") <- attributes(ccmppWPP_estimates)$revision
+    attr(inputs_nochange, "locid") <- attributes(ccmppWPP_estimates)$locid
+    attr(inputs_nochange, "variant") <- "no change"
+  
+  # constant mortality is same as medium variant but with constant life tables
+  inputs_constant_mort <- inputs_nochange
+  inputs_constant_mort$fert_rate_age_f <- ccmppWPP_medium$fert_rate_age_1x1
+    # assign attributes
+    attr(inputs_constant_mort, "revision") <- attributes(ccmppWPP_estimates)$revision
+    attr(inputs_constant_mort, "locid") <- attributes(ccmppWPP_estimates)$locid
+    attr(inputs_constant_mort, "variant") <- "constant mortality"
+    
+  # zero migration is medium inputs but zero migration
+  inputs_nomig <- inputs_low
+  inputs_nomig$fert_rate_age_f <- ccmppWPP_medium$fert_rate_age_1x1
+  inputs_nomig$mig_net_count_age_sex$value <- 0
+  inputs_nomig$mig_net_count_tot_b$value <- 0
+    # assign attributes
+    attr(inputs_nomig, "revision") <- attributes(ccmppWPP_estimates)$revision
+    attr(inputs_nomig, "locid") <- attributes(ccmppWPP_estimates)$locid
+    attr(inputs_nomig, "variant") <- "zero migration"
+  
+  
+  
+  variant_inputs <- list(low_fert = inputs_low,
+                         high_fert = inputs_high,
+                         constant_fert = inputs_constant,
+                         instant_replace = inputs_instant,
+                         momentum = inputs_momentum,
+                         no_change = inputs_nochange,
+                         constant_mort = inputs_constant,
+                         zero_mig = inputs_nomig)
   
   return(variant_inputs)
 }
 
 
-project_variants_deterministic <- function(medium_variant_outputs, variant_inputs) {
+project_variants_deterministic <- function(medium_variant_outputs) {
   
   df <- medium_variant_outputs
   proj_start <- df$pop_count_tot_sex$time_start[1]

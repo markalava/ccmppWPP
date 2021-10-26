@@ -471,7 +471,7 @@ ccmppWPP_migration_override <- function(ccmpp_input, ccmpp_output) {
   mig_count_times <- ccmpp_input$mig_parameter$time_start[which(ccmpp_input$mig_parameter$indicator == "mig_type" & 
                                                                   ccmpp_input$mig_parameter$value == "counts")]
   
-  if (!is_empty(mig_count_times)) {
+  if (!(rlang::is_empty(mig_count_times))) {
   # get inputs total for age group 100+
   total_100 <- sum_last_column(ccmpp_input$mig_net_count_age_sex[ccmpp_input$mig_net_count_age_sex$time_start %in% mig_count_times &
                                                                    ccmpp_input$mig_net_count_age_sex$age_start >= 100 ,

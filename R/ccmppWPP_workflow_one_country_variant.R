@@ -363,7 +363,7 @@ ccmppWPP_compute_WPP_outputs <- function(ccmpp_output, atr) {
                                           pop_count_tot_sex$value[pop_count_tot_sex$sex == "female"] * 100)
   pop_sex_ratio_age_1x1   <- data.frame(time_start = pop_count_age_sex_1x1$time_start[pop_count_age_sex_1x1$sex=="male"],
                                         time_span  = pop_count_age_sex_1x1$time_span[pop_count_age_sex_1x1$sex=="male"],
-                                        age_start  = pop_count_age_sex_1x1$age_start[pop_count_age_sex_1x1=="male"],
+                                        age_start  = pop_count_age_sex_1x1$age_start[pop_count_age_sex_1x1$sex=="male"],
                                         age_span   = pop_count_age_sex_1x1$age_span[pop_count_age_sex_1x1$sex=="male"],
                                         value      = pop_count_age_sex_1x1$value[pop_count_age_sex_1x1$sex == "male"] / 
                                           pop_count_age_sex_1x1$value[pop_count_age_sex_1x1$sex == "female"] * 100)
@@ -451,7 +451,6 @@ ccmppWPP_compute_WPP_outputs <- function(ccmpp_output, atr) {
                           mig_net_count_tot_sex      = mig_net_count_tot_sex,
                           mig_net_rate_crude         = mig_net_rate_crude)
   
-  attr(ccmppWPP_output, "revision") <- atr$revision
   attr(ccmppWPP_output, "locid")   <- atr$locid
   attr(ccmppWPP_output, "locname")<- atr$locname
   attr(ccmppWPP_output, "variant") <- atr$variant

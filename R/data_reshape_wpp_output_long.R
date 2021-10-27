@@ -25,6 +25,7 @@ data_reshape_wpp_output_long <- function(wpp_output) {
   # identify global parameters from attributes
   atr <- attributes(wpp_output)
   atr <- atr[!(names(atr) == "names")]
+  atr <- atr[names(atr) == "locid"] # for now only keep locid on this output to ensure that all values written to csv are numeric
   
   global <- data.frame(indicator = rep("global_parameters", length(atr)),
                        subindicator = names(atr),

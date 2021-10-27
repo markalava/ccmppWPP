@@ -101,7 +101,6 @@ ccmppWPP_input_file_estimates <- function(input_file_path) {
                                     mig_parameter          = mig_parameter)
 
   # set attributes
-  attr(ccmppWPP_inputs_estimates, "revision") <- "WPP2021"
   attr(ccmppWPP_inputs_estimates, "locid")    <- meta.list$LocationID
   attr(ccmppWPP_inputs_estimates, "locname")    <- meta.list$Location
   attr(ccmppWPP_inputs_estimates, "variant")  <- "estimates"

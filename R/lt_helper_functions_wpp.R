@@ -74,8 +74,8 @@ lt_summary <- function(lt_data, byvar) {
   
   label <- stringr::str_split_fixed(lt_lx$indicator, "_", 2)[,2]
   label <- stringr::str_split_fixed(label, "q", 2)
-  lt_lx$age_start <- label[,2]
-  lt_lx$age_span  <- label[,1]
+  lt_lx$age_start <- as.numeric(label[,2])
+  lt_lx$age_span  <- as.numeric(label[,1])
   
   # extract summary ex
   lt_ex           <- lt_data[lt_data$indicator=="lt_ex" & lt_data$age_start %in% c(0,15,50,60,65,80,85,100,110), 

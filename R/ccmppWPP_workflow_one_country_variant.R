@@ -356,23 +356,24 @@ ccmppWPP_compute_WPP_outputs <- function(ccmpp_output, atr) {
                                                       pop_count_tot_b$value[1:(nrow(pop_count_tot_b)-1)])*100)
   pop_change_rate_tot$time_span     <- 1
   
-  # compute population sex ratio
-  pop_sex_ratio           <- data.frame(time_start = pop_count_tot_b$time_start,
-                                        time_span  = pop_count_tot_b$time_span,
-                                        value      = pop_count_tot_sex$value[pop_count_tot_sex$sex == "male"] / 
-                                          pop_count_tot_sex$value[pop_count_tot_sex$sex == "female"] * 100)
-  pop_sex_ratio_age_1x1   <- data.frame(time_start = pop_count_age_sex_1x1$time_start[pop_count_age_sex_1x1$sex=="male"],
-                                        time_span  = pop_count_age_sex_1x1$time_span[pop_count_age_sex_1x1$sex=="male"],
-                                        age_start  = pop_count_age_sex_1x1$age_start[pop_count_age_sex_1x1$sex=="male"],
-                                        age_span   = pop_count_age_sex_1x1$age_span[pop_count_age_sex_1x1$sex=="male"],
-                                        value      = pop_count_age_sex_1x1$value[pop_count_age_sex_1x1$sex == "male"] / 
-                                          pop_count_age_sex_1x1$value[pop_count_age_sex_1x1$sex == "female"] * 100)
-  pop_sex_ratio_age_5x1   <- data.frame(time_start = pop_count_age_sex_5x1$time_start[pop_count_age_sex_5x1$sex=="male"],
-                                        time_span  = pop_count_age_sex_5x1$time_span[pop_count_age_sex_5x1$sex=="male"],
-                                        age_start  = pop_count_age_sex_5x1$age_start[pop_count_age_sex_5x1$sex=="male"],
-                                        age_span   = pop_count_age_sex_5x1$age_span[pop_count_age_sex_5x1$sex=="male"],
-                                        value      = pop_count_age_sex_5x1$value[pop_count_age_sex_5x1$sex == "male"] / 
-                                          pop_count_age_sex_5x1$value[pop_count_age_sex_5x1$sex == "female"] * 100)
+  # commented out sex ratios -- we will do this in SQL to reduce rows in csv file
+  # # compute population sex ratio
+  # pop_sex_ratio           <- data.frame(time_start = pop_count_tot_b$time_start,
+  #                                       time_span  = pop_count_tot_b$time_span,
+  #                                       value      = pop_count_tot_sex$value[pop_count_tot_sex$sex == "male"] / 
+  #                                         pop_count_tot_sex$value[pop_count_tot_sex$sex == "female"] * 100)
+  # pop_sex_ratio_age_1x1   <- data.frame(time_start = pop_count_age_sex_1x1$time_start[pop_count_age_sex_1x1$sex=="male"],
+  #                                       time_span  = pop_count_age_sex_1x1$time_span[pop_count_age_sex_1x1$sex=="male"],
+  #                                       age_start  = pop_count_age_sex_1x1$age_start[pop_count_age_sex_1x1$sex=="male"],
+  #                                       age_span   = pop_count_age_sex_1x1$age_span[pop_count_age_sex_1x1$sex=="male"],
+  #                                       value      = pop_count_age_sex_1x1$value[pop_count_age_sex_1x1$sex == "male"] / 
+  #                                         pop_count_age_sex_1x1$value[pop_count_age_sex_1x1$sex == "female"] * 100)
+  # pop_sex_ratio_age_5x1   <- data.frame(time_start = pop_count_age_sex_5x1$time_start[pop_count_age_sex_5x1$sex=="male"],
+  #                                       time_span  = pop_count_age_sex_5x1$time_span[pop_count_age_sex_5x1$sex=="male"],
+  #                                       age_start  = pop_count_age_sex_5x1$age_start[pop_count_age_sex_5x1$sex=="male"],
+  #                                       age_span   = pop_count_age_sex_5x1$age_span[pop_count_age_sex_5x1$sex=="male"],
+  #                                       value      = pop_count_age_sex_5x1$value[pop_count_age_sex_5x1$sex == "male"] / 
+  #                                         pop_count_age_sex_5x1$value[pop_count_age_sex_5x1$sex == "female"] * 100)
   
   
   # compute some fertility indicators
@@ -419,9 +420,9 @@ ccmppWPP_compute_WPP_outputs <- function(ccmpp_output, atr) {
                           pop_pct_age_sex_5x1        = pop_pct_age_sex_5x1,
                           pop_change_rate_tot        = pop_change_rate_tot,
                           pop_change_rate_natural    = pop_change_rate_natural,
-                          pop_sex_ratio              = pop_sex_ratio,
-                          pop_sex_ratio_age_1x1      = pop_sex_ratio_age_1x1,
-                          pop_sex_ratio_age_5x1      = pop_sex_ratio_age_5x1,
+                          #pop_sex_ratio              = pop_sex_ratio,
+                          #pop_sex_ratio_age_1x1      = pop_sex_ratio_age_1x1,
+                          #pop_sex_ratio_age_5x1      = pop_sex_ratio_age_5x1,
                           birth_count_age_1x1        = birth_count_age_1x1,
                           birth_count_age_5x1        = birth_count_age_5x1,
                           birth_count_tot_sex        = ccmpp_output$birth_count_tot_sex,

@@ -76,6 +76,35 @@ data_reshape_wpp_output_long <- function(wpp_output) {
   # reduce size of file by shortening some fields
   wpp_output_long$sex <- substr(wpp_output_long$sex,1,1)
   wpp_output_long$age_span[which(wpp_output_long$age_span == 1000)] <- -1
+  
+  # do some rounding
+
+  # round to integer
+  wpp_output_long$value <- ifelse(wpp_output_long$indicator %in% c("birth_count_age", "birth_count_tot_sex", "death_count_age_sex",
+                                                         "death_count_cohort_sex", "death_count_tot_sex", "exposure_count_age_sex",
+                                                         "mig_net_count_age_sex", "mig_net_count_tot_sex"), 
+                                  round(wpp_output_long$value,0), wpp_output_long$value)
+  # round to 3 places
+  wpp_output_long$value <- ifelse(wpp_output_long$indicator %in% c("birth_rate_crude", "death_rate_crude", "fert_mean_age",
+                                                                   "mig_net_rate_crude", "pop_change_rate_natural",
+                                                                   "pop_change_rate_tot", "pop_pct_age_sex", "srb"), 
+                                  round(wpp_output_long$value,3), wpp_output_long$value)
+  
+  # round to 6 places
+  wpp_output_long$value <- ifelse(wpp_output_long$indicator %in% c("fert_pct_age", "fert_rate_age", "fert_rate_gross",
+                                                                   "fert_rate_net", "fert_rate_tot"), 
+                                  round(wpp_output_long$value,6), wpp_output_long$value)
+  
+  # life table values
+  wpp_output_long$value <- ifelse(wpp_output_long$subindicator %in% c("lx", "ndx", "nLx", "Tx"),
+                                  round(wpp_output_long$value, 3), wpp_output_long$value)
+  wpp_output_long$value <- ifelse(wpp_output_long$subindicator %in% c("nMx", "nqx", "Sx", "Tx", "10q15", "10q25", "15q35",
+                                                                      "1q0", "35q15", "45q15", "4q1", "1q0"),
+                                  round(wpp_output_long$value, 8), wpp_output_long$value)
+  wpp_output_long$value <- ifelse(wpp_output_long$subindicator %in% c("ex", "e0", "e100", "e15", "e50", "e60", "e65", "e80", "e85"),
+                                  round(wpp_output_long$value, 4), wpp_output_long$value)
+  wpp_output_long$value <- ifelse(wpp_output_long$subindicator %in% c("nAx"),
+                                  round(wpp_output_long$value, 6), wpp_output_long$value)
 
   return(wpp_output_long)
   

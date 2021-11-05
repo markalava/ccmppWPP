@@ -29,11 +29,11 @@ data_reshape_wpp_output_long <- function(wpp_output) {
   
   global <- data.frame(indicator = rep("global_parameters", length(atr)),
                        subindicator = names(atr),
-                       time_start = "",
-                       time_span = "",
-                       sex = "",
-                       age_start = "",
-                       age_span = "",
+                       time_start = as.numeric(NA),
+                       time_span = as.numeric(NA),
+                       sex = as.character(NA),
+                       age_start = as.numeric(NA),
+                       age_span = as.numeric(NA),
                        value = do.call(rbind, atr))
   
   wpp_output <- wpp_output[!(names(wpp_output) %in% c("mig_parameter", "mig_net_count_age_sex_override"))]
@@ -77,6 +77,10 @@ data_reshape_wpp_output_long <- function(wpp_output) {
   wpp_output_long$sex <- substr(wpp_output_long$sex,1,1)
   wpp_output_long$age_span[which(wpp_output_long$age_span == 1000)] <- -1
   
+  # remove youngest and oldest ages from asfr and pct output
+  wpp_output_long <- wpp_output_long[!(wpp_output_long$indicator %in% c("fert_rate_age", "fert_pct_age") &
+                                         (wpp_output_long$age_start < 10 | wpp_output_long$age_start > 59)),]
+
   # do some rounding
 
   # round to integer

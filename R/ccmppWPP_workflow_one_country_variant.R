@@ -92,6 +92,7 @@ ccmppWPP_project_one_country_variant <- function(ccmpp_input, atr) {
   exposure_count_age_sex <- exposure_age_sex_loop_over_time(dth_age = death_count_age_sex,
                                                             nmx = ccmpp_input$life_table_age_sex[which(ccmpp_input$life_table_age_sex$indicator == "lt_nMx"),])
   
+  exposure_count_age_sex$value[exposure_count_age_sex$value == 0] <- 0.00000001 # don't allow division by zero
   
   # aggregate exposures to both sexes
   exposure_count_age_b   <- sum_last_column(exposure_count_age_sex[,c("time_start", "time_span",
@@ -122,9 +123,8 @@ ccmppWPP_project_one_country_variant <- function(ccmpp_input, atr) {
   # compute both sexes life tables by single year of age ("complete" life tables)
   
   # compute age-specific mortality rates from age-specific deaths and exposures
-  exp_b <- ifelse(exposure_count_age_b$value == 0, 0.00000001, exposure_count_age_b$value) # don't allow division by zero
   mx_b <- cbind(death_count_age_b[, 1:4],
-                value = death_count_age_b$value / exp_b) 
+                value = death_count_age_b$value / exposure_count_age_b$value) 
   # compute all life table columns from single year mx
   life_table_age_b <- lt_complete_loop_over_time(mx = mx_b, sex="both", a0rule = atr$a0rule, OAnew = 130)
   
@@ -384,6 +384,7 @@ ccmppWPP_compute_WPP_outputs <- function(ccmpp_output, atr) {
                                        age_span    = birth_count_age_5x1$age_span,
                                        value = birth_count_age_5x1$value/
                                          exposure_count_age_sex_5x1$value[which(exposure_count_age_sex_5x1$sex == "female")])
+
   # total fertility rate
   fert_rate_tot          <- sum_last_column(ccmpp_output$fert_rate_age_f[, c("time_start", "time_span", "value")])
   

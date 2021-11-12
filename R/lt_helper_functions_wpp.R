@@ -120,12 +120,13 @@ lt_complete_loop_over_time <- function(mx, sex, a0rule = "ak", OAnew = 130) {
     
     n   <- n+1
     
+    maxage <- max(mx$age_start[which(mx$time_start == time)])
     lt <- DemoTools::lt_single_mx(nMx = mx$value[which(mx$time_start == time)],
                                   Age = mx$age_start[which(mx$time_start == time)],
                                   sex = substr(sex,1,1),
                                   a0rule = a0rule,
                                   OAnew = OAnew,
-                                  extrapLaw = "kannisto", extrapFit = 80:99, parS = c(A = 0.005, B = 0.13)) # here we set starting parameters for kannisto
+                                  extrapLaw = "kannisto", extrapFit = 80:(maxage-1), parS = c(A = 0.005, B = 0.13)) # here we set starting parameters for kannisto
     
     # The above gives a warning message and I'm not sure why.  Still seems to work though:
     # Warning message:

@@ -556,7 +556,6 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
 
   # set attributes
   attributes <- attributes(ccmpp_output)
-  attr(inputs, "revision") <- attributes$revision
   attr(inputs, "locid") <- attributes$locid
   attr(inputs, "locname") <- attributes$locname
   attr(inputs, "variant") <- "medium"
@@ -565,5 +564,446 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
   return(inputs)
 
 }
+
+# THIS FUNCTION PREPARES THE INPUT FILES FOR EACH OF THE DETERMINISTIC PROJECTION VARIANT SCENARIOS
+
+#' Derive inputs needed for deterministic projection variants
+#'
+#' @description Returns a list of age specific fertility rates and life table values needed as inputs to the 
+#' deterministic projection variants, including low, high and constant fertility, instant replacement fertility and
+#' momentum, and constant mortality 
+#'
+#' @author Sara Hertog
+#'
+#' @param medium_variant_outputs list of data frames. medium variant output from the ccmppWPP_workflow_one_country_variant function
+#'
+#' @details accesses the global model in the data frame "pasfr_global_model" needed to infer pasfr from tfr
+#'
+#' @return a list of data frames
+#' @export
+#' 
+
+ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
+                                           ccmppWPP_medium,
+                                           PasfrGlobalNorm) {
+  
+  
+  # create vector of projection time_starts
+  projection_times <- unique(ccmppWPP_medium$fert_rate_tot$time_start)
+  projection_start_year <- projection_times[1]
+  
+  # extract pasfr estimates
+  pasfr_df <- ccmppWPP_estimates$fert_pct_age_1x1[ccmppWPP_estimates$fert_pct_age_1x1$age_start %in% c(10:54),
+                                                  c("time_start", "age_start", "value")]
+  pasfr_estimates <- reshape(pasfr_df, idvar = "age_start", timevar = "time_start", direction = "wide")
+  pasfr_estimates <- as.matrix(pasfr_estimates[,c(2:ncol(pasfr_estimates))])
+  rownames(pasfr_estimates) <- unique(pasfr_df$age_start)
+  colnames(pasfr_estimates) <- unique(pasfr_df$time_start)
+  
+  # extract tfr estimates
+  tfr_est <- ccmppWPP_estimates$fert_rate_tot$value
+  names(tfr_est) <- colnames(pasfr_estimates)
+  
+  # fill-in zeros for ages < 10 and > 54
+  asfr_0_9 <- matrix(0.0, nrow=length(0:9), ncol = length(projection_times), dimnames = list(0:9, projection_times))
+  asfr_55_100 <- matrix(0.0, nrow=length(55:100), length(projection_times), dimnames = list(55:100, projection_times))
+  
+  ############################
+  ############################
+  # compute asfr inputs for low/high fertility variants
+  
+  # extract medium variant tfr
+  tfr_med <- ccmppWPP_medium$fert_rate_tot$value
+  names(tfr_med) <- projection_times
+  
+  #    for tfr adjustment, subtract/add 0.25 children in first five years, 0.4 children in next five years, 0.5 children thereafter
+  tfr_adj <- rep(0.5, length(projection_times))
+  tfr_adj[which(projection_times >= projection_start_year & projection_times < projection_start_year+5)] <- 0.25
+  tfr_adj[which(projection_times >= projection_start_year+5 & projection_times < projection_start_year+10)] <- 0.40
+  
+  #    compute asfr for low-fertility variant
+  tfr_low <- tfr_med - tfr_adj
+  
+  pasfr_low <- pasfr_given_tfr(PasfrGlobalNorm = PasfrGlobalNorm,
+                               pasfr_observed = pasfr_estimates,
+                               tfr_observed_projected = c(tfr_est, tfr_low),
+                               years_projection = projection_times,
+                               num_points = 15)
+  
+  asfr_low <- t(tfr_low * t(pasfr_low/100))
+  asfr_low <- rbind(asfr_0_9,  asfr_low, asfr_55_100)
+  
+  # transform to long data frame
+  fert_rate_age_f_low <- as.data.frame(asfr_low)
+  fert_rate_age_f_low$age_start <- as.numeric(row.names(asfr_low))
+  fert_rate_age_f_low <- reshape(fert_rate_age_f_low, 
+                                 idvar = "age_start", 
+                                 direction = "long", 
+                                 varying = list(names(fert_rate_age_f_low)[1:(ncol(fert_rate_age_f_low)-1)]), 
+                                 times = names(fert_rate_age_f_low)[1:(ncol(fert_rate_age_f_low)-1)], 
+                                 timevar = "time_start",
+                                 v.names = "value")
+  fert_rate_age_f_low$age_span <- ifelse(fert_rate_age_f_low$age_start < 100, 1, 1000)
+  fert_rate_age_f_low$time_span <- 1
+  
+  
+  #    compute asfr for high-fertility variant
+  tfr_high <- tfr_med + tfr_adj
+  
+  pasfr_high <- pasfr_given_tfr(PasfrGlobalNorm = PasfrGlobalNorm,
+                                pasfr_observed = pasfr_estimates,
+                                tfr_observed_projected = c(tfr_est, tfr_high),
+                                years_projection = projection_times,
+                                num_points = 15)
+  
+  asfr_high <- t(tfr_high * t(pasfr_high/100))
+  asfr_high <- rbind(asfr_0_9,  asfr_high, asfr_55_100)
+  
+  # transform to long data frame
+  fert_rate_age_f_high <- as.data.frame(asfr_high)
+  fert_rate_age_f_high$age_start <- as.numeric(row.names(asfr_high))
+  fert_rate_age_f_high <- reshape(fert_rate_age_f_high, 
+                                  idvar = "age_start", 
+                                  direction = "long", 
+                                  varying = list(names(fert_rate_age_f_high)[1:(ncol(fert_rate_age_f_high)-1)]), 
+                                  times = names(fert_rate_age_f_high)[1:(ncol(fert_rate_age_f_high)-1)], 
+                                  timevar = "time_start",
+                                  v.names = "value")
+  fert_rate_age_f_high$age_span <- ifelse(fert_rate_age_f_high$age_start < 100, 1, 1000)
+  fert_rate_age_f_high$time_span <- 1
+  
+  ############################
+  ############################
+  # extract asfr inputs for constant-fertility variant (constant at last estimated)
+  
+  asfr_last_observed <- ccmppWPP_estimates$fert_rate_age_1x1[ccmppWPP_estimates$fert_rate_age_1x1$time_start == projection_start_year-1,]
+  fert_rate_age_f_constant <- NULL
+  for (i in 1:length(projection_times)) {
+    asfr_add <- asfr_last_observed
+    asfr_add$time_start <- projection_times[i]
+    fert_rate_age_f_constant <- rbind(fert_rate_age_f_constant, asfr_add)
+  }
+  
+  ############################
+  ############################
+  #    compute asfr for instant replacement fertility (NRR = 1)
+  
+  fert_rate_age_f_instant <- list()
+  for (i in 1:length(projection_times)) {
+    
+    srb_time              <- ccmppWPP_medium$srb[ccmppWPP_medium$srb$time_start == projection_times[i],]
+    fert_rate_age_f_time  <- ccmppWPP_medium$fert_rate_age_1x1[ccmppWPP_medium$fert_rate_age_1x1$time_start == projection_times[i],]
+    lx_f_time             <- ccmppWPP_medium$lt_complete_age_sex[ccmppWPP_medium$lt_complete_age_sex$time_start == projection_times[i] & 
+                                                                   ccmppWPP_medium$lt_complete_age_sex$indicator == "lt_lx" & 
+                                                                   ccmppWPP_medium$lt_complete_age_sex$sex == "female",]
+    # interpolate lx to middle of each age group
+    lx_f_mid           <- (lx_f_time$value + c(lx_f_time$value[2:length(lx_f_time$value)],NA))/2
+    # compute female births implied by lx_f_mid, period asfr and period srb
+    births_f_age       <- (lx_f_mid * fert_rate_age_f_time$value) * (1/(1+srb_time$value))
+    births_f_age       <- births_f_age[!is.na(births_f_age)]
+    # compute scaling factor needed to achieve NRR=1
+    scaling_factor    <- 100000/sum(births_f_age)
+    # compute instant replacement asfr by multiplying period asfr by scaling factor
+    fert_rate_age_f_time$value   <- fert_rate_age_f_time$value * scaling_factor
+    fert_rate_age_f_instant[[i]] <- fert_rate_age_f_time
+    
+  }
+  fert_rate_age_f_instant <- do.call(rbind, fert_rate_age_f_instant)
+  
+  ############################
+  ############################
+  # extract life table inputs for constant-mortality variant
+  
+  # take sex-specific life tables from last observed period
+  lt_last_observed <- ccmppWPP_estimates$lt_complete_age_sex[ccmppWPP_estimates$lt_complete_age_sex$time_start == projection_start_year-1 & 
+                                                               ccmppWPP_estimates$lt_complete_age_sex$sex %in% c("male","female"),]
+  # initialize constant-mortality output
+  lt_constant <- list()
+  # repeat starting period sex-specific life table for each period in projection horizon
+  for (i in 1:length(projection_times)) {
+    
+    lt_time            <- lt_last_observed
+    lt_time$time_start <- projection_times[i]
+    lt_constant[[i]]   <- lt_time
+    
+  }
+  # assemble life table outputs into one data frame
+  life_table_age_sex_constant <- do.call(rbind, lt_constant)
+  
+  ############################
+  ############################
+  #    compute asfr for momentum (constant mortality and NRR = 1)
+  
+  fert_rate_age_f_momentum <- list()
+  for (i in 1:length(projection_times)) {
+    
+    srb_time              <- ccmppWPP_medium$srb[ccmppWPP_medium$srb$time_start == projection_times[i],]
+    fert_rate_age_f_time  <- ccmppWPP_medium$fert_rate_age_1x1[ccmppWPP_medium$fert_rate_age_1x1$time_start == projection_times[i],]
+    lx_f_time             <- life_table_age_sex_constant[life_table_age_sex_constant$time_start == projection_times[i] & 
+                                                           life_table_age_sex_constant$indicator=="lt_lx" & 
+                                                           life_table_age_sex_constant$sex=="female",]
+    # interpolate lx to middle of each age group
+    lx_f_mid            <- (lx_f_time$value + c(lx_f_time$value[2:length(lx_f_time$value)],NA))/2
+    # compute female births implied by lx_mid, period asfr and period srb
+    births_f_age       <- (lx_f_mid * fert_rate_age_f_time$value) * (1/(1+srb_time$value))
+    births_f_age       <- births_f_age[!is.na(births_f_age)]
+    # compute scaling factor needed to achieve NRR=1
+    scaling_factor    <- 100000/sum(births_f_age)
+    # compute instant replacement asfr by multiplying period asfr by scaling factor
+    fert_rate_age_f_time$value   <- fert_rate_age_f_time$value * scaling_factor
+    fert_rate_age_f_momentum[[i]] <- fert_rate_age_f_time
+    
+  }
+  fert_rate_age_f_momentum <- do.call(rbind, fert_rate_age_f_momentum)
+  
+  ### QUESTION: DO WE HOLD SRB CONSTANT AT 2020 LEVEL OVER INSTANT REPLACEMENT AND MOMENTUM SCENARIOS
+  ### OR USE MEDIUM VARIANT SRB EVEN IF IT CHANGES OVER THE PROJECTION HORIZON?
+  ### CURRENT IMPLEMENTATION IS USING THE MEDIUM VARIANT SRB
+  
+  # assemble the ccmppWPP input objects needed for deterministic variants
+  
+  pop_count_age_sex_base <- ccmppWPP_estimates$pop_count_age_sex_1x1[ccmppWPP_estimates$pop_count_age_sex_1x1$time_start == projection_start_year &
+                                                                       ccmppWPP_estimates$pop_count_age_sex_1x1$sex %in% c("male", "female"),]
+  
+  # make a dummy filler for migration rates since these are not operationalized yet
+  mig_net_rate_age_sex = ccmppWPP_medium$mig_net_count_age_sex_1x1[ccmppWPP_medium$mig_net_count_age_sex_1x1$sex %in% c("male","female"),]
+  mig_net_rate_age_sex$value <- 0
+  mig_net_count_tot_b <- ccmppWPP_medium$mig_net_count_tot_sex[ccmppWPP_medium$mig_net_count_tot_sex$sex == "both", 
+                                                               names(ccmppWPP_medium$mig_net_count_tot_sex) != "sex"]
+  
+  # all inputs same as medium variant, except asfr, which are low
+  inputs_low <- list(pop_count_age_sex_base = pop_count_age_sex_base,
+                     life_table_age_sex = ccmppWPP_medium$lt_complete_age_sex[ccmppWPP_medium$lt_complete_age_sex$sex %in% c("male","female"),],
+                     fert_rate_age_f = fert_rate_age_f_low,
+                     srb = ccmppWPP_medium$srb,
+                     mig_net_count_age_sex = ccmppWPP_medium$mig_net_count_age_sex_1x1[ccmppWPP_medium$mig_net_count_age_sex_1x1$sex %in% c("male","female"),],
+                     mig_net_rate_age_sex = mig_net_rate_age_sex,
+                     mig_net_count_tot_b = mig_net_count_tot_b,
+                     mig_parameter = ccmppWPP_medium$mig_parameter)
+  
+  # assign attributes
+  attr(inputs_low, "revision") <- attributes(ccmppWPP_estimates)$revision
+  attr(inputs_low, "locid") <- attributes(ccmppWPP_estimates)$locid
+  attr(inputs_low, "variant") <- "low fertility"
+  
+  
+  # same as medium variant, but with high asfr
+  inputs_high <- inputs_low
+  inputs_high$fert_rate_age_f <- fert_rate_age_f_high
+  # assign attributes
+  attr(inputs_high, "revision") <- attributes(ccmppWPP_estimates)$revision
+  attr(inputs_high, "locid") <- attributes(ccmppWPP_estimates)$locid
+  attr(inputs_high, "variant") <- "high fertility"
+  
+  # same as medium variant, but with constant asfr
+  inputs_constant <- inputs_low
+  inputs_constant$fert_rate_age_f <- fert_rate_age_f_constant
+  # assign attributes
+  attr(inputs_constant, "revision") <- attributes(ccmppWPP_estimates)$revision
+  attr(inputs_constant, "locid") <- attributes(ccmppWPP_estimates)$locid
+  attr(inputs_constant, "variant") <- "constant fertility"
+  
+  # instant replacement same as medium variant, but with instant replacement asfr
+  inputs_instant <- inputs_low
+  inputs_instant$fert_rate_age_f <- fert_rate_age_f_instant
+  # assign attributes
+  attr(inputs_instant, "revision") <- attributes(ccmppWPP_estimates)$revision
+  attr(inputs_instant, "locid") <- attributes(ccmppWPP_estimates)$locid
+  attr(inputs_instant, "variant") <- "instant replacement"
+  
+  # momentum is instant replacement asfr, constant mortality, zero migration
+  inputs_momentum <- inputs_instant
+  inputs_instant$life_table_age_sex <- life_table_age_sex_constant
+  inputs_instant$mig_net_count_age_sex$value <- 0
+  inputs_instant$mig_net_count_tot_b$value <- 0
+  # assign attributes
+  attr(inputs_momentum, "revision") <- attributes(ccmppWPP_estimates)$revision
+  attr(inputs_momentum, "locid") <- attributes(ccmppWPP_estimates)$locid
+  attr(inputs_momentum, "variant") <- "momentum"
+  
+  # no change is medium inputs with constant fertility and constant mortality
+  inputs_nochange <- inputs_constant
+  inputs_nochange$life_table_age_sex <- life_table_age_sex_constant
+  # assign attributes
+  attr(inputs_nochange, "revision") <- attributes(ccmppWPP_estimates)$revision
+  attr(inputs_nochange, "locid") <- attributes(ccmppWPP_estimates)$locid
+  attr(inputs_nochange, "variant") <- "no change"
+  
+  # constant mortality is same as medium variant but with constant life tables
+  inputs_constant_mort <- inputs_nochange
+  inputs_constant_mort$fert_rate_age_f <- ccmppWPP_medium$fert_rate_age_1x1
+  # assign attributes
+  attr(inputs_constant_mort, "revision") <- attributes(ccmppWPP_estimates)$revision
+  attr(inputs_constant_mort, "locid") <- attributes(ccmppWPP_estimates)$locid
+  attr(inputs_constant_mort, "variant") <- "constant mortality"
+  
+  # zero migration is medium inputs but zero migration
+  inputs_nomig <- inputs_low
+  inputs_nomig$fert_rate_age_f <- ccmppWPP_medium$fert_rate_age_1x1
+  inputs_nomig$mig_net_count_age_sex$value <- 0
+  inputs_nomig$mig_net_count_tot_b$value <- 0
+  # assign attributes
+  attr(inputs_nomig, "revision") <- attributes(ccmppWPP_estimates)$revision
+  attr(inputs_nomig, "locid") <- attributes(ccmppWPP_estimates)$locid
+  attr(inputs_nomig, "variant") <- "zero migration"
+  
+  
+  
+  variant_inputs <- list(low_fert = inputs_low,
+                         high_fert = inputs_high,
+                         constant_fert = inputs_constant,
+                         instant_replace = inputs_instant,
+                         momentum = inputs_momentum,
+                         no_change = inputs_nochange,
+                         constant_mort = inputs_constant,
+                         zero_mig = inputs_nomig)
+  
+  return(variant_inputs)
+}
+
+
+
+# THIS FUNCTION PERFORMS A BASEPOP ADJUSTMENT TO 1950 POPULATION SO THAT POP COUNTS ARE CONSISTENT WITH FERT AND MORT
+
+#' Adjust base population children for consistency with fertility and mortality
+#'
+#' @description Invokes DemoTools::basepop_five to adjust counts of children under age 10 to be consistent with 1950
+#' fertility and mortality
+#'
+#' @author Sara Hertog
+#'
+#' @param input_file_path character string pointing to excel input file
+#'
+#' @details uses life tables, asfr and srb from the excel input file
+#'
+#' @return data frame with adjusted 1950 base population
+#' @export
+#' 
+basepop_adjust_1950_population <- function(pop_count_age_sex_base,
+                                           input_file_path) {
+  
+  # read metadata from parameters sheet of excel input file
+  meta <-   readxl::read_xlsx(path = input_file_path,
+                              sheet = "parameters")
+  
+  meta <- meta %>%
+    dplyr::select(parameter, value) %>%
+    dplyr::filter(!is.na(parameter))
+  
+  meta.list <- list()
+  for (i in 1:nrow(meta)) {
+    meta.list[[i]] <- ifelse(!is.na(suppressWarnings(as.numeric(meta$value[i]))), as.numeric(meta$value[i]), meta$value[i])
+    names(meta.list)[i] <- gsub(" ", "_", meta$parameter[i])
+  }
+  rm(meta)
+
+  # import life tables from excel input file
+  life_table_age_sex <-   readxl::read_xlsx(path = input_file_path, sheet = "life_table_age_sex") 
+  # import age specific fertility rates from excel input file
+  fert_rate_age_f <-   readxl::read_xlsx(path = input_file_path, sheet = "fert_rate_age_f") 
+  # import sex ratios at birth from excel input file
+  srb <-   readxl::read_xlsx(path = input_file_path, sheet = "srb")
+  
+  # parse nLx for males and females transform into the matrices needed for basepop
+  nLxDatesIn <- 1950.0 - c(0.5, 2.5, 7.5)
+  
+  nLxMatMale <- life_table_age_sex %>% 
+    dplyr::filter(indicator == "lt_nLx" & sex == "male" & time_start == 1950) %>% 
+    select(value) %>% 
+    apply(MARGIN = 2, FUN = function(S) {DemoTools::single2abridged(Age = S)}) %>%
+    as.data.frame() %>% 
+    mutate(value2 = value,
+           value3 = value) %>% 
+    as.matrix()
+  colnames(nLxMatMale) <- nLxDatesIn
+  
+  nLxMatFemale <- life_table_age_sex %>% 
+    dplyr::filter(indicator == "lt_nLx" & sex == "female" & time_start == 1950) %>% 
+    select(value) %>% 
+    apply(MARGIN = 2, FUN = function(S) {DemoTools::single2abridged(Age = S)}) %>%
+    as.data.frame() %>% 
+    mutate(value2 = value,
+           value3 = value) %>% 
+    as.matrix()
+  colnames(nLxMatFemale) <- nLxDatesIn
+  
+  radix <- life_table_age_sex$value[life_table_age_sex$indicator=="lt_lx" & 
+                                      life_table_age_sex$age_start == 0][1]
+  
+  # parse ASFR and transform into the matrix needed for basepop
+  
+  AsfrMat <- fert_rate_age_f[, c("time_start", "age_start", "value")] 
+  
+  AsfrMat <- AsfrMat %>% 
+    filter(time_start == 1950) %>% 
+    mutate(age5 = 5 * floor(age_start/5)) %>% 
+    group_by(age5) %>% 
+    summarise(asfr = mean(value)) %>% 
+    dplyr::filter(age5 >=15 & age5 <= 45) %>% 
+    mutate(asfr2 = asfr,
+           asfr3 = asfr) %>% 
+    select(-age5) %>% 
+    as.matrix()
+  
+  colnames(AsfrMat) <- nLxDatesIn
+  rownames(AsfrMat) <- seq(15,45,5)
+  AsfrDatesIn <- nLxDatesIn 
+  
+  # get SRB
+  SRBDatesIn <- floor(1950.5 - c(0.5, 2.5, 7.5))
+  
+  parse_columns <- ifelse(SRBDatesIn < 1950, 1950, SRBDatesIn)
+  
+  SRB <- NULL
+  for (k in 1:length(parse_columns)) {
+    SRB <- c(SRB, srb$value[srb$time_start == parse_columns[k]])
+  }
+  SRBDatesIn <- SRBDatesIn + 0.5
+  
+  
+  popin <- pop_count_age_sex_base %>% 
+    mutate(value = replace(value, is.na(value), 0)) %>% 
+    arrange(sex, age_start)
+  Age1 <- popin$age_start[popin$sex == "male"]
+  popM <- popin$value[popin$sex=="male"]
+  popF <- popin$value[popin$sex=="female"]
+  
+  # group to abridged age groups
+  popM_abr <- DemoTools::single2abridged(popM)
+  popF_abr <- DemoTools::single2abridged(popF)
+  Age_abr  <- as.numeric(row.names(popM_abr))
+  
+  # run basepop_five()
+  BP1 <- DemoTools::basepop_five(location = meta.list$LocationID,
+                                 refDate = 1950.0,
+                                 Age = Age_abr,
+                                 Females_five = popF_abr,
+                                 Males_five = popM_abr, 
+                                 nLxFemale = nLxMatFemale,
+                                 nLxMale   = nLxMatMale,
+                                 nLxDatesIn = nLxDatesIn,
+                                 AsfrMat = AsfrMat,
+                                 AsfrDatesIn = AsfrDatesIn,
+                                 SRB = SRB,
+                                 SRBDatesIn = SRBDatesIn,
+                                 radix = radix,
+                                 verbose = FALSE)
+  
+  # graduate result to single year of age
+  popM_BP1 <- DemoTools::graduate_mono(Value = BP1[[2]], Age = Age_abr, AgeInt = DemoTools::age2int(Age_abr), OAG = TRUE)
+  popF_BP1 <- DemoTools::graduate_mono(Value = BP1[[1]], Age = Age_abr, AgeInt = DemoTools::age2int(Age_abr), OAG = TRUE)
+  
+  popM_out <- c(popM_BP1[1:10],popM[11:length(popM)])
+  popF_out <- c(popF_BP1[1:10],popF[11:length(popF)])
+  
+  popout <- popin %>% 
+    mutate(value = replace(value, sex == "male", round(popM_out)),
+           value = replace(value, sex == "female", round(popF_out)))
+  
+ return(popout)
+  
+}
+
+
 
 

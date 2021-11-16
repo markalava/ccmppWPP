@@ -240,6 +240,9 @@ ccmppWPP_input_file_extend <- function(ccmppWPP_inputs, OAnew = 130, a0rule = "a
     pop_count_age_sex_base <- pop_in
   }
   rm(ages,maxage)
+  
+  # replace any zero values with a very small number
+  pop_count_age_sex_base$value[pop_count_age_sex_base$value == 0] <- 0.00001
 
   ############
   # age-specific fertility rates

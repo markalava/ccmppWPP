@@ -1007,6 +1007,163 @@ basepop_adjust_1950_population <- function(pop_count_age_sex_base,
   
 }
 
+# THIS FUNCTION BACK PROJECTS A CENSUS POPULATION TO JANUARY 1 1950
+
+#' Adjust base population children for consistency with fertility and mortality
+#'
+#' @description Back projects from census one year at a time using input survival ratios, then interpolates to 1 Jan 1950
+#'
+#' @author Sara Hertog
+#'
+#' @param census_protocol_adjusted data frame with census population by single year of age and sex output from census adjustment protocol
+#' @param census_reference_date numeric. census reference date as decimal
+#' @param life_table_age_sex data frame. the life_table_age_sex table from input file
+#'
+#' @details extends both population and life tables to oag = 130+; NO INTERNATIONAL MIGRATION
+#'
+#' @return data frame with 1950 base population back projected from the earliest census
+#' @export
+#' 
+
+census_back_project_1950 <- function(census_protocol_adjusted, census_reference_date, life_table_age_sex) {
+  
+  lts <- life_table_age_sex[life_table_age_sex$time_start <= census_reference_date,]
+  lts <- lts[order(lts$time_start, lts$sex, lts$indicator, lts$age_start),]
+  age_max <- max(lts$age_start)
+  if (age_max < 130) {
+    lts$id <- paste(lts$time_start, lts$sex, sep = " - ")
+    ids <- unique(lts$id)
+    
+    lts_new <- list()
+    for (i in 1:length(ids)) {
+      df <- lts[lts$id == ids[i] & lts$indicator == "lt_nMx",]
+      df_ext <- DemoTools::lt_single_mx(nMx = df$value, Age = df$age_start, Sex = substr(df$sex[1],1,1), OAnew = 130,
+                                        extrapFit = 90:age_max, extrapFrom = age_max, extrapLaw = "Kannisto")
+      
+      nMx_max1 <- ifelse(df_ext$nMx<1, df_ext$nMx, 1)
+      df_ext1 <- DemoTools::lt_single_mx(nMx = nMx_max1, Age = df_ext$Age, Sex = substr(df$sex[1],1,1), OAnew = 130)
+      
+      df_ext1 <- reshape(df_ext1, idvar = c("Age", "AgeInt"), 
+                         direction = "long", 
+                         times = paste0("lt_",names(df_ext1)[3:11]), timevar = "indicator",
+                         varying = list(names(df_ext1)[3:11]), v.names = "value")
+      
+      df_ext1$time_start <- df$time_start[1]
+      df_ext1$time_span <- df$time_span[1]
+      df_ext1$sex <- df$sex[1]
+      df_ext1$age_start <- df_ext1$Age
+      df_ext1$age_span <- df_ext1$AgeInt
+      df_ext1 <- df_ext1[,names(df)[1:7]]
+      
+      lts_new[[i]] <- df_ext1
+    }
+    lts <- do.call(rbind,lts_new)
+  }
+  
+  # extend census population to OAG 130+
+  census_extended_M <- DemoTools::OPAG(Pop = census_protocol_adjusted$DataValue[census_protocol_adjusted$SexID == 1],
+                                       Age_Pop = census_protocol_adjusted$AgeStart[census_protocol_adjusted$SexID == 1],
+                                       nLx = lts$value[lts$time_start == max(floor(census_reference_date),1950) & 
+                                                         lts$sex == "male" & lts$indicator == "lt_nLx"],
+                                       Age_nLx = 0:130)$Pop_out
+  
+  census_extended_F <- DemoTools::OPAG(Pop = census_protocol_adjusted$DataValue[census_protocol_adjusted$SexID == 2],
+                                       Age_Pop = census_protocol_adjusted$AgeStart[census_protocol_adjusted$SexID == 2],
+                                       nLx = lts$value[lts$time_start == max(floor(census_reference_date),1950) & 
+                                                         lts$sex == "female" & lts$indicator == "lt_nLx"],
+                                       Age_nLx = 0:130)$Pop_out
+  
+  # get reference years for back projection
+  back_dts <- census_reference_date-(1:(census_reference_date-1949))
+  
+  # create a matrix to store population by age back projected
+  popM_back <- as.matrix(census_extended_M)
+  colnames(popM_back) <- census_reference_date
+  
+  popF_back <- as.matrix(census_extended_F)
+  colnames(popF_back) <- census_reference_date
+  
+  # initialize starting population
+  popM <- popM_back[,1]
+  popF <- popF_back[,1]
+  
+  # loop thru back dates, one year back at a time
+  for (i in 1:length(back_dts)) {
+    
+    # extract male Sx
+    Sx_age_m <- lts$value[lts$sex == "male" & lts$time_start == max(1950,floor(back_dts[i])) &
+                            lts$indicator == "lt_Sx"]
+    
+    # back project males one step
+    popM <- project_backwards_no_mig(pop_count_age_start = popM, Sx_age = Sx_age_m)
+    # add a 0 for the last age group (fine because there's no one this old in 1950)
+    popM <- c(popM,0)
+    names(popM) <- 0:130
+    
+    # extract female Sx
+    Sx_age_f <- lts$value[lts$sex == "female" & lts$time_start == max(1950,floor(back_dts[i])) &
+                            lts$indicator == "lt_Sx"]
+    
+    # back project females one step
+    popF <- project_backwards_no_mig(pop_count_age_start = popF, Sx_age = Sx_age_f)
+    # add a 0 for the last age group
+    popF <- c(popF,0)
+    names(popF) <- 0:130
+    
+    popM_back <- cbind(popM_back, popM)
+    colnames(popM_back)[i+1] <- back_dts[i]
+    
+    popF_back <- cbind(popF_back, popF)
+    colnames(popF_back)[i+1] <- back_dts[i]
+    
+  }
+  
+  # interpolate to 1 January 1950
+  
+  interpM <- DemoTools::interpolatePop(Pop1 = popM_back[,ncol(popM_back)],
+                                       Pop2 = popM_back[,ncol(popM_back)-1],
+                                       Date1 = as.numeric(colnames(popM_back)[ncol(popM_back)]),
+                                       Date2 = as.numeric(colnames(popM_back)[ncol(popM_back)-1]),
+                                       DesiredDate = 1950.0,
+                                       method = "linear")
+  
+  interpF <- DemoTools::interpolatePop(Pop1 = popF_back[,ncol(popF_back)],
+                                       Pop2 = popF_back[,ncol(popF_back)-1],
+                                       Date1 = as.numeric(colnames(popF_back)[ncol(popF_back)]),
+                                       Date2 = as.numeric(colnames(popF_back)[ncol(popF_back)-1]),
+                                       DesiredDate = 1950.0,
+                                       method = "linear")
+  
+  # assemble into a data frame
+  
+  pop_out <- data.frame(time_start = rep(1950, 262),
+                        time_span = rep(0,262),
+                        sex = c(rep("male", 131), rep("female", 131)),
+                        age_start = rep(0:130,2),
+                        age_span = rep(c(rep(1,130),1000),2),
+                        value = c(interpM, interpF))
+  
+  return(pop_out)
+  
+}
 
 
+project_backwards_no_mig <- function(pop_count_age_start,
+                                     Sx_age) {
+  
+  # check that lengths of inputs agree
+  check_length <- length(pop_count_age_start) == length(Sx_age)
+  if (isFALSE(check_length)) { stop("Input columns are not all the same length")}
+  
+  # get input ages
+  ages <- names(pop_count_age_start)
+  nage <- length(ages) # number of age groups
+  
+  # get backwards population 
+  pop_count_age_end <- pop_count_age_start[2:nage]/ Sx_age[1:(nage-1)]
+  names(pop_count_age_end) <- ages[1:nage-1]
+  
+  return(pop_count_age_end)
+  
+}
 

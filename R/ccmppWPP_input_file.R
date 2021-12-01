@@ -25,8 +25,7 @@ ccmppWPP_input_file_estimates <- function(input_file_path) {
 
   # base year population by sex and single year of age from 0:100
   pop_count_age_sex_base <- readxl::read_xlsx(path = input_file_path,
-                                              sheet = "pop_count_age_sex_base",
-                                              range = "A1:F203")
+                                              sheet = "pop_count_age_sex_base")
 
   # replace any NA values with 0
   pop_count_age_sex_base$value[is.na(pop_count_age_sex_base$value)] <- 0

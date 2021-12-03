@@ -20,6 +20,7 @@ death_cohort_period_to_age_period <- function(death_cohort_period,
   cohort_separation_factor <- (nLx_age_period[1:(nage-1)] - lx_age_period[2:nage]) / (nLx_age_period[1:(nage-1)] - nLx_age_period[2:(nage)])
   cohort_separation_factor[nage-1] <- (nLx_age_period[(nage-1)] - lx_age_period[nage]) / nLx_age_period[(nage-1)]
   cohort_separation_factor[nage] <- 1
+  cohort_separation_factor[is.na(cohort_separation_factor)] <- 1
   
   # compute deaths from period mortality rates by age and exposures
   death_age_period <- NULL

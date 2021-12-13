@@ -995,8 +995,13 @@ basepop_adjust_1950_population <- function(pop_count_age_sex_base,
   popM_BP1 <- DemoTools::graduate_mono(Value = BP1[[2]], Age = Age_abr, AgeInt = DemoTools::age2int(Age_abr), OAG = TRUE)
   popF_BP1 <- DemoTools::graduate_mono(Value = BP1[[1]], Age = Age_abr, AgeInt = DemoTools::age2int(Age_abr), OAG = TRUE)
   
-  popM_out <- c(popM_BP1[1:10],popM[11:length(popM)])
-  popF_out <- c(popF_BP1[1:10],popF[11:length(popF)])
+  # define childhood ages to be adjusted with basepop
+  adjust_basepop_1950_maxage <- as.numeric(meta.list$adjust_basepop_1950_maxage)
+  adjust_basepop_1950_maxage <- ifelse(length(adjust_basepop_1950_maxage)==0, 9, adjust_basepop_1950_maxage)
+  adjust_basepop_1950_maxage <- ifelse(is.na(adjust_basepop_1950_maxage), 9, adjust_basepop_1950_maxage)
+  
+  popM_out <- c(popM_BP1[1:(adjust_basepop_1950_maxage+1)],popM[(adjust_basepop_1950_maxage+2):length(popM)])
+  popF_out <- c(popF_BP1[1:(adjust_basepop_1950_maxage+1)],popF[(adjust_basepop_1950_maxage+2):length(popF)])
   
   popout <- popin %>% 
     mutate(value = replace(value, sex == "male", round(popM_out)),

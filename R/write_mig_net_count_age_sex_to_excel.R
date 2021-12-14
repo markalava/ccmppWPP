@@ -33,7 +33,7 @@ write_mig_net_count_age_sex_to_excel  <- function(input_file_path,
   openxlsx::writeData(wb, sheet = "update_status", update_status$last_update, startCol=3, startRow=2, colNames = FALSE, rowNames=FALSE)
 
   # save the workbook
-  openxlsx::saveWorkbook(wb, input_file_path, overwrite = T)
+  openxlsx::saveWorkbook(wb, input_file_path, overwrite = TRUE)
 
 }
 

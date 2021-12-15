@@ -1064,21 +1064,30 @@ census_back_project_1950 <- function(census_protocol_adjusted, census_reference_
     lts <- do.call(rbind,lts_new)
   }
   
+  # get reference years for back projection
+  back_dts <- census_reference_date-(1:(census_reference_date-1949))
+  
   # extend census population to OAG 130+
+  
+  redist_from_age <- max(65, census_adj_all[[1]]$age_redist_start - (length(back_dts) + 10))
+  
   census_extended_M <- DemoTools::OPAG(Pop = census_protocol_adjusted$DataValue[census_protocol_adjusted$SexID == 1],
                                        Age_Pop = census_protocol_adjusted$AgeStart[census_protocol_adjusted$SexID == 1],
                                        nLx = lts$value[lts$time_start == max(floor(census_reference_date),1950) & 
                                                          lts$sex == "male" & lts$indicator == "lt_nLx"],
-                                       Age_nLx = 0:130)$Pop_out
+                                       Age_nLx = 0:130,
+                                       Redistribute_from = redist_from_age,
+                                       OAnew = 130)$Pop_out
   
   census_extended_F <- DemoTools::OPAG(Pop = census_protocol_adjusted$DataValue[census_protocol_adjusted$SexID == 2],
                                        Age_Pop = census_protocol_adjusted$AgeStart[census_protocol_adjusted$SexID == 2],
                                        nLx = lts$value[lts$time_start == max(floor(census_reference_date),1950) & 
                                                          lts$sex == "female" & lts$indicator == "lt_nLx"],
-                                       Age_nLx = 0:130)$Pop_out
+                                       Age_nLx = 0:130,
+                                       Redistribute_from = redist_from_age,
+                                       OAnew = 130)$Pop_out
   
-  # get reference years for back projection
-  back_dts <- census_reference_date-(1:(census_reference_date-1949))
+  
   
   # create a matrix to store population by age back projected
   popM_back <- as.matrix(census_extended_M)

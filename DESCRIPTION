@@ -4,6 +4,7 @@ Version: 0.0.0.9000
 Authors@R: 
     c(person(given = "Mark",
            family = "Wheldon",
+	   middle = "C",
            role = c("aut", "cre"),
            email = "wheldon@un.org",
            comment = c(ORCID = "0000-0002-6897-9644")),

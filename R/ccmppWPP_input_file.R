@@ -25,27 +25,31 @@ ccmppWPP_input_file_estimates <- function(input_file_path) {
 
   # base year population by sex and single year of age from 0:100
   pop_count_age_sex_base <- readxl::read_xlsx(path = input_file_path,
-                                              sheet = "pop_count_age_sex_base")
+                                              sheet = "pop_count_age_sex_base",
+                                              n_max = 1048576)
 
   # replace any NA values with 0
   pop_count_age_sex_base$value[is.na(pop_count_age_sex_base$value)] <- 0
 
   # asfr by single year of mother's age and single year of time (jan 1 to dec 31)
   fert_rate_age_f <- readxl::read_xlsx(path = input_file_path,
-                                       sheet = "fert_rate_age_f")
+                                       sheet = "fert_rate_age_f",
+                                              n_max = 1048576)
   fert_rate_age_f <- fert_rate_age_f[fert_rate_age_f$time_start >= base_year & fert_rate_age_f$time_start < begin_proj_year,]
   # ensure sort by time_start and age_start
   fert_rate_age_f <- fert_rate_age_f[order(fert_rate_age_f$time_start, fert_rate_age_f$age_start),]
 
   # srb estimates by single year of time (jan 1 to dec 31)
   srb <- readxl::read_xlsx(path = input_file_path,
-                           sheet = "srb")
+                           sheet = "srb",
+                           n_max = 1048576)
   srb <- srb[srb$time_start >= base_year & srb$time_start < begin_proj_year,]
   # ensure sort by time_start
   srb <- srb[order(srb$time_start),]
 
   # read the mortality estimation parameters
-  MORT_PARAMS <- readxl::read_xlsx(path = input_file_path, sheet = "MORT_PARAMS")
+  MORT_PARAMS <- readxl::read_xlsx(path = input_file_path, sheet = "MORT_PARAMS",
+                                              n_max = 1048576)
   mp <- MORT_PARAMS[MORT_PARAMS$type == "Estimation", c(2,3)]
 
   # for classic model life table families, we use the Coale-Demeny a0 rule, otherwise we use Andreev-Kinkaid
@@ -57,7 +61,8 @@ ccmppWPP_input_file_estimates <- function(input_file_path) {
 
   # asfr by single year of mother's age and single year of time (jan 1 to dec 31)
   life_table_age_sex <- readxl::read_xlsx(path = input_file_path,
-                                       sheet = "life_table_age_sex")
+                                       sheet = "life_table_age_sex",
+                                              n_max = 1048576)
   life_table_age_sex <- life_table_age_sex[life_table_age_sex$time_start >= base_year & life_table_age_sex$time_start < begin_proj_year,]
   # ensure sort by time_start, sex and age_start
   life_table_age_sex <- life_table_age_sex[order(life_table_age_sex$time_start, life_table_age_sex$sex, life_table_age_sex$age_start),]
@@ -65,7 +70,8 @@ ccmppWPP_input_file_estimates <- function(input_file_path) {
   # net international migration
   # estimate of counts by sex and single year of age
   mig_net_count_age_sex <- readxl::read_xlsx(path = input_file_path,
-                                             sheet = "mig_net_count_age_sex")
+                                             sheet = "mig_net_count_age_sex",
+                                              n_max = 1048576)
   mig_net_count_age_sex$value[is.na(mig_net_count_age_sex$value)] <- 0
   mig_net_count_age_sex <- mig_net_count_age_sex[mig_net_count_age_sex$time_start >= base_year & mig_net_count_age_sex$time_start < begin_proj_year,]
   # ensure sort by time_start, sex and age_start
@@ -73,7 +79,8 @@ ccmppWPP_input_file_estimates <- function(input_file_path) {
 
   # totals (in case need to apply age distribution)
   mig_net_count_tot_b <- readxl::read_xlsx(path = input_file_path,
-                                           sheet = "mig_net_count_tot_b")
+                                           sheet = "mig_net_count_tot_b",
+                                              n_max = 1048576)
   mig_net_count_tot_b$value[is.na(mig_net_count_tot_b$value)] <- 0
   mig_net_count_tot_b <- mig_net_count_tot_b[mig_net_count_tot_b$time_start >= base_year & mig_net_count_tot_b$time_start < begin_proj_year,]
   # ensure sort by time_start
@@ -85,7 +92,8 @@ ccmppWPP_input_file_estimates <- function(input_file_path) {
 
   # parameters
   mig_parameter <- readxl::read_xlsx(path = input_file_path,
-                                     sheet = "mig_parameter")
+                                     sheet = "mig_parameter",
+                                              n_max = 1048576)
   # ensure sort by time_start
   mig_parameter <- mig_parameter[order(mig_parameter$time_start),]
 
@@ -356,7 +364,8 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
 
   # read metadata from parameters sheet of excel input file
   meta <-   readxl::read_xlsx(path = input_file_path,
-                              sheet = "parameters")
+                              sheet = "parameters",
+                              n_max = 1048576)
 
   meta <- meta %>%
     dplyr::select(parameter, value) %>%
@@ -474,7 +483,8 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
   names(e0m_projected) <- projection_years
 
   # extract mortality parameters from Excel input file
-  MORT_PARAMS <- readxl::read_xlsx(path = input_file_path, sheet = "MORT_PARAMS")
+  MORT_PARAMS <- readxl::read_xlsx(path = input_file_path, sheet = "MORT_PARAMS",
+                                              n_max = 1048576)
 
 
   Age_Mort_Proj_arguments <- list(Age_Mort_Proj_Method1 = MORT_PARAMS$value[MORT_PARAMS$parameter=="Age_Mort_Proj_Method1"],
@@ -887,7 +897,8 @@ basepop_adjust_1950_population <- function(pop_count_age_sex_base,
 
   # read metadata from parameters sheet of excel input file
   meta <-   readxl::read_xlsx(path = input_file_path,
-                              sheet = "parameters")
+                              sheet = "parameters",
+                                              n_max = 1048576)
 
   meta <- meta %>%
     dplyr::select(parameter, value) %>%
@@ -901,11 +912,14 @@ basepop_adjust_1950_population <- function(pop_count_age_sex_base,
   rm(meta)
 
   # import life tables from excel input file
-  life_table_age_sex <-   readxl::read_xlsx(path = input_file_path, sheet = "life_table_age_sex")
+  life_table_age_sex <-   readxl::read_xlsx(path = input_file_path, sheet = "life_table_age_sex",
+                                              n_max = 1048576)
   # import age specific fertility rates from excel input file
-  fert_rate_age_f <-   readxl::read_xlsx(path = input_file_path, sheet = "fert_rate_age_f")
+  fert_rate_age_f <-   readxl::read_xlsx(path = input_file_path, sheet = "fert_rate_age_f",
+                                              n_max = 1048576)
   # import sex ratios at birth from excel input file
-  srb <-   readxl::read_xlsx(path = input_file_path, sheet = "srb")
+  srb <-   readxl::read_xlsx(path = input_file_path, sheet = "srb",
+                                              n_max = 1048576)
 
   # parse nLx for males and females transform into the matrices needed for basepop
   nLxDatesIn <- 1950.0 - c(0.5, 2.5, 7.5)

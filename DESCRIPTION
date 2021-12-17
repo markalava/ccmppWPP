@@ -4,6 +4,7 @@ Version: 0.0.0.9000
 Authors@R: 
     c(person(given = "Mark",
            family = "Wheldon",
+	   middle = "C",
            role = c("aut", "cre"),
            email = "wheldon@un.org",
            comment = c(ORCID = "0000-0002-6897-9644")),
@@ -25,7 +26,7 @@ Suggests:
     rmarkdown,
     bookdown,
     DiagrammeR
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Imports:
     dplyr,
     tibble,
@@ -35,7 +36,8 @@ Imports:
     stringr,
     DemoTools,
     DDSQLtools,
-    MortCast
+    MortCast,
+    openxlsx
 Depends: 
     R (>= 2.10)
 VignetteBuilder: knitr

@@ -1082,6 +1082,17 @@ census_back_project_1950 <- function(census_protocol_adjusted, census_reference_
   
   # smooth the join point of the extension a bit
   
+  # if the value at the join point is lower than that of the previous age
+  if (census_extended_M[redist_from_age+1] < census_extended_M[redist_from_age]) {
+    census_extended_M[redist_from_age+1] <- (census_extended_M[redist_from_age] + census_extended_M[redist_from_age+2])/2
+    if (census_extended_M[redist_from_age+2] < census_extended_M[redist_from_age+1]) {
+      census_extended_M[redist_from_age+2] <- (census_extended_M[redist_from_age+1] + census_extended_M[redist_from_age+3])/2
+      if (census_extended_M[redist_from_age+3] < census_extended_M[redist_from_age+2]) {
+        census_extended_M[redist_from_age+3] <- (census_extended_M[redist_from_age+2] + census_extended_M[redist_from_age+4])/2
+      }
+    }
+  } else {
+  
   # identify the minimum age above the redist_from_age at which the difference between the value from extended and the 
   # previous age group value from original census is negative (such that population shrinks with age)
   nages <- length(census_protocol_adjusted$DataValue[census_protocol_adjusted$SexID == 1])
@@ -1090,12 +1101,15 @@ census_back_project_1950 <- function(census_protocol_adjusted, census_reference_
                         age_cen = 0:(nages-2),
                         cen = census_protocol_adjusted$DataValue[census_protocol_adjusted$SexID == 1][1:(nages-1)])
   compare$diff <- compare$ext - compare$cen
-  age_for_blend <- min(compare$age_ext[compare$age_ext >= redist_from_age & compare$diff <= 0])
+  compare$pct <- compare$diff/compare$cen *100
+  age_for_blend <- min(compare$age_ext[compare$age_ext >= redist_from_age & compare$pct <= -9])
   rm(compare)
   
   census_extended_M <- c(census_protocol_adjusted$DataValue[census_protocol_adjusted$SexID == 1][1:age_for_blend],
                          census_extended_M[(age_for_blend+1):131])
   names(census_extended_M) <- 0:130
+  
+  }
   
 
   census_extended_F <- DemoTools::OPAG(Pop = census_protocol_adjusted$DataValue[census_protocol_adjusted$SexID == 2],
@@ -1108,6 +1122,17 @@ census_back_project_1950 <- function(census_protocol_adjusted, census_reference_
   
   # smooth the join point of the extension a bit
   
+  # if the value at the join point is lower than that of the previous age
+  if (census_extended_F[redist_from_age+1] < census_extended_F[redist_from_age]) {
+    census_extended_F[redist_from_age+1] <- (census_extended_F[redist_from_age] + census_extended_F[redist_from_age+2])/2
+    if (census_extended_F[redist_from_age+2] < census_extended_F[redist_from_age+1]) {
+      census_extended_F[redist_from_age+2] <- (census_extended_F[redist_from_age+1] + census_extended_F[redist_from_age+3])/2
+      if (census_extended_F[redist_from_age+3] < census_extended_F[redist_from_age+2]) {
+        census_extended_F[redist_from_age+3] <- (census_extended_F[redist_from_age+2] + census_extended_F[redist_from_age+4])/2
+      }
+    }
+  } else {
+  
   # identify the minimum age above the redist_from_age at which the difference between the value from extended and the 
   # previous age group value from original census is negative (such that population shrinks with age)
   nages <- length(census_protocol_adjusted$DataValue[census_protocol_adjusted$SexID == 2])
@@ -1116,13 +1141,15 @@ census_back_project_1950 <- function(census_protocol_adjusted, census_reference_
                         age_cen = 0:(nages-2),
                         cen = census_protocol_adjusted$DataValue[census_protocol_adjusted$SexID == 2][1:(nages-1)])
   compare$diff <- compare$ext - compare$cen
-  age_for_blend <- min(compare$age_ext[compare$age_ext >= redist_from_age & compare$diff <= 0])
+  compare$pct <- compare$diff/compare$cen *100
+  age_for_blend <- min(compare$age_ext[compare$age_ext >= redist_from_age & compare$pct <= -9])
   rm(compare)
   
   census_extended_F <- c(census_protocol_adjusted$DataValue[census_protocol_adjusted$SexID == 2][1:age_for_blend],
                          census_extended_F[(age_for_blend+1):131])
   names(census_extended_F) <- 0:130
 
+  }
 
 
   # create a matrix to store population by age back projected

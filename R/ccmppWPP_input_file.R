@@ -124,8 +124,9 @@ ccmppWPP_input_file_extend <- function(ccmppWPP_inputs, OAnew = 130, a0rule = "a
   ages  <- unique(lt_in$age_start)
   maxage <- max(ages)
 
-  # if the OA is less then OAnew, then extend the life tables to OAnew
+  
   lts <- NULL
+  # if the OA is less than OAnew, then extend the life tables to OAnew
   if (maxage < OAnew) {
     for (i in unique(lt_in$time_start)) {
       mxM <- lt_in$value[lt_in$indicator == "lt_nMx" & lt_in$sex == "male" & lt_in$time_start == i]
@@ -149,6 +150,26 @@ ccmppWPP_input_file_extend <- function(ccmppWPP_inputs, OAnew = 130, a0rule = "a
 
       lts <- rbind(lts,lt)
     }
+    }
+    
+    # if the OA is greater than OAnew, then truncate life tables to OAnew
+    if (maxage > OAnew) {
+      for (i in unique(lt_in$time_start)) {
+        mxM <- lt_in$value[lt_in$indicator == "lt_nMx" & lt_in$sex == "male" & lt_in$time_start == i]
+        names(mxM) <- ages
+        mxF <- lt_in$value[lt_in$indicator == "lt_nMx" & lt_in$sex == "female" & lt_in$time_start == i]
+        names(mxF) <- ages
+        
+        lt_m <- DemoTools::lt_single_mx(nMx = mxM, Age = 0:maxage, a0rule = a0rule, Sex = "m", OAG = TRUE, OAnew = OAnew)
+        lt_m$sex <- "male"
+        lt_f <- DemoTools::lt_single_mx(nMx = mxF, Age = 0:maxage, a0rule = a0rule, Sex = "f", OAG = TRUE, OAnew = OAnew)
+        lt_f$sex <- "female"
+        
+        lt <- rbind(lt_m, lt_f)
+        lt$time_start <- i
+        
+        lts <- rbind(lts,lt)
+      }
 
     lts$AgeInt[is.na(lts$AgeInt)] <- 1000
 
@@ -162,7 +183,9 @@ ccmppWPP_input_file_extend <- function(ccmppWPP_inputs, OAnew = 130, a0rule = "a
     names(life_table_age_sex)[c(1,2)] <- c("age_start", "age_span")
     life_table_age_sex$time_span <- 1
 
-  } else {
+    } 
+  
+  if (maxage == OAnew) {
 
     # check to see that all of the life table columns are present
     ltnames <- c("lt_nMx","lt_nqx","lt_lx","lt_nAx","lt_ndx","lt_nLx","lt_Tx","lt_Sx","lt_ex")
@@ -236,7 +259,23 @@ ccmppWPP_input_file_extend <- function(ccmppWPP_inputs, OAnew = 130, a0rule = "a
                                          sex = c(rep("female", OAnew + 1),rep("male", OAnew + 1)),
                                          value = c(pop_count_age_sex_f, pop_count_age_sex_m))
     pop_count_age_sex_base$age_span[pop_count_age_sex_base$age_start == OAnew] <- 1000
-  } else {
+  } 
+  
+  if (maxage > OAnew) {
+    # truncate back to OAnew, aggregating OAG
+    pop_count_age_sex_m <- DemoTools::groupOAG(Value = pop_in$value[pop_in$sex == "male"], Age = pop_in$age_start[pop_in$sex == "male"], OAnew = OAnew)
+    pop_count_age_sex_f <- DemoTools::groupOAG(Value = pop_in$value[pop_in$sex == "female"], Age = pop_in$age_start[pop_in$sex == "female"], OAnew = OAnew)
+    pop_count_age_sex_base <- data.frame(time_start = rep(pop_in$time_start[1], (OAnew + 1) * 2),
+                                         time_span = rep(0,(OAnew + 1) * 2),
+                                         age_start = rep(0:OAnew,2),
+                                         age_span = rep(1,(OAnew + 1) * 2),
+                                         sex = c(rep("female", OAnew + 1),rep("male", OAnew + 1)),
+                                         value = c(pop_count_age_sex_f, pop_count_age_sex_m))
+    pop_count_age_sex_base$age_span[pop_count_age_sex_base$age_start == OAnew] <- 1000
+    
+  }
+  
+  if (maxage == OAnew) {
     pop_count_age_sex_base <- pop_in
   }
   rm(ages,maxage)
@@ -272,7 +311,15 @@ ccmppWPP_input_file_extend <- function(ccmppWPP_inputs, OAnew = 130, a0rule = "a
     fert_rate_age_f$age_span <- ifelse(fert_rate_age_f$age_start == OAnew, 1000, 1)
     fert_rate_age_f <- fert_rate_age_f[order(fert_rate_age_f$time_start, fert_rate_age_f$age_start),]
 
-  } else {
+  } 
+  
+  if (maxage > OAnew) {
+    
+    fert_rate_age_f <- fert_in[fert_in$age_start <= OAnew,]
+    
+  }
+  if (maxage == OAnew) {
+    
     fert_rate_age_f <- fert_in
   }
   rm(ages,maxage)
@@ -313,7 +360,13 @@ ccmppWPP_input_file_extend <- function(ccmppWPP_inputs, OAnew = 130, a0rule = "a
     mig_net_rate_age_sex <- mig_net_count_age_sex
     mig_net_rate_age_sex$value <- 0.0
 
-  } else {
+  } 
+  if (maxage > OAnew) {
+    mig_net_count_age_sex <- mig_in[mig_in$age_start <= OAnew,]
+    mig_net_rate_age_sex <- ccmppWPP_inputs$mig_net_rate_age_sex[ccmppWPP_inputs$mig_net_rate_age_sex$age_start <= OAnew,]
+  }
+  
+  if (maxage == OAnew){
     mig_net_count_age_sex <- mig_in
     mig_net_rate_age_sex <- ccmppWPP_inputs$mig_net_rate_age_sex
   }

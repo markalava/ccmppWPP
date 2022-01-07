@@ -58,7 +58,6 @@ valid_DDextract_ccmppWPPinputs_tier1 <- function(x) {
         return(TRUE)
 }
 
-
 ###-----------------------------------------------------------------------------
 ### * Locations
 
@@ -132,6 +131,7 @@ get_census_years.list <- function(x) {
 #' @export
 get_census_years.numeric <- function(x) {
     stopifnot(identical(length(x), 1L))
+    warning("'data(census_years)' may not be complete. E.g., Albania 1989 is missing.")
     ccmppWPP::census_years[ccmppWPP::census_years$LocID %in% x,]$ReferencePeriod
 }
 
@@ -139,6 +139,7 @@ get_census_years.numeric <- function(x) {
 #' @export
 get_census_years.character <- function(x) {
     stopifnot(identical(length(x), 1L))
+    warning("'data(census_years)' may not be complete. E.g., Albania 1989 is missing.")
     ccmppWPP::census_years[ccmppWPP::census_years$LocName %in% x,]$ReferencePeriod
 }
 

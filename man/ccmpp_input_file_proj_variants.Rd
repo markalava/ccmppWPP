@@ -17,7 +17,7 @@ ccmpp_input_file_proj_variants(
 a list of data frames
 }
 \description{
-Returns a list of age specific fertility rates and life table values needed as inputs to the 
+Returns a list of age specific fertility rates and life table values needed as inputs to the
 deterministic projection variants, including low, high and constant fertility, instant replacement fertility and
 momentum, and constant mortality
 }

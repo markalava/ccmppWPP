@@ -1,7 +1,7 @@
 # 
 # # 
 # library(tidyverse)
-# locationIDs <- c(124, 414, 4)
+# locationIDs <- c(124, 414, 4, 2222)
 # base_year <- 1950
 # last_year <- 2021
 # intermediate_output_folder <- paste0( "C:/Users/SARAH/OneDrive - United Nations/WPP2021/ccmppWPP/ccmppWPP_outputs/Intermediate/Estimates/")
@@ -137,8 +137,8 @@ ccmppWPP_compile <- function(locationIDs, base_year, last_year, intermediate_out
     if (has_outputs) {
       load(paste0(intermediate_output_folder, locationIDs[i], "_ccmpp_output.RData")) # need to verify whether we changed ccmpp intermediates to rda
     } else {
-      print(paste0("Error: No CCMPP outputs available for LocID = ", locationIDs[i]))
-      stop()
+      print(paste0("Warning: No CCMPP outputs available for LocID = ", locationIDs[i]))
+      next()
     }
     
     # check whether base year agrees

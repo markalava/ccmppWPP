@@ -124,7 +124,9 @@ ccmppWPP_project_one_country_variant <- function(ccmpp_input, atr) {
   
   # compute age-specific mortality rates from age-specific deaths and exposures
   mx_b <- cbind(death_count_age_b[, 1:4],
-                value = max(death_count_age_b$value / exposure_count_age_b$value, 0.0000000000000001)) 
+                value = death_count_age_b$value / exposure_count_age_b$value) 
+  mx_b$value[mx_b$value <= 0] <- 0.0000000000000001
+
   # compute all life table columns from single year mx
   life_table_age_b <- lt_complete_loop_over_time(mx = mx_b, sex="both", a0rule = atr$a0rule, OAnew = 130)
   

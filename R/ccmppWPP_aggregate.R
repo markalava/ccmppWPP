@@ -57,9 +57,8 @@ ccmppWPP_aggregate <- function(locationIDs, base_year, last_year, intermediate_o
   }))
   # weight aggregate nAx series for each period and sex by deaths and input nAx
   lt_nAx <- deaths_nAx_all %>% 
-    group_by(time_start, sex, age_start) %>% 
-    summarise(value = sum(deaths*nAx)/sum(deaths)) %>% 
-    select(-deaths, -nAx)
+    dplyr::group_by(time_start, sex, age_start) %>% 
+    summarise(value = sum(deaths*nAx)/sum(deaths)) 
   
   birth_count_age_b <- do.call(rbind, lapply(location_outputs, "[[", "birth_count_age_b")) 
   birth_count_age_b <- sum_last_column(birth_count_age_b)

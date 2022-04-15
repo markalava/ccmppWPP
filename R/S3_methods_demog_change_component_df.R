@@ -707,7 +707,16 @@ plot.demog_change_component_df <-
                     gp <- gp + ggplot2::geom_point() + ggplot2::geom_line()
                 }
             }
-            gp <- gp + ggplot2::scale_x_continuous(breaks = scales::breaks_width(10))
+
+            ## x-axis breaks
+            if ("age" %in% dcc_dims_x) x_var_name <- "age_start"
+            else x_var_name <- "time_start"
+
+            if (abs(diff(range(x[[x_var_name]]))) >= 80) gp <- gp + ggplot2::scale_x_continuous(breaks = scales::breaks_width(20))
+            else if (abs(diff(range(x[[x_var_name]]))) >= 40) gp <- gp + ggplot2::scale_x_continuous(breaks = scales::breaks_width(10))
+            else if (abs(diff(range(x[[x_var_name]]))) >= 20) gp <- gp + ggplot2::scale_x_continuous(breaks = scales::breaks_width(5))
+            ## otherwise use the default
+
         } else {
             gp <- gp + ggplot2::geom_bar()
         }

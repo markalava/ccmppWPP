@@ -624,7 +624,7 @@ plot.demog_change_component_df <-
 
         if (!all(requireNamespace("ggplot2", quietly = TRUE),
                  requireNamespace("scales", quietly = TRUE))) {
-            message("Install 'ggplot2' and 'scales' packages for better plotting experience.")
+            message("Install the 'ggplot2' and 'scales' packages for a better plotting experience.")
             return(NextMethod(type = substr(type, 1, 1)))
         }
 
@@ -707,6 +707,7 @@ plot.demog_change_component_df <-
                     gp <- gp + ggplot2::geom_point() + ggplot2::geom_line()
                 }
             }
+            gp <- gp + ggplot2::scale_x_continuous(breaks = scales::breaks_width(10))
         } else {
             gp <- gp + ggplot2::geom_bar()
         }

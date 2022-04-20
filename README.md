@@ -1,7 +1,6 @@
 # ccmppWPP
 
-Development of a CCMPP specification and implementation(s) at UNPD &amp; Co.
-
+Implementation of the cohort component method of population projection (CCMPP).
 
 # Installation
 

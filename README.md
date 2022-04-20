@@ -83,5 +83,14 @@ Here is a grab bag of various issues that may come up in no particular order. Pl
   
 5. **The vignettes do not load.**
 
-  You may see this message if you are working with the source code and have loaded it with, for example, `devtools::load_all()` or the equivalent via *R Studio*'s menus. To read the vignettes they need to have been 'built'. You will need to use `R CMD build` from your operating system's terminal / command line interface (e.g., `cmd.exe` in Windows), or use `devtools::install(pkg = ".", build = TRUE, build_vignettes = TRUE)` from within *R*. In both cases you will first need to set the working directory of the terminal or *R* to the package directory (which contains the package's 'DESCRIPTION' file). If you're trying this from within *R* (or *R Studio*) you may need to quit and restart before and/or after trying the install. If you restart after the install, remember to `library(ccmppWPP)` or `devtools::load_all()` again once *R* has restarted. 
+  You may see this message if you have used install 'Option 1', or are working with the source code and have loaded it with, for example, `devtools::load_all()` or the equivalent via *R Studio*'s menus. To read the vignettes they need to have been 'built'. You will need to use `R CMD build` from your operating system's terminal / command line interface (e.g., `cmd.exe` in Windows), or use `devtools::install(pkg = ".", build = TRUE, build_vignettes = TRUE)` from within *R*. In both cases you will first need to set the working directory of the terminal or *R* to the package directory (which contains the package's 'DESCRIPTION' file). If you're trying this from within *R* (or *R Studio*) you may need to quit and restart before and/or after trying the install. If you restart after the install, remember to `library(ccmppWPP)` or `devtools::load_all()` again once *R* has restarted. 
   
+  To get PDF versions of the help files you will need to download and install a version of the [*LaTeX*](https://www.latex-project.org/) typesetting system. Some options include:
+
+  * [TinyTex](https://yihui.org/tinytex/)
+  * [TeXLive](https://www.tug.org/texlive/)
+  * [MiKTeX](https://miktex.org/)
+
+Follow the installation instructions for the version you choose. The path to *LaTeX* executables should be added to your system's "PATH" environment variable; this will typically be done by the installers. 
+  
+  You could try using install 'Option 2', at least to get the vignettes. This option uses pre-built versions of the package that include the vignettes.

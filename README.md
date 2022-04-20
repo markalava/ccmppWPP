@@ -41,17 +41,6 @@ Below are basic instructions to download and install the package on your system.
 	```
 		
 
-## PDF Help Files via LaTeX 
-
-To get PDF versions of the help files you will need to download and install a version of the [*LaTeX*](https://www.latex-project.org/) typesetting system. Some options include:
-
-* [TinyTex](https://yihui.org/tinytex/)
-* [TeXLive](https://www.tug.org/texlive/)
-* [MiKTeX](https://miktex.org/)
-
-Follow the installation instructions for the version you choose. The path to *LaTeX* executables should be added to your system's "PATH" environment variable; this will typically be done by the installers. 
-
-
 # Troubleshooting
 
 Here is a grab bag of various issues that may come up in no particular order. Please feel free to suggest additions, corrections, clarifications. 

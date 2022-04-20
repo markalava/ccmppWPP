@@ -8,7 +8,7 @@ pasfr_global_model(
   tfr_all_locs,
   pasfr_all_locs,
   pasfr_pattern_locs,
-  present_year = 2020
+  present_year = 2021
 )
 }
 \arguments{

@@ -4,23 +4,25 @@
 \alias{DDextract_get_pop_count_age_sex_reference}
 \title{Get reference population counts from a DDSQL query}
 \usage{
-DDextract_get_pop_count_age_sex_reference(x, times = NULL)
+DDextract_get_pop_count_age_sex_reference(
+  x,
+  times = c("all", "excl_baseline", "census", "census_excl_baseline")
+)
 }
 \arguments{
 \item{x}{A list of the form returned by
 \code{\link{DDextract_ccmppWPPinputs_tier1}}.}
 
-\item{times}{Vector containing years for which reference population
-counts should be extracted from \code{x}. Can be numeric or
-character; see \dQuote{Details}. If \code{NULL} (default), all
-times will be retained.}
+\item{times}{Either a numeric vector containing years for which
+reference population counts should be extracted from \code{x},
+or a character string specifying a pre-defined set of times;
+see \dQuote{Details}.}
 
 \item{...}{Passed to other methods.}
 }
 \value{
-An object of class
-    \code{\link{demog_change_component_df}} containing
-    the reference population counts.
+An object of class \code{\link{demog_change_component_df}}
+    containing the reference population counts.
 }
 \description{
 Extracts and (optionally) subsets reference population data from a
@@ -29,45 +31,32 @@ list of the kind returned by
 returned as a \code{\link{demog_change_component_df}} object.
 }
 \details{
-\code{x} must be a
-\code{\link{list}} with a \code{\link{data.frame}} element named
-\code{pop_count_age_sex_reference}. This \code{data.frame} must
-have colums \code{time_start}, \code{time_span}, \code{age_start},
-\code{age_span}, \code{sex}, \code{value}.
 
-\code{times} can be used to return counts for specific times only,
-e.g., specific years. If \code{times} is \code{NULL} (default) it
-will be initialized to the times of
-\code{x$pop_count_age_sex_reference}. You might, instead, want to
-set it to something determined by
-\code{\link{get_census_years}}. Regardless,
-\code{\link{extract_pop_count_reference_times}} will be
-called. This will discard any elements of \code{times} not in
-\code{times(x$pop_count_age_sex_reference)} and then parse the
-result using
-\code{\link{parse_pop_count_reference_times_ranges}}. Once
-\code{times} is set and parsed, the time of the baseline population
-counts in \code{pop_count_base_component(x$ccmppWPP_inputs)} will
-be removed.
 }
+\section{Note}{
+
+Census times cannot be determined by default because the object
+returned by \code{\link{DDextract_ccmppWPPinputs_tier1}} does not
+record the location to which the data pertain. Use
+\code{\link{get_census_years}} to separately look up census years.
+}
+
 \examples{
 
 data("france_wpp_1950_2020_population_data")
 data("census_years")
 
 all_years <-
-  DDextract_to_pop_count_age_sex_reference(france_wpp_1950_2020_population_data)
+  DDextract_get_pop_count_age_sex_reference(france_wpp_1950_2020_population_data)
 
 census_years_only <-
-  DDextract_to_pop_count_age_sex_reference(france_wpp_1950_2020_population_data,
-                                   times = get_census_years(250))
+  DDextract_get_pop_count_age_sex_reference(france_wpp_1950_2020_population_data,
+                                   times = "census")
 
-}
-\seealso{
-Other DDSQL_extract: 
-\code{\link{DDextract_get_pop_count_reference_times}()},
-\code{\link{get_census_years}()},
-\code{\link{parse_pop_count_reference_times_ranges}()}
+selected_years <-
+  DDextract_get_pop_count_age_sex_reference(france_wpp_1950_2020_population_data,
+                                   times = 1950:1955)
+
 }
 \author{
 Mark Wheldon

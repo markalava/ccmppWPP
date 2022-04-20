@@ -3,6 +3,7 @@
 \name{mig_net_count_tot_b}
 \alias{mig_net_count_tot_b}
 \alias{mig_net_count_tot_b.data.frame}
+\alias{mig_net_count_tot_b.mig_net_count_age_sex}
 \alias{mig_net_count_tot_b.ccmpp_input_list}
 \alias{mig_net_count_tot_b<-}
 \title{Constructor for class \code{mig_net_count_tot_b}}
@@ -10,6 +11,8 @@
 mig_net_count_tot_b(x, ...)
 
 \method{mig_net_count_tot_b}{data.frame}(x, value_scale = attr(x, "value_scale"))
+
+\method{mig_net_count_tot_b}{mig_net_count_age_sex}(x)
 
 \method{mig_net_count_tot_b}{ccmpp_input_list}(x)
 
@@ -35,11 +38,15 @@ An object of class \code{mig_net_count_tot_b}.
 }
 \details{
 Methods are defined for \code{\link{data.frame}}s and
-\code{\link{ccmpp_input_list}}s, and possibly other objects as
-well. The \code{data.frame} method \dQuote{constructs} an object
-from \code{x}. The \code{ccmpp_input_list} method \dQuote{extracts}
-an object from \code{x}. There is also a replacement function which
-complements the extraction methods.
+\code{\link{ccmpp_input_list}}s,
+\code{\link{mig_net_count_age_sex}} objects, and possibly other
+objects as well. The \code{data.frame} method \dQuote{constructs}
+an object from \code{x}. The \code{ccmpp_input_list} method
+\dQuote{extracts} an object from \code{x}. There is also a
+replacement function which complements the extraction methods.
+
+The \code{\link{mig_net_count_age_sex}} method allows creation of
+total migration counts from age- sex-specific counts.
 }
 \seealso{
 \code{\link{validate_ccmppWPP_object}} for object validation,
@@ -49,31 +56,15 @@ complements the extraction methods.
 Other ccmpp_input_objects: 
 \code{\link{ccmpp_input_df}()},
 \code{\link{ccmpp_input_list}()},
-\code{\link{coerce_ccmpp_input_df}},
-\code{\link{coerce_ccmpp_input_list}},
-\code{\link{coerce_death_count_age_sex}},
-\code{\link{coerce_death_probability_age_sex}},
-\code{\link{coerce_demog_change_component_df}},
-\code{\link{coerce_fert_rate_age_f}},
-\code{\link{coerce_life_table_age_sex}},
-\code{\link{coerce_mig_net_count_age_sex}},
-\code{\link{coerce_mig_net_count_tot_b}},
-\code{\link{coerce_mig_net_prop_age_sex}},
-\code{\link{coerce_mig_net_rate_age_sex}},
-\code{\link{coerce_mig_parameter}},
-\code{\link{coerce_mortality_rate_age_sex}},
-\code{\link{coerce_pop_count_age_sex_base}},
-\code{\link{coerce_srb}},
-\code{\link{coerce_survival_ratio_age_sex}},
+\code{\link{coerce_pop_count_age_sex_reference}},
 \code{\link{death_count_age_sex}()},
 \code{\link{death_probability_age_sex}()},
 \code{\link{fert_rate_age_f}()},
 \code{\link{life_table_age_sex}()},
 \code{\link{mig_net_count_age_sex}()},
-\code{\link{mig_net_prop_age_sex}()},
 \code{\link{mig_net_rate_age_sex}()},
 \code{\link{mig_parameter}()},
-\code{\link{mortality_rate_age_sex}()},
+\code{\link{mort_rate_age_sex}()},
 \code{\link{pop_count_age_sex_base}()},
 \code{\link{srb}()},
 \code{\link{survival_ratio_age_sex}()}

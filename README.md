@@ -1,7 +1,6 @@
 # ccmppWPP
 
-Development of a CCMPP specification and implementation(s) at UNPD &amp; Co.
-
+Implementation of the cohort component method of population projection (CCMPP).
 
 # Installation
 
@@ -21,6 +20,7 @@ Below are basic instructions to download and install the package on your system.
 	    
         If this is the first time running `install.packages` for this version of *R* on your system you may be asked to select a *CRAN* mirror. You can choose any mirror; the choice does affect the functioning of the package.
 	
+<<<<<<< HEAD
     2. [Option 2] Scroll to the top of this page and click "Releases", which appears to the left of the page. Click "assests" in the version you want to install and download either the .tar.gz or .zip file (.zip for *Microsoft Windows* systems only). Take note of where the downloaded file is stored on your system. Launch *R* (with or without *R Studio*) and issue the following command:
 	
 	```

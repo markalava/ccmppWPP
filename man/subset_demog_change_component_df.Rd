@@ -6,15 +6,15 @@
 %   R/S3_classes_ccmpp_input_life_table_df.R,
 %   R/S3_classes_ccmpp_input_mig_net_count_df.R,
 %   R/S3_classes_ccmpp_input_mig_net_count_tot_df.R,
-%   R/S3_classes_ccmpp_input_mig_net_prop_df.R,
 %   R/S3_classes_ccmpp_input_mig_net_rate_df.R,
 %   R/S3_classes_ccmpp_input_mig_parameter_df.R,
-%   R/S3_classes_ccmpp_input_mortality_rate_df.R,
-%   R/S3_classes_ccmpp_input_pop_count_base.R,
+%   R/S3_classes_ccmpp_input_mort_rate_df.R,
+%   R/S3_classes_ccmpp_input_pop_count_base_df.R,
 %   R/S3_classes_ccmpp_input_srb_df.R,
 %   R/S3_classes_ccmpp_input_survival_ratio_df.R,
 %   R/S3_classes_ccmpp_ouput_df_utility_functions.R,
 %   R/S3_classes_ccmpp_output_pop_count_age_sex_df.R,
+%   R/S3_classes_demog_change_component_pop_count_reference.R,
 %   R/S3_classes_demog_change_component_utility_functions.R
 \name{subset_time.death_count_age_sex}
 \alias{subset_time.death_count_age_sex}
@@ -37,17 +37,14 @@
 \alias{subset_age.mig_net_count_age_sex}
 \alias{subset_sex.mig_net_count_age_sex}
 \alias{subset_time.mig_net_count_tot_b}
-\alias{subset_time.mig_net_prop_age_sex}
-\alias{subset_age.mig_net_prop_age_sex}
-\alias{subset_sex.mig_net_prop_age_sex}
 \alias{subset_time.mig_net_rate_age_sex}
 \alias{subset_age.mig_net_rate_age_sex}
 \alias{subset_sex.mig_net_rate_age_sex}
 \alias{subset_time.mig_parameter}
 \alias{subset_indicator.mig_parameter}
-\alias{subset_time.mortality_rate_age_sex}
-\alias{subset_age.mortality_rate_age_sex}
-\alias{subset_sex.mortality_rate_age_sex}
+\alias{subset_time.mort_rate_age_sex}
+\alias{subset_age.mort_rate_age_sex}
+\alias{subset_sex.mort_rate_age_sex}
 \alias{subset_time.pop_count_age_sex_base}
 \alias{subset_age.pop_count_age_sex_base}
 \alias{subset_sex.pop_count_age_sex_base}
@@ -62,6 +59,9 @@
 \alias{subset_time.pop_count_age_sex}
 \alias{subset_age.pop_count_age_sex}
 \alias{subset_sex.pop_count_age_sex}
+\alias{subset_time.pop_count_age_sex_reference}
+\alias{subset_age.pop_count_age_sex_reference}
+\alias{subset_sex.pop_count_age_sex_reference}
 \alias{subset_demog_change_component_df}
 \alias{subset_time}
 \alias{subset_time.demog_change_component_df}
@@ -113,12 +113,6 @@
 
 \method{subset_time}{mig_net_count_tot_b}(x, times, include = TRUE)
 
-\method{subset_time}{mig_net_prop_age_sex}(x, times, include = TRUE)
-
-\method{subset_age}{mig_net_prop_age_sex}(x, ages, include = TRUE)
-
-\method{subset_sex}{mig_net_prop_age_sex}(x, sexes, include = TRUE)
-
 \method{subset_time}{mig_net_rate_age_sex}(x, times, include = TRUE)
 
 \method{subset_age}{mig_net_rate_age_sex}(x, ages, include = TRUE)
@@ -129,11 +123,11 @@
 
 \method{subset_indicator}{mig_parameter}(x, times, include = TRUE)
 
-\method{subset_time}{mortality_rate_age_sex}(x, times, include = TRUE)
+\method{subset_time}{mort_rate_age_sex}(x, times, include = TRUE)
 
-\method{subset_age}{mortality_rate_age_sex}(x, ages, include = TRUE)
+\method{subset_age}{mort_rate_age_sex}(x, ages, include = TRUE)
 
-\method{subset_sex}{mortality_rate_age_sex}(x, sexes, include = TRUE)
+\method{subset_sex}{mort_rate_age_sex}(x, sexes, include = TRUE)
 
 \method{subset_time}{pop_count_age_sex_base}(x, times, include = TRUE)
 
@@ -162,6 +156,12 @@
 \method{subset_age}{pop_count_age_sex}(x, ages, include = TRUE)
 
 \method{subset_sex}{pop_count_age_sex}(x, sexes, include = TRUE)
+
+\method{subset_time}{pop_count_age_sex_reference}(x, times, include = TRUE)
+
+\method{subset_age}{pop_count_age_sex_reference}(x, ages, include = TRUE)
+
+\method{subset_sex}{pop_count_age_sex_reference}(x, sexes, include = TRUE)
 
 subset_time(x, times, include = TRUE, ...)
 

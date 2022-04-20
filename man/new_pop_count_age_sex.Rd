@@ -7,9 +7,9 @@
 new_pop_count_age_sex(
   x,
   age_span = double(),
-  time_span = double(),
-  dimensions = get_req_dimensions_for_ccmpp_in_out_classes("pop_count_age_sex"),
-  value_type = get_value_types_for_ccmpp_in_out_classes("pop_count_age_sex"),
+  time_span = 0,
+  dimensions = get_req_dimensions_for_subclass_classes("pop_count_age_sex"),
+  value_type = get_value_types_for_subclass_classes("pop_count_age_sex"),
   value_scale = double(),
   ...,
   class = character()
@@ -19,9 +19,6 @@ new_pop_count_age_sex(
 \item{x}{For \code{demog_change_component_df}: A data frame with
 columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
 \dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.}
-
-\item{dimensions}{Character vector listing the dimensions such as
-\dQuote{time}, \dQuote{age}, \dQuote{sex}.}
 
 \item{value_type}{Scalar indicating the type of the \dQuote{value}
 column (e.g., \dQuote{count}, \dQuote{rate}, etc.).}
@@ -42,6 +39,12 @@ checks are done; for interactive use see
 This function is not exported. The user-level constructor is
 \code{\link{pop_count_age_sex}}.
 }
+\section{Note}{
+
+There is no \code{age_span} argument. Population counts
+    have time span 0.
+}
+
 \seealso{
 pop_count_age_sex
 }

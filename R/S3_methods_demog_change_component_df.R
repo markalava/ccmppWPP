@@ -1,5 +1,5 @@
 ###
-### Methods for *existing* generics. See '..._utility_functions.R' for new generics and methods.
+### Methods for *existing* generics and functions. See '..._utility_functions.R' for new generics and methods.
 ###
 
 ###-----------------------------------------------------------------------------
@@ -130,7 +130,126 @@ subset.demog_change_component_df <- function(x, ...) {
                 "' will not preserve the class or attributes.")
     }
     return(NextMethod())
+}
+
+###-----------------------------------------------------------------------------
+### * Col and Row names
+
+#' Change column and row names of a \code{demog_change_component_df}
+#'
+#' Changing row or columns names of \code{demog_change_component_df}s
+#' may result in invalid members of the class. Therefore, the changed
+#' object will no longer inherit from class
+#' \code{demog_change_component_df} (or subclasses) and the attributes
+#' specific to those classes will be lost.
+#'
+#' @seealso \code{\link{demog_change_component_df}} for class
+#'     definitions.
+#'
+#' @inheritParams base::colnames
+#' @return A \code{data.frame},
+#'     one-dimensional vector, or scalar depending on the dimensions
+#'     of the extracted values.
+#' @author Mark Wheldon
+#'
+#' @name col_row_names
+NULL
+
+
+#' @rdname col_row_names
+#' @export
+`row.names<-` <- function(x, value) {
+    UseMethod("row.names<-")
+}
+
+#' @rdname col_row_names
+#' @export
+`row.names<-.default` <- function(x, value) {
+    base::`row.names<-`(x = x, value = value)
+}
+
+#' @rdname col_row_names
+#' @export
+`row.names<-.demog_change_component_df` <- function(x, value) {
+    if (identical(parent.frame(), .GlobalEnv)) {
+        S3_class_warning("changing the 'row.names' of a '",
+                oldClass(x)[1],
+                "' will not preserve the class or attributes.")
     }
+    base::`row.names<-`(x = as.data.frame(x), value = value)
+}
+
+
+#' @rdname col_row_names
+#' @export
+`rownames<-` <- function(x, value) {
+    UseMethod("rownames<-")
+}
+
+#' @rdname col_row_names
+#' @export
+`rownames<-.default` <- function(x, value) {
+    base::`rownames<-`(x = x, value = value)
+}
+
+#' @rdname col_row_names
+#' @export
+`rownames<-.demog_change_component_df` <- function(x, value) {
+    if (identical(parent.frame(), .GlobalEnv)) {
+        S3_class_warning("changing the 'rownames' of a '",
+                oldClass(x)[1],
+                "' will not preserve the class or attributes.")
+    }
+    base::`rownames<-`(x = as.data.frame(x), value = value)
+}
+
+
+#' @rdname col_row_names
+#' @export
+`colnames<-` <- function(x, value) {
+    UseMethod("colnames<-")
+}
+
+#' @rdname col_row_names
+#' @export
+`colnames<-.default` <- function(x, value) {
+    base::`colnames<-`(x = x, value = value)
+}
+
+#' @rdname col_row_names
+#' @export
+`colnames<-.demog_change_component_df` <- function(x, value) {
+    if (identical(parent.frame(), .GlobalEnv)) {
+        S3_class_warning("changing the 'colnames' of a '",
+                oldClass(x)[1],
+                "' will not preserve the class or attributes.")
+    }
+    base::`colnames<-`(x = as.data.frame(x), value = value)
+}
+
+
+#' @rdname col_row_names
+#' @export
+`dimnames<-` <- function(x, value) {
+    UseMethod("dimnames<-")
+}
+
+#' @rdname col_row_names
+#' @export
+`dimnames<-.default` <- function(x, value) {
+    base::`dimnames<-`(x = x, value = value)
+}
+
+#' @rdname col_row_names
+#' @export
+`dimnames<-.demog_change_component_df` <- function(x, value) {
+    if (identical(parent.frame(), .GlobalEnv)) {
+        S3_class_warning("changing the 'dimnames' of a '",
+                         oldClass(x)[1],
+                         "' will not preserve the class or attributes.")
+    }
+    base::`dimnames<-`(x = as.data.frame(x), value = value)
+}
 
 
 ###-----------------------------------------------------------------------------
@@ -474,34 +593,51 @@ print.summary_demog_change_component_df <-
 ###-----------------------------------------------------------------------------
 ### * Plot
 
+## Custom y-asix scales based on class. E.g., mortality rates get log y-axis.
+get_y_scale <- function(x) {
+    UseMethod("get_y_scale")
+}
+get_y_scale.demog_change_component_df <- function(x) {
+    stopifnot(requireNamespace("scales", quietly = TRUE))
+    if (identical("mort_rate_age_sex", oldClass(x)[1]))
+        return(scales::log_trans())
+    else return(scales::identity_trans())
+}
+
+
 #' Plot \code{demog_change_component_df} objects
 #'
 #' This is the S3 method for the generic \code{\link{plot}}
 #' function. It requires \pkg{ggplot2}.
 #'
-#' @param x An object of class \code{demog_change_component_df}.
+#' @param x An object inheriting from class \code{demog_change_component_df}.
 #' @param type The type of plot to produce, e.g., \dQuote{line}.
-#' @param ... When \code{type} is \dQuote{ggplot2} (default) passed on
-#'     to \code{\link[ggplot2]{ggplot}}. Otherwise passed on to \code{\link{plot}}.
-#' @param plot Should the plot be printed?
-#' @return When \code{framework} is \dQuote{ggplot2}, a plot
-#'     object. Otherwise nothing. The function is mainly called for
+#' @param ... Passed on to \code{\link[ggplot2]{ggplot}}.
+#' @return A \code{ggplot2} plot object.The function is mainly called for
 #'     the side effect of producing a plot.
 #' @author Mark Wheldon
 #' @export
 plot.demog_change_component_df <-
-    function(x, type = c("point", "line", "both"), ...,
-             plot = TRUE
-             ) {
+    function(x, type = c("line", "point", "both"), ...) {
+
         type <- match.arg(type)
+
+        if (!all(requireNamespace("ggplot2", quietly = TRUE),
+                 requireNamespace("scales", quietly = TRUE))) {
+            message("Install the 'ggplot2' and 'scales' packages for a better plotting experience.")
+            return(NextMethod(type = substr(type, 1, 1)))
+        }
+
+        ## -------* Base Plot For Dimensions
+
         dcc_dims_x <- demog_change_component_dims(x)
 
         if ("non_zero_fert_ages" %in% names(attributes(x))) {
             nzf_ages_present <- TRUE
-                    x$fert_rate_ages <-
-                        factor(x$age_start %in% non_zero_fert_ages(x),
-                               levels = c(TRUE, FALSE),
-                               labels = c("Non-zero fertility", "Zero fertility"))
+            fert_rate_ages <-
+                factor(x$age_start %in% non_zero_fert_ages(x),
+                       levels = c(TRUE, FALSE),
+                       labels = c("Non-zero fertility", "Zero fertility"))
         } else nzf_ages_present <- FALSE
 
         if (identical("age", dcc_dims_x)) {
@@ -536,38 +672,62 @@ plot.demog_change_component_df <-
         } else stop("These dimensions not yet implemented.")
 
         if (!identical("sex", dcc_dims_x)) {
-            if (identical(type, "line"))
-                gp <- gp + ggplot2::geom_line()
-            else if (identical(type, "point")) {
+            if (identical(type, "line")) {
                 if (nzf_ages_present) {
-                    gp <- gp + ggplot2::geom_point(aes(shape = fert_rate_ages, col = fert_rate_ages)) +
+                    gp <- gp + ggplot2::geom_line(ggplot2::aes(col = fert_rate_ages)) +
+                        ggplot2::scale_colour_manual(name = "Reproductive\nage range",
+                                                     values = c("Non-zero fertility" = "black",
+                                                                "Zero fertility" = "grey"))
+                } else {
+                    gp <- gp + ggplot2::geom_line()
+                }
+            } else if (identical(type, "point")) {
+                if (nzf_ages_present) {
+                    gp <- gp + ggplot2::geom_point(ggplot2::aes(shape = fert_rate_ages, col = fert_rate_ages)) +
                         ggplot2::scale_shape_manual(name = "Reproductive\nage range",
                                                     values = c("Non-zero fertility" = 19,
                                                                "Zero fertility" = 1)) +
                         ggplot2::scale_colour_manual(name = "Reproductive\nage range",
-                                                    values = c("Non-zero fertility" = "black",
-                                                               "Zero fertility" = "grey"))
+                                                     values = c("Non-zero fertility" = "black",
+                                                                "Zero fertility" = "grey"))
                 } else {
                     gp <- gp + ggplot2::geom_point()
                 }
-            } else if (identical(type, "both"))
+            } else if (identical(type, "both")) {
                 if (nzf_ages_present) {
-                    gp <- gp + ggplot2::geom_point(aes(shape = fert_rate_ages, col = fert_rate_ages)) +
-                        ggplot2::geom_line(aes(col = fert_rate_ages)) +
-                        ggplot2::scale_shape_manual(name = "Reproductive age range",
+                    gp <- gp + ggplot2::geom_point(ggplot2::aes(shape = fert_rate_ages, col = fert_rate_ages)) +
+                        ggplot2::geom_line(ggplot2::aes(col = fert_rate_ages)) +
+                        ggplot2::scale_shape_manual(name = "Reproductive\nage range",
                                                     values = c("Non-zero fertility" = 19,
                                                                "Zero fertility" = 1)) +
                         ggplot2::scale_colour_manual(name = "Reproductive\nage range",
-                                                    values = c("Non-zero fertility" = "black",
-                                                               "Zero fertility" = "grey"))
+                                                     values = c("Non-zero fertility" = "black",
+                                                                "Zero fertility" = "grey"))
                 } else {
                     gp <- gp + ggplot2::geom_point() + ggplot2::geom_line()
                 }
+            }
+
+            ## x-axis breaks
+            if ("age" %in% dcc_dims_x) x_var_name <- "age_start"
+            else x_var_name <- "time_start"
+
+            if (abs(diff(range(x[[x_var_name]]))) >= 80) gp <- gp + ggplot2::scale_x_continuous(breaks = scales::breaks_width(20))
+            else if (abs(diff(range(x[[x_var_name]]))) >= 40) gp <- gp + ggplot2::scale_x_continuous(breaks = scales::breaks_width(10))
+            else if (abs(diff(range(x[[x_var_name]]))) >= 20) gp <- gp + ggplot2::scale_x_continuous(breaks = scales::breaks_width(5))
+            ## otherwise use the default
+
         } else {
             gp <- gp + ggplot2::geom_bar()
         }
-        if (plot) print(gp)
-        return(invisible(gp))
+
+        ## -------* y-Axis Scale
+
+        gp <- gp + ggplot2::scale_y_continuous(trans = get_y_scale(x))
+
+        ## -------* RETURN
+
+        return(gp)
     }
 
 

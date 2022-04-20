@@ -7,8 +7,8 @@
 new_mig_parameter(
   x,
   time_span = double(),
-  dimensions = get_req_dimensions_for_ccmpp_in_out_classes("mig_parameter"),
-  value_type = get_value_types_for_ccmpp_in_out_classes("mig_parameter"),
+  dimensions = get_req_dimensions_for_subclass_classes("mig_parameter"),
+  value_type = get_value_types_for_subclass_classes("mig_parameter"),
   value_scale = NA,
   ...,
   class = character()

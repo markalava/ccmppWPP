@@ -1,4 +1,4 @@
-#' Compute period deaths by age from mx and exposures
+#' Compute period deaths by age from cohort deaths and life table values
 #'
 #' @description This function computes the age-specific period deaths from cohort-specific deaths
 #' and life table values lx and nLx. Approach uses cohort separation factors as described by 
@@ -20,8 +20,9 @@ death_cohort_period_to_age_period <- function(death_cohort_period,
   cohort_separation_factor <- (nLx_age_period[1:(nage-1)] - lx_age_period[2:nage]) / (nLx_age_period[1:(nage-1)] - nLx_age_period[2:(nage)])
   cohort_separation_factor[nage-1] <- (nLx_age_period[(nage-1)] - lx_age_period[nage]) / nLx_age_period[(nage-1)]
   cohort_separation_factor[nage] <- 1
+  cohort_separation_factor[is.na(cohort_separation_factor)] <- 1
   
-  # compute deaths from period mortality rates by age and exposures
+  # compute age period deaths 
   death_age_period <- NULL
   death_age_period[1] <- death_cohort_period[1] + (death_cohort_period[2] * cohort_separation_factor[1])
   death_age_period[2:(nage-1)] <- (death_cohort_period[2:(nage-1)] * (1-cohort_separation_factor[1:(nage-2)])) + 

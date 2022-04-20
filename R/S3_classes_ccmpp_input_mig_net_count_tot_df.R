@@ -18,8 +18,8 @@ new_mig_net_count_tot_b <-
     function(x,
              age_span = double(),
              time_span = double(),
-             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("mig_net_count_tot_b"),
-             value_type = get_value_types_for_ccmpp_in_out_classes("mig_net_count_tot_b"),
+             dimensions = get_req_dimensions_for_subclass_classes("mig_net_count_tot_b"),
+             value_type = get_value_types_for_subclass_classes("mig_net_count_tot_b"),
              value_scale = double(),
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
@@ -42,11 +42,15 @@ new_mig_net_count_tot_b <-
 #'   \item{Within year and sex, age must start at 0.}}
 #'
 #' Methods are defined for \code{\link{data.frame}}s and
-#' \code{\link{ccmpp_input_list}}s, and possibly other objects as
-#' well. The \code{data.frame} method \dQuote{constructs} an object
-#' from \code{x}. The \code{ccmpp_input_list} method \dQuote{extracts}
-#' an object from \code{x}. There is also a replacement function which
-#' complements the extraction methods.
+#' \code{\link{ccmpp_input_list}}s,
+#' \code{\link{mig_net_count_age_sex}} objects, and possibly other
+#' objects as well. The \code{data.frame} method \dQuote{constructs}
+#' an object from \code{x}. The \code{ccmpp_input_list} method
+#' \dQuote{extracts} an object from \code{x}. There is also a
+#' replacement function which complements the extraction methods.
+#'
+#' The \code{\link{mig_net_count_age_sex}} method allows creation of
+#' total migration counts from age- sex-specific counts.
 #'
 #' @family ccmpp_input_objects
 #' @seealso \code{\link{validate_ccmppWPP_object}} for object validation,
@@ -68,8 +72,8 @@ mig_net_count_tot_b.data.frame <- function(x,
              value_scale = attr(x, "value_scale")) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
-                            dimensions = get_req_dimensions_for_ccmpp_in_out_classes("mig_net_count_tot_b"),
-                            value_type = get_value_types_for_ccmpp_in_out_classes("mig_net_count_tot_b"),
+                            dimensions = get_req_dimensions_for_subclass_classes("mig_net_count_tot_b"),
+                            value_type = get_value_types_for_subclass_classes("mig_net_count_tot_b"),
                             value_scale = value_scale)
         ## Create/Validate
         validate_ccmppWPP_object(
@@ -77,7 +81,13 @@ mig_net_count_tot_b.data.frame <- function(x,
                                     time_span = li$time_span,
                                     value_scale = li$value_scale)
         )
-    }
+}
+
+#' @rdname mig_net_count_tot_b
+#' @export
+mig_net_count_tot_b.mig_net_count_age_sex <- function(x) {
+    mig_net_count_tot_b(collapse_demog_dimension(x, by_dimensions = "time", out_class = "data.frame"))
+}
 
 #' @rdname mig_net_count_tot_b
 #' @export
@@ -99,7 +109,6 @@ mig_net_count_tot_b.ccmpp_input_list <- function(x) {
 #' \code{mig_net_count_tot_b} if possible, or check if it is
 #' one.
 #'
-#' @family ccmpp_input_objects
 #' @seealso \code{\link{coerce_demog_change_component_df}}
 #'
 #' @inheritParams coerce_demog_change_component_df

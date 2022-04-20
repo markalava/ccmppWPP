@@ -47,7 +47,13 @@ demog_change_component_dims <- function(x) {
 #' @rdname demog_change_component_dims
 #' @export
 demog_change_component_dims.demog_change_component_df <- function(x) {
+    ## NOTE: do _not_ use 'ensure_these_dimensions_correctly_ordered' here.
     attr(x, "dimensions")
+}
+
+## DON'T export! Useful for internal use.
+demog_change_component_dims.data.frame <- function(x) {
+    guess_dimensions_from_df_cols(x)
 }
 
 
@@ -55,18 +61,21 @@ demog_change_component_dims.demog_change_component_df <- function(x) {
 #'
 #' These functions extract specific components (attributes, factor
 #' levels, values, etc.) from objects inheriting from
-#' \code{demog_change_component_df}s. In general they return the
-#' \emph{\dQuote{levels}} of the component, not the whole column from the data
-#' frame; see \dQuote{Details} for an important exception.
+#' \code{demog_change_component_df}s. They return the
+#' \emph{\dQuote{levels}} of the component, not the whole column from
+#' the data frame. If the whole column is required use the usual
+#' subsetting functions such as \code{\link{base::[}}. See
+#' \dQuote{Extracting and replacing values} for the operation of
+#' \code{values} and \code{values<-}, which are a bit different.
 #'
-#' All functions will attempt to return the unique values, or
-#' \dQuote{levels}, of the component being extracted. If the whole
-#' column is required use the usual subsetting functions such as
-#' \code{\link{base::[}}.
-#'
-#' An important exception is that \code{values} will return the whole
-#' column if \code{\link{value_type}} does not return
-#' \code{"categorical"}.
+#' @section Extracting and replacing values:
+#' If \code{\link{value_type(x)}} is \emph{not} \code{"categorical"}
+#' then \code{value(x)} will return \code{x$value} as it is assumed
+#' all are unique. The replacement function \code{values<-} replaces
+#' the \code{"value"} column, using the usual recycling rules (see
+#' \code{\link{data.frame}}), and attempts to return an object the
+#' same class as \code{x}. If the replacement renders the object
+#' invalid as a member of the class an error will be signaled.
 #'
 #' @param x An object from which to extract attributes.
 #' @return The \dQuote{levels} of the extracted component
@@ -143,7 +152,15 @@ sexes <- function(x) {
 sexes.demog_change_component_df <- function(x) {
     if (!is_by_sex(x))
         stop("'sex' is not a dimension of 'x'.")
-    levels(factor(x$sex))
+    ## Ordering is arbitrary and would (probably) be alphabetical if
+    ## left unspecified. So enforce the DemoData order.
+    ##
+    ## Do _not_ rely on this to give the correct order of sex
+    ## labels. If some levels are not present, direct conversion of
+    ## the result to numeric will be incorrect. Explicitly call
+    ## 'sex_as_factor', 'sex_as_numeric', etc., if you need to the
+    ## order.
+    levels(sex_as_factor(x$sex))
 }
 
 #' @rdname extract_demog_change_component_attributes

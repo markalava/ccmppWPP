@@ -9,8 +9,8 @@ new_death_count_age_sex(
   age_span = double(),
   time_span = double(),
   non_zero_fert_ages = double(),
-  dimensions = get_req_dimensions_for_ccmpp_in_out_classes("death_count_age_sex"),
-  value_type = get_value_types_for_ccmpp_in_out_classes("death_count_age_sex"),
+  dimensions = get_req_dimensions_for_subclass_classes("death_count_age_sex"),
+  value_type = get_value_types_for_subclass_classes("death_count_age_sex"),
   value_scale = double(),
   ...,
   class = character()
@@ -30,10 +30,12 @@ counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
 An object of class \code{death_count_age_sex}.
 }
 \description{
+q@description
 Creates an object of class \code{death_count_age_sex}. Minimal
 checks are done; for interactive use see
 \code{\link{death_count_age_sex}}.
-
+}
+\details{
 This function is not exported. The user-level constructor is
 \code{\link{death_count_age_sex}}.
 }

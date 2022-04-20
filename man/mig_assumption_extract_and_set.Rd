@@ -4,16 +4,26 @@
 \name{mig_assumption.ccmpp_input_list}
 \alias{mig_assumption.ccmpp_input_list}
 \alias{mig_assumption<-.ccmpp_input_list}
+\alias{mig_type.ccmpp_input_list}
+\alias{mig_type<-.ccmpp_input_list}
 \alias{mig_assumption_extract_and_set}
 \alias{mig_assumption}
 \alias{mig_assumption.mig_parameter}
 \alias{mig_assumption<-}
 \alias{mig_assumption<-.mig_parameter}
-\title{Extract or set the migration assumption}
+\alias{mig_type}
+\alias{mig_type.mig_parameter}
+\alias{mig_type<-}
+\alias{mig_type<-.mig_parameter}
+\title{Extract or set the migration assumption or migration type}
 \usage{
 \method{mig_assumption}{ccmpp_input_list}(x)
 
 \method{mig_assumption}{ccmpp_input_list}(x) <- value
+
+\method{mig_type}{ccmpp_input_list}(x)
+
+\method{mig_type}{ccmpp_input_list}(x) <- value
 
 mig_assumption(x)
 
@@ -22,20 +32,30 @@ mig_assumption(x)
 mig_assumption(x) <- value
 
 \method{mig_assumption}{mig_parameter}(x) <- value
+
+mig_type(x)
+
+\method{mig_type}{mig_parameter}(x)
+
+mig_type(x) <- value
+
+\method{mig_type}{mig_parameter}(x) <- value
 }
 \arguments{
 \item{x}{An object inheriting from \code{\link{mig_parameter}}.}
 }
 \value{
-A character string with the assumption for the extraction
-    function, or \code{x} (invisibly) with the assumption set to
-    \code{value} for the replacement function.
+For the extraction function, a character string with the
+    assumption or type; for the replacement function, \code{x}
+    (invisibly) with the assumption or type to set to \code{value}.
 }
 \description{
 Returns or sets the migration assumption for a
 \code{\link{mig_parameter}} object. Migration assumption is stored
 in the \value{column} in rows where \code{indicator} =
-\dQuote{mig_assumption}.
+\dQuote{mig_assumption}. Migration type is stored
+in the \value{column} in rows where \code{indicator} =
+\dQuote{mig_type}.
 }
 \author{
 Mark Wheldon

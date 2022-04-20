@@ -61,7 +61,7 @@ dimension. Moreover, abridging is done within levels of \dQuote{sex} and
 \dQuote{indicators} if \code{x} has those dimensions.
 
 This function calls
-\code{\link{aggregate.demog_change_component_df}} to do the actual
+\code{\link{aggregate.data.frame}} to do the actual
 abridging.
 
 If you get an error along the lines of \dQuote{result is invalid as

@@ -8,7 +8,7 @@ pasfr_given_tfr(
   PasfrGlobalNorm,
   pasfr_observed,
   tfr_observed_projected,
-  years_projection = 2020:2100,
+  years_projection = 2022:2100,
   num_points = 15
 )
 }
@@ -24,7 +24,7 @@ pasfr_given_tfr(
 \item{num_points}{numeric scalar. The number of past point estimates to be used to model pasfr}
 }
 \value{
-a data frame with the inferred pasfr in the "value" field.
+a matrix of pasfr with age in rows and years in columns
 }
 \description{
 This function returns the proportional age-specific fertility rates given a projected level of

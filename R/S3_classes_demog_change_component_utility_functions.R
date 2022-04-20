@@ -77,6 +77,7 @@ subset_time.demog_change_component_df <- function(x, times, include = TRUE, drop
     value_type_x <- value_type(x)
     value_scale_x <- value_scale(x)
     time_col_name <- get_df_col_names_for_dimensions(dimensions = "time", spans = FALSE)
+                                # TODO: should hard-code 'time_span'
 
     if (include) {
         time_x <- x[[time_col_name]] %in% times
@@ -95,7 +96,6 @@ subset_time.demog_change_component_df <- function(x, times, include = TRUE, drop
         }
 
     return(suppressMessages(demog_change_component_df(x,
-                                                      dimensions = NULL,
                                                       value_type = value_type_x,
                                                       value_scale = value_scale_x
                                                       )))
@@ -128,6 +128,7 @@ subset_age.demog_change_component_df <- function(x, ages, include = TRUE, drop =
     value_type_x <- value_type(x)
     value_scale_x <- value_scale(x)
     age_col_name <- get_df_col_names_for_dimensions(dimensions = "age", spans = FALSE)
+                                # TODO: should hard-code 'age_span'
 
     if (include) {
     age_x <- x[[age_col_name]] %in% ages
@@ -146,7 +147,6 @@ subset_age.demog_change_component_df <- function(x, ages, include = TRUE, drop =
         }
 
     return(suppressMessages(demog_change_component_df(x,
-                                                      dimensions = NULL,
                                                       value_type = value_type_x,
                                                       value_scale = value_scale_x)))
 }
@@ -167,6 +167,7 @@ subset_sex.demog_change_component_df <-
         value_type_x <- value_type(x)
         value_scale_x <- value_scale(x)
         sex_col_name <- get_df_col_names_for_dimensions(dimensions = "sex", spans = FALSE)
+                                # TODO: should hard-code 'sex'
 
         if (include) {
             sex_x <- x[[sex_col_name]] %in% sexes
@@ -185,7 +186,6 @@ subset_sex.demog_change_component_df <-
             }
 
         return(suppressMessages(demog_change_component_df(x,
-                                                          dimensions = NULL,
                                                           value_type = value_type_x,
                                                           value_scale = value_scale_x)))
     }
@@ -205,6 +205,7 @@ subset_indicator.demog_change_component_df <-
         value_type_x <- value_type(x)
         value_scale_x <- value_scale(x)
         indicator_col_name <- get_df_col_names_for_dimensions(dimensions = "indicator", spans = FALSE)
+                                # TODO: should hard-code 'indicator'
 
         if (include) {
             indicator_x <- x[[indicator_col_name]] %in% indicators
@@ -223,7 +224,6 @@ subset_indicator.demog_change_component_df <-
         }
 
         return(suppressMessages(demog_change_component_df(x,
-                                                          dimensions = NULL,
                                                           value_type = value_type_x,
                                                           value_scale = value_scale_x)))
     }
@@ -239,12 +239,18 @@ subset_indicator.demog_change_component_df <-
 #' merged on columns named \code{by_vars_names} and these columns are
 #' in the output, which is also a data frame.
 #'
+#' When \code{by_vars_names} is \code{NULL}, if \code{denom} has
+#' column \code{time_span} and all entries are 0, \dQuote{time_span}
+#' will be omitted from \code{by_vars_names}. \emph{Note:} This only
+#' happens if \code{by_vars_names} is \code{NULL}.
+#'
 #' @param num A data frame with columns \dQuote{\code{by_vars_names}}
 #'     and \dQuote{value}, holding the numerator values.
 #' @param denom Similar to \code{num} but holding the denominator
 #'     values.
 #' @param by_vars_names Character vector of names of columns to merge
-#'     by. By default, all columns except \dQuote{value}.
+#'     by. By default, all columns except \dQuote{value}. See also
+#'     \dQuote{Details}.
 #' @inheritParams base::merge
 #' @return A data frame with columns \dQuote{\code{by_vars_names}} and
 #'     \dQuote{value}, where the latter holds the ratio of
@@ -259,6 +265,12 @@ make_value_ratio <- function(num, denom,
     if (is.null(by_vars_names)) {
         by_vars_names <- intersect(names(num), names(denom))
         by_vars_names <- by_vars_names[!by_vars_names == "value"]
+        ## Handle 'time_span == 0', eg when 'denom' is a
+        ## 'pop_count_age_sex[_base]' object.
+        if ("time_span" %in% colnames(denom)) {
+            if (all(denom$time_span == 0))
+                by_vars_names <- by_vars_names[!by_vars_names == "time_span"]
+            }
     }
     if (!length(by_vars_names))
         stop("'No 'by_vars' variables in common.")
@@ -293,11 +305,17 @@ make_value_ratio <- function(num, denom,
 #' \code{y} are first merged on columns named \code{by_vars_names}
 #' and these columns are in the output, which is also a data frame.
 #'
+#' Special processing occurs when \code{by_vars_names} is \code{NULL}
+#' and either \code{x} or \code{y} has column \code{time_span} and all
+#' entries are 0. In this case, before merging, \dQuote{time_span} is
+#' omitted from \code{by_vars_names} and the \code{time_span} column
+#' is dropped from \code{y}. This ensures the result has only one
+#' \code{time_span} column, namely the one from \code{x}.
+#'
 #' @param x,y Data frames with columns \dQuote{\code{by_vars_names}}
 #'     and \dQuote{value}.
-#' @param by_vars_names Character vector of names of columns to merge
-#'     by. By default, all columns except \dQuote{value}.
 #' @inheritParams base::merge
+#' @inheritParams make_value_ratio
 #' @return A data frame with columns \dQuote{\code{by_vars_names}} and
 #'     \dQuote{value}, where the latter holds the product of
 #'     \dQuote{value}s in \code{x} and \code{y}.
@@ -306,11 +324,25 @@ make_value_ratio <- function(num, denom,
 make_value_product <- function(x, y,
                              by_vars_names = NULL,
                              all.x = TRUE, all.y = FALSE) {
-    num <- as.data.frame(x)
+    x <- as.data.frame(x)
     y <- as.data.frame(y)
     if (is.null(by_vars_names)) {
         by_vars_names <- intersect(names(x), names(y))
         by_vars_names <- by_vars_names[!by_vars_names == "value"]
+        ## Handle 'time_span == 0', eg when 'x' or 'y' are a
+        ## 'pop_count_age_sex[_base]' objects.
+        if ("time_span" %in% colnames(x)) {
+            if (all(x$time_span == 0))
+                by_vars_names <- by_vars_names[!by_vars_names == "time_span"]
+        }
+        if ("time_span" %in% colnames(y)) {
+            if (all(y$time_span == 0)) {
+                by_vars_names <- by_vars_names[!by_vars_names == "time_span"]
+                ## Also need to remove the 'time_span' column
+                ## otherwise it will appear in the result.
+                y <- y[, -which(colnames(y) == "time_span")]
+            }
+        }
     }
     if (!length(by_vars_names))
         stop("'No 'by_vars' variables in common.")
@@ -341,38 +373,37 @@ make_value_product <- function(x, y,
 #' Collapse a \code{demog_change_component_df} object across demographic dimension(s)
 #'
 #' This function conveniently collapses objects across the demographic
-#' dimension(s) specified in \code{by_dimension}. The \dQuote{value}
+#' dimension(s) specified in \code{by_dimensions}. The \dQuote{value}
 #' column is aggregated using function \code{FUN}. Columns
-#' corresponding to \code{by_dimension} are dropped. If you want to
+#' corresponding to \code{by_dimensions} are dropped. If you want to
 #' aggregate other columns, or complete collapsing over a dimension is
 #' not desired, use \code{\link[stats]{aggregate}}, or similar.
 #'
-#' Argument \code{by_dimension} is a character vector and can be any
+#' Argument \code{by_dimensions} is a character vector and can be any
 #' of the allowed demographic \dQuote{dimensions} such as
 #' \dQuote{age}, \dQuote{time}, \dQuote{sex} (you can see the full
 #' list by calling \code{ccmppWPP:::get_all_allowed_dimensions}). The
 #' result will have values completely collapsed over the given
-#' dimension. E.g., if \code{by_dimension = "age"} then column
+#' dimension. E.g., if \code{by_dimensions = "age"} then column
 #' \code{value} in the result will contain the original \code{value}s
 #' aggregated over all remaining dimensions, where aggregation is done
 #' by function \code{FUN}.
 #'
-#' The function will try to return an object of the class given in
-#' \code{out_class}, which is just \code{\class{x}} by default (see
-#' the argument description for how to specify it). If a valid object
-#' of this class cannot be created from the result an error is
-#' signalled.
+#' @section Setting the class of the output:
+#' Collapsing a \code{demog_change_component_df} object will likely
+#' make it an invalid member of its class. By default, the function
+#' will attempt to return a
+#' \code{\link{demog_change_component_df}}. If this fails a
+#' \code{\link{data.frame}} will be returned with a warning.
 #'
 #' @param x An object inheriting from
 #'     \code{demog_change_component_df}.
-#' @param by_dimension A \emph{character vector} (not a list) of
+#' @param by_dimensions A \emph{character vector} (not a list) of
 #'     demographic \dQuote{dimensions} to aggregate over; see
 #'     \dQuote{Details}).
-#' @param out_class The first element of the class of \code{x}
-#'     \emph{after} aggregation. It will be expanded by adding
-#'     elements 2, 3, ... of \code{class(x)}} if \code{out_class} is
-#'     an element of \class{x} and not the last element. Otherwise,
-#'     \code{out_class} is left as-is.
+#' @param out_class The class of the object to be returned
+#'     (specifically the first element of the vector returned by
+#'     \code{\link{class}}). See \dQuote{Setting the class of the output}.
 #' @param FUN A function to use to aggregate the \dQuote{value} column
 #'     of \code{x}; found by \code{\link{match.fun}}.
 #' @param ... Passed to
@@ -382,63 +413,26 @@ make_value_product <- function(x, y,
 #' @author Mark Wheldon
 #' @seealso \code{\link[stats]{aggregate}}, \code{link{abridge}}
 #'     \code{\link{demog_change_component_df}}
-#' @examples
-#' x1 <- ccmpp_input_df(expand.grid(age_start = 0:5, time_start = 1950:1954, value = 1),
-#'                    value_type = "count")
-#' x1_agg <- collapse_demog_dimension(x1, by_dimension = "time")
-#' stopifnot("ccmpp_input_df" %in% class(x1_agg))
-#'
-#'
-#' ## When the result is not a valid member of the class:
-#'
-#' x2 <- subset(x1, age_start != 0)
-#' stopifnot(identical(class(x2), "data.frame"))
-#'
-#' x2 <- demog_change_component_df(x2, value_type = "count", value_scale = 1)
-#' # Force an invalid object (do not try this at home!):
-#' class(x2) <- c("ccmpp_input_df", "demog_change_component_df", "data.frame")
-#' \dontrun{
-#' x2_agg <- collapse_demog_dimension(x2, by_dimension = "age") # exits with an error message
-#' }
-#'
-#' # Coerce object
-#' x2_dcc <- demog_change_component_df(x2, value_type = "count", value_scale = 1)
-#' x2_dcc_agg <- collapse_demog_dimension(x2_dcc, by_dimension = "age") # OK
-#' stopifnot(identical(class(x2_dcc_agg), c("demog_change_component_df", "data.frame")))
-#'
-#' # Specify 'out_class'
-#' x2_dcc_agg <- collapse_demog_dimension(x2, by_dimension = "age", out_class = "demog_change_component_df") # OK
-#' stopifnot(identical(class(x2_dcc_agg), c("demog_change_component_df", "data.frame")))
-#'
-#'
-#' ## Coercing 'x' to a data.frame.
-#'
-#' x3 <- as.data.frame(x1) # will issue a warning that class is dropped
-#' x3_agg <- collapse_demog_dimension(x3, by_dimension = "time")
-#' stopifnot(identical(class(x3_agg, "data.frame"))
-#'
-#' # Can re-cast as a 'demog_change_component_df'
-#' x_agg_dcc <- as_demog_change_component_df(x3_agg)
 #'
 #' @export
-collapse_demog_dimension <- function(x, FUN = "sum", ..., by_dimension = get_all_allowed_dimensions(),
-                                     out_class = class(x)[1]) {
+collapse_demog_dimension <- function(x, FUN = "sum", ...,
+                                     by_dimensions = demog_change_component_dims(x),
+                                     collapse_dimensions = NULL,
+                                     out_class = c("demog_change_component_df", "data.frame")) {
     ## Check arguments
     FUN <- match.fun(FUN)
-    stopifnot(identical(length(out_class), 1L))
-    if (!is.character(by_dimension)) stop("'by_dimension' must be a 'character' vector.")
-    by_dimension <- match.arg(by_dimension, several.ok = TRUE)
-    by_dimension <- get_all_req_col_names_excl_spans_for_dimensions(by_dimension)
-    by_dimension <- by_dimension[by_dimension != "value"]
-    class_x <- class(x)
-    if (length(class_x) > 1) {
-        i <- match(out_class, class_x)
-        if (!is.na(i) && i < length(class_x)) out_class <- c(out_class, tail(class_x, -i))
+    out_class <- match.arg(out_class)
+    if (!is.null(collapse_dimensions)) {
+        if (!is.character(collapse_dimensions))
+            stop("'collapse_dimensions' must be a 'character' vector.")
+        by_dimensions <-
+            demog_change_component_dims(x)[!demog_change_component_dims(x) %in% collapse_dimensions]
+    } else {
+        if (!is.character(by_dimensions)) stop("'by_dimensions' must be a 'character' vector.")
+        by_dimensions <- match.arg(by_dimensions, several.ok = TRUE)
     }
-    if (!all(out_class %in% c(get_all_demog_change_component_df_class_names(), "data.frame")))
-        stop("'out_class' must only use classes in this list '",
-             toString(c(get_all_demog_change_component_df_class_names(), "data.frame")),
-             "'.")
+    by_dimensions <- get_all_req_col_names_excl_spans_for_dimensions(by_dimensions)
+    by_dimensions <- by_dimensions[by_dimensions != "value"]
 
     ## Make sure 'x' can be collapsed: only certain 'value_type's can be collapsed:
     value_type_x <- value_type(x)
@@ -450,26 +444,14 @@ collapse_demog_dimension <- function(x, FUN = "sum", ..., by_dimension = get_all
 
     ## Do the collapsing
     out <- stats::aggregate.data.frame(x = x[, "value", drop = FALSE],
-                                       by = x[, by_dimension, drop = FALSE],
+                                       by = x[, by_dimensions, drop = FALSE],
                                        FUN = FUN, ...)
-    tryout <- try(do.call(get_as_function_for_class(out_class[1]),
-                          list(x = out, value_type = value_type_x, value_scale = value_scale_x)),
-                  silent = TRUE)
-    if (!identical(class(tryout), "try-error") && identical(class(tryout), out_class)) return(tryout)
-    else {
-        class_orig <- class_x
-        while(identical(class(tryout), "try-error") && length(class_x[-1])) {
-            class_x <- class_x[-1]
-            tryout <- try(do.call(get_as_function_for_class(class_x[1]),
-                                  list(x = out, value_type = value_type_x, value_scale = value_scale_x)),
-                          silent = TRUE)
-            if (!identical(class(tryout), "try-error")) {
-                msg <- paste0("The result of collapsing 'x' cannot be coerced to the class in argument 'out_class' (i.e., '", toString(out_class), "').\n\tIf you want to collapse 'x', set 'out_class' to '", class_x[1], "' or coerce it to a '", class_x[1], "' object and use 'collapse_demog_dimension' again (see examples in '?collapse_demog_dimension').")
-                stop(msg)
-            }
-        }
-        stop("Could not collapse 'x'. Try coercing it to a 'data.frame' via 'as.data.frame(x)' and re-applying the function on that, or use 'stats::aggregate'. Note that the result will not have the same class as 'x' until you re-cast it.")
-    }
+    if (identical(out_class, "demog_change_component_df")) {
+        tryout <- try(demog_change_component_df(out, value_type = value_type_x, value_scale = value_scale_x),
+                      silent = TRUE)
+        if (!identical(class(tryout), "try-error")) return(tryout)
+        else warning("Returning a 'data.frame'.")
+    } else return(out)
 }
 
 
@@ -491,7 +473,7 @@ collapse_demog_dimension <- function(x, FUN = "sum", ..., by_dimension = get_all
 #' \dQuote{indicators} if \code{x} has those dimensions.
 #'
 #' This function calls
-#' \code{\link{aggregate.demog_change_component_df}} to do the actual
+#' \code{\link{aggregate.data.frame}} to do the actual
 #' abridging.
 #'
 #' If you get an error along the lines of \dQuote{result is invalid as
@@ -621,6 +603,11 @@ abridge.demog_change_component_df <- function(x,
     value_scale_x <- value_scale(x)
     out <- stats::aggregate(data.frame(value = x$value), by = by_list, FUN = "sum")
 
+    ## Deal with pop counts and zero time spans
+
+    if (is_by_time(x) && has_time_span_zero(x) && is.null(time_span_abridged) && is.null(time_start_abridged))
+        out$time_span <- 0
+
     ## Check the class
     tryout <- try(do.call(get_as_function_for_class(out_class[1]),
                           list(x = out, value_type = value_type_x, value_scale = value_scale_x)),
@@ -634,6 +621,9 @@ abridge.demog_change_component_df <- function(x,
                           silent = TRUE)
             if (!identical(class(tryout), "try-error")) {
                 msg <- paste0("The result of abridging 'x' cannot be coerced to the class in argument 'out_class' (i.e., '", toString(out_class), "').\n\tIf you want to abridge 'x', set 'out_class' to '", class_x[1], "' or coerce it to a '", class_x[1], "' object and use 'abridge' again (see examples in '?abridge').")
+                if (is_by_time(x) && has_time_span_zero(x) &&
+                    (!is.null(time_span_abridged) || is.null(time_start_abridged)))
+                    msg <- c(msg, "\nNote: 'x' inherits from a class with time_span == 0 but time has been abridged over.")
                 stop(msg)
             }
         }

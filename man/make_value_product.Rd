@@ -12,7 +12,8 @@ make_value_product(x, y, by_vars_names = NULL, all.x = TRUE, all.y = FALSE)
 and \dQuote{value}.}
 
 \item{by_vars_names}{Character vector of names of columns to merge
-by. By default, all columns except \dQuote{value}.}
+by. By default, all columns except \dQuote{value}. See also
+\dQuote{Details}.}
 
 \item{all.x}{logical; if \code{TRUE}, then extra rows will be added to
     the output, one for each row in \code{x} that has no matching row in
@@ -33,6 +34,14 @@ The product of the \dQuote{value} columns in data frames \code{x}
 and \code{y} is calculated and returned. \code{x} and
 \code{y} are first merged on columns named \code{by_vars_names}
 and these columns are in the output, which is also a data frame.
+}
+\details{
+Special processing occurs when \code{by_vars_names} is \code{NULL}
+and either \code{x} or \code{y} has column \code{time_span} and all
+entries are 0. In this case, before merging, \dQuote{time_span} is
+omitted from \code{by_vars_names} and the \code{time_span} column
+is dropped from \code{y}. This ensures the result has only one
+\code{time_span} column, namely the one from \code{x}.
 }
 \author{
 Mark Wheldon

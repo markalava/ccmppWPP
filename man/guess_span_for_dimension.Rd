@@ -7,7 +7,7 @@
 \alias{guess_span_for_dimension_for_df}
 \title{Guess the \dQuote{span} for a demographic dimension}
 \usage{
-guess_span_from_start(x)
+guess_span_from_start(x, span_name = character())
 
 guess_span_for_dimension_for_df(x, dimension = get_all_dimensions_w_spans())
 }
@@ -23,17 +23,21 @@ guess_span_for_dimension_for_df(x, dimension = get_all_dimensions_w_spans())
 Guessed span.
 }
 \description{
+\code{guess_span_from_start} takes a
+vector of \dQuote{\code{_start}} values as first argument;
+\code{guess_span_for_dimension_for_df} is a convenience wrapper
+that takes a data frame with such a column instead.
+}
+\details{
 Certain demographic dimensions, such as \dQuote{time} and
 \dQuote{age} have associated spans. These should ordinarily be
 supplied by the user when calling, e.g.,
 \code{\link{demog_change_component_df}}, but a very simple guess
-will be attempted if not. Currently, the smallest difference
+will be attempted if not. Generally, the smallest difference
 between successive values in the corresponding
-\dQuote{\code{_start}} column is
-returned. \code{guess_span_from_start} takes a
-vector of \dQuote{\code{_start}} values as first argument;
-\code{guess_span_for_dimension_for_df} is a convenience wrapper
-that takes a data frame with such a column instead.
+\dQuote{\code{_start}} column will be returned. However, if there
+is only one unique \dQuote{\code{_start}} value, all \code{1} will
+be returned and a warning issued.
 }
 \author{
 Mark Wheldon

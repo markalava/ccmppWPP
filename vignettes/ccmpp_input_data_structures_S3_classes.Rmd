@@ -379,13 +379,12 @@ Functions to construct objects of the various classes, and validate existing obj
 
 ## Main Constructor Functions
 
-A user-level constructor is provided for each class which takes as input the base data frame object plus arguments specifying the dimensions and value types. The names of these functions are the class names.
+A user-level constructor is provided for each class which takes as input the base data frame object plus arguments specifying the value type and value scale. The names of these functions are the class names.
 
 ```{r construct-vital-rate-df-1}
 demog_change_example_df <-
     demog_change_component_df(x = wpp_input_example$mig_net_count_age_sex,
-                              dimensions = c("time", "sex", "age"),
-                              value_type = "count")
+                              value_type = "count", value_scale = 1)
 ```
 
 The class of the object is contained in the "class" attribute accessed with base *R* function `class()`
@@ -401,8 +400,7 @@ Constructing objects of the other classes is done in the same way, e.g.:
 ```{r construct-ccmpp-input-df-1}
 ccmpp_input_example_df <-
     ccmpp_input_df(x = wpp_input_example$mig_net_count_age_sex,
-                   dimensions = c("time", "sex", "age"),
-                   value_type = "count")
+                   value_type = "count", value_scale = 1)
 
 fert_rate_input_example_df <-
     fert_rate_age_f(x = wpp_input_example$fert_rate_age_f,
@@ -428,12 +426,12 @@ ccmpp_input_list_example <-
 
 ### Construction Conveniences
 
-The constructor functions check that the data frame being supplied is valid as an input for the class being created. The following operations are also done as conveniences. Note that these are hierarchical; everything that is listed under a function applies to all those beneath it.
+The constructor functions check that the data frame being supplied is valid as an input for the class being created. The following operations are also done as conveniences.
 
 `demog_change_component_df`
 
-:  - Superfluous columns will be discarded; only the columns needed for the specified "dimensions" and the `value` column are retained. 
-- If the `dimensions` argument is omitted the constructor functions will attempt to guess the "dimensions" attribute from the columns in the data frame. 
+:  - The "dimensions" attribute will be determined based on the columns present in the input data frame. For example, if columns `time_start` and `age_start` are present, the result will have demographic dimensions "age" and "time".
+- The data frame will be sorted appropriately.
 
 ```{r construct-vital-rate-df-2}
 ## Dimensions can be guessed from the columns in the data frame
@@ -443,8 +441,7 @@ demog_change_example_df <-
 
 `ccmpp_input_df`
 
-:  - Pre-sorting is not required; the data frame will be sorted appropriately.
-- The "time_span" and "age_span" attributes will be set using the corresponding columns in the data frame, which will be checked for validity.
+:  - The "time_span" and "age_span" attributes will be set using the corresponding columns in the data frame, which will be checked for validity.
 
 
 `fert_rate_age_f`
@@ -461,14 +458,14 @@ The following are the responsibility of the user and will *not* be done automati
 
 `demog_change_component_df`
 
-:  - There must be only one row per unique `indicator` $\times$ `time_start` $\times$ `sex` combination. Use `dplyr` or similar before passing to `demog_change_component_df()`.
-- There cannot be any missing values; CCMPP won't work with them.
+:  - There cannot be any missing values; CCMPP won't work with them.
 - The `sex` column (if present) can only have values "both", "female", or "male". Variations such as "Both", "MALE", etc. are not valid.
  
 
 `ccmpp_input_df`
 
-:  - Ensuring that the age breakdown starts at age 0 for every unique `indicator` $\times$ `time_start` $\times$ `sex` combination. 
+:  - There must be only one row per unique `indicator` $\times$ `time_start` $\times$ `sex` combination.
+- The age breakdown must start at age 0 for every unique `indicator` $\times$ `time_start` $\times$ `sex` combination. 
 
 
 ## Validation

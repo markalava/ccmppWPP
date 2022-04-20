@@ -14,6 +14,11 @@ get_life_table_radix_from_li <- function(li) {
         else return(NA)
 }
 
+get_all_life_table_subclasses <- function() {
+    c("mort_rate_age_sex", "survival_ratio_age_sex", "ccmpp_input_death_count",
+      "ccmpp_input_death_probability")
+    }
+
 ###-----------------------------------------------------------------------------
 ### * Class constructors
 
@@ -37,8 +42,8 @@ new_life_table_age_sex <-
     function(x,
              age_span = double(),
              time_span = double(),
-             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("life_table_age_sex"),
-             value_type = get_value_types_for_ccmpp_in_out_classes("life_table_age_sex"),
+             dimensions = get_req_dimensions_for_subclass_classes("life_table_age_sex"),
+             value_type = get_value_types_for_subclass_classes("life_table_age_sex"),
              value_scale = double(),
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
@@ -88,8 +93,8 @@ life_table_age_sex.data.frame <- function(x,
              value_scale = attr(x, "value_scale")) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
-                            dimensions = get_req_dimensions_for_ccmpp_in_out_classes("life_table_age_sex"),
-                            value_type = get_value_types_for_ccmpp_in_out_classes("life_table_age_sex"),
+                            dimensions = get_req_dimensions_for_subclass_classes("life_table_age_sex"),
+                            value_type = get_value_types_for_subclass_classes("life_table_age_sex"),
                             value_scale = value_scale)
 
         ## Set 'value_scale' to the radix
@@ -123,7 +128,6 @@ life_table_age_sex.ccmpp_input_list <- function(x) {
 #' \code{life_table_age_sex} if possible, or check if it is
 #' one.
 #'
-#' @family ccmpp_input_objects
 #' @seealso \code{\link{coerce_demog_change_component_df}}
 #'
 #' @inheritParams coerce_demog_change_component_df

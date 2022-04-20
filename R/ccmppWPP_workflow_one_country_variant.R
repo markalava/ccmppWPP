@@ -125,6 +125,8 @@ ccmppWPP_project_one_country_variant <- function(ccmpp_input, atr) {
   # compute age-specific mortality rates from age-specific deaths and exposures
   mx_b <- cbind(death_count_age_b[, 1:4],
                 value = death_count_age_b$value / exposure_count_age_b$value) 
+  mx_b$value[mx_b$value <= 0] <- 0.0000000000000001
+
   # compute all life table columns from single year mx
   life_table_age_b <- lt_complete_loop_over_time(mx = mx_b, sex="both", a0rule = atr$a0rule, OAnew = 130)
   
@@ -190,12 +192,23 @@ ccmppWPP_truncate_OAG <- function(ccmpp_output, OAnew = 100) {
   exposure_count_age_sex <- exposure_count_age_sex[order(exposure_count_age_sex$time_start, exposure_count_age_sex$sex, exposure_count_age_sex$age_start),]
   
   # life tables by age and sex
-  mx <- ccmpp_output$lt_complete_age_sex[ccmpp_output$lt_complete_age_sex$indicator == "lt_nMx",]
-  lt_f <- lt_complete_loop_over_time(mx = mx[mx$sex == "female",], sex = "female", a0rule = atr$a0rule, OAnew = 100)
-  lt_m <- lt_complete_loop_over_time(mx = mx[mx$sex == "male",], sex = "male", a0rule = atr$a0rule, OAnew = 100)
-  lt_b <- lt_complete_loop_over_time(mx = mx[mx$sex == "both",], sex = "both", a0rule = atr$a0rule, OAnew = 100)
+  lt_complete_age_sex <- ccmpp_output$lt_complete_age_sex[ccmpp_output$lt_complete_age_sex$age_start <= OAnew,] %>%
+    dplyr::group_by(time_start, sex) %>%
+    mutate(value = replace(value, age_start == OAnew & indicator == "lt_nLx", value[age_start == OAnew & indicator == "lt_Tx"]),
+           value = replace(value, age_start == OAnew & indicator == "lt_ndx", value[age_start == OAnew & indicator == "lt_lx"]),
+           value = replace(value, age_start == OAnew & indicator == "lt_nqx", 1),
+           value = replace(value, age_start == OAnew & indicator == "lt_nMx", value[age_start == OAnew & indicator == "lt_lx"] / value[age_start == OAnew & indicator == "lt_nLx"]),
+           value = replace(value, age_start == OAnew & indicator == "lt_nAx", value[age_start == OAnew & indicator == "lt_ex"]),
+           value = replace(value, age_start == OAnew & indicator == "lt_Sx", value[age_start == OAnew & indicator == "lt_nLx"] / (value[age_start == (OAnew - 1) & indicator == "lt_nLx"] + value[age_start == OAnew & indicator == "lt_nLx"])),
+           age_span = replace(age_span, age_start == OAnew, 1000))
   
-  lt_complete_age_sex <- rbind(lt_f, lt_m, lt_b)
+  # # we don't use DemoTools lt functions for this because for aggregates we might need to use custom ax
+  # mx <- ccmpp_output$lt_complete_age_sex[ccmpp_output$lt_complete_age_sex$indicator == "lt_nMx",]
+  # lt_f <- lt_complete_loop_over_time(mx = mx[mx$sex == "female",], sex = "female", a0rule = atr$a0rule, OAnew = 100)
+  # lt_m <- lt_complete_loop_over_time(mx = mx[mx$sex == "male",], sex = "male", a0rule = atr$a0rule, OAnew = 100)
+  # lt_b <- lt_complete_loop_over_time(mx = mx[mx$sex == "both",], sex = "both", a0rule = atr$a0rule, OAnew = 100)
+  # 
+  # lt_complete_age_sex <- rbind(lt_f, lt_m, lt_b)
   
   # births by age and sex
   birth_OAnew <- sum_last_column(ccmpp_output$birth_count_age_b[ccmpp_output$birth_count_age_b$age_start >= OAnew, 

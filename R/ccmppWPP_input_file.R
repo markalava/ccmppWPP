@@ -409,9 +409,7 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
                                        srb_median_all_locs, # projected srb
                                        e0_median_all_locs, # medium e0 from bayesian model
                                        mig_net_count_proj_all_locs, # projected net migration by age and sex
-
                                        PasfrGlobalNorm, # pasfr global norm from pasfr_global_model() function
-
                                        input_file_path, # file path name for Excel input file
                                        ccmpp_estimates_130_folder) { # file path to folder where ccmpp intermediate outputs for ages 0 to 130 are stored
 
@@ -539,28 +537,43 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
   MORT_PARAMS <- readxl::read_xlsx(path = input_file_path, sheet = "MORT_PARAMS",
                                               n_max = 1048576)
 
-
   Age_Mort_Proj_arguments <- list(Age_Mort_Proj_Method1 = MORT_PARAMS$value[MORT_PARAMS$parameter=="Age_Mort_Proj_Method1"],
                                   Age_Mort_Proj_Method2 = MORT_PARAMS$value[MORT_PARAMS$parameter=="Age_Mort_Proj_Method2"],
                                   Age_Mort_Proj_Pattern = MORT_PARAMS$value[MORT_PARAMS$parameter=="Age_Mort_Proj_Pattern"],
                                   Age_Mort_Proj_Method_Weights = eval(parse(text = MORT_PARAMS$value[MORT_PARAMS$parameter=="Age_Mort_Proj_Method_Weights"])),
                                   Age_Mort_Proj_Adj_SR = eval(parse(text = MORT_PARAMS$value[MORT_PARAMS$parameter=="Age_Mort_Proj_Adj_SR"])),
                                   Latest_Age_Mortality_Pattern = eval(parse(text = MORT_PARAMS$value[MORT_PARAMS$parameter=="Latest_Age_Mortality_Pattern"])),
-                                  Smooth_Latest_Age_Mortality_Pattern = eval(parse(text = MORT_PARAMS$value[MORT_PARAMS$parameter=="Smooth_Latest_Age_Mortality_Pattern"])))
+                                  Latest_Age_Mortality_Pattern_Years = eval(parse(text = MORT_PARAMS$value[MORT_PARAMS$parameter=="Latest_Age_Mortality_Pattern_Years"])),
+                                  Smooth_Latest_Age_Mortality_Pattern = eval(parse(text = MORT_PARAMS$value[MORT_PARAMS$parameter=="Smooth_Latest_Age_Mortality_Pattern"])),
+                                  Smooth_Latest_Age_Mortality_Pattern_Degree = eval(parse(text = MORT_PARAMS$value[MORT_PARAMS$parameter=="Smooth_Latest_Age_Mortality_Pattern_Degree"])))
+  
+   # mx_medium <- mx_given_e0(mx_mat_m = mx_mat_m, # matrix of mx estimates (age in rows, years in columns)
+   #                         mx_mat_f = mx_mat_f,
+   #                         e0m = e0m_projected, # vector of projected e0 (named with years)
+   #                         e0f = e0f_projected,
+   #                         Age_Mort_Proj_Method1 = tolower(Age_Mort_Proj_arguments$Age_Mort_Proj_Method1),
+   #                         Age_Mort_Proj_Method2 = tolower(Age_Mort_Proj_arguments$Age_Mort_Proj_Method2),  # only used if first method is "pmd"
+   #                         Age_Mort_Proj_Pattern = Age_Mort_Proj_arguments$Age_Mort_Proj_Pattern,
+   #                         Age_Mort_Proj_Method_Weights = Age_Mort_Proj_arguments$Age_Mort_Proj_Method_Weights,
+   #                         Age_Mort_Proj_Adj_SR = Age_Mort_Proj_arguments$Age_Mort_Proj_Adj_SR,
+   #                         Latest_Age_Mortality_Pattern = Age_Mort_Proj_arguments$Latest_Age_Mortality_Pattern,
+   #                         Latest_Age_Mortality_Pattern_Years = Age_Mort_Proj_arguments$Latest_Age_Mortality_Pattern_Years,
+   #                         Smooth_Latest_Age_Mortality_Pattern = Age_Mort_Proj_arguments$Smooth_Latest_Age_Mortality_Pattern,
+   #                         Smooth_Latest_Age_Mortality_Pattern_Degree = Age_Mort_Proj_arguments$Smooth_Latest_Age_Mortality_Pattern_Degree) # a number between 1 and nrow(mx_mat). Higher numbers give less smoothing
 
-
-  mx_medium <- mx_given_e0(mx_mat_m = mx_mat_m, # matrix of mx estimates (age in rows, years in columns)
-                           mx_mat_f = mx_mat_f,
-                           e0m = e0m_projected, # vector of projected e0 (named with years)
-                           e0f = e0f_projected,
-                           Age_Mort_Proj_Method1 = tolower(Age_Mort_Proj_arguments$Age_Mort_Proj_Method1),
-                           Age_Mort_Proj_Method2 = tolower(Age_Mort_Proj_arguments$Age_Mort_Proj_Method2),  # only used if first method is "pmd"
-                           Age_Mort_Proj_Pattern = Age_Mort_Proj_arguments$Age_Mort_Proj_Pattern,
-                           Age_Mort_Proj_Method_Weights = Age_Mort_Proj_arguments$Age_Mort_Proj_Method_Weights,
-                           Age_Mort_Proj_Adj_SR = Age_Mort_Proj_arguments$Age_Mort_Proj_Adj_SR,
-                           Latest_Age_Mortality_Pattern = Age_Mort_Proj_arguments$Latest_Age_Mortality_Pattern,
-                           Smooth_Latest_Age_Mortality_Pattern = Age_Mort_Proj_arguments$Smooth_Latest_Age_Mortality_Pattern)
-
+  # old
+   mx_medium <- mx_given_e0(mx_mat_m = mx_mat_m, # matrix of mx estimates (age in rows, years in columns)
+                            mx_mat_f = mx_mat_f,
+                            e0m = e0m_projected, # vector of projected e0 (named with years)
+                            e0f = e0f_projected,
+                            Age_Mort_Proj_Method1 = tolower(Age_Mort_Proj_arguments$Age_Mort_Proj_Method1),
+                            Age_Mort_Proj_Method2 = tolower(Age_Mort_Proj_arguments$Age_Mort_Proj_Method2),  # only used if first method is "pmd"
+                            Age_Mort_Proj_Pattern = Age_Mort_Proj_arguments$Age_Mort_Proj_Pattern,
+                            Age_Mort_Proj_Method_Weights = Age_Mort_Proj_arguments$Age_Mort_Proj_Method_Weights,
+                            Age_Mort_Proj_Adj_SR = Age_Mort_Proj_arguments$Age_Mort_Proj_Adj_SR,
+                            Latest_Age_Mortality_Pattern = Age_Mort_Proj_arguments$Latest_Age_Mortality_Pattern,
+                            Smooth_Latest_Age_Mortality_Pattern = Age_Mort_Proj_arguments$Smooth_Latest_Age_Mortality_Pattern) # a number between 1 and nrow(mx_mat). Higher numbers give less smoothing
+   
   # organize into a long file required by ccmppWPP
 
   mx_f <- mx_medium$female$mx[,colnames(mx_medium$female$mx) %in% projection_years]
@@ -591,16 +604,62 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
   mx_m$time_span <- 1
   mx_m$sex <- "male"
 
-  lts_all_long <- rbind(mx_f, mx_m)
-  lts_all_long$indicator <- "lt_nMx"
-  lts_all_long$time_start <- as.numeric(lts_all_long$time_start)
-
-
+  mx_all_long <- rbind(mx_f, mx_m)
+  mx_all_long$time_start <- as.numeric(mx_all_long$time_start)
+  
+  lts_all <- list()
+  for (i in 1:(length(projection_years))) {
+    ltf <- DemoTools::lt_single_mx(nMx = mx_all_long$value[mx_all_long$sex == "female" & mx_all_long$time_start == projection_years[i]],
+                                   Age = mx_all_long$age_start[mx_all_long$sex == "female" & mx_all_long$time_start == projection_years[i]],
+                                   Sex = "f")
+    ltf$sex <- "female"
+    ltf$time_start <- projection_years[i]
+    ltm <- DemoTools::lt_single_mx(nMx = mx_all_long$value[mx_all_long$sex == "male" & mx_all_long$time_start == projection_years[i]],
+                                   Age = mx_all_long$age_start[mx_all_long$sex == "male" & mx_all_long$time_start == projection_years[i]],
+                                   Sex = "m")
+    ltm$sex <- "male"
+    ltm$time_start <- projection_years[i]
+    
+    lts_all[[i]] <- rbind(ltf, ltm)
+  }
+  lts_all <- do.call(rbind, lts_all)
+  
+  lts_all_long <- reshape(lts_all,
+                          idvar = c("time_start", "sex", "Age"),
+                          drop = c("AgeInt"),
+                          direction = "long",
+                          varying = list(names(lts_all)[3:11]),
+                          times = names(lts_all)[3:11],
+                          timevar = "indicator",
+                          v.names = "value")
+  
+  lts_all_long$age_start <- lts_all_long$Age
+  lts_all_long$age_span <- 1
+  lts_all_long$age_span[lts_all_long$age_start == 130] <- 1000
+  lts_all_long$time_span <- 1
+  lts_all_long$indicator <- paste0("lt_", lts_all_long$indicator)
+  lts_all_long <- lts_all_long[,c("indicator", "time_start", "time_span", "sex", "age_start", "age_span", "value")]
+  
   # net international migration inputs
-
-  mig_net_count_age_sex  = mig_net_count_proj_all_locs[mig_net_count_proj_all_locs$LocID == locid &
-                                                         mig_net_count_proj_all_locs$time_start %in% projection_years,
-                                                        c("time_start","time_span","sex","age_start","age_span","value")]
+  mig_net_count_age_sex <- list()
+  for (i in 1:length(projection_years)) {
+    mig_net_count_age_sex[[i]] <- data.frame(time_start = rep(projection_years[i], 262),
+                                             age_start = rep(0:130,2),
+                                             sex = c(rep("male", 131), rep("female", 131)))
+  }
+  mig_net_count_age_sex <- do.call(rbind, mig_net_count_age_sex)
+  mig_net_count_age_sex <- merge(mig_net_count_age_sex,
+                                 mig_net_count_proj_all_locs[mig_net_count_proj_all_locs$LocID == locid & 
+                                                               mig_net_count_proj_all_locs$time_start %in% projection_years,
+                                                             c("time_start", "sex", "age_start", "value")],
+                                 by = c("time_start", "sex", "age_start"), all.x = TRUE, all.y= FALSE)
+  mig_net_count_age_sex$time_span <- 1
+  mig_net_count_age_sex$age_span <- 1
+  mig_net_count_age_sex$age_span[mig_net_count_age_sex$age_start == 130] <- 1000
+  mig_net_count_age_sex$value[is.na(mig_net_count_age_sex$value)] <- 0
+  mig_net_count_age_sex <- mig_net_count_age_sex[mig_net_count_age_sex$time_start <= max(projection_years),
+                                                 c("time_start", "time_span", "sex", "age_start", "age_span", "value")]
+  
   mig_net_rate_age_sex <- mig_net_count_age_sex
   mig_net_rate_age_sex$value <- 0 # This is a placeholder -- not in use for WPP 2021
   mig_net_count_tot_b <- sum_last_column(mig_net_count_age_sex[,c("time_start", "time_span", "value")]) # This is a placeholder -- not in use for WPP 2022
@@ -655,31 +714,33 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
 
 
   # create vector of projection time_starts
-  projection_times <- unique(ccmppWPP_medium$fert_rate_tot$time_start)
+  projection_times <- unique(ccmppWPP_medium$fert_rate_age_f$time_start)
   projection_start_year <- projection_times[1]
 
-  # extract pasfr estimates
-  pasfr_df <- ccmppWPP_estimates$fert_pct_age_1x1[ccmppWPP_estimates$fert_pct_age_1x1$age_start %in% c(10:54),
-                                                  c("time_start", "age_start", "value")]
-  pasfr_estimates <- reshape(pasfr_df, idvar = "age_start", timevar = "time_start", direction = "wide")
-  pasfr_estimates <- as.matrix(pasfr_estimates[,c(2:ncol(pasfr_estimates))])
-  rownames(pasfr_estimates) <- unique(pasfr_df$age_start)
-  colnames(pasfr_estimates) <- unique(pasfr_df$time_start)
-
+  # extract asfr estimates
+  asfr_df <- ccmppWPP_estimates$fert_rate_age_f[, c("time_start", "age_start", "value")]
+  
   # extract tfr estimates
-  tfr_est <- ccmppWPP_estimates$fert_rate_tot$value
-  names(tfr_est) <- colnames(pasfr_estimates)
+  tfr_est <- sum_last_column(asfr_df[,c("time_start", "value")])$value
+  names(tfr_est) <- unique(asfr_df$time_start)
+  
+  # compute pasfr
+  pasfr_est <- merge(asfr_df, tfr_est, by = "time_start")
+  pasfr_est$value <- pasfr_est$value.x/pasfr_est$value.y
+  pasfr_est <- pasfr_est[, c("time_start", "age_start", "value")]
 
-  # fill-in zeros for ages < 10 and > 54
-  asfr_0_9 <- matrix(0.0, nrow=length(0:9), ncol = length(projection_times), dimnames = list(0:9, projection_times))
-  asfr_55_100 <- matrix(0.0, nrow=length(55:100), length(projection_times), dimnames = list(55:100, projection_times))
+  # reshape to matrix
+  pasfr_estimates <- reshape(pasfr_est, idvar = "age_start", timevar = "time_start", direction = "wide")
+  pasfr_estimates <- as.matrix(pasfr_estimates[,c(2:ncol(pasfr_estimates))])
+  rownames(pasfr_estimates) <- unique(pasfr_est$age_start)
+  colnames(pasfr_estimates) <- unique(pasfr_est$time_start)
 
   ############################
   ############################
   # compute asfr inputs for low/high fertility variants
 
   # extract medium variant tfr
-  tfr_med <- ccmppWPP_medium$fert_rate_tot$value
+  tfr_med <- sum_last_column(ccmppWPP_medium$fert_rate_age_f[, c("time_start", "value")])$value
   names(tfr_med) <- projection_times
 
   #    for tfr adjustment, subtract/add 0.25 children in first five years, 0.4 children in next five years, 0.5 children thereafter
@@ -691,12 +752,17 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
   tfr_low <- tfr_med - tfr_adj
 
   pasfr_low <- pasfr_given_tfr(PasfrGlobalNorm = PasfrGlobalNorm,
-                               pasfr_observed = pasfr_estimates,
+                               pasfr_observed = pasfr_estimates[11:55,],
                                tfr_observed_projected = c(tfr_est, tfr_low),
                                years_projection = projection_times,
                                num_points = 15)
 
   asfr_low <- t(tfr_low * t(pasfr_low/100))
+  
+  asfr_0_9 <- matrix(0, nrow = 10, ncol = ncol(asfr_low))
+  asfr_0_9 <- matrix(0, nrow = 10, ncol = ncol(asfr_low))
+  
+  asfr_low <- rbind(as.matrix[])
   asfr_low <- rbind(asfr_0_9,  asfr_low, asfr_55_100)
 
   # transform to long data frame
@@ -848,34 +914,38 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
                      mig_parameter = ccmppWPP_medium$mig_parameter)
 
   # assign attributes
-  attr(inputs_low, "revision") <- attributes(ccmppWPP_estimates)$revision
   attr(inputs_low, "locid") <- attributes(ccmppWPP_estimates)$locid
+  attr(inputs_low, "locname") <- attributes(ccmppWPP_estimates)$locname
   attr(inputs_low, "variant") <- "low fertility"
+  attr(inputs_low, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
 
 
   # same as medium variant, but with high asfr
   inputs_high <- inputs_low
   inputs_high$fert_rate_age_f <- fert_rate_age_f_high
   # assign attributes
-  attr(inputs_high, "revision") <- attributes(ccmppWPP_estimates)$revision
   attr(inputs_high, "locid") <- attributes(ccmppWPP_estimates)$locid
+  attr(inputs_high, "locname") <- attributes(ccmppWPP_estimates)$locname
   attr(inputs_high, "variant") <- "high fertility"
+  attr(inputs_high, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
 
   # same as medium variant, but with constant asfr
   inputs_constant <- inputs_low
   inputs_constant$fert_rate_age_f <- fert_rate_age_f_constant
   # assign attributes
-  attr(inputs_constant, "revision") <- attributes(ccmppWPP_estimates)$revision
   attr(inputs_constant, "locid") <- attributes(ccmppWPP_estimates)$locid
+  attr(inputs_constant, "locname") <- attributes(ccmppWPP_estimates)$locname
   attr(inputs_constant, "variant") <- "constant fertility"
+  attr(inputs_constant, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
 
   # instant replacement same as medium variant, but with instant replacement asfr
   inputs_instant <- inputs_low
   inputs_instant$fert_rate_age_f <- fert_rate_age_f_instant
   # assign attributes
-  attr(inputs_instant, "revision") <- attributes(ccmppWPP_estimates)$revision
   attr(inputs_instant, "locid") <- attributes(ccmppWPP_estimates)$locid
+  attr(inputs_instant, "locname") <- attributes(ccmppWPP_estimates)$locname
   attr(inputs_instant, "variant") <- "instant replacement"
+  attr(inputs_instant, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
 
   # momentum is instant replacement asfr, constant mortality, zero migration
   inputs_momentum <- inputs_instant
@@ -883,25 +953,28 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
   inputs_instant$mig_net_count_age_sex$value <- 0
   inputs_instant$mig_net_count_tot_b$value <- 0
   # assign attributes
-  attr(inputs_momentum, "revision") <- attributes(ccmppWPP_estimates)$revision
   attr(inputs_momentum, "locid") <- attributes(ccmppWPP_estimates)$locid
+  attr(inputs_momentum, "locname") <- attributes(ccmppWPP_estimates)$locname
   attr(inputs_momentum, "variant") <- "momentum"
+  attr(inputs_momentum, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
 
   # no change is medium inputs with constant fertility and constant mortality
   inputs_nochange <- inputs_constant
   inputs_nochange$life_table_age_sex <- life_table_age_sex_constant
   # assign attributes
-  attr(inputs_nochange, "revision") <- attributes(ccmppWPP_estimates)$revision
   attr(inputs_nochange, "locid") <- attributes(ccmppWPP_estimates)$locid
+  attr(inputs_nochange, "locname") <- attributes(ccmppWPP_estimates)$locname
   attr(inputs_nochange, "variant") <- "no change"
+  attr(inputs_nochange, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
 
   # constant mortality is same as medium variant but with constant life tables
   inputs_constant_mort <- inputs_nochange
   inputs_constant_mort$fert_rate_age_f <- ccmppWPP_medium$fert_rate_age_1x1
   # assign attributes
-  attr(inputs_constant_mort, "revision") <- attributes(ccmppWPP_estimates)$revision
   attr(inputs_constant_mort, "locid") <- attributes(ccmppWPP_estimates)$locid
+  attr(inputs_constant_mort, "locname") <- attributes(ccmppWPP_estimates)$locname
   attr(inputs_constant_mort, "variant") <- "constant mortality"
+  attr(inputs_constant_mort, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
 
   # zero migration is medium inputs but zero migration
   inputs_nomig <- inputs_low
@@ -909,9 +982,10 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
   inputs_nomig$mig_net_count_age_sex$value <- 0
   inputs_nomig$mig_net_count_tot_b$value <- 0
   # assign attributes
-  attr(inputs_nomig, "revision") <- attributes(ccmppWPP_estimates)$revision
   attr(inputs_nomig, "locid") <- attributes(ccmppWPP_estimates)$locid
+  attr(inputs_nomig, "locname") <- attributes(ccmppWPP_estimates)$locname
   attr(inputs_nomig, "variant") <- "zero migration"
+  attr(inputs_nomig, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
 
 
 

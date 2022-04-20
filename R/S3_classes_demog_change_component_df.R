@@ -35,7 +35,6 @@
 
 #' Low-level constructor for class \code{demog_change_component_df}.
 #'
-#' @description
 #' Creates an object of class \code{demog_change_component_df}. Minimal
 #' checks are done; for interactive use see
 #' \code{\link{demog_change_component_df}}.
@@ -62,7 +61,7 @@ new_demog_change_component_df <-
         stopifnot(is.data.frame(x))
         stopifnot(is.character(class))
         structure(x,
-                  dimensions = dimensions,
+                  dimensions = ensure_these_dimensions_correctly_ordered(dimensions),
                   ## age_span = age_span,
                   ## time_span = time_span,
                   value_type = value_type,
@@ -98,9 +97,6 @@ prepare_df_for_demog_change_component_df <- function(x,
 
     if (is.null(dimensions)) {
         dimensions <- guess_dimensions_from_df_cols(x)
-        S3_class_message("Argument 'dimensions' is 'NULL'; setting 'dimensions' to '",
-                paste(dimensions, collapse = ", "),
-                "' based on column names of 'x'.")
     } else {
         ## Check 'dimensions'
         allowed_dimensions <- get_all_allowed_dimensions()
@@ -309,20 +305,19 @@ prepare_df_for_demog_change_component_df <- function(x,
 #' inputs are sorted by sex first (varying slowest) but with 'male'
 #' first, so in reverse alphabetical order.
 #'
-#' FACTORS vs CHARACHTERS:
+#' FACTORS vs CHARACTERS:
 #' -----------------------
 #'
 #' 'sex' is a categorical variable and encoding it as a factor could
 #' be justified. However it may be easier to encode as character and
-#' have methods convert to factor when advantageous.
+#' have methods convert to factor when advantageous. NOTE that
+#' ordering is important; see 'sex_as_factor()' and friends.
 #'
 #' @family demog_change_component_df constructor functions
 #'
 #' @param x For \code{demog_change_component_df}: A data frame with
 #'     columns \dQuote{age_start}, \dQuote{age_span}, \dQuote{sex},
 #'     \dQuote{time_start}, \dQuote{time_span}, and \dQuote{value}.
-#' @param dimensions Character vector listing the dimensions such as
-#'     \dQuote{time}, \dQuote{age}, \dQuote{sex}.
 #' @param value_type Scalar indicating the type of the \dQuote{value}
 #'     column (e.g., \dQuote{count}, \dQuote{rate}, etc.).
 #' @param value_scale \emph{Numeric} scalar indicating the value_scale of the
@@ -333,7 +328,6 @@ prepare_df_for_demog_change_component_df <- function(x,
 #' @export
 demog_change_component_df <-
     function(x,
-             dimensions = attr(x, "dimensions"),
              value_type = attr(x, "value_type"),
              value_scale = attr(x, "value_scale"),
              ...) {
@@ -341,21 +335,20 @@ demog_change_component_df <-
         li <-
             prepare_df_for_demog_change_component_df(
                 x,
-                dimensions = dimensions,
+                dimensions = attr(x, "dimensions"),
                 value_type = value_type,
                 value_scale = value_scale)
 
         ## Create/Validate
         validate_ccmppWPP_object(
             new_demog_change_component_df(li$df,
-                              dimensions = li$dimensions,
-                              ## age_span = (if (is.null(age_span)) double() else age_span),
-                              ## time_span = (if (is.null(time_span)) double() else time_span),
-                              value_type = li$value_type,
-                              value_scale = li$value_scale,
-                              ...
-                              )
-        )
+                                          dimensions = li$dimensions,
+                                          ## age_span = (if (is.null(age_span)) double() else age_span),
+                                          ## time_span = (if (is.null(time_span)) double() else time_span),
+                                          value_type = li$value_type,
+                                          value_scale = li$value_scale,
+                                          ...
+                                          ))
     }
 
 
@@ -372,7 +365,6 @@ demog_change_component_df <-
 #'     functions; a logical for the \code{is_...} functions.
 #' @author Mark Wheldon
 #'
-#' @family ccmpp_input_objects
 #' @name coerce_demog_change_component_df
 #' @export
 as_demog_change_component_df <- function(x, ...) {

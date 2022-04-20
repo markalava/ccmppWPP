@@ -36,7 +36,7 @@
 
 \item{factor.exclude}{if the data frames contain factors, the default
     \code{TRUE} ensures that \code{NA} levels of factors are kept, see
-    \href{https://bugs.R-project.org/bugzilla3/show_bug.cgi?id=17562}{PR#17562} and the \sQuote{Data frame methods}.  In \R versions up
+    \href{https://bugs.R-project.org/show_bug.cgi?id=17562}{PR#17562} and the \sQuote{Data frame methods}.  In \R versions up
     to 3.6.x, \code{factor.exclude = NA} has been implicitly hardcoded
     (\R <= 3.6.0) or the default (\R = 3.6.x, x >= 1).}
 }

@@ -74,8 +74,8 @@ lt_summary <- function(lt_data, byvar) {
   
   label <- stringr::str_split_fixed(lt_lx$indicator, "_", 2)[,2]
   label <- stringr::str_split_fixed(label, "q", 2)
-  lt_lx$age_start <- label[,2]
-  lt_lx$age_span  <- label[,1]
+  lt_lx$age_start <- as.numeric(label[,2])
+  lt_lx$age_span  <- as.numeric(label[,1])
   
   # extract summary ex
   lt_ex           <- lt_data[lt_data$indicator=="lt_ex" & lt_data$age_start %in% c(0,15,50,60,65,80,85,100,110), 
@@ -99,11 +99,13 @@ lt_summary <- function(lt_data, byvar) {
 #'
 #' @param mx data frame. "value" column contains age-specific mortality rates by time_start and age_start for one sex. 
 #' @param sex character. string indicating "m" male, "f" female, or "b" both sexes.
+#' @param a0rule character. string "ak" for andreev-kinkaid and "cd" for coale-demeny estimation of 1a0.
+#' @param OAnew numeric. The starting age for the new open age group.
 #'
 #' @return a data frame with "indicator" labeling the life table column name and "value" containing the value of 
 #' that measure, by single year of age_start and time_start
 #' @export
-lt_complete_loop_over_time <- function(mx, sex) {
+lt_complete_loop_over_time <- function(mx, sex, a0rule = "ak", OAnew = 130) {
   
   # initialize output list
   lt_output_list <- list()
@@ -118,9 +120,13 @@ lt_complete_loop_over_time <- function(mx, sex) {
     
     n   <- n+1
     
+    maxage <- max(mx$age_start[which(mx$time_start == time)])
     lt <- DemoTools::lt_single_mx(nMx = mx$value[which(mx$time_start == time)],
                                   Age = mx$age_start[which(mx$time_start == time)],
-                                  sex = substr(sex,1,1))
+                                  sex = substr(sex,1,1),
+                                  a0rule = a0rule,
+                                  OAnew = OAnew,
+                                  extrapLaw = "kannisto", extrapFit = 80:(maxage-1), parS = c(A = 0.005, B = 0.13)) # here we set starting parameters for kannisto
     
     # The above gives a warning message and I'm not sure why.  Still seems to work though:
     # Warning message:
@@ -155,9 +161,9 @@ lt_single2abridged_loop_over_time <- function(lx_single, nLx_single, ex_single, 
   for (time in times) {
 
     n   <- n+1
-    lt <- DemoTools::lt_single2abridged(lx = lx_single[which(lx_single$time_start == time & lx_single$sex == sex), "value"],
-                             nLx = nLx_single[which(nLx_single$time_start == time & nLx_single$sex == sex), "value"],
-                             ex = ex_single[which(ex_single$time_start == time & ex_single$sex == sex), "value"])
+    lt <- DemoTools::lt_single2abridged(lx = lx_single$value[which(lx_single$time_start == time & lx_single$sex == sex)],
+                             nLx = nLx_single$value[which(nLx_single$time_start == time & nLx_single$sex == sex)],
+                             ex = ex_single$value[which(ex_single$time_start == time & ex_single$sex == sex)])
     lt <- lt_long(lt)
     lt$time_start <- time
     lt$time_span  <- 1

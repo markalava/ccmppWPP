@@ -68,8 +68,8 @@ new_fert_rate_age_f <-
     function(x,
              age_span = double(),
              time_span = double(),
-             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("fert_rate_age_f"),
-             value_type = get_value_types_for_ccmpp_in_out_classes("fert_rate_age_f"),
+             dimensions = get_req_dimensions_for_subclass_classes("fert_rate_age_f"),
+             value_type = get_value_types_for_subclass_classes("fert_rate_age_f"),
              value_scale = double(),
              non_zero_fert_ages = double(),
              ..., class = character()) {
@@ -141,8 +141,8 @@ fert_rate_age_f.data.frame <-
              value_scale = attr(x, "value_scale")) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
-                            dimensions = get_req_dimensions_for_ccmpp_in_out_classes("fert_rate_age_f"),
-                            value_type = get_value_types_for_ccmpp_in_out_classes("fert_rate_age_f"),
+                            dimensions = get_req_dimensions_for_subclass_classes("fert_rate_age_f"),
+                            value_type = get_value_types_for_subclass_classes("fert_rate_age_f"),
                             value_scale = value_scale)
 
         if (is.null(non_zero_fert_ages)) {
@@ -193,7 +193,6 @@ fert_rate_age_f.ccmpp_input_list <- function(x) {
 #' \code{fert_rate_age_f} if possible, or check if it is
 #' one.
 #'
-#' @family ccmpp_input_objects
 #' @seealso \code{\link{coerce_demog_change_component_df}}
 #'
 #' @inheritParams coerce_demog_change_component_df
@@ -318,10 +317,9 @@ drop_zero_fert_ages <- function(x, ...) {
 #' @rdname drop_zero_fert_ages
 #' @export
 drop_zero_fert_ages.fert_rate_age_f <- function(x) {
-    nzfa <- non_zero_fert_ages(x)
-    x <- as_demog_change_component_df(x)
-    subset_age(x, nzfa)
+    subset_age(as_demog_change_component_df(x), non_zero_fert_ages(x))
 }
+
 
 #' Calculate total fertility rates
 #'
@@ -356,4 +354,11 @@ fert_rate_tot_f.fert_rate_age_f <- function(x) {
                      FUN = "sum")
     return(demog_change_component_df(out))
 }
+
+#' @rdname fert_rate_tot_f
+#' @export
+fert_rate_tot_f.ccmpp_input_list <- function(x) {
+    fert_rate_tot_f(fert_rate_component(x))
+}
+
 

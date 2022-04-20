@@ -5,21 +5,21 @@
 \title{Compute global normative model of proportion age-specific fertility rates}
 \usage{
 pasfr_global_model(
-  tfr_all_locs = "data/tfr_estimates_projections_for_pasfr_global_norm.RData",
-  pasfr_all_locs = "data/pasfr_estimates_for_pasfr_global_norm.RData",
-  pasfr_pattern = "data/PASFRpattern.RData",
-  present_year = 2019
+  tfr_all_locs,
+  pasfr_all_locs,
+  pasfr_pattern_locs,
+  present_year = 2020
 )
 }
 \arguments{
-\item{tfr_all_locs}{character. file path to RData file with annual TFR; countries in rows, years in columns}
+\item{tfr_all_locs}{character. file path to RData file with annual TFR; long format with LocID, time_start and value}
 
-\item{pasfr_all_locs}{character. file path to RData file with 1x1 PASFR; countries and ages from 10 to 54 in rows, years in columns}
+\item{pasfr_all_locs}{character. file path to RData file with 1x1 PASFR; long format with LocID, time_start and value, age_start from 10 to 54}
+
+\item{present_year}{numeric. Last year of observed data?}
 
 \item{pasfr_pattern}{character. file path to RData file with 1 record per LocID; country_code = LocID, PASFRNorm = "Global Norm", 
 PasfrGlobalNorm is c(0,1)flag indicating whether the countrys data should be used in computing global norm.}
-
-\item{present_year}{numeric. Last year of observed data?}
 }
 \value{
 a matrix of annual PASFR norms; age from 10 to 54 in row, year in columns

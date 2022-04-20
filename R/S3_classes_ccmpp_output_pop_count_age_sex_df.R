@@ -9,6 +9,10 @@
 #' This function is not exported. The user-level constructor is
 #' \code{\link{pop_count_age_sex}}.
 #'
+#' @section Note:
+#' There is no \code{age_span} argument. Population counts
+#'     have time span 0.
+#'
 #' @seealso pop_count_age_sex
 #'
 #' @inheritParams demog_change_component_df
@@ -17,9 +21,9 @@
 new_pop_count_age_sex <-
     function(x,
              age_span = double(),
-             time_span = double(),
-             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("pop_count_age_sex"),
-             value_type = get_value_types_for_ccmpp_in_out_classes("pop_count_age_sex"),
+             time_span = 0,
+             dimensions = get_req_dimensions_for_subclass_classes("pop_count_age_sex"),
+             value_type = get_value_types_for_subclass_classes("pop_count_age_sex"),
              value_scale = double(),
              ..., class = character()) {
         new_ccmpp_output_df(x = x,
@@ -49,7 +53,7 @@ new_pop_count_age_sex <-
 #' \code{\link{project_ccmpp_loop_over_time}}; it implements cohort
 #' component projection on the input list and returns the projected
 #' counts as a \code{pop_count_age_sex}
-#' object. \code{get_projected_pop_counts} is a more descriptively
+#' object. \code{pop_count_age_sex_projected} is a more descriptively
 #' name wrapper for \code{pop_count_age_sex.ccmpp_input_list(x,
 #' keep_baseline = FALSE)}. \code{ccmpp_input_list}s determine
 #' completely the population counts in subsequent times. As such, the
@@ -57,7 +61,7 @@ new_pop_count_age_sex <-
 #' \dQuote{extracting} these counts from the input.
 #'
 #' \code{pop_count_age_sex.ccmpp_input_list} and
-#' \code{get_projected_pop_counts} return projected
+#' \code{pop_count_age_sex_projected} return projected
 #' counts as an object of class \code{pop_count_age_sex}. For an
 #' alternative list output, see the underlying function
 #' \code{\link{project_ccmpp_loop_over_time}}.
@@ -88,15 +92,14 @@ pop_count_age_sex.data.frame <-
              value_scale = attr(x, "value_scale"), ...) {
 
         li <- prepare_df_for_ccmpp_output_df(x,
-                            dimensions = get_req_dimensions_for_ccmpp_in_out_classes("pop_count_age_sex"),
-                            value_type = get_value_types_for_ccmpp_in_out_classes("pop_count_age_sex"),
+                            dimensions = get_req_dimensions_for_subclass_classes("pop_count_age_sex"),
+                            value_type = get_value_types_for_subclass_classes("pop_count_age_sex"),
                             value_scale = value_scale)
 
         ## Create/Validate
         validate_ccmppWPP_object(
             new_pop_count_age_sex(li$df,
                                age_span = li$age_span,
-                               time_span = li$time_span,
                                value_scale = li$value_scale)
         )
     }
@@ -116,30 +119,29 @@ pop_count_age_sex.ccmpp_input_list <-
             pop_out <- rbind(x$pop_count_age_sex_base, pop_out)
 
         pop_out <- prepare_df_for_ccmpp_output_df(pop_out,
-                            dimensions = get_req_dimensions_for_ccmpp_in_out_classes("pop_count_age_sex"),
-                            value_type = get_value_types_for_ccmpp_in_out_classes("pop_count_age_sex"),
+                            dimensions = get_req_dimensions_for_subclass_classes("pop_count_age_sex"),
+                            value_type = get_value_types_for_subclass_classes("pop_count_age_sex"),
                             value_scale = val_scale_x)
 
         ## Create/Validate
         validate_ccmppWPP_object(
             new_pop_count_age_sex(pop_out$df,
                                age_span = pop_out$age_span,
-                               time_span = pop_out$time_span,
                                value_scale = pop_out$value_scale)
         )
     }
 
 #' @rdname pop_count_age_sex
-#' @aliases get_projected_pop_counts
+#' @aliases pop_count_age_sex_projected
 #' @export
-get_projected_pop_counts <- function(x, ...) {
-    UseMethod("get_projected_pop_counts")
+pop_count_age_sex_projected <- function(x, ...) {
+    UseMethod("pop_count_age_sex_projected")
 }
 
 #' @rdname pop_count_age_sex
-#' @aliases get_projected_pop_counts
+#' @aliases pop_count_age_sex_projected
 #' @export
-get_projected_pop_counts.ccmpp_input_list <- function(x) {
+pop_count_age_sex_projected.ccmpp_input_list <- function(x) {
     pop_count_age_sex.ccmpp_input_list(x, keep_baseline = FALSE)
 }
 
@@ -150,7 +152,6 @@ get_projected_pop_counts.ccmpp_input_list <- function(x) {
 #' \code{pop_count_age_sex} if possible, or check if it is
 #' one.
 #'
-#' @family ccmpp_output_objects
 #' @seealso \code{\link{coerce_demog_change_component_df}}
 #'
 #' @inheritParams coerce_demog_change_component_df

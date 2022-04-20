@@ -18,8 +18,8 @@ new_mig_net_rate_age_sex <-
     function(x,
              age_span = double(),
              time_span = double(),
-             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("mig_net_rate_age_sex"),
-             value_type = get_value_types_for_ccmpp_in_out_classes("mig_net_rate_age_sex"),
+             dimensions = get_req_dimensions_for_subclass_classes("mig_net_rate_age_sex"),
+             value_type = get_value_types_for_subclass_classes("mig_net_rate_age_sex"),
              value_scale = double(),
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
@@ -51,7 +51,7 @@ new_mig_net_rate_age_sex <-
 #' @family ccmpp_input_objects
 #' @seealso \code{\link{validate_ccmppWPP_object}} for object validation,
 #'     \code{\link{ccmpp_input_df}} for the class from which this one
-#'     inherits.
+#'     inherits, \code{\link{coerce_mig_net_rate_age_sex}}, \code{\link{make_mig_counts_match_rates}}
 #'
 #' @param x An object for which a method is defined (see \dQuote{Details}).
 #' @inheritParams demog_change_component_df
@@ -68,8 +68,8 @@ mig_net_rate_age_sex.data.frame <- function(x,
              value_scale = attr(x, "value_scale")) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
-                            dimensions = get_req_dimensions_for_ccmpp_in_out_classes("mig_net_rate_age_sex"),
-                            value_type = get_value_types_for_ccmpp_in_out_classes("mig_net_rate_age_sex"),
+                            dimensions = get_req_dimensions_for_subclass_classes("mig_net_rate_age_sex"),
+                            value_type = get_value_types_for_subclass_classes("mig_net_rate_age_sex"),
                             value_scale = value_scale)
 
         ## Create/Validate
@@ -89,8 +89,8 @@ mig_net_rate_age_sex.ccmpp_input_list <- function(x) {
 
 #' @rdname mig_net_rate_age_sex
 #' @export
-`mig_net_rate_age_sex<-` <- function(x, value) {
-    `mig_net_rate_component<-`(x, value)
+`mig_net_rate_age_sex<-` <- function(x, value, ...) {
+    `mig_net_rate_component<-`(x, value, ...)
 }
 
 
@@ -100,8 +100,7 @@ mig_net_rate_age_sex.ccmpp_input_list <- function(x) {
 #' \code{mig_net_rate_age_sex} if possible, or check if it is
 #' one.
 #'
-#' @family ccmpp_input_objects
-#' @seealso \code{\link{coerce_demog_change_component_df}}
+#' @seealso \code{\link{coerce_demog_change_component_df}}, \code{\link{make_mig_counts_match_rates}}
 #'
 #' @inheritParams coerce_demog_change_component_df
 #' @return A coerced object in the case of the \code{as_...}
@@ -154,7 +153,6 @@ is_mig_net_rate_age_sex <- function(x) {
 #' @rdname subset_demog_change_component_df
 #' @export
 subset_time.mig_net_rate_age_sex <- function(x, times, include = TRUE) {
-
     x <- NextMethod()
     return(mig_net_rate_age_sex(x))
 }
@@ -162,7 +160,6 @@ subset_time.mig_net_rate_age_sex <- function(x, times, include = TRUE) {
 #' @rdname subset_demog_change_component_df
 #' @export
 subset_age.mig_net_rate_age_sex <- function(x, ages, include = TRUE) {
-
     x <- NextMethod()
     return(mig_net_rate_age_sex(x))
 }
@@ -170,7 +167,38 @@ subset_age.mig_net_rate_age_sex <- function(x, ages, include = TRUE) {
 #' @rdname subset_demog_change_component_df
 #' @export
 subset_sex.mig_net_rate_age_sex <- function(x, sexes, include = TRUE) {
-
     x <- NextMethod()
     return(mig_net_rate_age_sex(x))
+}
+
+
+#' Make migration counts and rates match in a CCMPP input list
+#'
+#' The \code{\link{mig_net_count_age_sex}} and
+#' \code{\link{mig_net_rate_age_sex}} components of a
+#' \code{\link{ccmpp_input_list}} can be set independentely of each
+#' other. When a projection is done, the \code{\link{mig_parameter}}
+#' component determines whether the rates or counts are used. This
+#' function will modify its first argument by overwriting the
+#' \code{\link{mig_net_count_age_sex}} component with new counts such
+#' the rates and counts yield identical projections.
+#'
+#' @seealso Other migration rate functions:
+#'     \code{\link{mig_net_rate_age_sex}},
+#'     \code{\link{mig_parameter}}, \code{\link{mig_type}}. Also
+#'     \code{\link{ccmpp_input_list}} and
+#'     \code{\link{pop_count_age_sex}} for obtaining population
+#'     projections.
+#'
+#' @param x A \code{\link{ccmpp_input_list}}
+#' @param set_mig_type Logical; should \code{\link{mig_type}(x)} be set to \code{"rates"}?
+#' @return \code{x} suitably modifed.
+#' @author Mark Wheldon
+#' @export
+make_mig_counts_match_rates <- function(x, set_mig_type = TRUE) {
+    stopifnot(is_ccmpp_input_list(x))
+    mig_net_rate_component(x,
+                           set_mig_type = set_mig_type,
+                           reset_mig_counts = TRUE) <- mig_net_rate_age_sex(x)
+    return(x)
 }

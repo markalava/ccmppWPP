@@ -68,7 +68,6 @@ prepare_df_for_ccmpp_input_df <- function(x,
 #' @export
 ccmpp_input_df <-
     function(x,
-             dimensions = attr(x, "dimensions"),
              value_type = attr(x, "value_type"),
              value_scale = attr(x, "value_scale"),
              ...) {
@@ -76,7 +75,7 @@ ccmpp_input_df <-
         li <-
             prepare_df_for_ccmpp_input_df(
                 x,
-                dimensions = dimensions,
+                dimensions = attr(x, "dimensions"),
                 value_type = value_type,
                 value_scale = value_scale)
 
@@ -101,7 +100,6 @@ ccmpp_input_df <-
 #' \code{ccmpp_input_df} if possible, or check if it is
 #' one.
 #'
-#' @family ccmpp_input_objects
 #' @seealso \code{\link{coerce_demog_change_component_df}}
 #'
 #' @inheritParams coerce_demog_change_component_df

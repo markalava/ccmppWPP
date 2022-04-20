@@ -20,8 +20,8 @@ new_death_probability_age_sex <-
              age_span = double(),
              time_span = double(),
              non_zero_fert_ages = double(),
-             dimensions = get_req_dimensions_for_ccmpp_in_out_classes("death_probability_age_sex"),
-             value_type = get_value_types_for_ccmpp_in_out_classes("death_probability_age_sex"),
+             dimensions = get_req_dimensions_for_subclass_classes("death_probability_age_sex"),
+             value_type = get_value_types_for_subclass_classes("death_probability_age_sex"),
              value_scale = NA,
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
@@ -68,8 +68,8 @@ death_probability_age_sex <- function(x, ...) {
 #' @export
 death_probability_age_sex.data.frame <- function(x) {
         li <- prepare_df_for_ccmpp_input_df(x,
-                           dimensions = get_req_dimensions_for_ccmpp_in_out_classes("death_probability_age_sex"),
-                           value_type = get_value_types_for_ccmpp_in_out_classes("death_probability_age_sex"),
+                           dimensions = get_req_dimensions_for_subclass_classes("death_probability_age_sex"),
+                           value_type = get_value_types_for_subclass_classes("death_probability_age_sex"),
                            value_scale = NA)
 
         ## Create/Validate
@@ -106,7 +106,6 @@ death_probability_age_sex.ccmpp_input_list <- function(x) {
 #' \code{death_probability_age_sex} if possible, or check if it is
 #' one.
 #'
-#' @family ccmpp_input_objects
 #' @seealso \code{\link{coerce_demog_change_component_df}} for an important note on validation.
 #'
 #' @inheritParams coerce_demog_change_component_df

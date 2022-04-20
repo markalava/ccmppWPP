@@ -7,7 +7,7 @@
 subset_indicator.ccmpp_input_df <- function(x, indicators, include = TRUE) {
 
     x <- NextMethod()
-    return(ccmpp_input_df(x, dimensions = demog_change_component_dims(x),
+    return(ccmpp_input_df(x,
                           value_type = value_type(x)))
 }
 
@@ -16,7 +16,7 @@ subset_indicator.ccmpp_input_df <- function(x, indicators, include = TRUE) {
 subset_time.ccmpp_input_df <- function(x, times, include = TRUE) {
 
     x <- NextMethod()
-    return(ccmpp_input_df(x, dimensions = demog_change_component_dims(x),
+    return(ccmpp_input_df(x,
                           value_type = value_type(x)))
 }
 
@@ -25,7 +25,7 @@ subset_time.ccmpp_input_df <- function(x, times, include = TRUE) {
 subset_age.ccmpp_input_df <- function(x, ages, include = TRUE) {
 
     x <- NextMethod()
-    return(ccmpp_input_df(x, dimensions = demog_change_component_dims(x),
+    return(ccmpp_input_df(x,
                           value_type = value_type(x)))
 }
 
@@ -34,7 +34,7 @@ subset_age.ccmpp_input_df <- function(x, ages, include = TRUE) {
 subset_sex.ccmpp_input_df <- function(x, sexes, include = TRUE) {
 
     x <- NextMethod()
-    return(ccmpp_input_df(x, dimensions = demog_change_component_dims(x),
+    return(ccmpp_input_df(x,
                           value_type = value_type(x)))
 }
 

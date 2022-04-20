@@ -6,10 +6,11 @@
 \alias{validate_ccmppWPP_object}
 \alias{validate_ccmppWPP_object.default}
 \alias{validate_ccmppWPP_object.demog_change_component_df}
+\alias{validate_ccmppWPP_object.pop_count_age_sex_reference}
 \alias{validate_ccmppWPP_object.ccmpp_input_df}
 \alias{validate_ccmppWPP_object.fert_rate_age_f}
 \alias{validate_ccmppWPP_object.survival_ratio_age_sex}
-\alias{validate_ccmppWPP_object.mortality_rate_age_sex}
+\alias{validate_ccmppWPP_object.mort_rate_age_sex}
 \alias{validate_ccmppWPP_object.death_probability_age_sex}
 \alias{validate_ccmppWPP_object.death_count_age_sex}
 \alias{validate_ccmppWPP_object.pop_count_age_sex_base}
@@ -17,7 +18,6 @@
 \alias{validate_ccmppWPP_object.mig_net_rate_age_sex}
 \alias{validate_ccmppWPP_object.mig_net_count_age_sex}
 \alias{validate_ccmppWPP_object.mig_net_count_tot_b}
-\alias{validate_ccmppWPP_object.mig_net_prop_age_sex}
 \alias{validate_ccmppWPP_object.mig_parameter}
 \alias{validate_ccmppWPP_object.life_table_age_sex}
 \alias{validate_ccmppWPP_object.ccmpp_input_list}
@@ -31,13 +31,15 @@ validate_ccmppWPP_object(x, ...)
 
 \method{validate_ccmppWPP_object}{demog_change_component_df}(x, ...)
 
+\method{validate_ccmppWPP_object}{pop_count_age_sex_reference}(x, check_sex_equality_by_time = FALSE, ...)
+
 \method{validate_ccmppWPP_object}{ccmpp_input_df}(x, ...)
 
 \method{validate_ccmppWPP_object}{fert_rate_age_f}(x, ...)
 
 \method{validate_ccmppWPP_object}{survival_ratio_age_sex}(x, check_sex_equality_by_time = FALSE, ...)
 
-\method{validate_ccmppWPP_object}{mortality_rate_age_sex}(x, check_sex_equality_by_time = FALSE, ...)
+\method{validate_ccmppWPP_object}{mort_rate_age_sex}(x, check_sex_equality_by_time = FALSE, ...)
 
 \method{validate_ccmppWPP_object}{death_probability_age_sex}(x, check_sex_equality_by_time = FALSE, ...)
 
@@ -52,8 +54,6 @@ validate_ccmppWPP_object(x, ...)
 \method{validate_ccmppWPP_object}{mig_net_count_age_sex}(x, ...)
 
 \method{validate_ccmppWPP_object}{mig_net_count_tot_b}(x, ...)
-
-\method{validate_ccmppWPP_object}{mig_net_prop_age_sex}(x, ...)
 
 \method{validate_ccmppWPP_object}{mig_parameter}(x, ...)
 

@@ -2,21 +2,26 @@
 % Please edit documentation in R/S3_classes_ccmpp_input_mig_net_count_df.R
 \name{mig_net_count_age_sex}
 \alias{mig_net_count_age_sex}
+\alias{mig_net_count_age_sex.data.frame}
+\alias{mig_net_count_age_sex.ccmpp_input_list}
+\alias{mig_net_count_age_sex<-}
 \title{Constructor for class \code{mig_net_count_age_sex}}
 \usage{
 mig_net_count_age_sex(x, ...)
+
+\method{mig_net_count_age_sex}{data.frame}(x, value_scale = attr(x, "value_scale"), ...)
+
+\method{mig_net_count_age_sex}{ccmpp_input_list}(x)
+
+mig_net_count_age_sex(x) <- value
 }
 \arguments{
 \item{x}{An object for which a method is defined (see \dQuote{Details}).}
 
 \item{...}{Passed to the low-level constructor.}
 
-\item{pop_count_age_sex}{For the \code{mig_net_prop_age_sex}
-method, an object that can be coreced to a
-\code{\link{ccmpp_input_df}} object (e.g., a
-\code{data.frame}), holding population counts from which to
-calculate the migration counts. The \code{value_type} must be
-\dQuote{count} and the \code{value_scale}s must match.#'}
+\item{value_scale}{\emph{Numeric} scalar indicating the value_scale of the
+counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
 
 \item{value_scale_pop_count}{The scale of the \code{value} column
 in \code{pop_count_age_sex}. If unspecified, defaults to the
@@ -42,38 +47,22 @@ an object from \code{x}. There is also a replacement function which
 complements the extraction methods.
 }
 \seealso{
-\code{\link{validate_ccmppWPP_object}} for object validation,
-    \code{\link{ccmpp_input_df}} for the class from which this one
-    inherits.
+\code{\link{validate_ccmppWPP_object}} for object
+    validation, \code{\link{ccmpp_input_df}} for the class from
+    which this one inherits.
 
 Other ccmpp_input_objects: 
 \code{\link{ccmpp_input_df}()},
 \code{\link{ccmpp_input_list}()},
-\code{\link{coerce_ccmpp_input_df}},
-\code{\link{coerce_ccmpp_input_list}},
-\code{\link{coerce_death_count_age_sex}},
-\code{\link{coerce_death_probability_age_sex}},
-\code{\link{coerce_demog_change_component_df}},
-\code{\link{coerce_fert_rate_age_f}},
-\code{\link{coerce_life_table_age_sex}},
-\code{\link{coerce_mig_net_count_age_sex}},
-\code{\link{coerce_mig_net_count_tot_b}},
-\code{\link{coerce_mig_net_prop_age_sex}},
-\code{\link{coerce_mig_net_rate_age_sex}},
-\code{\link{coerce_mig_parameter}},
-\code{\link{coerce_mortality_rate_age_sex}},
-\code{\link{coerce_pop_count_age_sex_base}},
-\code{\link{coerce_srb}},
-\code{\link{coerce_survival_ratio_age_sex}},
+\code{\link{coerce_pop_count_age_sex_reference}},
 \code{\link{death_count_age_sex}()},
 \code{\link{death_probability_age_sex}()},
 \code{\link{fert_rate_age_f}()},
 \code{\link{life_table_age_sex}()},
 \code{\link{mig_net_count_tot_b}()},
-\code{\link{mig_net_prop_age_sex}()},
 \code{\link{mig_net_rate_age_sex}()},
 \code{\link{mig_parameter}()},
-\code{\link{mortality_rate_age_sex}()},
+\code{\link{mort_rate_age_sex}()},
 \code{\link{pop_count_age_sex_base}()},
 \code{\link{srb}()},
 \code{\link{survival_ratio_age_sex}()}

@@ -33,6 +33,12 @@ get_all_required_ccmpp_input_list_element_classes <- function() {
     get_all_required_ccmpp_input_list_element_names()
 }
 
+## Function names as character vectors for functions that extract the
+## component from the ccmpp_input_list.
+get_extractor_function_for_component <- function(component) {
+    return(as.character(component))
+}
+
 ###-----------------------------------------------------------------------------
 ### * Class constructors
 
@@ -138,7 +144,6 @@ ccmpp_input_list <-
 #' \code{names} of the single argument match the arguments to
 #' \code{link{ccmpp_input_list}}.
 #'
-#' @family ccmpp_input_objects
 #' @seealso \code{\link{coerce_demog_change_component_df}} for an important note on validation.
 #'
 #' @inheritParams coerce_demog_change_component_df

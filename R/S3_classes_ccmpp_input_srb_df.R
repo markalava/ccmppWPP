@@ -17,8 +17,8 @@ new_srb <-
     function(x,
              age_span = double(),
              time_span = double(),
-             dimensions =  get_req_dimensions_for_ccmpp_in_out_classes("srb"),
-             value_type = get_value_types_for_ccmpp_in_out_classes("srb"),
+             dimensions =  get_req_dimensions_for_subclass_classes("srb"),
+             value_type = get_value_types_for_subclass_classes("srb"),
              value_scale = NA,
              ..., class = character()) {
         new_ccmpp_input_df(x = x,
@@ -68,8 +68,8 @@ srb.data.frame <- function(x,
              time_span = attr(x, "time_span")) {
 
         li <- prepare_df_for_ccmpp_input_df(x,
-                            dimensions = get_req_dimensions_for_ccmpp_in_out_classes("srb"),
-                            value_type = get_value_types_for_ccmpp_in_out_classes("srb"),
+                            dimensions = get_req_dimensions_for_subclass_classes("srb"),
+                            value_type = get_value_types_for_subclass_classes("srb"),
                             value_scale = NA)
 
         ## Create/Validate
@@ -99,7 +99,6 @@ srb.ccmpp_input_list <- function(x) {
 #' \code{srb} if possible, or check if it is
 #' one.
 #'
-#' @family ccmpp_input_objects
 #' @seealso \code{\link{coerce_demog_change_component_df}}
 #'
 #' @inheritParams coerce_demog_change_component_df

@@ -65,8 +65,8 @@ for use with \code{\link{identical}} when comparing the
 }
 \seealso{
 Other extract_attributes: 
-\code{\link{age_span}()},
-\code{\link{extract_ccmpp_input_list_attributes}}
+\code{\link{extract_ccmpp_input_list_attributes}},
+\code{\link{non_zero_fert_ages}()}
 }
 \author{
 Mark Wheldon

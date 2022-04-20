@@ -13,7 +13,7 @@ mig_net_rate_age_sex(x, ...)
 
 \method{mig_net_rate_age_sex}{ccmpp_input_list}(x)
 
-mig_net_rate_age_sex(x) <- value
+mig_net_rate_age_sex(x, ...) <- value
 }
 \arguments{
 \item{x}{An object for which a method is defined (see \dQuote{Details}).}
@@ -44,36 +44,20 @@ complements the extraction methods.
 \seealso{
 \code{\link{validate_ccmppWPP_object}} for object validation,
     \code{\link{ccmpp_input_df}} for the class from which this one
-    inherits.
+    inherits, \code{\link{coerce_mig_net_rate_age_sex}}, \code{\link{make_mig_counts_match_rates}}
 
 Other ccmpp_input_objects: 
 \code{\link{ccmpp_input_df}()},
 \code{\link{ccmpp_input_list}()},
-\code{\link{coerce_ccmpp_input_df}},
-\code{\link{coerce_ccmpp_input_list}},
-\code{\link{coerce_death_count_age_sex}},
-\code{\link{coerce_death_probability_age_sex}},
-\code{\link{coerce_demog_change_component_df}},
-\code{\link{coerce_fert_rate_age_f}},
-\code{\link{coerce_life_table_age_sex}},
-\code{\link{coerce_mig_net_count_age_sex}},
-\code{\link{coerce_mig_net_count_tot_b}},
-\code{\link{coerce_mig_net_prop_age_sex}},
-\code{\link{coerce_mig_net_rate_age_sex}},
-\code{\link{coerce_mig_parameter}},
-\code{\link{coerce_mortality_rate_age_sex}},
-\code{\link{coerce_pop_count_age_sex_base}},
-\code{\link{coerce_srb}},
-\code{\link{coerce_survival_ratio_age_sex}},
+\code{\link{coerce_pop_count_age_sex_reference}},
 \code{\link{death_count_age_sex}()},
 \code{\link{death_probability_age_sex}()},
 \code{\link{fert_rate_age_f}()},
 \code{\link{life_table_age_sex}()},
 \code{\link{mig_net_count_age_sex}()},
 \code{\link{mig_net_count_tot_b}()},
-\code{\link{mig_net_prop_age_sex}()},
 \code{\link{mig_parameter}()},
-\code{\link{mortality_rate_age_sex}()},
+\code{\link{mort_rate_age_sex}()},
 \code{\link{pop_count_age_sex_base}()},
 \code{\link{srb}()},
 \code{\link{survival_ratio_age_sex}()}

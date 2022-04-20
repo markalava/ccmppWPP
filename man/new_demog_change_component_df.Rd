@@ -30,7 +30,8 @@ An object of class \code{demog_change_component_df}.
 Creates an object of class \code{demog_change_component_df}. Minimal
 checks are done; for interactive use see
 \code{\link{demog_change_component_df}}.
-
+}
+\details{
 This function is not exported. The user-level constructor is
 \code{\link{demog_change_component_df}}.
 }

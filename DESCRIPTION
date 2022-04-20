@@ -1,6 +1,7 @@
 Package: ccmppWPP
 Title: Cohort Component Population Projection
 Version: 0.0.0.9000
+Date: 2022-04-20
 Authors@R: 
     c(person(given = "Mark",
            family = "Wheldon",
@@ -14,8 +15,9 @@ Authors@R:
            email = "hertog@un.org"#,
            # comment = c(ORCID = "XXXX-XXXX-XXXX-XXXX")
 	   ))
+Copyright: United Nations
 Description: This package provides an R implementation of the cohort component method of population projection (CCMPP).
-License: What license it uses
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Suggests: 

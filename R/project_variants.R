@@ -3,6 +3,8 @@
 # requires the output of ccmppWPP_workflow_one_country_variant for the medium variant projection
 
 # In what year has/will each location enter phase 3 of the fertility transition?
+#' @export
+#' 
 tfr_phase3_id <- function(tfr_all_locs, present_year = 2021) {
   
   years <- unique(tfr_all_locs$time_start)
@@ -28,7 +30,8 @@ tfr_phase3_id <- function(tfr_all_locs, present_year = 2021) {
 }
 
 # assemble the PASFRpattern data frame that bayesPop needs to compute global normative model of pasfr
-
+#' @export
+#' 
 pasfr_global_norm_include <- function(phase3,
                                       mac,
                                       present_year= 2021,

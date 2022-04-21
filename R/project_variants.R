@@ -2,6 +2,58 @@
 # this set of functions produces the inputs and outputs for the various deterministic projection variants projection variants
 # requires the output of ccmppWPP_workflow_one_country_variant for the medium variant projection
 
+# In what year has/will each location enter phase 3 of the fertility transition?
+tfr_phase3_id <- function(tfr_all_locs, present_year = 2021) {
+  
+  years <- unique(tfr_all_locs$time_start)
+  
+  # reshape tfr data to a matrix with year in row and country in columns
+  tfr_matrix <- reshape(tfr_all_locs[,c("LocID", "time_start", "value")], direction = "wide", idvar = "time_start", timevar = "LocID")
+  tfr_matrix <- as.matrix(tfr_matrix[,2:ncol(tfr_matrix)])
+  rownames(tfr_matrix) <- years
+  colnames(tfr_matrix) <- unique(tfr_all_locs$LocID)
+  
+  # initialize output data frame
+  phase3 <- data.frame(LocID = colnames(tfr_matrix),
+                       year = rep(NA, ncol(tfr_matrix)))
+  # for each country, determine whether the year entering phase III is less than or equal to present year
+  for (i in 1:ncol(tfr_matrix)) {
+    year_ind_phase3 <- bayesTFR:::find.lambda.for.one.country(tfr = tfr_matrix[,i], T_end = length(years), annual = TRUE) 
+    phase3$year[i] <- years[year_ind_phase3]
+  }
+  phase3 <- phase3[order(phase3$LocID),]
+  
+  return(phase3)
+  
+}
+
+# assemble the PASFRpattern data frame that bayesPop needs to compute global normative model of pasfr
+
+pasfr_global_norm_include <- function(phase3,
+                                      mac,
+                                      present_year= 2021,
+                                      mac_criterion = 30, 
+                                      exclude_small = TRUE) {
+
+  
+  phase3_include_ids <- phase3$LocID[phase3$year <= present_year]
+  mac_include_ids <- mac$LocID[mac$time_start == present_year & mac$value >= mac_criterion]
+
+  # create the PASFR pattern dataset required as input to the bayesPop:::compute.pasfr.global.norms function
+  PASFRpattern <- data.frame(country_code = phase3$LocID,
+                             PasfrNorm = as.factor("Global Norm"))
+  PASFRpattern$PasfrGlobalNorm <- ifelse(PASFRpattern$country_code %in% phase3_include_ids &
+                                           PASFRpattern$country_code %in% mac_include_ids, 1, 0)
+  
+  if (exclude_small) {
+    small_locs <- c(16,20,660,60,535,92,136,184,212,238,234,292,304,336,833,438,584,492,500,520,570,
+                    580,585,652,654,659,663,666,674,534,772,796,798,876)
+    PASFRpattern$PasfrGlobalNorm[as.numeric(PASFRpattern$country_code) %in% small_locs] <- 0
+  }
+  
+  return(PASFRpattern)
+  
+}
 
 #' Compute global normative model of proportion age-specific fertility rates
 #'
@@ -10,11 +62,10 @@
 #'
 #' @author Sara Hertog
 #'
-#' @param tfr_all_locs character. file path to RData file with annual TFR; long format with LocID, time_start and value
-#' @param pasfr_all_locs character. file path to RData file with 1x1 PASFR; long format with LocID, time_start and value, age_start from 10 to 54
-#' @param pasfr_pattern character. file path to RData file with 1 record per LocID; country_code = LocID, PASFRNorm = "Global Norm", 
-#' PasfrGlobalNorm is c(0,1)flag indicating whether the countrys data should be used in computing global norm.
+#' @param tfr_all_locs data.frame. file path to RData file with annual TFR; long format with LocID, time_start and value
+#' @param pasfr_all_locs data.frame. file path to RData file with 1x1 PASFR; long format with LocID, time_start and value, age_start from 10 to 54
 #' @param present_year numeric. Last year of observed data?
+#' @param mac_criterion numeric. Lower bound threshold for mean age at childbearing to determine includision in computing global norm
 #'
 #' @details calls embedded functions from bayesPop
 #'
@@ -24,15 +75,16 @@
 
 pasfr_global_model <- function(tfr_all_locs, # tfr estimates and projections
                                pasfr_all_locs, # 1x1 pasfr estimates
-                               pasfr_pattern_locs, # flags which countries are included for global norm computation
-                               present_year = 2021) {
+                               PASFRpattern, # output of pasfr_global_norm_include()
+                               present_year = 2021,
+                               mac_criterion = 30) {
 
   # TFR estimates and projections as a long data frame with year, country_code and TFR value
-  TFRpred <- as.data.frame(tfr_est_proj[,c("time_start", "LocID", "value")])
+  TFRpred <- as.data.frame(tfr_all_locs[,c("time_start", "LocID", "value")])
   names(TFRpred) <- c("year", "country_code", "value") # this is required by bayesPop
   
   # reshape pasfr estimates to the wide matrix form required by bayesPop
-  pasfr_est <- pasfr_est[pasfr_est$LocID != 566 & pasfr_est$age_start %in% 10:54, ] # temporarily exclude Nigeria because of weird dup values
+  pasfr_est <- pasfr_all_locs[pasfr_all_locs$age_start %in% 10:54, ] 
   pasfr_est <- as.data.frame(pasfr_est[order(pasfr_est$LocID, pasfr_est$time_start, pasfr_est$age_start),])
 
   pasfr_estimates <- reshape(pasfr_est[,c("LocID","time_start","age_start","value")], 
@@ -45,7 +97,7 @@ pasfr_global_model <- function(tfr_all_locs, # tfr estimates and projections
                       observed = list(PASFR = pasfr_estimates),
                       PASFR = NULL,
                       PASFRnorms = NULL,
-                      PASFRpattern = pasfr_pattern,
+                      PASFRpattern = PASFRpattern,
                       present.year = present_year,
                       TFRpred = TFRpred,
                       annual = TRUE)
@@ -317,7 +369,7 @@ mx_given_e0_new <- function(mx_mat_m, # matrix of mx estimates (age in rows, yea
                         Latest_Age_Mortality_Pattern = FALSE,
                         Latest_Age_Mortality_Pattern_Years = NULL,
                         Smooth_Latest_Age_Mortality_Pattern = FALSE,
-                        Smooth_Latest_Age_Mortality_Pattern_Degrees = NULL) {
+                        Smooth_Latest_Age_Mortality_Pattern_Degree = NULL) {
   
   method <- ifelse(Age_Mort_Proj_Method1 == "pmd" & (!is.na(Age_Mort_Proj_Method2) & Age_Mort_Proj_Method2 == "mlt"), "blend", Age_Mort_Proj_Method1)
   

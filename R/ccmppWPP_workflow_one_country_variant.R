@@ -159,11 +159,14 @@ ccmppWPP_truncate_OAG <- function(ccmpp_output, OAnew = 100) {
   atr <- attributes(ccmpp_output)
   
   # population by age and sex
-  pop_OAnew <- sum_last_column(ccmpp_output$pop_count_age_sex[ccmpp_output$pop_count_age_sex$age_start >= OAnew, 
-                                                              !(names(ccmpp_output$pop_count_age_sex) %in% c("age_start","age_span"))])
+  pop_count_age_sex_rounded <- ccmpp_output$pop_count_age_sex
+  pop_count_age_sex_rounded$value <- round(pop_count_age_sex_rounded$value)
+  
+  pop_OAnew <- sum_last_column(pop_count_age_sex_rounded[pop_count_age_sex_rounded$age_start >= OAnew, 
+                                                              !(names(pop_count_age_sex_rounded) %in% c("age_start","age_span"))])
   pop_OAnew$age_start <- OAnew
   pop_OAnew$age_span <- 1000
-  pop_count_age_sex <- rbind(ccmpp_output$pop_count_age_sex[ccmpp_output$pop_count_age_sex$age_start < OAnew,], pop_OAnew)
+  pop_count_age_sex <- rbind(pop_count_age_sex_rounded[pop_count_age_sex_rounded$age_start < OAnew,], pop_OAnew)
   pop_count_age_sex <- pop_count_age_sex[order(pop_count_age_sex$time_start, pop_count_age_sex$sex, pop_count_age_sex$age_start),]
   
   # deaths by cohort and sex
@@ -283,9 +286,13 @@ ccmppWPP_compute_WPP_outputs <- function(ccmpp_output, atr) {
   birth_count_age_1x1        <- ccmpp_output$birth_count_age_b
   birth_count_age_1x1$sex    <- "both"
   
-  # ensure population counts as integer
-  pop_count_age_sex_1x1 <- ccmpp_output$pop_count_age_sex
-  pop_count_age_sex_1x1$value <- round(pop_count_age_sex_1x1$value, 0)
+  # ensure both sexes is sum of female and male after rounding
+  pop_count_age_sex_1x1 <- ccmpp_output$pop_count_age_sex[ccmpp_output$pop_count_age_sex$sex %in% c("female", "male"),]
+  pop_count_age_sex_1x1_b <- sum_last_column(pop_count_age_sex_1x1[,c("time_start", "time_span", "age_start", "age_span", "value")])
+  pop_count_age_sex_1x1_b$sex <- "both"
+  pop_count_age_sex_1x1 <- rbind(pop_count_age_sex_1x1, pop_count_age_sex_1x1_b)
+  pop_count_age_sex_1x1 <- pop_count_age_sex_1x1[order(pop_count_age_sex_1x1$time_start, pop_count_age_sex_1x1$sex, pop_count_age_sex_1x1$age_start),]
+  rm(pop_count_age_sex_1x1_b)
   
   # sum to five-year age groups
   # population
@@ -336,8 +343,8 @@ ccmppWPP_compute_WPP_outputs <- function(ccmpp_output, atr) {
   
   # five year age groups
   pop_pct_age_sex_5x1   <- merge(pop_count_age_sex_5x1, pop_count_tot_sex, by=c("time_start", "time_span", "sex"))
-  pop_pct_age_sex_5x1 $value <- pop_pct_age_sex_5x1 $value.x/pop_pct_age_sex_5x1 $value.y * 100
-  pop_pct_age_sex_5x1   <- pop_pct_age_sex_5x1 [, !(names(pop_pct_age_sex_5x1 ) %in% c("value.x", "value.y"))]
+  pop_pct_age_sex_5x1$value <- pop_pct_age_sex_5x1 $value.x/pop_pct_age_sex_5x1 $value.y * 100
+  pop_pct_age_sex_5x1   <- pop_pct_age_sex_5x1[, !(names(pop_pct_age_sex_5x1 ) %in% c("value.x", "value.y"))]
   
   
   

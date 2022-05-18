@@ -15,16 +15,15 @@
 
 #' aggregate ccmppWPP outputs across multiple location ids
 #'
-#' @description This function takes a vector of locids, compiles the ccmppWPP intermediate outputs (from ages 0:130) for
-#' those locations, and computes the aggregate values for each demographic component 
+#' @description xx 
 #'
 #' @author Sara Hertog
 #'
-#' @param wpp_input list of input objects required for one country-variant
+#' @param locationIDs xx
 #'
 #' @details xx
 #'
-#' @return returns an "intermediate_output" list of dataframes with all ccmpp components by sex and ages 0 to 130
+#' @return xx
 #'
 #' @export
 #'
@@ -35,10 +34,25 @@ ccmppWPP_aggregate <- function(locationIDs, base_year, last_year, intermediate_o
   
   location_outputs <- ccmppWPP_compile(locationIDs, base_year, last_year, intermediate_output_folder)
   
-  pop_count_age_sex <- location_outputs[[1]]$pop_count_age_sex %>% mutate(value = 0)
+  # initialize aggregate population by age and sex
+  pop_count_age_sex <- location_outputs[[1]]$pop_count_age_sex %>% dplyr::filter(age_start <= 100) %>% 
+    mutate(value = 0,
+           age_span = replace(age_span, age_start == 100, 1000))
+  
   for (i in 1:length(location_outputs)) {
-    pop_count_age_sex <- pop_count_age_sex %>% 
-      left_join(location_outputs[[i]]$pop_count_age_sex, by = c("time_start", "time_span", "sex", "age_start", "age_span")) %>% 
+    
+    # population by age and sex
+    pop_count_age_sex_rounded <- location_outputs[[i]]$pop_count_age_sex
+    pop_count_age_sex_rounded$value <- round(pop_count_age_sex_rounded$value)
+    
+    pop_OAnew <- sum_last_column(pop_count_age_sex_rounded[pop_count_age_sex_rounded$age_start >= 100, 
+                                                           !(names(pop_count_age_sex_rounded) %in% c("age_start","age_span"))])
+    pop_OAnew$age_start <- 100
+    pop_OAnew$age_span <- 1000
+    pop_count_age_sex_one_loc <- rbind(pop_count_age_sex_rounded[pop_count_age_sex_rounded$age_start < 100,], pop_OAnew)
+    
+    pop_count_age_sex <- pop_count_age_sex %>%
+      left_join(pop_count_age_sex_one_loc, by = c("time_start", "time_span", "sex", "age_start", "age_span")) %>% 
       mutate(value = value.x + value.y) %>% 
       select(-value.x, -value.y)
   }
@@ -47,7 +61,7 @@ ccmppWPP_aggregate <- function(locationIDs, base_year, last_year, intermediate_o
   for (i in 1:length(location_outputs)) {
     death_count_cohort_sex <- death_count_cohort_sex %>% 
       left_join(location_outputs[[i]]$death_count_cohort_sex, by = c("time_start", "time_span", "sex", "age_start", "age_span")) %>% 
-      mutate(value = value.x + value.y) %>% 
+      mutate(value = as.integer(round(value.x + value.y, 0))) %>% 
       select(-value.x, -value.y)
   }
   
@@ -55,7 +69,7 @@ ccmppWPP_aggregate <- function(locationIDs, base_year, last_year, intermediate_o
   for (i in 1:length(location_outputs)) {
     death_count_age_sex <- death_count_age_sex %>% 
       left_join(location_outputs[[i]]$death_count_age_sex, by = c("time_start", "time_span", "sex", "age_start", "age_span")) %>% 
-      mutate(value = value.x + value.y) %>% 
+      mutate(value = as.integer(round(value.x + value.y, 0))) %>% 
       select(-value.x, -value.y)
   }
   
@@ -63,7 +77,7 @@ ccmppWPP_aggregate <- function(locationIDs, base_year, last_year, intermediate_o
   for (i in 1:length(location_outputs)) {
     exposure_count_age_sex <- exposure_count_age_sex %>% 
       left_join(location_outputs[[i]]$exposure_count_age_sex, by = c("time_start", "time_span", "sex", "age_start", "age_span")) %>% 
-      mutate(value = value.x + value.y) %>% 
+      mutate(value = as.integer(round(value.x + value.y, 0))) %>% 
       select(-value.x, -value.y)
   }
   
@@ -85,7 +99,7 @@ ccmppWPP_aggregate <- function(locationIDs, base_year, last_year, intermediate_o
   for (i in 1:length(location_outputs)) {
     birth_count_age_b <- birth_count_age_b %>% 
       left_join(location_outputs[[i]]$birth_count_age_b, by = c("time_start", "time_span", "age_start", "age_span")) %>% 
-      mutate(value = value.x + value.y) %>% 
+      mutate(value = as.integer(round(value.x + value.y, 0))) %>% 
       select(-value.x, -value.y)
   }
   
@@ -93,7 +107,7 @@ ccmppWPP_aggregate <- function(locationIDs, base_year, last_year, intermediate_o
   for (i in 1:length(location_outputs)) {
     birth_count_tot_sex <- birth_count_tot_sex %>% 
       left_join(location_outputs[[i]]$birth_count_tot_sex, by = c("time_start", "time_span", "sex")) %>% 
-      mutate(value = value.x + value.y) %>% 
+      mutate(value = as.integer(round(value.x + value.y, 0))) %>% 
       select(-value.x, -value.y)
   }
   

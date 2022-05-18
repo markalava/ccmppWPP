@@ -203,7 +203,8 @@ ccmppWPP_truncate_OAG <- function(ccmpp_output, OAnew = 100) {
            value = replace(value, age_start == OAnew & indicator == "lt_nMx", value[age_start == OAnew & indicator == "lt_lx"] / value[age_start == OAnew & indicator == "lt_nLx"]),
            value = replace(value, age_start == OAnew & indicator == "lt_nAx", value[age_start == OAnew & indicator == "lt_ex"]),
            value = replace(value, age_start == OAnew & indicator == "lt_Sx", value[age_start == OAnew & indicator == "lt_nLx"] / (value[age_start == (OAnew - 1) & indicator == "lt_nLx"] + value[age_start == OAnew & indicator == "lt_nLx"])),
-           age_span = replace(age_span, age_start == OAnew, 1000))
+           age_span = replace(age_span, age_start == OAnew, 1000)) %>% 
+    ungroup()
   
   # # we don't use DemoTools lt functions for this because for aggregates we might need to use custom ax
   # mx <- ccmpp_output$lt_complete_age_sex[ccmpp_output$lt_complete_age_sex$indicator == "lt_nMx",]
@@ -237,7 +238,7 @@ ccmppWPP_truncate_OAG <- function(ccmpp_output, OAnew = 100) {
                            death_count_cohort_sex = death_count_cohort_sex,
                            death_count_age_sex = death_count_age_sex,
                            exposure_count_age_sex = exposure_count_age_sex,
-                           lt_complete_age_sex = lt_complete_age_sex,
+                           lt_complete_age_sex = as.data.frame(lt_complete_age_sex),
                            fert_rate_age_f = fert_rate_age_f,
                            srb = ccmpp_output$srb,
                            birth_count_age_b = birth_count_age_b,
@@ -284,6 +285,7 @@ ccmppWPP_compute_WPP_outputs <- function(ccmpp_output, atr) {
   
   # add sex field to births data frame
   birth_count_age_1x1        <- ccmpp_output$birth_count_age_b
+  birth_count_age_1x1$value <- round(birth_count_age_1x1$value, 0)
   birth_count_age_1x1$sex    <- "both"
   
   # ensure both sexes is sum of female and male after rounding
@@ -304,35 +306,60 @@ ccmppWPP_compute_WPP_outputs <- function(ccmpp_output, atr) {
                                                          byvar = c("time_start","time_span","sex"))
   
   # exposures
-  exposure_count_age_sex_5x1 <- sum_five_year_age_groups(indata = ccmpp_output$exposure_count_age_sex,
+  exposure_count_age_sex_1x1 <- ccmpp_output$exposure_count_age_sex[ccmpp_output$exposure_count_age_sex$sex %in% c("female", "male"),]
+  exposure_count_age_sex_1x1$value <- round(exposure_count_age_sex_1x1$value, 3)
+  exposure_count_age_sex_1x1_b <- sum_last_column(exposure_count_age_sex_1x1[,c("time_start", "time_span", "age_start", "age_span", "value")])
+  exposure_count_age_sex_1x1_b$sex <- "both"
+  exposure_count_age_sex_1x1 <- rbind(exposure_count_age_sex_1x1, exposure_count_age_sex_1x1_b)
+  exposure_count_age_sex_1x1 <- exposure_count_age_sex_1x1[order(exposure_count_age_sex_1x1$time_start, exposure_count_age_sex_1x1$sex, exposure_count_age_sex_1x1$age_start),]
+  rm(exposure_count_age_sex_1x1_b)
+  exposure_count_age_sex_5x1 <- sum_five_year_age_groups(indata = exposure_count_age_sex_1x1,
                                                          byvar = c("time_start","time_span","sex"))
   
   # deaths by age and sex
-  
-  death_count_age_sex_5x1 <- sum_five_year_age_groups(indata = ccmpp_output$death_count_age_sex,
+  death_count_age_sex_1x1 <- ccmpp_output$death_count_age_sex[ccmpp_output$death_count_age_sex$sex %in% c("female", "male"),]
+  death_count_age_sex_1x1$value <- round(death_count_age_sex_1x1$value, 3)
+  death_count_age_sex_1x1_b <- sum_last_column(death_count_age_sex_1x1[,c("time_start", "time_span", "age_start", "age_span", "value")])
+  death_count_age_sex_1x1_b$sex <- "both"
+  death_count_age_sex_1x1 <- rbind(death_count_age_sex_1x1, death_count_age_sex_1x1_b)
+  death_count_age_sex_1x1 <- death_count_age_sex_1x1[order(death_count_age_sex_1x1$time_start, death_count_age_sex_1x1$sex, death_count_age_sex_1x1$age_start),]
+  rm(death_count_age_sex_1x1_b)
+  death_count_age_sex_5x1 <- sum_five_year_age_groups(indata = death_count_age_sex_1x1,
                                                       byvar = c("time_start","time_span","sex"))
   
   # deaths by cohort and sex
-  
-  death_count_cohort_sex_5x1 <- sum_five_year_age_groups(indata = ccmpp_output$death_count_cohort_sex,
+  death_count_cohort_sex_1x1 <- ccmpp_output$death_count_cohort_sex[ccmpp_output$death_count_cohort_sex$sex %in% c("female", "male"),]
+  death_count_cohort_sex_1x1$value <- round(death_count_cohort_sex_1x1$value, 3)
+  death_count_cohort_sex_1x1_b <- sum_last_column(death_count_cohort_sex_1x1[,c("time_start", "time_span", "age_start", "age_span", "value")])
+  death_count_cohort_sex_1x1_b$sex <- "both"
+  death_count_cohort_sex_1x1 <- rbind(death_count_cohort_sex_1x1, death_count_cohort_sex_1x1_b)
+  death_count_cohort_sex_1x1 <- death_count_cohort_sex_1x1[order(death_count_cohort_sex_1x1$time_start, death_count_cohort_sex_1x1$sex, death_count_cohort_sex_1x1$age_start),]
+  rm(death_count_cohort_sex_1x1_b)
+  death_count_cohort_sex_5x1 <- sum_five_year_age_groups(indata = death_count_cohort_sex_1x1,
                                                          byvar = c("time_start","time_span","sex"))
   
   # net migrants
-  
-  mig_net_count_age_sex_5x1  <- sum_five_year_age_groups(indata = ccmpp_output$mig_net_count_age_sex,
+  mig_net_count_age_sex_1x1 <- ccmpp_output$mig_net_count_age_sex[ccmpp_output$mig_net_count_age_sex$sex %in% c("female", "male"),]
+  mig_net_count_age_sex_1x1$value <- round(mig_net_count_age_sex_1x1$value, 3)
+  mig_net_count_age_sex_1x1_b <- sum_last_column(mig_net_count_age_sex_1x1[,c("time_start", "time_span", "age_start", "age_span", "value")])
+  mig_net_count_age_sex_1x1_b$sex <- "both"
+  mig_net_count_age_sex_1x1 <- rbind(mig_net_count_age_sex_1x1, mig_net_count_age_sex_1x1_b)
+  mig_net_count_age_sex_1x1 <- mig_net_count_age_sex_1x1[order(mig_net_count_age_sex_1x1$time_start, mig_net_count_age_sex_1x1$sex, mig_net_count_age_sex_1x1$age_start),]
+  rm(mig_net_count_age_sex_1x1_b)
+  mig_net_count_age_sex_5x1  <- sum_five_year_age_groups(indata = mig_net_count_age_sex_1x1,
                                                          byvar = c("time_start","time_span","sex"))
   
   # sum to totals
   # population
   pop_count_tot_sex        <- sum_last_column(pop_count_age_sex_1x1[, c("time_start", "time_span", "sex", "value")])
   # exposures
-  exposure_count_tot_sex   <- sum_last_column(ccmpp_output$exposure_count_age_sex[, c("time_start", "time_span", "sex", "value")])
+  exposure_count_tot_sex   <- sum_last_column(exposure_count_age_sex_1x1[, c("time_start", "time_span", "sex", "value")])
   # births
   birth_count_tot_sex      <- ccmpp_output$birth_count_tot_sex
   # deaths
-  death_count_tot_sex      <- sum_last_column(ccmpp_output$death_count_age_sex[, c("time_start", "time_span", "sex", "value")])
+  death_count_tot_sex      <- sum_last_column(death_count_age_sex_1x1[, c("time_start", "time_span", "sex", "value")])
   # net migrants
-  mig_net_count_tot_sex    <- sum_last_column(ccmpp_output$mig_net_count_age_sex[, c("time_start", "time_span", "sex", "value")])
+  mig_net_count_tot_sex    <- sum_last_column(mig_net_count_age_sex_1x1[, c("time_start", "time_span", "sex", "value")])
   
   # compute population percentage distributions by age
   
@@ -398,12 +425,29 @@ ccmppWPP_compute_WPP_outputs <- function(ccmpp_output, atr) {
   
   # compute some fertility indicators
   # fertility rates by 5-year age group of mother
-  fert_rate_age_5x1      <- data.frame(time_start  = birth_count_age_5x1$time_start,
-                                       time_span   = birth_count_age_5x1$time_span,
-                                       age_start   = birth_count_age_5x1$age_start,
-                                       age_span    = birth_count_age_5x1$age_span,
-                                       value = birth_count_age_5x1$value/
-                                         exposure_count_age_sex_5x1$value[which(exposure_count_age_sex_5x1$sex == "female")])
+  fert_rate_age_5x1 <- ccmpp_output$birth_count_age_b %>% 
+    rename(births = value) %>% 
+    left_join(ccmpp_output$exposure_count_age_sex %>% dplyr::filter(sex == "female") %>% rename(exposures = value) %>% dplyr::select(-sex),
+              by = c("time_start", "time_span", "age_start", "age_span")) %>% 
+    group_by(time_start, time_span) %>% 
+    summarise(births = DemoTools::groupAges(Value = births, Age = age_start, N = 5),
+              exposures = DemoTools::groupAges(Value = exposures, Age = age_start, N = 5),
+              age_start = seq(0, max(ccmpp_output$birth_count_age_b$age_start),5),
+              age_span = 5) %>% 
+    ungroup() %>% 
+    mutate(value = births/exposures,
+           age_span = replace(age_span, age_start == 100, 1000)) %>% 
+    dplyr::select(-births, - exposures) %>% 
+    arrange(time_start, time_span, age_start, age_span, value)
+  fert_rate_age_5x1 <- as.data.frame(fert_rate_age_5x1)
+  
+  # use above instead of this one to avoid computing on rounded values
+  # fert_rate_age_5x1      <- data.frame(time_start  = birth_count_age_5x1$time_start,
+  #                                      time_span   = birth_count_age_5x1$time_span,
+  #                                      age_start   = birth_count_age_5x1$age_start,
+  #                                      age_span    = birth_count_age_5x1$age_span,
+  #                                      value = birth_count_age_5x1$value/
+  #                                        exposure_count_age_sex_5x1$value[which(exposure_count_age_sex_5x1$sex == "female")])
 
   # total fertility rate
   fert_rate_tot          <- sum_last_column(ccmpp_output$fert_rate_age_f[, c("time_start", "time_span", "value")])
@@ -446,7 +490,7 @@ ccmppWPP_compute_WPP_outputs <- function(ccmpp_output, atr) {
                           #pop_sex_ratio_age_5x1      = pop_sex_ratio_age_5x1,
                           birth_count_age_1x1        = birth_count_age_1x1,
                           birth_count_age_5x1        = birth_count_age_5x1,
-                          birth_count_tot_sex        = ccmpp_output$birth_count_tot_sex,
+                          birth_count_tot_sex        = birth_count_tot_sex,
                           birth_rate_crude           = birth_rate_crude,
                           fert_rate_age_1x1          = ccmpp_output$fert_rate_age_f,
                           fert_rate_age_5x1          = fert_rate_age_5x1,
@@ -457,18 +501,18 @@ ccmppWPP_compute_WPP_outputs <- function(ccmpp_output, atr) {
                           fert_rate_net              = fert_rate_net,
                           fert_mean_age              = fert_mean_age,
                           srb                        = ccmpp_output$srb,
-                          death_count_age_sex_1x1    = ccmpp_output$death_count_age_sex,
+                          death_count_age_sex_1x1    = death_count_age_sex_1x1,
                           death_count_age_sex_5x1    = death_count_age_sex_5x1,
                           death_count_tot_sex        = death_count_tot_sex,
                           death_rate_crude           = death_rate_crude,
-                          death_count_cohort_sex_1x1 = ccmpp_output$death_count_cohort_sex,
+                          death_count_cohort_sex_1x1 = death_count_cohort_sex_1x1,
                           death_count_cohort_sex_5x1 = death_count_cohort_sex_5x1,
-                          exposure_count_age_sex_1x1 = ccmpp_output$exposure_count_age_sex,
+                          exposure_count_age_sex_1x1 = exposure_count_age_sex_1x1,
                           exposure_count_age_sex_5x1 = exposure_count_age_sex_5x1,
                           lt_complete_age_sex        = lt_complete_age_sex,
                           lt_abridged_age_sex        = lt_abridged_age_sex,
                           lt_summary                 = lt_summary,
-                          mig_net_count_age_sex_1x1  = ccmpp_output$mig_net_count_age_sex,
+                          mig_net_count_age_sex_1x1  = mig_net_count_age_sex_1x1,
                           mig_net_count_age_sex_5x1  = mig_net_count_age_sex_5x1,
                           mig_net_count_tot_sex      = mig_net_count_tot_sex,
                           mig_net_rate_crude         = mig_net_rate_crude)

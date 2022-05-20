@@ -189,7 +189,7 @@ ccmppWPP_aggregate <- function(locationIDs, base_year, last_year, intermediate_o
       mutate(indicator = paste0("lt_", indicator),
              time_span = 1) %>% 
       arrange(indicator, time_start, sex, age_start) %>% 
-      select(indicator, time_start, time_span, sex, age_start, age_span, value)
+      dplyr::select(indicator, time_start, time_span, sex, age_start, age_span, value)
     
     return(lts_one_year)
   }) 
@@ -229,7 +229,7 @@ ccmppWPP_aggregate <- function(locationIDs, base_year, last_year, intermediate_o
     dplyr::filter(sex %in% c("male", "female")) %>% 
     pivot_wider(names_from = sex, values_from = value) %>% 
     mutate(value = male/female) %>% 
-    select(time_start, time_span, value)
+    dplyr::select(time_start, time_span, value)
   
   # compute age-specific fertility rates from births by age of mother and female exposures
   fert_rate_age_f <- do.call(rbind, birth_count_age_b_loc) %>% 
@@ -244,7 +244,7 @@ ccmppWPP_aggregate <- function(locationIDs, base_year, last_year, intermediate_o
     mutate(value = births/exposures) %>% 
     dplyr::filter(age_start <= 100) %>% 
     mutate(age_span = replace(age_span, age_start == 100, 1000)) %>% 
-    select(time_start, time_span, age_start, age_span, value)
+    dplyr::select(time_start, time_span, age_start, age_span, value)
   
   
   mig_net_count_age_sex_loc <- lapply(location_outputs, "[[", "mig_net_count_age_sex")

@@ -243,7 +243,8 @@ ccmppWPP_aggregate <- function(locationIDs, base_year, last_year, intermediate_o
                 ungroup(), by = c("time_start", "time_span", "age_start", "age_span")) %>% 
     mutate(value = births/exposures) %>% 
     dplyr::filter(age_start <= 100) %>% 
-    mutate(age_span = replace(age_span, age_start == 100, 1000))
+    mutate(age_span = replace(age_span, age_start == 100, 1000)) %>% 
+    select(time_start, time_span, age_start, age_span, value)
   
   
   mig_net_count_age_sex_loc <- lapply(location_outputs, "[[", "mig_net_count_age_sex")

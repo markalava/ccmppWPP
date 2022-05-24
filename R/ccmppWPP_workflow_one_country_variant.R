@@ -436,6 +436,7 @@ ccmppWPP_compute_WPP_outputs <- function(ccmpp_output, atr) {
               age_span = 5) %>% 
     ungroup() %>% 
     mutate(value = births/exposures,
+           value = replace(value, is.na(value), 0),
            age_span = replace(age_span, age_start == 100, 1000)) %>% 
     dplyr::select(-births, - exposures) %>% 
     arrange(time_start, time_span, age_start, age_span, value)

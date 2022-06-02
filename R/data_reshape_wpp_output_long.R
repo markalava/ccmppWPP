@@ -109,6 +109,13 @@ data_reshape_wpp_output_long <- function(wpp_output) {
                                   round(wpp_output_long$value, 4), wpp_output_long$value)
   wpp_output_long$value <- ifelse(wpp_output_long$subindicator %in% c("nAx"),
                                   round(wpp_output_long$value, 6), wpp_output_long$value)
+  
+  # resort the complete life table for more efficient database upload
+  ltc <- wpp_output_long[wpp_output_long$indicator == "lt_complete_age_sex",]
+  ltc <- ltc[order(ltc$time_start, ltc$sex, ltc$age_start, ltc$subindicator),]
+  
+  wpp_output_long <- wpp_output_long[!(wpp_output_long$indicator == "lt_complete_age_sex"),]
+  wpp_output_long <- rbind(wpp_output_long, ltc)
 
   return(wpp_output_long)
   

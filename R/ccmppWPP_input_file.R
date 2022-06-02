@@ -400,8 +400,10 @@ ccmppWPP_input_file_extend <- function(ccmppWPP_inputs, OAnew = 130, a0rule = "a
 ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from bayesian model
                                        srb_median_all_locs, # projected srb
                                        e0_median_all_locs, # medium e0 from bayesian model
+                                       mx_median_all_locs = NULL,
                                        mig_net_count_proj_all_locs, # projected net migration by age and sex
                                        PasfrGlobalNorm, # pasfr global norm from pasfr_global_model() function
+                                       PasfrNorm, # use Global Model or ConstantPasfr for this country
                                        input_file_path, # file path name for Excel input file
                                        ccmpp_estimates_130_folder) { # file path to folder where ccmpp intermediate outputs for ages 0 to 130 are stored
 
@@ -425,6 +427,7 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
 
   # load the intermediate outputs file for estimates that contains population by single year of age from 0 to 130+
   load(paste0(ccmpp_estimates_130_folder,locid,"_ccmpp_output.RData"))
+  a0rule <- attributes(ccmpp_output)$a0rule
 
   # base year population by sex and single year of age from 0:100
   pop_count_age_sex_base <- ccmpp_output$pop_count_age_sex[ccmpp_output$pop_count_age_sex$time_start == meta.list$Projection_First_Year &
@@ -458,6 +461,7 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
 
   # project pasfr given projected tfr and historical observed pasfr
   pasfr_medium <- pasfr_given_tfr(PasfrGlobalNorm,
+                                  PasfrNorm = PasfrNorm,
                                   pasfr_observed = pasfr_observed,
                                   tfr_observed_projected = tfr_observed_projected,
                                   years_projection = projection_years)
@@ -491,126 +495,134 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
 
   srb <-   srb_median_all_locs[srb_median_all_locs$LocID == locid & srb_median_all_locs$time_start %in% projection_years,]
 
-  ############################
-  ############################
-  # get projected 1mx from projected e0
-
-  # get mx estimates by single year of age from 0 to 130
-  life_table_age_sex_mx <- ccmpp_output$lt_complete_age_sex[ccmpp_output$lt_complete_age_sex$indicator=="lt_nMx" &
-                                                              ccmpp_output$lt_complete_age_sex$sex %in% c("female", "male"),]
-
-  # transform life_table_age_sex_mx into the matrices needed by the MortCast functions
-  mxM <- life_table_age_sex_mx[life_table_age_sex_mx$sex == "male", c("age_start", "time_start", "value")]
-  mxMr <- reshape(mxM, idvar = "age_start", timevar = "time_start", direction = "wide")
-  mx_mat_m <- as.matrix(mxMr[,2:ncol(mxMr)])
-  rownames(mx_mat_m) <- unique(mxM$age_start)
-  colnames(mx_mat_m) <- unique(mxM$time_start)
-
-  mxF <- life_table_age_sex_mx[life_table_age_sex_mx$sex == "female", c("age_start", "time_start", "value")]
-  mxFr <- reshape(mxF, idvar = "age_start", timevar = "time_start", direction = "wide")
-  mx_mat_f <- as.matrix(mxFr[,2:ncol(mxFr)])
-  rownames(mx_mat_f) <- unique(mxF$age_start)
-  colnames(mx_mat_f) <- unique(mxF$time_start)
-
-  # parse median projected e0f and e0m
-  e0_median_all_locs <- e0_median_all_locs[order(e0_median_all_locs$time_start),]
-  e0f_projected <- e0_median_all_locs$value[e0_median_all_locs$LocID == locid &
-                                             e0_median_all_locs$sex == "female" &
-                                              e0_median_all_locs$time_start %in% projection_years]
-  names(e0f_projected) <- projection_years
-
-  e0m_projected <- e0_median_all_locs$value[e0_median_all_locs$LocID == locid &
-                                              e0_median_all_locs$sex == "male" &
-                                              e0_median_all_locs$time_start %in% projection_years]
-  names(e0m_projected) <- projection_years
-
-  # extract mortality parameters from Excel input file
-  MORT_PARAMS <- readxl::read_xlsx(path = input_file_path, sheet = "MORT_PARAMS")
-
-  Age_Mort_Proj_arguments <- list(Age_Mort_Proj_Method1 = MORT_PARAMS$value[MORT_PARAMS$parameter=="Age_Mort_Proj_Method1"],
-                                  Age_Mort_Proj_Method2 = MORT_PARAMS$value[MORT_PARAMS$parameter=="Age_Mort_Proj_Method2"],
-                                  Age_Mort_Proj_Pattern = MORT_PARAMS$value[MORT_PARAMS$parameter=="Age_Mort_Proj_Pattern"],
-                                  Age_Mort_Proj_Method_Weights = eval(parse(text = MORT_PARAMS$value[MORT_PARAMS$parameter=="Age_Mort_Proj_Method_Weights"])),
-                                  Age_Mort_Proj_Adj_SR = eval(parse(text = MORT_PARAMS$value[MORT_PARAMS$parameter=="Age_Mort_Proj_Adj_SR"])),
-                                  Latest_Age_Mortality_Pattern = eval(parse(text = MORT_PARAMS$value[MORT_PARAMS$parameter=="Latest_Age_Mortality_Pattern"])),
-                                  Latest_Age_Mortality_Pattern_Years = eval(parse(text = MORT_PARAMS$value[MORT_PARAMS$parameter=="Latest_Age_Mortality_Pattern_Years"])),
-                                  Smooth_Latest_Age_Mortality_Pattern = eval(parse(text = MORT_PARAMS$value[MORT_PARAMS$parameter=="Smooth_Latest_Age_Mortality_Pattern"])),
-                                  Smooth_Latest_Age_Mortality_Pattern_Degree = eval(parse(text = MORT_PARAMS$value[MORT_PARAMS$parameter=="Smooth_Latest_Age_Mortality_Pattern_Degree"])))
+  if (is.null(mx_median_all_locs)) {
+    ############################
+    ############################
+    # get projected 1mx from projected e0
   
-   mx_medium <- mx_given_e0(mx_mat_m = mx_mat_m, # matrix of mx estimates (age in rows, years in columns)
-                           mx_mat_f = mx_mat_f,
-                           e0m = e0m_projected, # vector of projected e0 (named with years)
-                           e0f = e0f_projected,
-                           Age_Mort_Proj_Method1 = tolower(Age_Mort_Proj_arguments$Age_Mort_Proj_Method1),
-                           Age_Mort_Proj_Method2 = tolower(Age_Mort_Proj_arguments$Age_Mort_Proj_Method2),  # only used if first method is "pmd"
-                           Age_Mort_Proj_Pattern = Age_Mort_Proj_arguments$Age_Mort_Proj_Pattern,
-                           Age_Mort_Proj_Method_Weights = Age_Mort_Proj_arguments$Age_Mort_Proj_Method_Weights,
-                           Age_Mort_Proj_Adj_SR = Age_Mort_Proj_arguments$Age_Mort_Proj_Adj_SR,
-                           Latest_Age_Mortality_Pattern = Age_Mort_Proj_arguments$Latest_Age_Mortality_Pattern,
-                           Latest_Age_Mortality_Pattern_Years = Age_Mort_Proj_arguments$Latest_Age_Mortality_Pattern_Years,
-                           Smooth_Latest_Age_Mortality_Pattern = Age_Mort_Proj_arguments$Smooth_Latest_Age_Mortality_Pattern,
-                           Smooth_Latest_Age_Mortality_Pattern_Degree = Age_Mort_Proj_arguments$Smooth_Latest_Age_Mortality_Pattern_Degree) # a number between 1 and nrow(mx_mat). Higher numbers give less smoothing
-
-  # # old
-  #  mx_medium <- mx_given_e0(mx_mat_m = mx_mat_m, # matrix of mx estimates (age in rows, years in columns)
-  #                           mx_mat_f = mx_mat_f,
-  #                           e0m = e0m_projected, # vector of projected e0 (named with years)
-  #                           e0f = e0f_projected,
-  #                           Age_Mort_Proj_Method1 = tolower(Age_Mort_Proj_arguments$Age_Mort_Proj_Method1),
-  #                           Age_Mort_Proj_Method2 = tolower(Age_Mort_Proj_arguments$Age_Mort_Proj_Method2),  # only used if first method is "pmd"
-  #                           Age_Mort_Proj_Pattern = Age_Mort_Proj_arguments$Age_Mort_Proj_Pattern,
-  #                           Age_Mort_Proj_Method_Weights = Age_Mort_Proj_arguments$Age_Mort_Proj_Method_Weights,
-  #                           Age_Mort_Proj_Adj_SR = Age_Mort_Proj_arguments$Age_Mort_Proj_Adj_SR,
-  #                           Latest_Age_Mortality_Pattern = Age_Mort_Proj_arguments$Latest_Age_Mortality_Pattern,
-  #                           Smooth_Latest_Age_Mortality_Pattern = Age_Mort_Proj_arguments$Smooth_Latest_Age_Mortality_Pattern) # a number between 1 and nrow(mx_mat). Higher numbers give less smoothing
-  #  
-  # organize into a long file required by ccmppWPP
-
-  mx_f <- mx_medium$female$mx[,colnames(mx_medium$female$mx) %in% projection_years]
-  mx_f <- as.data.frame(mx_f)
-  mx_f$age_start <- as.numeric(row.names(mx_f))
-  mx_f <- reshape(mx_f,
-                  idvar = "age_start",
-                  direction = "long",
-                  varying = list(names(mx_f)[1:(ncol(mx_f)-1)]),
-                  times = names(mx_f)[1:(ncol(mx_f)-1)],
-                  timevar = "time_start",
-                  v.names = "value")
-  mx_f$age_span <- ifelse(mx_f$age_start < max(mx_f$age_start), 1, 1000)
-  mx_f$time_span <- 1
-  mx_f$sex <- "female"
-
-  mx_m <- mx_medium$male$mx[,colnames(mx_medium$male$mx) %in% projection_years]
-  mx_m <- as.data.frame(mx_m)
-  mx_m$age_start <- as.numeric(row.names(mx_m))
-  mx_m <- reshape(mx_m,
-                  idvar = "age_start",
-                  direction = "long",
-                  varying = list(names(mx_m)[1:(ncol(mx_m)-1)]),
-                  times = names(mx_m)[1:(ncol(mx_m)-1)],
-                  timevar = "time_start",
-                  v.names = "value")
-  mx_m$age_span <- ifelse(mx_m$age_start < max(mx_m$age_start), 1, 1000)
-  mx_m$time_span <- 1
-  mx_m$sex <- "male"
-
-  mx_all_long <- rbind(mx_f, mx_m)
-  mx_all_long$time_start <- as.numeric(mx_all_long$time_start)
+    # get mx estimates by single year of age from 0 to 130
+    life_table_age_sex_mx <- ccmpp_output$lt_complete_age_sex[ccmpp_output$lt_complete_age_sex$indicator=="lt_nMx" &
+                                                                ccmpp_output$lt_complete_age_sex$sex %in% c("female", "male"),]
+  
+    # transform life_table_age_sex_mx into the matrices needed by the MortCast functions
+    mxM <- life_table_age_sex_mx[life_table_age_sex_mx$sex == "male", c("age_start", "time_start", "value")]
+    mxMr <- reshape(mxM, idvar = "age_start", timevar = "time_start", direction = "wide")
+    mx_mat_m <- as.matrix(mxMr[,2:ncol(mxMr)])
+    rownames(mx_mat_m) <- unique(mxM$age_start)
+    colnames(mx_mat_m) <- unique(mxM$time_start)
+  
+    mxF <- life_table_age_sex_mx[life_table_age_sex_mx$sex == "female", c("age_start", "time_start", "value")]
+    mxFr <- reshape(mxF, idvar = "age_start", timevar = "time_start", direction = "wide")
+    mx_mat_f <- as.matrix(mxFr[,2:ncol(mxFr)])
+    rownames(mx_mat_f) <- unique(mxF$age_start)
+    colnames(mx_mat_f) <- unique(mxF$time_start)
+  
+    # parse median projected e0f and e0m
+    e0_median_all_locs <- e0_median_all_locs[order(e0_median_all_locs$time_start),]
+    e0f_projected <- e0_median_all_locs$value[e0_median_all_locs$LocID == locid &
+                                               e0_median_all_locs$sex == "female" &
+                                                e0_median_all_locs$time_start %in% projection_years]
+    names(e0f_projected) <- projection_years
+  
+    e0m_projected <- e0_median_all_locs$value[e0_median_all_locs$LocID == locid &
+                                                e0_median_all_locs$sex == "male" &
+                                                e0_median_all_locs$time_start %in% projection_years]
+    names(e0m_projected) <- projection_years
+  
+    # extract mortality parameters from Excel input file
+    MORT_PARAMS <- readxl::read_xlsx(path = input_file_path, sheet = "MORT_PARAMS")
+  
+    Age_Mort_Proj_arguments <- list(Age_Mort_Proj_Method1 = MORT_PARAMS$value[MORT_PARAMS$parameter=="Age_Mort_Proj_Method1"],
+                                    Age_Mort_Proj_Method2 = MORT_PARAMS$value[MORT_PARAMS$parameter=="Age_Mort_Proj_Method2"],
+                                    Age_Mort_Proj_Pattern = MORT_PARAMS$value[MORT_PARAMS$parameter=="Age_Mort_Proj_Pattern"],
+                                    Age_Mort_Proj_Method_Weights = eval(parse(text = MORT_PARAMS$value[MORT_PARAMS$parameter=="Age_Mort_Proj_Method_Weights"])),
+                                    Age_Mort_Proj_Adj_SR = eval(parse(text = MORT_PARAMS$value[MORT_PARAMS$parameter=="Age_Mort_Proj_Adj_SR"])),
+                                    Latest_Age_Mortality_Pattern = eval(parse(text = MORT_PARAMS$value[MORT_PARAMS$parameter=="Latest_Age_Mortality_Pattern"])),
+                                    Latest_Age_Mortality_Pattern_Years = eval(parse(text = MORT_PARAMS$value[MORT_PARAMS$parameter=="Latest_Age_Mortality_Pattern_Years"])),
+                                    Smooth_Latest_Age_Mortality_Pattern = eval(parse(text = MORT_PARAMS$value[MORT_PARAMS$parameter=="Smooth_Latest_Age_Mortality_Pattern"])),
+                                    Smooth_Latest_Age_Mortality_Pattern_Degree = eval(parse(text = MORT_PARAMS$value[MORT_PARAMS$parameter=="Smooth_Latest_Age_Mortality_Pattern_Degree"])))
+    
+     mx_medium <- mx_given_e0(mx_mat_m = mx_mat_m, # matrix of mx estimates (age in rows, years in columns)
+                             mx_mat_f = mx_mat_f,
+                             e0m = e0m_projected, # vector of projected e0 (named with years)
+                             e0f = e0f_projected,
+                             Age_Mort_Proj_Method1 = tolower(Age_Mort_Proj_arguments$Age_Mort_Proj_Method1),
+                             Age_Mort_Proj_Method2 = tolower(Age_Mort_Proj_arguments$Age_Mort_Proj_Method2),  # only used if first method is "pmd"
+                             Age_Mort_Proj_Pattern = Age_Mort_Proj_arguments$Age_Mort_Proj_Pattern,
+                             Age_Mort_Proj_Method_Weights = Age_Mort_Proj_arguments$Age_Mort_Proj_Method_Weights,
+                             Age_Mort_Proj_Adj_SR = Age_Mort_Proj_arguments$Age_Mort_Proj_Adj_SR,
+                             Latest_Age_Mortality_Pattern = Age_Mort_Proj_arguments$Latest_Age_Mortality_Pattern,
+                             Latest_Age_Mortality_Pattern_Years = Age_Mort_Proj_arguments$Latest_Age_Mortality_Pattern_Years,
+                             Smooth_Latest_Age_Mortality_Pattern = Age_Mort_Proj_arguments$Smooth_Latest_Age_Mortality_Pattern,
+                             Smooth_Latest_Age_Mortality_Pattern_Degree = Age_Mort_Proj_arguments$Smooth_Latest_Age_Mortality_Pattern_Degree) # a number between 1 and nrow(mx_mat). Higher numbers give less smoothing
+  
+    # # old
+    #  mx_medium <- mx_given_e0(mx_mat_m = mx_mat_m, # matrix of mx estimates (age in rows, years in columns)
+    #                           mx_mat_f = mx_mat_f,
+    #                           e0m = e0m_projected, # vector of projected e0 (named with years)
+    #                           e0f = e0f_projected,
+    #                           Age_Mort_Proj_Method1 = tolower(Age_Mort_Proj_arguments$Age_Mort_Proj_Method1),
+    #                           Age_Mort_Proj_Method2 = tolower(Age_Mort_Proj_arguments$Age_Mort_Proj_Method2),  # only used if first method is "pmd"
+    #                           Age_Mort_Proj_Pattern = Age_Mort_Proj_arguments$Age_Mort_Proj_Pattern,
+    #                           Age_Mort_Proj_Method_Weights = Age_Mort_Proj_arguments$Age_Mort_Proj_Method_Weights,
+    #                           Age_Mort_Proj_Adj_SR = Age_Mort_Proj_arguments$Age_Mort_Proj_Adj_SR,
+    #                           Latest_Age_Mortality_Pattern = Age_Mort_Proj_arguments$Latest_Age_Mortality_Pattern,
+    #                           Smooth_Latest_Age_Mortality_Pattern = Age_Mort_Proj_arguments$Smooth_Latest_Age_Mortality_Pattern) # a number between 1 and nrow(mx_mat). Higher numbers give less smoothing
+    #  
+    # organize into a long file required by ccmppWPP
+  
+    mx_f <- mx_medium$female$mx[,colnames(mx_medium$female$mx) %in% projection_years]
+    mx_f <- as.data.frame(mx_f)
+    mx_f$age_start <- as.numeric(row.names(mx_f))
+    mx_f <- reshape(mx_f,
+                    idvar = "age_start",
+                    direction = "long",
+                    varying = list(names(mx_f)[1:(ncol(mx_f)-1)]),
+                    times = names(mx_f)[1:(ncol(mx_f)-1)],
+                    timevar = "time_start",
+                    v.names = "value")
+    mx_f$age_span <- ifelse(mx_f$age_start < max(mx_f$age_start), 1, 1000)
+    mx_f$time_span <- 1
+    mx_f$sex <- "female"
+  
+    mx_m <- mx_medium$male$mx[,colnames(mx_medium$male$mx) %in% projection_years]
+    mx_m <- as.data.frame(mx_m)
+    mx_m$age_start <- as.numeric(row.names(mx_m))
+    mx_m <- reshape(mx_m,
+                    idvar = "age_start",
+                    direction = "long",
+                    varying = list(names(mx_m)[1:(ncol(mx_m)-1)]),
+                    times = names(mx_m)[1:(ncol(mx_m)-1)],
+                    timevar = "time_start",
+                    v.names = "value")
+    mx_m$age_span <- ifelse(mx_m$age_start < max(mx_m$age_start), 1, 1000)
+    mx_m$time_span <- 1
+    mx_m$sex <- "male"
+  
+    mx_all_long <- rbind(mx_f, mx_m)
+    mx_all_long$time_start <- as.numeric(mx_all_long$time_start)
+  } else {
+    
+    mx_all_long <- mx_median_all_locs[mx_median_all_locs$locid == locid, c("time_start", "time_span", "sex", "age_start", "age_span", "value")]
+    
+  }
   
   lts_all <- list()
   for (i in 1:(length(projection_years))) {
+    
     ltf <- DemoTools::lt_single_mx(nMx = mx_all_long$value[mx_all_long$sex == "female" & mx_all_long$time_start == projection_years[i]],
                                    Age = mx_all_long$age_start[mx_all_long$sex == "female" & mx_all_long$time_start == projection_years[i]],
-                                   Sex = "f")
+                                   Sex = "f", a0rule = a0rule)
     ltf$sex <- "female"
     ltf$time_start <- projection_years[i]
     ltm <- DemoTools::lt_single_mx(nMx = mx_all_long$value[mx_all_long$sex == "male" & mx_all_long$time_start == projection_years[i]],
                                    Age = mx_all_long$age_start[mx_all_long$sex == "male" & mx_all_long$time_start == projection_years[i]],
-                                   Sex = "m")
+                                   Sex = "m" , a0rule = a0rule)
     ltm$sex <- "male"
     ltm$time_start <- projection_years[i]
     
     lts_all[[i]] <- rbind(ltf, ltm)
+    
   }
   lts_all <- do.call(rbind, lts_all)
   
@@ -639,7 +651,7 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
   }
   mig_net_count_age_sex <- do.call(rbind, mig_net_count_age_sex)
   mig_net_count_age_sex <- merge(mig_net_count_age_sex,
-                                 mig_net_count_proj_all_locs[mig_net_count_proj_all_locs$LocID == locid & 
+                                 mig_net_count_proj_all_locs[mig_net_count_proj_all_locs$locid == locid & 
                                                                mig_net_count_proj_all_locs$time_start %in% projection_years,
                                                              c("time_start", "sex", "age_start", "value")],
                                  by = c("time_start", "sex", "age_start"), all.x = TRUE, all.y= FALSE)

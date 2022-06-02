@@ -6,9 +6,10 @@
 \usage{
 pasfr_given_tfr(
   PasfrGlobalNorm,
+  PasfrNorm,
   pasfr_observed,
   tfr_observed_projected,
-  years_projection = 2020:2100,
+  years_projection = 2022:2100,
   num_points = 15
 )
 }

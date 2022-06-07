@@ -361,20 +361,6 @@ ccmppWPP_compute_WPP_outputs <- function(ccmpp_output, atr) {
   # net migrants
   mig_net_count_tot_sex    <- sum_last_column(mig_net_count_age_sex_1x1[, c("time_start", "time_span", "sex", "value")])
   
-  # compute population percentage distributions by age
-  
-  # single year of age
-  pop_pct_age_sex <- merge(pop_count_age_sex_1x1, pop_count_tot_sex, by=c("time_start", "time_span", "sex"))
-  pop_pct_age_sex$value <- pop_pct_age_sex$value.x/pop_pct_age_sex$value.y * 100
-  pop_pct_age_sex       <- pop_pct_age_sex[, !(names(pop_pct_age_sex) %in% c("value.x", "value.y"))]
-  
-  # five year age groups
-  pop_pct_age_sex_5x1   <- merge(pop_count_age_sex_5x1, pop_count_tot_sex, by=c("time_start", "time_span", "sex"))
-  pop_pct_age_sex_5x1$value <- pop_pct_age_sex_5x1 $value.x/pop_pct_age_sex_5x1 $value.y * 100
-  pop_pct_age_sex_5x1   <- pop_pct_age_sex_5x1[, !(names(pop_pct_age_sex_5x1 ) %in% c("value.x", "value.y"))]
-  
-  
-  
   # compute crude birth, death and net migration rates, as well as rate of natural increase
   birth_rate_crude        <- data.frame(time_start = birth_count_tot_sex$time_start[birth_count_tot_sex$sex == "both"],
                                         time_span  = birth_count_tot_sex$time_span[birth_count_tot_sex$sex == "both"],
@@ -403,23 +389,22 @@ ccmppWPP_compute_WPP_outputs <- function(ccmpp_output, atr) {
                                                       pop_count_tot_b$value[1:(nrow(pop_count_tot_b)-1)])*100)
   pop_change_rate_tot$time_span     <- 1
   
-  # commented out sex ratios -- we will do this in SQL to reduce rows in csv file
   # # compute population sex ratio
-  # pop_sex_ratio           <- data.frame(time_start = pop_count_tot_b$time_start,
-  #                                       time_span  = pop_count_tot_b$time_span,
-  #                                       value      = pop_count_tot_sex$value[pop_count_tot_sex$sex == "male"] / 
-  #                                         pop_count_tot_sex$value[pop_count_tot_sex$sex == "female"] * 100)
+  pop_sex_ratio           <- data.frame(time_start = pop_count_tot_b$time_start,
+                                        time_span  = pop_count_tot_b$time_span,
+                                        value      = pop_count_tot_sex$value[pop_count_tot_sex$sex == "male"] /
+                                          pop_count_tot_sex$value[pop_count_tot_sex$sex == "female"] * 100)
   # pop_sex_ratio_age_1x1   <- data.frame(time_start = pop_count_age_sex_1x1$time_start[pop_count_age_sex_1x1$sex=="male"],
   #                                       time_span  = pop_count_age_sex_1x1$time_span[pop_count_age_sex_1x1$sex=="male"],
   #                                       age_start  = pop_count_age_sex_1x1$age_start[pop_count_age_sex_1x1$sex=="male"],
   #                                       age_span   = pop_count_age_sex_1x1$age_span[pop_count_age_sex_1x1$sex=="male"],
-  #                                       value      = pop_count_age_sex_1x1$value[pop_count_age_sex_1x1$sex == "male"] / 
+  #                                       value      = pop_count_age_sex_1x1$value[pop_count_age_sex_1x1$sex == "male"] /
   #                                         pop_count_age_sex_1x1$value[pop_count_age_sex_1x1$sex == "female"] * 100)
   # pop_sex_ratio_age_5x1   <- data.frame(time_start = pop_count_age_sex_5x1$time_start[pop_count_age_sex_5x1$sex=="male"],
   #                                       time_span  = pop_count_age_sex_5x1$time_span[pop_count_age_sex_5x1$sex=="male"],
   #                                       age_start  = pop_count_age_sex_5x1$age_start[pop_count_age_sex_5x1$sex=="male"],
   #                                       age_span   = pop_count_age_sex_5x1$age_span[pop_count_age_sex_5x1$sex=="male"],
-  #                                       value      = pop_count_age_sex_5x1$value[pop_count_age_sex_5x1$sex == "male"] / 
+  #                                       value      = pop_count_age_sex_5x1$value[pop_count_age_sex_5x1$sex == "male"] /
   #                                         pop_count_age_sex_5x1$value[pop_count_age_sex_5x1$sex == "female"] * 100)
   
   
@@ -477,18 +462,51 @@ ccmppWPP_compute_WPP_outputs <- function(ccmpp_output, atr) {
   fert_mean_age          <- fert_mac(fert_data_age = ccmpp_output$fert_rate_age_f,
                                      byvar         = c("time_start", "time_span"))
   
+  # mid-year population
+  pop_count_age_sex_mid_1x1 <- mid_period_pop(pop_count_age_sex = pop_count_age_sex_1x1, period_length = 1)
+  
+  pop_count_age_sex_mid_5x1      <- sum_five_year_age_groups(indata = pop_count_age_sex_mid_1x1,
+                                                             byvar = c("time_start","time_span","sex"))
+  
+  pop_count_tot_sex_mid        <- sum_last_column(indata = pop_count_age_sex_mid_1x1[, c("time_start", "time_span", "sex", "value")])
+  
+  pop_sex_ratio_mid           <- data.frame(time_start = pop_count_tot_sex_mid$time_start[pop_count_tot_sex_mid$sex == "both"],
+                                            time_span  = pop_count_tot_sex_mid$time_span[pop_count_tot_sex_mid$sex == "both"],
+                                            value      = pop_count_tot_sex_mid$value[pop_count_tot_sex_mid$sex == "male"] /
+                                              pop_count_tot_sex_mid$value[pop_count_tot_sex_mid$sex == "female"] * 100)
+  
+  # compute population percentage distributions by age
+  
+  # single year of age
+  pop_pct_age_sex_mid <- merge(pop_count_age_sex_mid_1x1, pop_count_tot_sex_mid, by=c("time_start", "time_span", "sex"))
+  pop_pct_age_sex_mid$value <- pop_pct_age_sex_mid$value.x/pop_pct_age_sex_mid$value.y * 100
+  pop_pct_age_sex_mid       <- pop_pct_age_sex_mid[, !(names(pop_pct_age_sex_mid) %in% c("value.x", "value.y"))]
+  
+  # five year age groups
+  pop_pct_age_sex_mid_5x1   <- merge(pop_count_age_sex_mid_5x1, pop_count_tot_sex_mid, by=c("time_start", "time_span", "sex"))
+  pop_pct_age_sex_mid_5x1$value <- pop_pct_age_sex_mid_5x1 $value.x/pop_pct_age_sex_mid_5x1 $value.y * 100
+  pop_pct_age_sex_mid_5x1   <- pop_pct_age_sex_mid_5x1[, !(names(pop_pct_age_sex_mid_5x1 ) %in% c("value.x", "value.y"))]
+  
+  # median age of the population
+  median_age <- median_age(pop_count_age = pop_count_age_sex_1x1[pop_count_age_sex_1x1$sex == "both",])
+  median_age_mid <- median_age(pop_count_age = pop_count_age_sex_mid_1x1[pop_count_age_sex_mid_1x1$sex == "both",])
+  
   # compile output list and return
   # assemble all estimates to send to Eagle
   ccmppWPP_output <- list(pop_count_age_sex_1x1      = pop_count_age_sex_1x1,
                           pop_count_age_sex_5x1      = pop_count_age_sex_5x1,
                           pop_count_tot_sex          = pop_count_tot_sex,
-                          pop_pct_age_sex_1x1        = pop_pct_age_sex,
-                          pop_pct_age_sex_5x1        = pop_pct_age_sex_5x1,
+                          pop_count_age_sex_mid_1x1  = pop_count_age_sex_mid_1x1,
+                          pop_count_age_sex_mid_5x1  = pop_count_age_sex_mid_5x1,
+                          pop_count_tot_sex_mid      = pop_count_tot_sex_mid,
+                          pop_pct_age_sex_mid_1x1    = pop_pct_age_sex_mid,
+                          pop_pct_age_sex_mid_5x1    = pop_pct_age_sex_mid_5x1,
                           pop_change_rate_tot        = pop_change_rate_tot,
                           pop_change_rate_natural    = pop_change_rate_natural,
-                          #pop_sex_ratio              = pop_sex_ratio,
-                          #pop_sex_ratio_age_1x1      = pop_sex_ratio_age_1x1,
-                          #pop_sex_ratio_age_5x1      = pop_sex_ratio_age_5x1,
+                          pop_sex_ratio              = pop_sex_ratio,
+                          pop_sex_ratio_mid          = pop_sex_ratio_mid,
+                          median_age                 = median_age,
+                          median_age_mid             = median_age_mid,
                           birth_count_age_1x1        = birth_count_age_1x1,
                           birth_count_age_5x1        = birth_count_age_5x1,
                           birth_count_tot_sex        = birth_count_tot_sex,

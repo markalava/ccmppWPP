@@ -491,7 +491,7 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
 
   ############################
   ############################
-  # get projected srb from input file for now (later let's read this from somewhere else that analysts can't accidentally edit)
+  # get projected srb 
 
   srb <-   srb_median_all_locs[srb_median_all_locs$LocID == locid & srb_median_all_locs$time_start %in% projection_years,]
 
@@ -712,7 +712,8 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
 
 ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
                                            ccmppWPP_medium,
-                                           PasfrGlobalNorm) {
+                                           PasfrGlobalNorm,
+                                           PasfrNorm) {
 
 
   # create vector of projection time_starts
@@ -755,6 +756,7 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
   tfr_low <- tfr_med - tfr_adj
 
   pasfr_low <- pasfr_given_tfr(PasfrGlobalNorm = PasfrGlobalNorm,
+                               PasfrNorm = PasfrNorm,
                                pasfr_observed = pasfr_estimates[11:55,],
                                tfr_observed_projected = c(tfr_est, tfr_low),
                                years_projection = projection_times,
@@ -786,6 +788,7 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
   tfr_high <- tfr_med + tfr_adj
 
   pasfr_high <- pasfr_given_tfr(PasfrGlobalNorm = PasfrGlobalNorm,
+                                PasfrNorm = PasfrNorm,
                                 pasfr_observed = pasfr_estimates[11:55,],
                                 tfr_observed_projected = c(tfr_est, tfr_high),
                                 years_projection = projection_times,
@@ -812,12 +815,12 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
 
   ############################
   ############################
-  # extract asfr inputs for constant-fertility variant (constant at last estimated)
+  # extract asfr inputs for constant-fertility variant (constant at first projected) (for 2022 revision to avoid a Covid year)
 
-  asfr_last_observed <- ccmppWPP_estimates$fert_rate_age_f[ccmppWPP_estimates$fert_rate_age_f$time_start == projection_start_year-1,]
+  asfr_first_projected <- ccmppWPP_medium$fert_rate_age_f[ccmppWPP_medium$fert_rate_age_f$time_start == projection_start_year,]
   fert_rate_age_f_constant <- NULL
   for (i in 1:length(projection_times)) {
-    asfr_add <- asfr_last_observed
+    asfr_add <- asfr_first_projected
     asfr_add$time_start <- projection_times[i]
     fert_rate_age_f_constant <- rbind(fert_rate_age_f_constant, asfr_add)
   }
@@ -853,14 +856,14 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
   # extract life table inputs for constant-mortality variant
 
   # take sex-specific life tables from last observed period
-  lt_last_observed <- ccmppWPP_estimates$lt_complete_age_sex[ccmppWPP_estimates$lt_complete_age_sex$time_start == projection_start_year-1 &
-                                                               ccmppWPP_estimates$lt_complete_age_sex$sex %in% c("male","female"),]
+  lt_first_projected <- ccmppWPP_medium$lt_complete_age_sex[ccmppWPP_medium$lt_complete_age_sex$time_start == projection_start_year &
+                                                              ccmppWPP_medium$lt_complete_age_sex$sex %in% c("male","female"),]
   # initialize constant-mortality output
   lt_constant <- list()
   # repeat starting period sex-specific life table for each period in projection horizon
   for (i in 1:length(projection_times)) {
 
-    lt_time            <- lt_last_observed
+    lt_time            <- lt_first_projected
     lt_time$time_start <- projection_times[i]
     lt_constant[[i]]   <- lt_time
 
@@ -929,9 +932,8 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
   # assign attributes
   attr(inputs_low, "locid") <- attributes(ccmppWPP_estimates)$locid
   attr(inputs_low, "locname") <- attributes(ccmppWPP_estimates)$locname
-  attr(inputs_low, "variant") <- "low fertility"
+  attr(inputs_low, "variant") <- "Low fertility"
   attr(inputs_low, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
-
 
   # same as medium variant, but with high asfr
   inputs_high <- inputs_medium
@@ -939,7 +941,7 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
   # assign attributes
   attr(inputs_high, "locid") <- attributes(ccmppWPP_estimates)$locid
   attr(inputs_high, "locname") <- attributes(ccmppWPP_estimates)$locname
-  attr(inputs_high, "variant") <- "high fertility"
+  attr(inputs_high, "variant") <- "High fertility"
   attr(inputs_high, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
 
   # same as medium variant, but with constant asfr
@@ -948,7 +950,7 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
   # assign attributes
   attr(inputs_constant_fert, "locid") <- attributes(ccmppWPP_estimates)$locid
   attr(inputs_constant_fert, "locname") <- attributes(ccmppWPP_estimates)$locname
-  attr(inputs_constant_fert, "variant") <- "constant fertility"
+  attr(inputs_constant_fert, "variant") <- "Constant fertility"
   attr(inputs_constant_fert, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
 
   # instant replacement same as medium variant, but with instant replacement asfr
@@ -957,7 +959,7 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
   # assign attributes
   attr(inputs_instant, "locid") <- attributes(ccmppWPP_estimates)$locid
   attr(inputs_instant, "locname") <- attributes(ccmppWPP_estimates)$locname
-  attr(inputs_instant, "variant") <- "instant replacement"
+  attr(inputs_instant, "variant") <- "Instant replacement fertility"
   attr(inputs_instant, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
 
   # momentum is instant replacement asfr, constant mortality, zero migration
@@ -968,7 +970,7 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
   # assign attributes
   attr(inputs_momentum, "locid") <- attributes(ccmppWPP_estimates)$locid
   attr(inputs_momentum, "locname") <- attributes(ccmppWPP_estimates)$locname
-  attr(inputs_momentum, "variant") <- "momentum"
+  attr(inputs_momentum, "variant") <- "Momentum"
   attr(inputs_momentum, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
 
   # no change is medium inputs with constant fertility and constant mortality
@@ -977,7 +979,7 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
   # assign attributes
   attr(inputs_nochange, "locid") <- attributes(ccmppWPP_estimates)$locid
   attr(inputs_nochange, "locname") <- attributes(ccmppWPP_estimates)$locname
-  attr(inputs_nochange, "variant") <- "no change"
+  attr(inputs_nochange, "variant") <- "No change"
   attr(inputs_nochange, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
 
   # constant mortality is same as medium variant but with constant life tables
@@ -986,7 +988,7 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
   # assign attributes
   attr(inputs_constant_mort, "locid") <- attributes(ccmppWPP_estimates)$locid
   attr(inputs_constant_mort, "locname") <- attributes(ccmppWPP_estimates)$locname
-  attr(inputs_constant_mort, "variant") <- "constant mortality"
+  attr(inputs_constant_mort, "variant") <- "Constant mortality"
   attr(inputs_constant_mort, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
 
   # zero migration is medium inputs but zero migration
@@ -996,8 +998,18 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
   # assign attributes
   attr(inputs_zeromig, "locid") <- attributes(ccmppWPP_estimates)$locid
   attr(inputs_zeromig, "locname") <- attributes(ccmppWPP_estimates)$locname
-  attr(inputs_zeromig, "variant") <- "zero migration"
+  attr(inputs_zeromig, "variant") <- "Zero migration"
   attr(inputs_zeromig, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
+  
+  # Instant replacement and zero migration 
+  inputs_instantzeromig <- inputs_instant
+  inputs_instantzeromig$mig_net_count_age_sex$value <- 0
+  inputs_instantzeromig$mig_net_count_tot_b$value <- 0
+  # assign attributes
+  attr(inputs_instantzeromig, "locid") <- attributes(ccmppWPP_estimates)$locid
+  attr(inputs_instantzeromig, "locname") <- attributes(ccmppWPP_estimates)$locname
+  attr(inputs_instantzeromig, "variant") <- "Instant replacement zero migration"
+  attr(inputs_instantzeromig, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
 
   # compile deterministic variant inputs into a list and return
   variant_inputs <- list(medium = inputs_medium,
@@ -1005,6 +1017,7 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
                          high_fert = inputs_high,
                          constant_fert = inputs_constant_fert,
                          instant_replacement_fert = inputs_instant,
+                         instant_zero_mig = inputs_instantzeromig,
                          momentum = inputs_momentum,
                          no_change = inputs_nochange,
                          constant_mort = inputs_constant_mort,

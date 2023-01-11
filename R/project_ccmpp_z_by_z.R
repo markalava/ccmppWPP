@@ -65,8 +65,10 @@ project_ccmpp_z_by_z <- function(z=1,
   if (isFALSE(check_length)) { stop("Input columns are not all the same length")}
 
   nage <- length(pop_count_age_m_start) # number of age groups
-
+  
+ 
 ### Two possible migration assumptions: end of period or evenly over period
+  # THIS DOCUMENTATION NEEDS UPDATING, VARIABLE NAMES HAVE CHANGED
   # here we set up some interim vectors according to the migration assumptions
   # pxm and pxf are population at time 0 unaltered from the input if mig_assumption is end of period
   # or with half of net migration added if mig_assumption is evenly over period
@@ -162,6 +164,134 @@ project_ccmpp_z_by_z <- function(z=1,
 
     ## need to look closely at first and last age group
     ## also need to determine whether lead(migm_end) should be used in P1M calc instead of just migm_end
+
+
+project_ccmpp_z_by_z_new <- function(z=1, 
+                                 pop_count_age_m_start, 
+                                 pop_count_age_f_start, 
+                                 survival_ratio_age_m, 
+                                 survival_ratio_age_f,
+                                 fert_rate_age_f, 
+                                 srb,
+                                 mig_net_count_age_m,
+                                 mig_net_count_age_f, 
+                                 mig_assumption = c("end", "even")) {
+  
+  # check that lengths of inputs agree
+  check_length <- min(length(pop_count_age_m_start),length(pop_count_age_f_start),
+                      length(survival_ratio_age_m),length(survival_ratio_age_f),
+                      length(fert_rate_age_f),
+                      length(mig_net_count_age_m),length(mig_net_count_age_f)) ==
+    max(length(pop_count_age_m_start),length(pop_count_age_f_start),
+        length(survival_ratio_age_m),length(survival_ratio_age_f),
+        length(fert_rate_age_f),length(mig_net_count_age_m),length(mig_net_count_age_f))
+  if (isFALSE(check_length)) { stop("Input columns are not all the same length")}
+  
+  nage <- length(pop_count_age_m_start) # number of age groups
+  
+ 
+  
+  # Pre-compute lagged variables
+  lag_pop_count_age_m_start <- c(NA, head(pop_count_age_m_start, -1))
+  lag_pop_count_age_f_start <- c(NA, head(pop_count_age_f_start, -1))
+
+  # compute deaths from year 0 population and survival ratios
+  death_count_cohort_m <- (1-survival_ratio_age_m)*lag_pop_count_age_m_start
+  death_count_cohort_m[nage] <- (1-survival_ratio_age_m[nage]) * (pop_count_age_m_start[nage-1]+pop_count_age_m_start[nage])
+  
+  death_count_cohort_f <- (1-survival_ratio_age_f)*lag_pop_count_age_f_start
+  death_count_cohort_f[nage] <- (1-survival_ratio_age_f[nage]) * (pop_count_age_f_start[nage-1]+pop_count_age_f_start[nage])
+  
+  # project population by age at year +z from year 0 population and deaths
+  pop_count_age_m_end <- lag_pop_count_age_m_start - death_count_cohort_m 
+  pop_count_age_m_end[nage] <- pop_count_age_m_star[nage-1] + pop_count_age_m_start[nage] - death_count_cohort_m[nage]
+  
+  pop_count_age_f_end <- lag_pop_count_age_f_start - death_count_cohort_f 
+  pop_count_age_f_end[nage] <- pop_count_age_f_start[nage-1] + pop_count_age_f_start[nage] - death_count_cohort_f[nage]
+  
+  # compute births from female population, age-specific fertility rates and sex ratio at birth
+  birth_count_age_b <- z * fert_rate_age_f * (pop_count_age_f_start + pop_count_age_f_end)/2
+  birth_count_age_b[c(1,nage)] <- 0
+  birth_count_tot_b <- sum(birth_count_age_b)
+  birth_count_tot_f <- birth_count_tot_b * (1/(1+srb))
+  birth_count_tot_m <- birth_count_tot_b - birth_count_tot_f
+  
+  # compute infant deaths from total births by sex and survival ratio
+  death_count_cohort_m[1] <- (1 - survival_ratio_age_m[1]) * birth_count_tot_m
+  death_count_cohort_f[1] <- (1 - survival_ratio_age_f[1]) * birth_count_tot_f
+  
+  # project infant population at year +1 from births and infant deaths
+  pop_count_age_m_end[1] <- birth_count_tot_m - death_count_cohort_m[1]
+  pop_count_age_f_end[1] <- birth_count_tot_f - death_count_cohort_f[1]
+  
+  # adjust migration if necessary so that we can never have negative population THIS IS NOT IMPLEMENTED YET!!! 
+  mig_net_count_age_m <- ifelse(pop_count_age_m_end - mig_net_count_age_m <=0, mig_net_count_age_m, mig_net_count_age_m) ## if true, adjust the migration count the minimum necessary to ensure positive population
+  mig_net_count_age_f <- ifelse(pop_count_age_f_end - mig_net_count_age_f <=0, mig_net_count_age_f, mig_net_count_age_f) ## if true, adjust the migration count the minimum necessary to ensure positive population
+  
+  
+  # if even assumption, compute deaths and births to migrants, exposing half to the risks of mortality and fertility
+ if (mig_assumption == "even") {
+    
+    lag_mig_count_age_m <- c(NA, head(mig_count_age_m, -1))
+    lag_mig_count_age_f <- c(NA, head(mig_count_age_f, -1))
+    
+    death_count_cohort_m_mig <- (1-survival_ratio_age_m)*(lag_mig_count_age_m/2)
+    death_count_cohort_m_mig[nage] <- (1-survival_ratio_age_m[nage]) * (lag_mig_count_age_m[nage-1]+mig_count_age_m[nage])/2
+    
+    # compute births from female population, age-specific fertility rates and sex ratio at birth
+    birth_count_age_b_mig <- z * fert_rate_age_f * mig_net_count_age_f/2
+    birth_count_age_b_mig[c(1,nage)] <- 0
+    birth_count_tot_b_mig <- sum(birth_count_age_b_mig)
+    birth_count_tot_f_mig <- birth_count_tot_b_mig * (1/(1+srb))
+    birth_count_tot_m_mig <- birth_count_tot_b_mig - birth_count_tot_f_mig
+    
+    # compute infant deaths from total births by sex and survival ratio
+    death_count_cohort_m_mig[1] <- (1 - survival_ratio_age_m[1]) * birth_count_tot_m_mig
+    death_count_cohort_f_mig[1] <- (1 - survival_ratio_age_f[1]) * birth_count_tot_f_mig
+    
+    # add migrant deaths and births to non-migrant deaths and births
+    birth_count_age_b <- birth_count_age_b + birth_count_age_b_mig
+    birth_count_tot_b <- birth_count_tot_b + birth_count_tot_b_mig
+    birth_count_tot_f <- birth_count_tot_f + birth_count_tot_f_mig
+    birth_count_tot_m <- birth_count_tot_m + birth_count_tot_m_mig
+    
+    death_count_cohort_m <- death_count_cohort_m + death_count_cohort_m_mig
+    death_count_cohort_f <- death_count_cohort_f + death_count_cohort_f_mig
+
+    
+    # account for migrant births and deaths in end year population
+    #STILL NEED TO DO THIS
+  
+  }
+  
+  # add migrants
+ pop_count_age_m_end <- pop_count_age_m_end + mig_net_count_age_m
+ pop_count_age_f_end <- pop_count_age_f_end + mig_net_count_age_f
+
+  
+  # # ensure no negative population by age and sex (0.0005 is same as Abacus) THIS SHOULD NOT BE NECESSARY ANYMORE?
+  # pop_count_age_m_end[which(pop_count_age_m_end<0)] <- 0.0005
+  # pop_count_age_f_end[which(pop_count_age_f_end<0)] <- 0.0005
+  
+  # assemble list of outputs and return
+  
+  proj_list <- list(age_start            = c(seq(0,(nage-1)*z, z)),
+                    age_span             = c(rep(z, nage-1), 1000), # age_span = 1000 identifies open age group
+                    pop_count_age_m_end  = pop_count_age_m_end,
+                    pop_count_age_f_end  = pop_count_age_f_end,
+                    death_count_cohort_m = death_count_cohort_m,
+                    death_count_cohort_f = death_count_cohort_f,
+                    birth_count_age_b    = birth_count_age_b,
+                    birth_count_tot_b    = birth_count_tot_b,
+                    birth_count_tot_m    = birth_count_tot_m,
+                    birth_count_tot_f    = birth_count_tot_f,
+                    mig_net_count_age_m  = mig_net_count_age_m,
+                    mig_net_count_age_f  = mig_net_count_age_f)
+  
+  return(proj_list)
+  
+}
+
 
 
 

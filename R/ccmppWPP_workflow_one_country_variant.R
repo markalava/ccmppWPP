@@ -39,7 +39,7 @@ ccmppWPP_workflow_one_country_variant <- function(wpp_input,
   if (store_intermediate_output) {
   # store projection outputs for all ages 0 to 130
   # we only publish 0 to 100+, but we need to store the original results to 130+ to use for deterministic projection variants aggregations
-  save(ccmpp_output, file = paste0(intermediate_output_folder,atr$locid,"_ccmpp_output.RData"))
+  save(ccmpp_output, file = file.path(intermediate_output_folder,paste0(atr$locid,"_ccmpp_output.rda")))
   }
 
   # truncate back to open age group 100+

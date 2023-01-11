@@ -9,6 +9,8 @@
 #' @author Sara Hertog
 #'
 #' @param wpp_input list of input objects required for one country-variant
+#' @param store_intermediate_output logical. whether to store the intermediate outputs with single ages from 0 to 130+
+#' @param intermediate_output_folder character string. where to store intermediate outputs
 #'
 #' @details This function calls all of the various functions required to complete the WPP workflow.  It currently
 #' works only for a 1x1 population projection and returns outputs summarised by 1-year and 5-year age groups.
@@ -21,6 +23,7 @@
 
 
 ccmppWPP_workflow_one_country_variant <- function(wpp_input,
+                                                  store_intermediate_output = FALSE,
                                                   intermediate_output_folder) {
 
   # pull out input file attributes
@@ -33,10 +36,11 @@ ccmppWPP_workflow_one_country_variant <- function(wpp_input,
   # 1x1 for ages 0 to 130+
   ccmpp_output <- ccmppWPP_project_one_country_variant(ccmpp_input = ccmpp_input, atr = atr)
   
+  if (store_intermediate_output) {
   # store projection outputs for all ages 0 to 130
-  # we only publish 0 to 100+, but we need to store the original results to 130+ to use for deterministic projection variants
-  # and also aggregates?
+  # we only publish 0 to 100+, but we need to store the original results to 130+ to use for deterministic projection variants aggregations
   save(ccmpp_output, file = paste0(intermediate_output_folder,atr$locid,"_ccmpp_output.RData"))
+  }
 
   # truncate back to open age group 100+
   ccmpp_output_100 <- ccmppWPP_truncate_OAG(ccmpp_output = ccmpp_output, OAnew = 100)
@@ -52,13 +56,13 @@ ccmppWPP_workflow_one_country_variant <- function(wpp_input,
   wpp_output$mig_net_count_age_sex_override <- ifelse(!is.null(override), override, NA)
   rm(override)
 
-
   return(wpp_output)
-
 
 }
 
 
+#' @export
+#'
 ccmppWPP_project_one_country_variant <- function(ccmpp_input, atr) {
   
   # run ccmpp, looping over time steps for the full projection period

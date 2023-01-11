@@ -1,9 +1,20 @@
 
-# read ccmppWPP inputs from country-specific excel input files
-
+#' read ccmppWPP inputs from country-specific excel input files
+#'
+#' @description This function reads the ccmppWPP inputs from the country specific excel files.  Specifically,
+#' it reads from parameters, pop_count_age_sex_base, fert_rate_age_f, srb, mort_params, life_table_age_sex,
+#' mig_net_count_age_sex, mig_net_count_tot_b, and mig_parameters sheets of the country input files.  It selects only
+#' years bounded by the estimation period.
+#'
+#' @author Sara Hertog
+#'
+#' @param input_file_path character. string pointing to the file path for the Excel input file for one country.
+#'
+#' @return a list of data frames -- one for each type of input needed to produce the estimates variant with the ccmpp. 
+#' attributes assigned to the list describe the location id and name, a0 rule and variant
 #' @export
-ccmppWPP_input_file_estimates <- function(input_file_path) {
 
+ccmppWPP_input_file_estimates <- function(input_file_path) {
 
   # read metadata from parameters sheet of excel input file
   meta <-   readxl::read_xlsx(path = input_file_path,
@@ -23,30 +34,32 @@ ccmppWPP_input_file_estimates <- function(input_file_path) {
   base_year <- as.numeric(meta.list$Base_Year)
   begin_proj_year <- as.numeric(meta.list$Projection_First_Year)
 
-  # base year population by sex and single year of age from 0:100
+  # base year population by sex and single year of age 
   pop_count_age_sex_base <- readxl::read_xlsx(path = input_file_path,
-                                              sheet = "pop_count_age_sex_base")
+                                              sheet = "pop_count_age_sex_base",
+                                              n_max = 1048576) %>% 
+    mutate(value = replace(value, is.na(value), 0)) # replace any NA values with 0
 
-  # replace any NA values with 0
-  pop_count_age_sex_base$value[is.na(pop_count_age_sex_base$value)] <- 0
 
-  # asfr by single year of mother's age and single year of time (jan 1 to dec 31)
+  # asfr by single year of mother's age single year of time (jan 1 to dec 31)
   fert_rate_age_f <- readxl::read_xlsx(path = input_file_path,
-                                       sheet = "fert_rate_age_f")
-  fert_rate_age_f <- fert_rate_age_f[fert_rate_age_f$time_start >= base_year & fert_rate_age_f$time_start < begin_proj_year,]
-  # ensure sort by time_start and age_start
-  fert_rate_age_f <- fert_rate_age_f[order(fert_rate_age_f$time_start, fert_rate_age_f$age_start),]
+                                       sheet = "fert_rate_age_f",
+                                       n_max = 1048576) %>% 
+    dplyr::filter(time_start >= base_year & time_start < begin_proj_year) %>% 
+    arrange(time_start, age_start)
 
   # srb estimates by single year of time (jan 1 to dec 31)
   srb <- readxl::read_xlsx(path = input_file_path,
-                           sheet = "srb")
-  srb <- srb[srb$time_start >= base_year & srb$time_start < begin_proj_year,]
-  # ensure sort by time_start
-  srb <- srb[order(srb$time_start),]
+                           sheet = "srb",
+                           n_max = 1048576) %>% 
+    dplyr::filter(time_start >= base_year & time_start < begin_proj_year) %>% 
+    arrange(time_start)
 
-  # read the mortality estimation parameters
-  MORT_PARAMS <- readxl::read_xlsx(path = input_file_path, sheet = "MORT_PARAMS")
-  mp <- MORT_PARAMS[MORT_PARAMS$type == "Estimation", c(2,3)]
+  # mortality estimation parameters
+  mp <- readxl::read_xlsx(path = input_file_path, sheet = "MORT_PARAMS",
+                          n_max = 1048576) %>% 
+    dplyr::filter(tolower(type) == "estimation") %>% 
+    dplyr::select(parameter, value)
 
   # for classic model life table families, we use the Coale-Demeny a0 rule, otherwise we use Andreev-Kinkaid
   a0rule <- ifelse(mp$value[mp$parameter == "Age_Specific_Mortality_Type"] == "Model-based" &
@@ -55,40 +68,41 @@ ccmppWPP_input_file_estimates <- function(input_file_path) {
                      c("CD_West","CD_East","CD_North","CD_South", "UN_Chilean","UN_Far_Eastern",
                        "UN_General","UN_Latin_American","UN_South_Asian"), "cd", "ak")
 
-  # asfr by single year of mother's age and single year of time (jan 1 to dec 31)
+  # life tables by sex and single year of age and single year of time (jan 1 to dec 31)
   life_table_age_sex <- readxl::read_xlsx(path = input_file_path,
-                                       sheet = "life_table_age_sex")
-  life_table_age_sex <- life_table_age_sex[life_table_age_sex$time_start >= base_year & life_table_age_sex$time_start < begin_proj_year,]
-  # ensure sort by time_start, sex and age_start
-  life_table_age_sex <- life_table_age_sex[order(life_table_age_sex$time_start, life_table_age_sex$sex, life_table_age_sex$age_start),]
-
+                                       sheet = "life_table_age_sex",
+                                       n_max = 1048576) %>% 
+    dplyr::filter(time_start >= base_year & time_start < begin_proj_year) %>% 
+    arrange(time_start, sex, age_start)
+  
   # net international migration
-  # estimate of counts by sex and single year of age
-  mig_net_count_age_sex <- readxl::read_xlsx(path = input_file_path,
-                                             sheet = "mig_net_count_age_sex")
-  mig_net_count_age_sex$value[is.na(mig_net_count_age_sex$value)] <- 0
-  mig_net_count_age_sex <- mig_net_count_age_sex[mig_net_count_age_sex$time_start >= base_year & mig_net_count_age_sex$time_start < begin_proj_year,]
-  # ensure sort by time_start, sex and age_start
-  mig_net_count_age_sex <- mig_net_count_age_sex[order(mig_net_count_age_sex$time_start, mig_net_count_age_sex$sex, mig_net_count_age_sex$age_start),]
+  
+    # estimates of counts by sex and single year of age and single year of time (jan 1 to dec 31)
+    mig_net_count_age_sex <- readxl::read_xlsx(path = input_file_path,
+                                               sheet = "mig_net_count_age_sex",
+                                               n_max = 1048576) %>% 
+      mutate(value = replace(value, is.na(value), 0)) %>% # replace any NA values with 0
+      dplyr::filter(time_start >= base_year & time_start < begin_proj_year) %>% 
+      arrange(time_start, sex, age_start)
+  
+    # estimates of totals (in case need to apply age distribution) by single year of time (jan 1 to dec 31)
+    mig_net_count_tot_b <- readxl::read_xlsx(path = input_file_path,
+                                             sheet = "mig_net_count_tot_b",
+                                             n_max = 1048576) %>% 
+      mutate(value = replace(value, is.na(value), 0)) %>% # replace any NA values with 0
+      dplyr::filter(time_start >= base_year & time_start < begin_proj_year) %>% 
+      arrange(time_start)
+    
+    # rates -- THIS IS NOT AN OPTION FOR THE 2022 or 2024 REVISIONS SO WE CREATE A PLACE HOLDER FOR FUTURE REVISIONS
+    mig_net_rate_age_sex <- mig_net_count_age_sex
+    mig_net_rate_age_sex$value <- 0
 
-  # totals (in case need to apply age distribution)
-  mig_net_count_tot_b <- readxl::read_xlsx(path = input_file_path,
-                                           sheet = "mig_net_count_tot_b")
-  mig_net_count_tot_b$value[is.na(mig_net_count_tot_b$value)] <- 0
-  mig_net_count_tot_b <- mig_net_count_tot_b[mig_net_count_tot_b$time_start >= base_year & mig_net_count_tot_b$time_start < begin_proj_year,]
-  # ensure sort by time_start
-  mig_net_count_tot_b <- mig_net_count_tot_b[order(mig_net_count_tot_b$time_start),]
-
-  # rates -- THIS IS NOT AN OPTION FOR THE 2022 REVISION SO WE CREATE A PLACE HOLDER FOR FUTURE REVISIONS
-  mig_net_rate_age_sex <- mig_net_count_age_sex
-  mig_net_rate_age_sex$value <- 0
-
-  # parameters
+  # migration parameters
   mig_parameter <- readxl::read_xlsx(path = input_file_path,
-                                     sheet = "mig_parameter")
-  # ensure sort by time_start
-  mig_parameter <- mig_parameter[order(mig_parameter$time_start),]
-
+                                     sheet = "mig_parameter",
+                                     n_max = 1048576) %>% 
+    arrange(time_start)
+  
 
   ccmppWPP_inputs_estimates <- list(pop_count_age_sex_base = pop_count_age_sex_base,
                                     life_table_age_sex     = life_table_age_sex,
@@ -119,12 +133,12 @@ ccmppWPP_input_file_extend <- function(ccmppWPP_inputs, OAnew = 130, a0rule = "a
   ############
   # life_table
   ############
-  lt_in <- ccmppWPP_inputs$life_table_age_sex
-  lt_in <- lt_in[order(lt_in$time_start, lt_in$sex, lt_in$indicator, lt_in$age_start),]
+  lt_in <- ccmppWPP_inputs$life_table_age_sex %>% 
+    arrange(time_start, sex, indicator, age_start)
+  
   ages  <- unique(lt_in$age_start)
   maxage <- max(ages)
 
-  
   lts <- NULL
   # if the OA is less than OAnew, then extend the life tables to OAnew
   if (maxage < OAnew) {

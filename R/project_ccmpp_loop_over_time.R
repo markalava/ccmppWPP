@@ -24,7 +24,7 @@ project_ccmpp_loop_over_time <- function(indata) {
   # initialize output
   projection_output_list <- list()
 
-  # read some attributes (these are temporarily read from example input file while Mark works on setting up attributes)
+  # read some attributes
     time_span              <- time_span(indata)
     time_start             <- min(times(indata))
     time_end               <- max(times(indata)) + time_span
@@ -52,6 +52,7 @@ project_ccmpp_loop_over_time <- function(indata) {
     mort_m            <- survival_ratio_age_sex[which(survival_ratio_age_sex$time_start == time &
                                                             survival_ratio_age_sex$sex == "male"), "value"]
 
+    # migration data type and assumptions
     mig_type          <- indata$mig_parameter[which(indata$mig_parameter$time_start == time &
                                                    indata$mig_parameter$indicator == "mig_type"), "value"]
 
@@ -86,6 +87,8 @@ project_ccmpp_loop_over_time <- function(indata) {
     }
 
     # if net migration counts would produce negative population, adjust such that it would leave negligible population
+    # NEED TO REVISIT THIS.  IT IS TOO STRONG AND SETS TO ZERO WHEN A SMALL REDUCTION WOULD BE BETTER. NEED TO ALSO CONSIDER MORTALITY.
+    # IT REALLY SHOULD BE PUT INTO THE ONE STEP FUNCTION
     mig_f[which(pop_f_start + mig_f <= 0)] <- 0.00001 - pop_f_start[which(pop_f_start + mig_f <= 0)]
     mig_m[which(pop_m_start + mig_m <= 0)] <- 0.00001 - pop_m_start[which(pop_m_start + mig_m <= 0)]
 

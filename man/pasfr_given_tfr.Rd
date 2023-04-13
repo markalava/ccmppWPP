@@ -6,6 +6,7 @@
 \usage{
 pasfr_given_tfr(
   PasfrGlobalNorm,
+  PasfrNorm,
   pasfr_observed,
   tfr_observed_projected,
   years_projection = 2022:2100,

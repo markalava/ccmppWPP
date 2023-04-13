@@ -2,6 +2,61 @@
 # this set of functions produces the inputs and outputs for the various deterministic projection variants projection variants
 # requires the output of ccmppWPP_workflow_one_country_variant for the medium variant projection
 
+# In what year has/will each location enter phase 3 of the fertility transition?
+#' @export
+#' 
+tfr_phase3_id <- function(tfr_all_locs, present_year = 2021) {
+  
+  years <- unique(tfr_all_locs$time_start)
+  
+  # reshape tfr data to a matrix with year in row and country in columns
+  tfr_matrix <- reshape(tfr_all_locs[,c("LocID", "time_start", "value")], direction = "wide", idvar = "time_start", timevar = "LocID")
+  tfr_matrix <- as.matrix(tfr_matrix[,2:ncol(tfr_matrix)])
+  rownames(tfr_matrix) <- years
+  colnames(tfr_matrix) <- unique(tfr_all_locs$LocID)
+  
+  # initialize output data frame
+  phase3 <- data.frame(LocID = colnames(tfr_matrix),
+                       year = rep(NA, ncol(tfr_matrix)))
+  # for each country, determine whether the year entering phase III is less than or equal to present year
+  for (i in 1:ncol(tfr_matrix)) {
+    year_ind_phase3 <- bayesTFR:::find.lambda.for.one.country(tfr = tfr_matrix[,i], T_end = length(years), annual = TRUE) 
+    phase3$year[i] <- years[year_ind_phase3]
+  }
+  phase3 <- phase3[order(phase3$LocID),]
+  
+  return(phase3)
+  
+}
+
+# assemble the PASFRpattern data frame that bayesPop needs to compute global normative model of pasfr
+#' @export
+#' 
+pasfr_global_norm_include <- function(phase3,
+                                      mac,
+                                      present_year= 2021,
+                                      mac_criterion = 30, 
+                                      exclude_small = TRUE) {
+
+  
+  phase3_include_ids <- phase3$LocID[phase3$year <= present_year]
+  mac_include_ids <- mac$LocID[mac$time_start == present_year & mac$value >= mac_criterion]
+
+  # create the PASFR pattern dataset required as input to the bayesPop:::compute.pasfr.global.norms function
+  PASFRpattern <- data.frame(country_code = phase3$LocID,
+                             PasfrNorm = as.factor("Global Norm"))
+  PASFRpattern$PasfrGlobalNorm <- ifelse(PASFRpattern$country_code %in% phase3_include_ids &
+                                           PASFRpattern$country_code %in% mac_include_ids, 1, 0)
+  
+  if (exclude_small) {
+    small_locs <- c(16,20,660,60,535,92,136,184,212,238,234,292,304,336,833,438,584,492,500,520,570,
+                    580,585,652,654,659,663,666,674,534,772,796,798,876)
+    PASFRpattern$PasfrGlobalNorm[as.numeric(PASFRpattern$country_code) %in% small_locs] <- 0
+  }
+  
+  return(PASFRpattern)
+  
+}
 
 #' Compute global normative model of proportion age-specific fertility rates
 #'
@@ -10,11 +65,10 @@
 #'
 #' @author Sara Hertog
 #'
-#' @param tfr_all_locs character. file path to RData file with annual TFR; long format with LocID, time_start and value
-#' @param pasfr_all_locs character. file path to RData file with 1x1 PASFR; long format with LocID, time_start and value, age_start from 10 to 54
-#' @param pasfr_pattern character. file path to RData file with 1 record per LocID; country_code = LocID, PASFRNorm = "Global Norm", 
-#' PasfrGlobalNorm is c(0,1)flag indicating whether the countrys data should be used in computing global norm.
+#' @param tfr_all_locs data.frame. file path to RData file with annual TFR; long format with LocID, time_start and value
+#' @param pasfr_all_locs data.frame. file path to RData file with 1x1 PASFR; long format with LocID, time_start and value, age_start from 10 to 54
 #' @param present_year numeric. Last year of observed data?
+#' @param mac_criterion numeric. Lower bound threshold for mean age at childbearing to determine includision in computing global norm
 #'
 #' @details calls embedded functions from bayesPop
 #'
@@ -24,15 +78,16 @@
 
 pasfr_global_model <- function(tfr_all_locs, # tfr estimates and projections
                                pasfr_all_locs, # 1x1 pasfr estimates
-                               pasfr_pattern_locs, # flags which countries are included for global norm computation
-                               present_year = 2021) {
+                               PASFRpattern, # output of pasfr_global_norm_include()
+                               present_year = 2021,
+                               mac_criterion = 30) {
 
   # TFR estimates and projections as a long data frame with year, country_code and TFR value
-  TFRpred <- as.data.frame(tfr_est_proj[,c("time_start", "LocID", "value")])
+  TFRpred <- as.data.frame(tfr_all_locs[,c("time_start", "LocID", "value")])
   names(TFRpred) <- c("year", "country_code", "value") # this is required by bayesPop
   
   # reshape pasfr estimates to the wide matrix form required by bayesPop
-  pasfr_est <- pasfr_est[pasfr_est$LocID != 566 & pasfr_est$age_start %in% 10:54, ] # temporarily exclude Nigeria because of weird dup values
+  pasfr_est <- pasfr_all_locs[pasfr_all_locs$age_start %in% 10:54, ] 
   pasfr_est <- as.data.frame(pasfr_est[order(pasfr_est$LocID, pasfr_est$time_start, pasfr_est$age_start),])
 
   pasfr_estimates <- reshape(pasfr_est[,c("LocID","time_start","age_start","value")], 
@@ -45,7 +100,7 @@ pasfr_global_model <- function(tfr_all_locs, # tfr estimates and projections
                       observed = list(PASFR = pasfr_estimates),
                       PASFR = NULL,
                       PASFRnorms = NULL,
-                      PASFRpattern = pasfr_pattern,
+                      PASFRpattern = PASFRpattern,
                       present.year = present_year,
                       TFRpred = TFRpred,
                       annual = TRUE)
@@ -76,24 +131,32 @@ pasfr_global_model <- function(tfr_all_locs, # tfr estimates and projections
 #' @export
 #' 
 #' 
-pasfr_given_tfr <- function(PasfrGlobalNorm, pasfr_observed, tfr_observed_projected, years_projection = 2022:2100, num_points = 15) {
+pasfr_given_tfr <- function(PasfrGlobalNorm, PasfrNorm, pasfr_observed, tfr_observed_projected, years_projection = 2022:2100, num_points = 15) {
   
-  pasfr_global_norm <- list(PasfrGlobalNorm = PasfrGlobalNorm)
-  
-  # assemble the country-specific inputs required for the bayesPop:::kantorova.pasfr function
-  inputs <- list(PASFRpattern = data.frame(PasfrNorm = "Global Norm"),
-                         # observed pasfr can be overwritten here if different from the initial pasfr file
-                         observed = list(PASFR = as.matrix(pasfr_observed)))
-  
-  # computation
-  #############
-  pasfr <- bayesPop:::kantorova.pasfr(tfr = tfr_observed_projected, 
-                                      inputs = inputs,
-                                      norms = pasfr_global_norm, 
-                                      proj.years = years_projection, 
-                                      tfr.med = tfr_observed_projected[length(tfr_observed_projected)], 
-                                      annual = TRUE, 
-                                      nr.est.points = num_points)
+  if(tolower(PasfrNorm) != "constantpasfr") {
+    
+    pasfr_global_norm <- list(PasfrGlobalNorm = PasfrGlobalNorm)
+    
+    # assemble the country-specific inputs required for the bayesPop:::kantorova.pasfr function
+    inputs <- list(PASFRpattern = data.frame(PasfrNorm = "Global Norm"),
+                           # observed pasfr can be overwritten here if different from the initial pasfr file
+                           observed = list(PASFR = as.matrix(pasfr_observed)))
+    
+    # computation
+    #############
+    pasfr <- bayesPop:::kantorova.pasfr(tfr = tfr_observed_projected, 
+                                        inputs = inputs,
+                                        norms = pasfr_global_norm, 
+                                        proj.years = years_projection, 
+                                        tfr.med = tfr_observed_projected[length(tfr_observed_projected)], 
+                                        annual = TRUE, 
+                                        nr.est.points = num_points)
+  } else {
+    
+    pasfr_last_observed <- as.matrix(pasfr_observed[, ncol(pasfr_observed)])
+    pasfr <- pasfr_last_observed[, rep(1, length(years_projection))]
+
+  }
   
   # as percentage
   pasfr <- pasfr*100
@@ -107,105 +170,106 @@ pasfr_given_tfr <- function(PasfrGlobalNorm, pasfr_observed, tfr_observed_projec
 }
 
 
-mx_given_e0 <- function(mx_mat_m, # matrix of mx estimates (age in rows, years in columns)
-                        mx_mat_f,
-                        e0m, # vector of projected e0 (named with years)
-                        e0f,
-                        Age_Mort_Proj_Method1 = c("lc","pmd","mlt"),
-                        Age_Mort_Proj_Method2 = "mlt",  # only used if first method is "pmd"
-                        Age_Mort_Proj_Pattern = c("CD_West", "CD_North", "CD_South", "CD_East", 
-                                        "UN_Far_Eastern", "UN_South_Asian", "UN_General"),
-                        Age_Mort_Proj_Method_Weights = c(1,0.5),
-                        Age_Mort_Proj_Adj_SR = TRUE,
-                        Latest_Age_Mortality_Pattern = FALSE,
-                        Smooth_Latest_Age_Mortality_Pattern = FALSE) {
-  
-  methods.allowed <- list(lc = "MortCast::mortcast", mlt = "MortCast::mltj", pmd = "MortCast::copmd", blend = "MortCast::mortcast.blend")
-  
-  method <- ifelse(Age_Mort_Proj_Method1 == "pmd" & (!is.na(Age_Mort_Proj_Method2) & Age_Mort_Proj_Method2 == "mlt"), "blend", Age_Mort_Proj_Method1)
-  
-  # Lee - Carter
-  if (method == "lc") {
-    
-    # define whether using only latest mortality pattern and whether to smooth it
-    if (Latest_Age_Mortality_Pattern == TRUE) {
-      
-      ax.index  <- ncol(mx_mat_f) # use only the last column in estimating lc parameters
-      ax.smooth <- Smooth_Latest_Age_Mortality_Pattern # logical whether to smooth latest age pattern
-      
-    }  else {
-      ax.index <- NULL
-      ax.smooth <- FALSE
-    }                        
-    
-    # estimate lee-carter parameters using the lileecarter.estimate() function from MortCast
-    lee_carter_parameters <- MortCast:::lileecarter.estimate(mxM = mx_mat_m, 
-                                                             mxF = mx_mat_f,
-                                                             ax.index = ax.index, # which columns of mx matrices to use in estimation (default is all of them)
-                                                             ax.smooth = ax.smooth) # smooth.spline(ax, df = ceiling(length(ax)/2))$y  ## NEED TO CONSIDER WHETHER THIS IS APPROPRIATE LEVEL OF SMOOTHING FOR BOTH n=1 AND n=5
-    
-    method.args <- list(e0m,
-                        e0f,
-                        lc.pars = lee_carter_parameters,
-                        rotate = TRUE,
-                        keep.lt = FALSE,
-                        constrain.all.ages = FALSE)
-  
-    
-  # Model life table   
-  } else if (method == "mlt") {
-    
-    method.args <- list(e0m,
-                        e0f,
-                        type = Age_Mort_Proj_Pattern,
-                        nx = 1)
-    
-  # Proportionate mortality decline
-  } else if (method == "pmd") {
-    
-    method.args <- list(e0m,
-                        e0f,
-                        mxm0 = mx_mat_m[0:101,ncol(mx_mat_m)], # pmd only accepts age groups <= 100
-                        mxf0 = mx_mat_f[0:101,ncol(mx_mat_f)],
-                        nx = 1,
-                        keep.lt = FALSE,
-                        adjust.sr.if.needed = Age_Mort_Proj_Adj_SR) # This is #3 in bayesPop, performed dynamically using sex ratio in previous time point
-
-  # Blend of PMD with MLT
-  } else if (method == "blend") {
-    
-    method.args <- list(e0m,
-                        e0f,
-                        meth1 = "pmd",
-                        meth2 = "mlt",
-                        weights = Age_Mort_Proj_Method_Weights,
-                        nx = 1,
-                        apply.kannisto = TRUE,
-                        min.age.groups = 131, # triggers kannisto extension if last age group is less than 100+
-                        match.e0 = TRUE,
-                        meth1.args = list(mxm0 = mx_mat_m[0:101,ncol(mx_mat_m)], mxf0 = mx_mat_f[0:101,ncol(mx_mat_f)], nx=1, keep.lt = FALSE, adjust.sr.if.needed = Age_Mort_Proj_Adj_SR),
-                        meth2.args = list(type = Age_Mort_Proj_Pattern, nx = 1),
-                        kannisto.args = list(est.ages = seq(80, 95, by=1), proj.ages = seq(100,130, by=1)))
-  }
-  
-  # write a small function that allows us to call functions exported from packages
-  getfun<-function(x) {
-    if(length(grep("::", x))>0) {
-      parts<-strsplit(x, "::")[[1]]
-      getExportedValue(parts[1], parts[2])
-    } else {
-      x
-    }
-  }
-  mx_proj <- do.call(getfun(methods.allowed[[method]]), method.args)
-  
-  if (method == "blend") {
-    mx_proj <- mx_proj[1:2]  # retain only the mx matrices from the blended results
-  }
-  
-  return(mx_proj) # list of two sex-specific mx matrices
-  
-}
+# this is the old version of the function, before Hana implemented selection of years and smoothing degree in lee-carter forecast in MortCast
+# mx_given_e0 <- function(mx_mat_m, # matrix of mx estimates (age in rows, years in columns)
+#                         mx_mat_f,
+#                         e0m, # vector of projected e0 (named with years)
+#                         e0f,
+#                         Age_Mort_Proj_Method1 = c("lc","pmd","mlt"),
+#                         Age_Mort_Proj_Method2 = "mlt",  # only used if first method is "pmd"
+#                         Age_Mort_Proj_Pattern = c("CD_West", "CD_North", "CD_South", "CD_East", 
+#                                         "UN_Far_Eastern", "UN_South_Asian", "UN_General"),
+#                         Age_Mort_Proj_Method_Weights = c(1,0.5),
+#                         Age_Mort_Proj_Adj_SR = TRUE,
+#                         Latest_Age_Mortality_Pattern = FALSE,
+#                         Smooth_Latest_Age_Mortality_Pattern = FALSE) {
+#   
+#   methods.allowed <- list(lc = "MortCast::mortcast", mlt = "MortCast::mltj", pmd = "MortCast::copmd", blend = "MortCast::mortcast.blend")
+#   
+#   method <- ifelse(Age_Mort_Proj_Method1 == "pmd" & (!is.na(Age_Mort_Proj_Method2) & Age_Mort_Proj_Method2 == "mlt"), "blend", Age_Mort_Proj_Method1)
+#   
+#   # Lee - Carter
+#   if (method == "lc") {
+#     
+#     # define whether using only latest mortality pattern and whether to smooth it
+#     if (Latest_Age_Mortality_Pattern == TRUE) {
+#       
+#       ax.index  <- ncol(mx_mat_f) # use only the last column in estimating lc parameters
+#       ax.smooth <- Smooth_Latest_Age_Mortality_Pattern # logical whether to smooth latest age pattern
+#       
+#     }  else {
+#       ax.index <- NULL
+#       ax.smooth <- FALSE
+#     }                        
+#     
+#     # estimate lee-carter parameters using the lileecarter.estimate() function from MortCast
+#     lee_carter_parameters <- MortCast:::lileecarter.estimate(mxM = mx_mat_m, 
+#                                                              mxF = mx_mat_f,
+#                                                              ax.index = ax.index, # which columns of mx matrices to use in estimation (default is all of them)
+#                                                              ax.smooth = ax.smooth) # smooth.spline(ax, df = ceiling(length(ax)/2))$y  ## NEED TO CONSIDER WHETHER THIS IS APPROPRIATE LEVEL OF SMOOTHING FOR BOTH n=1 AND n=5
+#     
+#     method.args <- list(e0m,
+#                         e0f,
+#                         lc.pars = lee_carter_parameters,
+#                         rotate = TRUE,
+#                         keep.lt = FALSE,
+#                         constrain.all.ages = FALSE)
+#   
+#     
+#   # Model life table   
+#   } else if (method == "mlt") {
+#     
+#     method.args <- list(e0m,
+#                         e0f,
+#                         type = Age_Mort_Proj_Pattern,
+#                         nx = 1)
+#     
+#   # Proportionate mortality decline
+#   } else if (method == "pmd") {
+#     
+#     method.args <- list(e0m,
+#                         e0f,
+#                         mxm0 = mx_mat_m[0:101,ncol(mx_mat_m)], # pmd only accepts age groups <= 100
+#                         mxf0 = mx_mat_f[0:101,ncol(mx_mat_f)],
+#                         nx = 1,
+#                         keep.lt = FALSE,
+#                         adjust.sr.if.needed = Age_Mort_Proj_Adj_SR) # This is #3 in bayesPop, performed dynamically using sex ratio in previous time point
+# 
+#   # Blend of PMD with MLT
+#   } else if (method == "blend") {
+#     
+#     method.args <- list(e0m,
+#                         e0f,
+#                         meth1 = "pmd",
+#                         meth2 = "mlt",
+#                         weights = Age_Mort_Proj_Method_Weights,
+#                         nx = 1,
+#                         apply.kannisto = TRUE,
+#                         min.age.groups = 131, # triggers kannisto extension if last age group is less than 100+
+#                         match.e0 = TRUE,
+#                         meth1.args = list(mxm0 = mx_mat_m[0:101,ncol(mx_mat_m)], mxf0 = mx_mat_f[0:101,ncol(mx_mat_f)], nx=1, keep.lt = FALSE, adjust.sr.if.needed = Age_Mort_Proj_Adj_SR),
+#                         meth2.args = list(type = Age_Mort_Proj_Pattern, nx = 1),
+#                         kannisto.args = list(est.ages = seq(80, 95, by=1), proj.ages = seq(100,130, by=1)))
+#   }
+#   
+#   # write a small function that allows us to call functions exported from packages
+#   getfun<-function(x) {
+#     if(length(grep("::", x))>0) {
+#       parts<-strsplit(x, "::")[[1]]
+#       getExportedValue(parts[1], parts[2])
+#     } else {
+#       x
+#     }
+#   }
+#   mx_proj <- do.call(getfun(methods.allowed[[method]]), method.args)
+#   
+#   if (method == "blend") {
+#     mx_proj <- mx_proj[1:2]  # retain only the mx matrices from the blended results
+#   }
+#   
+#   return(mx_proj) # list of two sex-specific mx matrices
+#   
+# }
 
 # testlc1 <- mx_given_e0(mx_mat_m = mxM_mat, # matrix of mx estimates (age in rows, years in columns)
 #                        mx_mat_f = mxF_mat,
@@ -304,7 +368,7 @@ mx_given_e0 <- function(mx_mat_m, # matrix of mx estimates (age in rows, years i
 #                         Smooth_Latest_Age_Mortality_Pattern = NA)
 
 
-mx_given_e0_new <- function(mx_mat_m, # matrix of mx estimates (age in rows, years in columns)
+mx_given_e0 <- function(mx_mat_m, # matrix of mx estimates (age in rows, years in columns)
                         mx_mat_f,
                         e0m, # vector of projected e0 (named with years)
                         e0f,
@@ -317,7 +381,7 @@ mx_given_e0_new <- function(mx_mat_m, # matrix of mx estimates (age in rows, yea
                         Latest_Age_Mortality_Pattern = FALSE,
                         Latest_Age_Mortality_Pattern_Years = NULL,
                         Smooth_Latest_Age_Mortality_Pattern = FALSE,
-                        Smooth_Latest_Age_Mortality_Pattern_Degrees = NULL) {
+                        Smooth_Latest_Age_Mortality_Pattern_Degree = NULL) {
   
   method <- ifelse(Age_Mort_Proj_Method1 == "pmd" & (!is.na(Age_Mort_Proj_Method2) & Age_Mort_Proj_Method2 == "mlt"), "blend", Age_Mort_Proj_Method1)
   
@@ -373,6 +437,41 @@ mx_given_e0_new <- function(mx_mat_m, # matrix of mx estimates (age in rows, yea
     # Blend of PMD with MLT
   } else if (method == "blend") {
     
+    # define whether using only latest mortality pattern and whether to smooth it
+    if (Latest_Age_Mortality_Pattern) {
+      
+      if (!is.null(Latest_Age_Mortality_Pattern_Years)) {
+        
+        ax.index <- 1:ncol(mx_mat_f)
+        ax.index <- ax.index[colnames(mx_mat_f) %in% Latest_Age_Mortality_Pattern_Years]
+        
+      } else {
+        ax.index <- ncol(mx_mat_f) # if no years specified, use the last one only
+      }
+      
+      mxm0 <- mx_mat_m[0:101,ax.index]
+      mxf0 <- mx_mat_f[0:101,ax.index]
+      if(length(ax.index) > 1) {
+        mxm0 <- rowMeans(mxm0)
+        mxf0 <- rowMeans(mxf0)
+      }
+      
+      ax.smooth <- Smooth_Latest_Age_Mortality_Pattern # logical whether to smooth latest age pattern
+      ax.smooth.df <- Smooth_Latest_Age_Mortality_Pattern_Degree
+      
+    }  else {
+      ax.index <- NULL
+      ax.smooth <- FALSE
+      ax.smooth.df <- NULL
+    }
+    if (ax.smooth == TRUE) {
+      
+      mxm0_smooth <- smooth.spline(mxm0, df = ax.smooth.df)$y
+      mxm0[-1] <- mxm0_smooth[-1]
+      mxf0_smooth <- smooth.spline(mxf0, df = ax.smooth.df)$y
+      mxf0[-1] <- mxf0_smooth[-1]
+    }
+    
     mx_proj <- MortCast::mortcast.blend(e0m,
                                         e0f,
                                         meth1 = "pmd",
@@ -382,7 +481,7 @@ mx_given_e0_new <- function(mx_mat_m, # matrix of mx estimates (age in rows, yea
                                         apply.kannisto = TRUE,
                                         min.age.groups = 131, # triggers kannisto extension if last age group is less than 130+
                                         match.e0 = TRUE,
-                                        meth1.args = list(mxm0 = mx_mat_m[0:101,ncol(mx_mat_m)], mxf0 = mx_mat_f[0:101,ncol(mx_mat_f)], nx=1, keep.lt = FALSE, adjust.sr.if.needed = Age_Mort_Proj_Adj_SR),
+                                        meth1.args = list(mxm0 = mxm0, mxf0 = mxf0, nx=1, keep.lt = FALSE, adjust.sr.if.needed = Age_Mort_Proj_Adj_SR),
                                         meth2.args = list(type = Age_Mort_Proj_Pattern, nx = 1),
                                         kannisto.args = list(est.ages = seq(80, 95, by=1), proj.ages = seq(100,130, by=1)))
     

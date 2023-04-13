@@ -14,14 +14,13 @@ ccmppWPP_aggregate(
 )
 }
 \arguments{
-\item{wpp_input}{list of input objects required for one country-variant}
+\item{locationIDs}{xx}
 }
 \value{
-returns an "intermediate_output" list of dataframes with all ccmpp components by sex and ages 0 to 130
+xx
 }
 \description{
-This function takes a vector of locids, compiles the ccmppWPP intermediate outputs (from ages 0:130) for
-those locations, and computes the aggregate values for each demographic component
+xx
 }
 \details{
 xx

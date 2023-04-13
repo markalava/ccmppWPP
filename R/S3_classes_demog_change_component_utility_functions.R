@@ -419,6 +419,9 @@ collapse_demog_dimension <- function(x, FUN = "sum", ...,
                                      by_dimensions = demog_change_component_dims(x),
                                      collapse_dimensions = NULL,
                                      out_class = c("demog_change_component_df", "data.frame")) {
+
+    stopifnot(is_demog_change_component_df(x))
+
     ## Check arguments
     FUN <- match.fun(FUN)
     out_class <- match.arg(out_class)

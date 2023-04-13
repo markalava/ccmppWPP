@@ -4,10 +4,18 @@
 \alias{ccmppWPP_workflow_one_country_variant}
 \title{Full ccmppWPP implementation for one country and variant}
 \usage{
-ccmppWPP_workflow_one_country_variant(wpp_input, intermediate_output_folder)
+ccmppWPP_workflow_one_country_variant(
+  wpp_input,
+  store_intermediate_output = FALSE,
+  intermediate_output_folder
+)
 }
 \arguments{
 \item{wpp_input}{list of input objects required for one country-variant}
+
+\item{store_intermediate_output}{logical. whether to store the intermediate outputs with single ages from 0 to 130+}
+
+\item{intermediate_output_folder}{character string. where to store intermediate outputs}
 }
 \value{
 a list of objects including projected population, deaths, exposures, life tables, births, fertility

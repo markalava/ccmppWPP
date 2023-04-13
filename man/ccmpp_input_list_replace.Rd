@@ -21,18 +21,6 @@
     number of times if necessary and it may be coerced: see the
     Coercion section.  If \code{NULL}, deletes the column if a single
     column is selected.}
-
-\item{i}{elements to extract or replace.  For \code{[} and
-    \code{[[}, these are \code{numeric} or \code{character} or, for
-    \code{[} only, empty or \code{logical}.  Numeric values are coerced to integer as if
-    by \code{\link[base]{as.integer}}.  For replacement by \code{[}, a logical
-    matrix is allowed.}
-
-\item{j}{elements to extract or replace.  For \code{[} and
-    \code{[[}, these are \code{numeric} or \code{character} or, for
-    \code{[} only, empty or \code{logical}.  Numeric values are coerced to integer as if
-    by \code{\link[base]{as.integer}}.  For replacement by \code{[}, a logical
-    matrix is allowed.}
 }
 \value{
 A \code{list}.

@@ -7,7 +7,10 @@
 \method{aggregate}{demog_change_component_df}(x, by, FUN, ..., simplify = TRUE, drop = TRUE)
 }
 \arguments{
-\item{x}{an R object.}
+\item{x}{an \R object.  For the \code{formula} method a \code{\link[stats]{formula}},
+    such as \code{y ~ x} or \code{cbind(y1, y2) ~ x1 + x2}, where the
+    \code{y} variables are numeric data to be split into groups according
+    to the grouping \code{x} variables (usually factors).}
 
 \item{by}{a list of grouping elements, each as long as the variables
     in the data frame \code{x}.  The elements are coerced to factors

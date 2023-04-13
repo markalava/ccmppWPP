@@ -35,6 +35,25 @@ checks are done; for interactive use see
 This function is not exported. The user-level constructor is
 \code{\link{demog_change_component_df}}.
 }
+\section{Default values for attributes}{
+
+\subsection{Value type}{
+If \code{value_type} is \code{NULL} the following defaults are employed:
+\itemize{
+\item If all elements of the \code{value} column are \code{NA}, \code{value_type} is set to \code{NA}.
+\item If all elements of the \code{value} column are \code{numeric}, \code{value_type} is set to \code{real}.
+\item If all elements of the \code{value} column are \code{character}, \code{value_type} is set to \code{categorical}.
+}
+}
+\subsection{Value scale}{
+If \code{value_scale} is \code{NULL} the following defaults are employed:
+\itemize{
+\item If \code{value_type} is such that \code{NA}s are sensible, \code{value_scale} is set to \code{NA}.
+\item If \code{NA}s are not sensible given \code{value_type}, \code{value_scale} is set to \code{1}.
+}
+}
+}
+
 \seealso{
 demog_change_component_df
 }

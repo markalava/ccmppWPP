@@ -63,7 +63,7 @@ validate_ccmppWPP_object.demog_change_component_df <-
         ## 4. The "value_scale" attribute must be formed correctly.
 
         demog_change_component_dims_x <- demog_change_component_dims(x)
-        if (is.na(demog_change_component_dims_x) || !is.character(demog_change_component_dims_x) ||
+        if (any(is.na(demog_change_component_dims_x)) || !is.character(demog_change_component_dims_x) ||
             length(demog_change_component_dims_x) < 1 ||
             !all(demog_change_component_dims_x %in% get_all_allowed_dimensions()))
             stop(not_a_valid_object_msg("demog_change_component_df",

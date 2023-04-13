@@ -16,14 +16,14 @@ ref_pop_years_census <-
 
 
 test_that("Census years can be found", {
-    expect_equal(get_census_years(250),
+    expect_equal(expect_warning(get_census_years(250), "'data\\(census_years\\)' may not be complete"),
                  c("1954", "1962", "1968", "1975", "1982", "1990", "1999", "2004-2008",
                    "2009-2013", "2011-2015"))
 })
 
 
 test_that("Reference population years can be parsed", {
-    x <- get_census_years(250)
+    x <- expect_warning(get_census_years(250), "'data\\(census_years\\)' may not be complete")
     expect_equal(x, ref_pop_years_census)
 
     expect_error(parse_census_years_ranges(x), NA)
@@ -41,7 +41,7 @@ test_that("Reference population years can be determined from DDSQL extract", {
 
 
 test_that("Census years can be determined from DDSQL extract", {
-    x <- get_census_years(france_wpp_1950_2020_population_data)
+    x <- expect_warning(get_census_years(france_wpp_1950_2020_population_data), "'data\\(census_years\\)' may not be complete")
     expect_equal(x, ref_pop_years_census)
     })
 
@@ -51,14 +51,16 @@ test_that("Reference population data can be created", {
     expect_s3_class(x, "demog_change_component_df")
     expect_equal(times(x), ref_pop_years_all)
 
-    x <- DDextract_get_pop_count_age_sex_reference(
-        france_wpp_1950_2020_population_data, "census_excl_baseline")
+    x <- expect_warning(
+        DDextract_get_pop_count_age_sex_reference(
+            france_wpp_1950_2020_population_data, "census_excl_baseline"),
+        "'data\\(census_years\\)' may not be complete")
+
     expect_s3_class(x, "demog_change_component_df")
     expect_equal(times(x), ccmppWPP:::exclude_baseline_pop_count_times(
                                           france_wpp_1950_2020_population_data,
                                parse_census_years_ranges(ref_pop_years_census)))
 })
-
 
 
 test_that("Raw data can be coerced to ccmpp_input_list objects", {

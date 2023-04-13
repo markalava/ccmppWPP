@@ -4,8 +4,9 @@ not_a_valid_object_msg <- function(class, ...) {
 }
 
 ## Unusual values
-get_mig_net_rate_value_warning_threshold <- function() {
-    0.5
+get_mig_net_rate_value_warning_threshold <- function(x) {
+    stopifnot(inherits(x, "mig_net_rate_age_sex"))
+    0.5 * value_scale(x)
 }
 
 ## Error checking: Report on near equality of sexes

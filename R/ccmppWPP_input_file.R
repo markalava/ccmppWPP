@@ -101,8 +101,8 @@ ccmppWPP_input_file_estimates <- function(input_file_path) {
   mig_parameter <- readxl::read_xlsx(path = input_file_path,
                                      sheet = "mig_parameter",
                                      n_max = 1048576) %>%
-    arrange(time_start)
-
+    arrange(time_start) %>%
+    pivot_longer(3:4, names_to = "indicator", values_to = "value")
 
   ccmppWPP_inputs_estimates <- list(pop_count_age_sex_base = pop_count_age_sex_base,
                                     life_table_age_sex     = life_table_age_sex,
@@ -441,7 +441,7 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
   projection_years <- meta.list$Projection_First_Year:meta.list$Projection_Last_Year
 
   # load the intermediate outputs file for estimates that contains population by single year of age from 0 to 130+
-  load(paste0(ccmpp_estimates_130_folder,locid,"_ccmpp_output.RData"))
+  load(file.path(ccmpp_estimates_130_folder, paste0(locid,"_ccmpp_output.rda")))
   a0rule <- attributes(ccmpp_output)$a0rule
 
   # base year population by sex and single year of age from 0:100

@@ -279,12 +279,14 @@ validate_ccmppWPP_object.mig_net_rate_age_sex <- function(x, ...) {
 
     ## Sanity check magnitudes
     thold <- get_mig_net_rate_value_warning_threshold(x)
-    large_vals <- abs(x$value) > thold
+    large_vals <- which(abs(x$value) > thold)
     if (sum(large_vals))
         warning("'x' has unusually large values for a net migration rates; absolute values are larger than ",
                 thold,
-                " in rows:\n\t",
-                toString(which(large_vals), width = 40)
+                "\nin rows:\n\t",
+                toString(large_vals, width = 40), "\n",
+                "with values:\n\t",
+                toString(round(x$value[large_vals], 4), width = 40)
                 )
 
     return(x)

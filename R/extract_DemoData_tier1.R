@@ -135,9 +135,39 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
   ## Paperspace server
    #options(unpd_server = "http://74.82.31.177/DemoData/api/")
 
+    ## Check Data Source Years
+    check_data_src_yr <- function(ds_yr_arg, short_name) {
+        out <- NULL
+        avail_yr <- ds_all[ds_all$ShortName == short_name, ]$Year
+        if (!all(ds_yr_arg %in% avail_yr)) {
+            out <- paste0("No '", short_name, "' data for data source year(s) '",
+                toString(ds_yr_arg),
+                "'. Available years are '",
+                toString(avail_yr),
+                "'.")
+        } else {
+            max_yr <- max(ds_all[ds_all$ShortName == short_name, ]$Year)
+            if (all(ds_yr_arg < max_yr))
+                warning("More recent data source year for source '",
+                        short_name,
+                        ": most recent available year = '",
+                        max_yr,
+                        "' (requested year = '",
+                        ds_yr_arg,
+                        "'.)", call. = FALSE)
+        }
+        return(out)
+    }
+    ds_all <- DDSQLtools::get_datasources(shortNames = c("EuroStat", "HFC-STAT", "HFD", "HMD"))
+    err <- c(check_data_src_yr(data_source_year_hmd, "HMD"),
+             check_data_src_yr(data_source_year_hfd, "HFD"),
+             check_data_src_yr(data_source_year_eurostat, "EuroStat"),
+             check_data_src_yr(data_source_year_hfc, "HFC-STAT"))
+    if (!is.null(err)) stop(paste(err, collapse = "\n"))
+
 # extract population by single year of age and sex from HMD
 
-  if ("HMD" %in% data_source_pop) {
+    if ("HMD" %in% data_source_pop) {
 
     tryCatch({
 
@@ -285,10 +315,12 @@ DDextract_ccmppWPPinputs_tier1 <- function(LocID,
     dplyr::arrange(time_start)
 
 
-  # fill in any missing srbs with average of observed values within five-year period
-  times_missing <- data.frame(time_start = times[!(times %in% srb$time_start)],
-                              time_span = 1,
-                              value = NA)
+    # fill in any missing srbs with average of observed values within five-year period
+    if (length(times[!(times %in% srb$time_start)])) {
+        times_missing <- data.frame(time_start = times[!(times %in% srb$time_start)],
+                                    time_span = 1,
+                                    value = NA)
+    } else times_missing <- data.frame()
 
   srb <- rbind(srb, times_missing) %>%
     dplyr::arrange(time_start) %>%

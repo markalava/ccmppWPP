@@ -10,7 +10,6 @@ get_mig_net_rate_value_warning_threshold <- function(x) {
 }
 
 ## Error checking: Report on near equality of sexes
-#' @noRd
 sexes_unequal <- function(x, x_name = "x", tolerance = 1e-6, scale = NULL,
                           check_by_time = FALSE #<-- with 'FALSE'
                                                 #almost doubles time

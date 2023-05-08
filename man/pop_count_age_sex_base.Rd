@@ -31,7 +31,11 @@ counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
 An object of class \code{pop_count_age_sex_base}.
 }
 \description{
-
+\code{pop_count_age_sex_base} is a subclass of
+\code{\link{ccmpp_input_df}}. It imposes two additional conditions:
+\enumerate{
+  \item{\code{Value_type} attribute equals \dQuote{count}.}
+  \item{Within year and sex, age must start at 0.}}
 }
 \details{
 Methods are defined for \code{\link{data.frame}}s and

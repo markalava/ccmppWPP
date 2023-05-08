@@ -26,7 +26,8 @@ counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
 A data frame
 }
 \description{
-
+Converts and cleans \code{x} into a form suitable for
+\code{\link{demog_change_component_df}}.
 }
 \author{
 Mark Wheldon

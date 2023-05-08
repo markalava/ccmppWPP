@@ -16,7 +16,9 @@
 Called for its side-effect.
 }
 \description{
-
+A method for the S3 generic \code{\link{base::summary}} for
+objects of class \code{summary_demog_change_component_df}, as
+returned by \code{\link{summary.demog_change_component_df}}.
 }
 \seealso{
 \code{\link{summary.demog_change_component_df}}.

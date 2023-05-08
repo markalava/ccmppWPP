@@ -421,7 +421,7 @@ print.demog_change_component_df <-
 #' Summarize a \code{demog_change_component_df}
 #'
 #' A method for the generic \code{\link{summary}} function for objects
-#' of class \code{demog_change_component_df}}. Summary statistics are returned invisibly in a named list.
+#' of class \code{\link{demog_change_component_df}}. Summary statistics are returned invisibly in a named list.
 #'
 #' @inheritParams base::summary
 #'
@@ -488,7 +488,7 @@ summary.demog_change_component_df <-
 #'
 #' A method for the S3 generic \code{\link{base::summary}} for
 #' objects of class \code{summary_demog_change_component_df}, as
-#' returned by \code{\link{summary.demog_change_component_df}.
+#' returned by \code{\link{summary.demog_change_component_df}}.
 #'
 #' @param x An object of class \code{demog_change_component_df}.
 #' @param ... Currently not used.

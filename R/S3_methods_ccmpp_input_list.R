@@ -112,7 +112,7 @@ print.ccmpp_input_list <-
 #' Summarize a \code{ccmpp_input_list}
 #'
 #' A method for the generic \code{\link{summary}} function for objects
-#' of class \code{ccmpp_input_list}}. Summary statistics are returned invisibly in a named list.
+#' of class \code{\link{ccmpp_input_list}}. Summary statistics are returned invisibly in a named list.
 #'
 #' @inheritParams base::summary
 #'

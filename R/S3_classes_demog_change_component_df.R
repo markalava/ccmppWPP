@@ -74,7 +74,7 @@ new_demog_change_component_df <-
 #' Prepare a data frame for conversion to a \code{demog_change_component_df}
 #'
 #' Converts and cleans \code{x} into a form suitable for
-#' \code{\link{demog_change_component_df}.
+#' \code{\link{demog_change_component_df}}.
 #'
 #' @inheritParams demog_change_component_df
 #' @return A data frame
@@ -259,7 +259,7 @@ prepare_df_for_demog_change_component_df <- function(x,
 #' \item{\code{is_demog_change_component_df}}{Tests if its
 #' argument is a \code{demog_change_component_df}. \emph{Note:} This only checks
 #' inheritance (via \code{\link{base::inherits}}), not validity. To
-#' validate an object use \code{\link{validate_ccmppWPP_object}}.}
+#' validate an object use \code{\link{validate_ccmppWPP_object}}.}}
 #'
 #' \code{demog_change_component_df} is the
 #' parent class of a family of classes for holding age- time-specific

@@ -43,7 +43,8 @@
 A list with elements \code{time}, \code{age}, \code{sex}, and \code{table}.
 }
 \description{
-
+A method for the generic \code{\link{summary}} function for objects
+of class \code{\link{demog_change_component_df}}. Summary statistics are returned invisibly in a named list.
 }
 \author{
 Mark Wheldon

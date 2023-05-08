@@ -90,7 +90,7 @@ DDextract_get_locid <- function(x) {
 #' Nations, 2021}) for a location (country or area) and returns the
 #' years in which censuses were conducted. This is a convenience
 #' function for extracting the years from
-#' \code{data("census_years"). This function is called by
+#' \code{data("census_years")}. This function is called by
 #' \code{\link{DDextract_to_pop_count_age_sex_reference}}. See that
 #' function's help file for additional notes.
 #'
@@ -249,7 +249,7 @@ get_pop_count_reference_times <- function(x, excl_baseline = FALSE) {
 #' \item{\dQuote{all}}{All years available.}
 #' \item{\dQuote{census}}{Only the years censuses were
 #' conducted. Census years are taken from the dataset
-#' \code{"census_years"} provided with the package.
+#' \code{"census_years"} provided with the package.}
 #' \item{\dQuote{census_excl_baseline}}{Census years excluding the
 #' baseline year (if the baseline year was not a census year this will
 #' give the same result as \dQuote{census}).}}

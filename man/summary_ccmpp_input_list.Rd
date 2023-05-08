@@ -16,7 +16,8 @@
 The object (invisibly)
 }
 \description{
-
+A method for the generic \code{\link{summary}} function for objects
+of class \code{\link{ccmpp_input_list}}. Summary statistics are returned invisibly in a named list.
 }
 \author{
 Mark Wheldon

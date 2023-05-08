@@ -14,13 +14,12 @@
 #' @seealso \code{\link{extract_demog_change_component_attributes}},
 #'     the assignment version for changing the span
 #'     \code{\link{span<-}}
-#' @name extract_ccmpp_input_df_span
 #' @export
 span <- function(x, ...) {
     UseMethod("span")
 }
 
-#' @rdname extract_ccmpp_input_df_span
+#' @rdname span
 #' @export
 span.ccmpp_input_df <- function(x, ...) {
     if (!identical(age_span(x), time_span(x)))
@@ -28,7 +27,7 @@ span.ccmpp_input_df <- function(x, ...) {
     return(age_span(x))
 }
 
-#' @rdname extract_ccmpp_output_df_span
+#' @rdname span
 #' @export
 span.ccmpp_output_df <- function(x, ...) {
     if (!identical(age_span(x), time_span(x)))

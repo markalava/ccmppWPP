@@ -3,9 +3,10 @@ test_that("canada workflow processed fully without errors and returns valid valu
     data("canada_wpp_1950_2020_ccmpp_inputs_1x1")
 
     # test that workflow completed without errors
-    test_out <- expect_error(ccmppWPP_workflow_one_country_variant(
+    test_out <- expect_no_error(expect_warning(ccmppWPP_workflow_one_country_variant(
         wpp_input = canada_wpp_1950_2020_ccmpp_inputs_1x1,
-        intermediate_output_folder = tempdir()), NA)
+        intermediate_output_folder = tempdir()),
+        "'x' has unusually large values"))
 
     # test that population by age and sex always has positive value
     expect_gt(min(test_out$pop_count_age_sex_1x1$value), 0)

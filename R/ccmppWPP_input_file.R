@@ -9,13 +9,13 @@
 #' @author Sara Hertog
 #'
 #' @param input_file_path character. string pointing to the file path for the Excel input file for one country.
-#' @param base_year numeric. If NULL then base year will be read from excel input file.
+#' @param base_year numeric. If NA then base year will be read from excel input file.
 #'
 #' @return a list of data frames -- one for each type of input needed to produce the estimates variant with the ccmpp. 
 #' attributes assigned to the list describe the location id and name, a0 rule and variant
 #' @export
 
-ccmppWPP_input_file_estimates <- function(input_file_path, base_year = NULL) {
+ccmppWPP_input_file_estimates <- function(input_file_path, base_year = NA) {
 
   # read metadata from parameters sheet of excel input file
   meta <-   readxl::read_xlsx(path = input_file_path,
@@ -32,7 +32,7 @@ ccmppWPP_input_file_estimates <- function(input_file_path, base_year = NULL) {
   }
   rm(meta)
 
-  if (is.null(base_year)) {
+  if (is.na(base_year)) {
     base_year <- as.numeric(meta.list$Base_Year)
   }
   begin_proj_year <- as.numeric(meta.list$Projection_First_Year)

@@ -4,12 +4,12 @@
 \alias{ccmppWPP_input_file_estimates}
 \title{read ccmppWPP inputs from country-specific excel input files}
 \usage{
-ccmppWPP_input_file_estimates(input_file_path, base_year = NULL)
+ccmppWPP_input_file_estimates(input_file_path, base_year = NA)
 }
 \arguments{
 \item{input_file_path}{character. string pointing to the file path for the Excel input file for one country.}
 
-\item{base_year}{numeric. If NULL then base year will be read from excel input file.}
+\item{base_year}{numeric. If NA then base year will be read from excel input file.}
 }
 \value{
 a list of data frames -- one for each type of input needed to produce the estimates variant with the ccmpp. 

@@ -7,7 +7,8 @@
 ccmpp_input_file_proj_variants(
   ccmppWPP_estimates,
   ccmppWPP_medium,
-  PasfrGlobalNorm
+  PasfrGlobalNorm,
+  PasfrNorm
 )
 }
 \arguments{

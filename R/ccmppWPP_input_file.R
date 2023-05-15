@@ -108,14 +108,14 @@ ccmppWPP_input_file_estimates <- function(input_file_path, base_year = NA) {
     pivot_longer(3:4, names_to = "indicator", values_to = "value")
   
 
-  ccmppWPP_inputs_estimates <- list(pop_count_age_sex_base = pop_count_age_sex_base,
-                                    life_table_age_sex     = life_table_age_sex,
-                                    fert_rate_age_f        = fert_rate_age_f,
-                                    srb                    = srb,
-                                    mig_net_count_age_sex  = mig_net_count_age_sex,
-                                    mig_net_rate_age_sex   = mig_net_rate_age_sex,
-                                    mig_net_count_tot_b    = mig_net_count_tot_b,
-                                    mig_parameter          = mig_parameter)
+  ccmppWPP_inputs_estimates <- list(pop_count_age_sex_base = as.data.frame(pop_count_age_sex_base),
+                                    life_table_age_sex     = as.data.frame(life_table_age_sex),
+                                    fert_rate_age_f        = as.data.frame(fert_rate_age_f),
+                                    srb                    = as.data.frame(srb),
+                                    mig_net_count_age_sex  = as.data.frame(mig_net_count_age_sex),
+                                    mig_net_rate_age_sex   = as.data.frame(mig_net_rate_age_sex),
+                                    mig_net_count_tot_b    = as.data.frame(mig_net_count_tot_b),
+                                    mig_parameter          = as.data.frame(mig_parameter))
 
   # set attributes
   attr(ccmppWPP_inputs_estimates, "locid")    <- meta.list$LocationID
@@ -391,14 +391,14 @@ ccmppWPP_input_file_extend <- function(ccmppWPP_inputs, OAnew = 130, a0rule = "a
   rm(ages,maxage)
 
 
-  ccmppWPP_inputs_extended <- list(pop_count_age_sex_base = pop_count_age_sex_base,
-                                   life_table_age_sex = life_table_age_sex,
-                                   fert_rate_age_f = fert_rate_age_f,
-                                   srb = ccmppWPP_inputs$srb,
-                                   mig_net_count_age_sex = mig_net_count_age_sex,
-                                   mig_net_rate_age_sex = mig_net_rate_age_sex,
-                                   mig_net_count_tot_b = ccmppWPP_inputs$mig_net_count_tot_b,
-                                   mig_parameter = ccmppWPP_inputs$mig_parameter)
+  ccmppWPP_inputs_extended <- list(pop_count_age_sex_base = as.data.frame(pop_count_age_sex_base),
+                                   life_table_age_sex = as.data.frame(life_table_age_sex),
+                                   fert_rate_age_f = as.data.frame(fert_rate_age_f),
+                                   srb = as.data.frame(ccmppWPP_inputs$srb),
+                                   mig_net_count_age_sex = as.data.frame(mig_net_count_age_sex),
+                                   mig_net_rate_age_sex = as.data.frame(mig_net_rate_age_sex),
+                                   mig_net_count_tot_b = as.data.frame(ccmppWPP_inputs$mig_net_count_tot_b),
+                                   mig_parameter = as.data.frame(ccmppWPP_inputs$mig_parameter))
 
   attr(ccmppWPP_inputs_extended, "revision") <- attributes(ccmppWPP_inputs)$revision
   attr(ccmppWPP_inputs_extended, "locid")    <- attributes(ccmppWPP_inputs)$locid
@@ -690,14 +690,14 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
                               value = c(rep("counts", length(projection_years)), rep("end", length(projection_years))))
 
   # assemble the ccmppWPP input file needed to carry out the deterministic projection for the medium variant
-  inputs <- list(pop_count_age_sex_base = pop_count_age_sex_base,
-                 life_table_age_sex     = lts_all_long[,c("indicator","time_start","time_span","sex","age_start","age_span","value")],
-                 fert_rate_age_f        = asfr_medium[,c("time_start", "time_span", "age_start", "age_span", "value")],
-                 srb                    = srb,
-                 mig_net_count_age_sex  = mig_net_count_age_sex,
-                 mig_net_rate_age_sex   = mig_net_rate_age_sex,
-                 mig_net_count_tot_b    = mig_net_count_tot_b,
-                 mig_parameter          = mig_parameter)
+  inputs <- list(pop_count_age_sex_base = as.data.frame(pop_count_age_sex_base),
+                 life_table_age_sex     = as.data.frame(lts_all_long[,c("indicator","time_start","time_span","sex","age_start","age_span","value")]),
+                 fert_rate_age_f        = as.data.frame(asfr_medium[,c("time_start", "time_span", "age_start", "age_span", "value")]),
+                 srb                    = as.data.frame(srb),
+                 mig_net_count_age_sex  = as.data.frame(mig_net_count_age_sex),
+                 mig_net_rate_age_sex   = as.data.frame(mig_net_rate_age_sex),
+                 mig_net_count_tot_b    = as.data.frame(mig_net_count_tot_b),
+                 mig_parameter          = as.data.frame(mig_parameter))
 
   # set attributes
   attributes <- attributes(ccmpp_output)

@@ -16,14 +16,14 @@ ref_pop_years_census <-
 
 
 test_that("Census years can be found", {
-    expect_equal(get_census_years(250),
+    expect_equal(expect_warning(get_census_years(250), "'data\\(census_years\\)' may not be complete"),
                  c("1954", "1962", "1968", "1975", "1982", "1990", "1999", "2004-2008",
                    "2009-2013", "2011-2015"))
 })
 
 
 test_that("Reference population years can be parsed", {
-    x <- get_census_years(250)
+    x <- expect_warning(get_census_years(250), "'data\\(census_years\\)' may not be complete")
     expect_equal(x, ref_pop_years_census)
 
     expect_error(parse_census_years_ranges(x), NA)
@@ -41,7 +41,7 @@ test_that("Reference population years can be determined from DDSQL extract", {
 
 
 test_that("Census years can be determined from DDSQL extract", {
-    x <- get_census_years(france_wpp_1950_2020_population_data)
+    x <- expect_warning(get_census_years(france_wpp_1950_2020_population_data), "'data\\(census_years\\)' may not be complete")
     expect_equal(x, ref_pop_years_census)
     })
 
@@ -51,14 +51,16 @@ test_that("Reference population data can be created", {
     expect_s3_class(x, "demog_change_component_df")
     expect_equal(times(x), ref_pop_years_all)
 
-    x <- DDextract_get_pop_count_age_sex_reference(
-        france_wpp_1950_2020_population_data, "census_excl_baseline")
+    x <- expect_warning(
+        DDextract_get_pop_count_age_sex_reference(
+            france_wpp_1950_2020_population_data, "census_excl_baseline"),
+        "'data\\(census_years\\)' may not be complete")
+
     expect_s3_class(x, "demog_change_component_df")
     expect_equal(times(x), ccmppWPP:::exclude_baseline_pop_count_times(
                                           france_wpp_1950_2020_population_data,
                                parse_census_years_ranges(ref_pop_years_census)))
 })
-
 
 
 test_that("Raw data can be coerced to ccmpp_input_list objects", {
@@ -76,19 +78,40 @@ test_that("Raw data can be coerced to ccmpp_input_list objects", {
 })
 
 
+test_that("Data source years are checked and appropriate errors thrown", {
+    ds_all <- DDSQLtools::get_datasources(shortNames = c("EuroStat", "HFC-STAT", "HFD", "HMD"))
+    dump <-
+        expect_error(DDextract_ccmppWPPinputs_tier1(LocID = 250,
+                                   times = 1950:2020,
+                                   times_censored_common = FALSE,
+                                   data_source_pop = c("HMD", "EuroStat"),
+                                   data_source_mort = c("HMD", "EuroStat"),
+                                   data_source_fert = c("HFD", "EuroStat", "HFC-STAT"),
+                                   data_source_year_hmd = 9999,
+                                   data_source_year_hfd = max(ds_all[ds_all$ShortName == "HFD",]$Year),
+                                   data_source_year_eurostat = max(ds_all[ds_all$ShortName == "EuroStat",]$Year),
+                                   data_source_year_hfc = max(ds_all[ds_all$ShortName == "HFC-STAT",]$Year),
+                                   revision = "test",
+                                   variant = "estimates"),
+                     regexp = "No 'HMD' data for data source year")
+    })
+
+
 test_that("Data can be downloaded from DemoData and cast as ccmpp input", {
-    france_test <- DDextract_ccmppWPPinputs_tier1(LocID = 250,
-                                                  times = 1950:2020,
-                                                  times_censored_common = FALSE,
-                                                  data_source_pop = c("HMD", "EuroStat"),
-                                                  data_source_mort = c("HMD", "EuroStat"),
-                                                  data_source_fert = c("HFD", "EuroStat","HFC-STAT"),
-                                                  data_source_year_hmd = 2020,
-                                                  data_source_year_hfd = 2020,
-                                                  data_source_year_eurostat = 2020,
-                                                  data_source_year_hfc = c(2012,2014,2015),
-                                                  revision = "test",
-                                                  variant = "estimates")
+    france_test <-
+        DDextract_ccmppWPPinputs_tier1(LocID = 250,
+                                       times = 1950:2020,
+                                       times_censored_common = FALSE,
+                                       data_source_pop = c("HMD", "EuroStat"),
+                                       data_source_mort = c("HMD", "EuroStat"),
+                                       data_source_fert = c("HFD", "EuroStat", "HFC-STAT"),
+                                       data_source_year_hmd = 2023,
+                                       data_source_year_hfd = 2023,
+                                       data_source_year_eurostat = 2023,
+                                       data_source_year_hfc = c(2012, 2014, 2015),
+                                       revision = "test",
+                                       variant = "estimates")
+    expect_true(valid_DDextract_ccmppWPPinputs_tier1(france_test))
     expect_s3_class(DDextract_get_ccmpp_input_list(france_test),
                     "ccmpp_input_list")
 })

@@ -74,7 +74,7 @@ new_demog_change_component_df <-
 #' Prepare a data frame for conversion to a \code{demog_change_component_df}
 #'
 #' Converts and cleans \code{x} into a form suitable for
-#' \code{\link{demog_change_component_df}.
+#' \code{\link{demog_change_component_df}}.
 #'
 #' @inheritParams demog_change_component_df
 #' @return A data frame
@@ -216,13 +216,10 @@ prepare_df_for_demog_change_component_df <- function(x,
 
     if (is.null(value_type)) {
         if (all(is.na(x$value))) {
-            S3_class_message("Argument 'value_type' is 'NULL' and all 'value' column entries are 'NA'; setting 'value_type' to 'real'.")
             value_type <- "real"
         } else if (is.numeric(x$value)) {
-            S3_class_message("Argument 'value_type' is 'NULL'; setting 'value_type' to 'real'.")
             value_type <- "real"
         } else if (is.character(x$value)) {
-            S3_class_message("Argument 'value_type' is 'NULL'; setting 'value_type' to 'categorical'.")
             value_type <- "categorical"
         }
     }
@@ -231,11 +228,9 @@ prepare_df_for_demog_change_component_df <- function(x,
 
     if (is.null(value_scale)) {
         if (value_type %in% get_value_types_w_non_NA_value_scale()) {
-            S3_class_message("Argument 'value_scale' is 'NULL'; setting 'value_scale' to '1'.")
             value_scale <- 1
         } else {
             value_scale <- NA
-            S3_class_message("Argument 'value_scale' is 'NULL'; setting 'value_scale' to 'NA'.")
         }
     }
 
@@ -264,7 +259,7 @@ prepare_df_for_demog_change_component_df <- function(x,
 #' \item{\code{is_demog_change_component_df}}{Tests if its
 #' argument is a \code{demog_change_component_df}. \emph{Note:} This only checks
 #' inheritance (via \code{\link{base::inherits}}), not validity. To
-#' validate an object use \code{\link{validate_ccmppWPP_object}}.}
+#' validate an object use \code{\link{validate_ccmppWPP_object}}.}}
 #'
 #' \code{demog_change_component_df} is the
 #' parent class of a family of classes for holding age- time-specific
@@ -286,11 +281,27 @@ prepare_df_for_demog_change_component_df <- function(x,
 #' \dQuote{See also} for further details specific to each type of vital rate
 #' or parameter.
 #'
+#' \subsection{Default values for attributes}{
+#' \subsection{Value type}{
+#' If \code{value_type} is \code{NULL} the following defaults are employed:
+#' \itemize{
+#' \item If all elements of the \code{value} column are \code{NA}, \code{value_type} is set to \code{NA}.
+#' \item If all elements of the \code{value} column are \code{numeric}, \code{value_type} is set to \code{real}.
+#' \item If all elements of the \code{value} column are \code{character}, \code{value_type} is set to \code{categorical}.
+#' }
+#' }
+#' \subsection{Value scale}{
+#' If \code{value_scale} is \code{NULL} the following defaults are employed:
+#' \itemize{
+#' \item If \code{value_type} is such that \code{NA}s are sensible, \code{value_scale} is set to \code{NA}.
+#' \item If \code{NA}s are not sensible given \code{value_type}, \code{value_scale} is set to \code{1}.
+#' }}}
+#'
 #' @section Class Definition:
 #' **TBC** (details of the class)
 #' 1. Must be sorted properly.
 #'
-#' \subsection{Attributes of objects with this class}
+#' \subsection{Attributes of objects with this class}{}
 #'
 #' **TBC**
 #'

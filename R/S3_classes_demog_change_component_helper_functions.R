@@ -310,6 +310,8 @@ guess_dimensions_from_df_cols <- function(x) {
 }
 
 ## Definine the proper sort order of the class
+##
+## As of 2022-01-13 this function is used in package popReconstruct2, save_posterior_summary_df,data.frame-method().
 sort_demog_change_component_df <- function(x) {
     coln_x <- colnames(x)
     coln_info_x <- subset_master_df_of_dimensions_colnames_coltypes(spans = FALSE)

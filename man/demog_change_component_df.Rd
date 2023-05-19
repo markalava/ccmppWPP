@@ -32,7 +32,15 @@ counts, e.g., \code{1}, \code{1000}, \code{1e6}, etc.}
 An object of class \code{demog_change_component_df}.
 }
 \description{
-
+\describe{
+\item{\code{demog_change_component_df}}{Creates objects of class
+\code{demog_change_component_df} from a given set of values.}
+\item{\code{coerce_demog_change_component_df}}{Attempts to turn its argument into a
+\code{demog_change_component_df}.}
+\item{\code{is_demog_change_component_df}}{Tests if its
+argument is a \code{demog_change_component_df}. \emph{Note:} This only checks
+inheritance (via \code{\link{base::inherits}}), not validity. To
+validate an object use \code{\link{validate_ccmppWPP_object}}.}}
 }
 \details{
 \code{demog_change_component_df} is the
@@ -54,13 +62,29 @@ one or more time periods in a column named \dQuote{value}.
 See the help files for the other constructor functions under
 \dQuote{See also} for further details specific to each type of vital rate
 or parameter.
+
+\subsection{Default values for attributes}{
+\subsection{Value type}{
+If \code{value_type} is \code{NULL} the following defaults are employed:
+\itemize{
+\item If all elements of the \code{value} column are \code{NA}, \code{value_type} is set to \code{NA}.
+\item If all elements of the \code{value} column are \code{numeric}, \code{value_type} is set to \code{real}.
+\item If all elements of the \code{value} column are \code{character}, \code{value_type} is set to \code{categorical}.
+}
+}
+\subsection{Value scale}{
+If \code{value_scale} is \code{NULL} the following defaults are employed:
+\itemize{
+\item If \code{value_type} is such that \code{NA}s are sensible, \code{value_scale} is set to \code{NA}.
+\item If \code{NA}s are not sensible given \code{value_type}, \code{value_scale} is set to \code{1}.
+}}}
 }
 \section{Class Definition}{
 
 **TBC** (details of the class)
 1. Must be sorted properly.
 
-\subsection{Attributes of objects with this class}
+\subsection{Attributes of objects with this class}{}
 
 **TBC**
 

@@ -24,7 +24,13 @@ string, or a list of the form returned by
 A \emph{character} vector of years.
 }
 \description{
-
+This function takes a three digit numeric code (\cite{United
+Nations, 2021}) for a location (country or area) and returns the
+years in which censuses were conducted. This is a convenience
+function for extracting the years from
+\code{data("census_years")}. This function is called by
+\code{\link{DDextract_to_pop_count_age_sex_reference}}. See that
+function's help file for additional notes.
 }
 \details{
 Years in which censuses were conducted are provided in

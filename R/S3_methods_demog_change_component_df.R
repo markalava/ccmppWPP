@@ -421,7 +421,7 @@ print.demog_change_component_df <-
 #' Summarize a \code{demog_change_component_df}
 #'
 #' A method for the generic \code{\link{summary}} function for objects
-#' of class \code{demog_change_component_df}}. Summary statistics are returned invisibly in a named list.
+#' of class \code{\link{demog_change_component_df}}. Summary statistics are returned invisibly in a named list.
 #'
 #' @inheritParams base::summary
 #'
@@ -488,7 +488,7 @@ summary.demog_change_component_df <-
 #'
 #' A method for the S3 generic \code{\link{base::summary}} for
 #' objects of class \code{summary_demog_change_component_df}, as
-#' returned by \code{\link{summary.demog_change_component_df}.
+#' returned by \code{\link{summary.demog_change_component_df}}.
 #'
 #' @param x An object of class \code{demog_change_component_df}.
 #' @param ... Currently not used.
@@ -624,7 +624,7 @@ plot.demog_change_component_df <-
 
         if (!all(requireNamespace("ggplot2", quietly = TRUE),
                  requireNamespace("scales", quietly = TRUE))) {
-            message("Install 'ggplot2' and 'scales' packages for better plotting experience.")
+            message("Install the 'ggplot2' and 'scales' packages for a better plotting experience.")
             return(NextMethod(type = substr(type, 1, 1)))
         }
 
@@ -707,6 +707,16 @@ plot.demog_change_component_df <-
                     gp <- gp + ggplot2::geom_point() + ggplot2::geom_line()
                 }
             }
+
+            ## x-axis breaks
+            if ("age" %in% dcc_dims_x) x_var_name <- "age_start"
+            else x_var_name <- "time_start"
+
+            if (abs(diff(range(x[[x_var_name]]))) >= 80) gp <- gp + ggplot2::scale_x_continuous(breaks = scales::breaks_width(20))
+            else if (abs(diff(range(x[[x_var_name]]))) >= 40) gp <- gp + ggplot2::scale_x_continuous(breaks = scales::breaks_width(10))
+            else if (abs(diff(range(x[[x_var_name]]))) >= 20) gp <- gp + ggplot2::scale_x_continuous(breaks = scales::breaks_width(5))
+            ## otherwise use the default
+
         } else {
             gp <- gp + ggplot2::geom_bar()
         }

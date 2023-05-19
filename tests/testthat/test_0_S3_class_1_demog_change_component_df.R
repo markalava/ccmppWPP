@@ -234,14 +234,14 @@ test_that("Non-squareness is OK", {
                                    value_type = "real",
                                    value_scale = 1)
 
-    y <- expect_message(demog_change_component_df(x[-1, ]))
+    y <- demog_change_component_df(x[-1, ])
     expect_s3_class(y, "demog_change_component_df")
     expect_s3_class(y, "data.frame")
     expect_true(setequal(demog_change_component_dims(y), c("time", "age", "sex")))
     expect_true(identical(names(demog_change_component_attributes(y)),
                           c("dimensions", "value_type", "value_scale")))
 
-    y <- expect_message(demog_change_component_df(rbind(x[1, ], x)))
+    y <- demog_change_component_df(rbind(x[1, ], x))
     expect_s3_class(y, "demog_change_component_df")
     expect_s3_class(y, "data.frame")
     expect_true(setequal(demog_change_component_dims(y), c("time", "age", "sex")))

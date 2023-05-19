@@ -1,21 +1,21 @@
-# 
-# # # 
+#
+# # #
 # library(tidyverse)
 # locationIDs <- c(124, 414, 4, 2222)
 # base_year <- 1950
 # last_year <- 2021
 # intermediate_output_folder <- paste0( "C:/Users/SARAH/OneDrive - United Nations/WPP2021/ccmppWPP/ccmppWPP_outputs/Intermediate/Estimates/")
-# 
+#
 # test <- ccmppWPP_aggregate(locationIDs, base_year, last_year, intermediate_output_folder, LocIDnew = 8888, LocNamenew = "Pretend Location")
 
-## 
-## 
+##
+##
 
 #------------------------------------------------------------
 
 #' aggregate ccmppWPP outputs across multiple location ids
 #'
-#' @description xx 
+#' @description xx
 #'
 #' @author Sara Hertog
 #'
@@ -28,248 +28,249 @@
 #' @export
 #'
 #'
-#'
+#' @importFrom dplyr ungroup mutate group_by summarise arrange rename left_join
+#' @importFrom tidyr pivot_wider pivot_longer
 
 ccmppWPP_aggregate <- function(locationIDs, base_year, last_year, intermediate_output_folder, LocIDnew, LocNamenew) {
-  
+
   location_outputs <- ccmppWPP_compile(locationIDs, base_year, last_year, intermediate_output_folder)
-  
+
   pop_count_age_sex_loc <- lapply(location_outputs, "[[", "pop_count_age_sex")
-  
-  pop_count_age_sex <- do.call(rbind, pop_count_age_sex_loc) %>% 
-    dplyr::filter(sex %in% c("female", "male")) %>% 
-    mutate(value = round(value, 0)) %>% 
-    group_by(time_start, time_span, sex, age_start, age_span) %>% 
-    summarise(value = sum(value)) %>% 
-    ungroup() %>% 
-    group_by(time_start, time_span, sex) %>% 
+
+  pop_count_age_sex <- do.call(rbind, pop_count_age_sex_loc) %>%
+    dplyr::filter(sex %in% c("female", "male")) %>%
+    mutate(value = round(value, 0)) %>%
+    group_by(time_start, time_span, sex, age_start, age_span) %>%
+    summarise(value = sum(value)) %>%
+    ungroup() %>%
+    group_by(time_start, time_span, sex) %>%
     summarise(value = DemoTools::groupOAG(Value = value, Age = age_start, OAnew = 100),
               age_start = 0:100,
-              age_span = c(rep(1, 100), 1000)) %>% 
-    ungroup() %>% 
-    pivot_wider(names_from = sex, values_from = value) %>% 
-    mutate(both = female + male) %>% 
-    pivot_longer(5:7, names_to = "sex", values_to = "value") %>% 
+              age_span = c(rep(1, 100), 1000)) %>%
+    ungroup() %>%
+    pivot_wider(names_from = sex, values_from = value) %>%
+    mutate(both = female + male) %>%
+    pivot_longer(5:7, names_to = "sex", values_to = "value") %>%
     arrange(time_start, time_span, sex, age_start, age_span, value)
-  
+
 
   death_count_cohort_sex_loc <- lapply(location_outputs, "[[", "death_count_cohort_sex")
-  
+
   death_count_cohort_sex <- lapply(1:length(death_count_cohort_sex_loc), function(x) {
-    
-    death_temp <- death_count_cohort_sex_loc[[x]] %>%  
-      group_by(time_start, time_span, sex) %>% 
+
+    death_temp <- death_count_cohort_sex_loc[[x]] %>%
+      group_by(time_start, time_span, sex) %>%
       summarise(value = DemoTools::groupOAG(Value = value, Age = age_start, OAnew = 100),
                 age_start = 0:100,
-                age_span = c(rep(1, 100), 1000)) %>% 
+                age_span = c(rep(1, 100), 1000)) %>%
       ungroup()
-    
+
   } )
-  death_count_cohort_sex <- do.call(rbind, death_count_cohort_sex) %>% 
-    dplyr::filter(sex %in% c("female", "male")) %>% 
-    mutate(value = round(value, 0)) %>% 
-    group_by(time_start, time_span, sex, age_start, age_span) %>% 
-    summarise(value = sum(value)) %>% 
-    ungroup() %>% 
-    pivot_wider(names_from = sex, values_from = value) %>% 
-    mutate(both = female + male) %>% 
-    pivot_longer(5:7, names_to = "sex", values_to = "value") %>% 
+  death_count_cohort_sex <- do.call(rbind, death_count_cohort_sex) %>%
+    dplyr::filter(sex %in% c("female", "male")) %>%
+    mutate(value = round(value, 0)) %>%
+    group_by(time_start, time_span, sex, age_start, age_span) %>%
+    summarise(value = sum(value)) %>%
+    ungroup() %>%
+    pivot_wider(names_from = sex, values_from = value) %>%
+    mutate(both = female + male) %>%
+    pivot_longer(5:7, names_to = "sex", values_to = "value") %>%
     arrange(time_start, time_span, sex, age_start, age_span, value)
-   
+
 
   death_count_age_sex_loc <- lapply(location_outputs, "[[", "death_count_age_sex")
-  
+
   death_count_age_sex <- lapply(1:length(death_count_age_sex_loc), function(x) {
-    
-    death_temp <- death_count_age_sex_loc[[x]] %>%  
-      group_by(time_start, time_span, sex) %>% 
+
+    death_temp <- death_count_age_sex_loc[[x]] %>%
+      group_by(time_start, time_span, sex) %>%
       summarise(value = DemoTools::groupOAG(Value = value, Age = age_start, OAnew = 100),
                 age_start = 0:100,
-                age_span = c(rep(1, 100), 1000)) %>% 
+                age_span = c(rep(1, 100), 1000)) %>%
       ungroup()
-      
+
   } )
-  death_count_age_sex <- do.call(rbind, death_count_age_sex) %>% 
-    dplyr::filter(sex %in% c("female", "male")) %>% 
-    mutate(value = round(value, 0)) %>% 
-    group_by(time_start, time_span, sex, age_start, age_span) %>% 
-    summarise(value = sum(value)) %>% 
-    ungroup() %>% 
-    pivot_wider(names_from = sex, values_from = value) %>% 
-    mutate(both = female + male) %>% 
-    pivot_longer(5:7, names_to = "sex", values_to = "value") %>% 
+  death_count_age_sex <- do.call(rbind, death_count_age_sex) %>%
+    dplyr::filter(sex %in% c("female", "male")) %>%
+    mutate(value = round(value, 0)) %>%
+    group_by(time_start, time_span, sex, age_start, age_span) %>%
+    summarise(value = sum(value)) %>%
+    ungroup() %>%
+    pivot_wider(names_from = sex, values_from = value) %>%
+    mutate(both = female + male) %>%
+    pivot_longer(5:7, names_to = "sex", values_to = "value") %>%
     arrange(time_start, time_span, sex, age_start, age_span, value)
-  
-  
+
+
   exposure_count_age_sex_loc <- lapply(location_outputs, "[[", "exposure_count_age_sex")
-  
+
   exposure_count_age_sex <- lapply(1:length(exposure_count_age_sex_loc), function(x) {
-    
-    exposure_temp <- exposure_count_age_sex_loc[[x]] %>%  
-      group_by(time_start, time_span, sex) %>% 
+
+    exposure_temp <- exposure_count_age_sex_loc[[x]] %>%
+      group_by(time_start, time_span, sex) %>%
       summarise(value = DemoTools::groupOAG(Value = value, Age = age_start, OAnew = 100),
                 age_start = 0:100,
-                age_span = c(rep(1, 100), 1000)) %>% 
+                age_span = c(rep(1, 100), 1000)) %>%
       ungroup()
-    
+
   } )
-  exposure_count_age_sex <- do.call(rbind, exposure_count_age_sex) %>% 
-    dplyr::filter(sex %in% c("female", "male")) %>% 
-    mutate(value = round(value, 0)) %>% 
-    group_by(time_start, time_span, sex, age_start, age_span) %>% 
-    summarise(value = sum(value)) %>% 
-    ungroup() %>% 
-    pivot_wider(names_from = sex, values_from = value) %>% 
-    mutate(both = female + male) %>% 
-    pivot_longer(5:7, names_to = "sex", values_to = "value") %>% 
+  exposure_count_age_sex <- do.call(rbind, exposure_count_age_sex) %>%
+    dplyr::filter(sex %in% c("female", "male")) %>%
+    mutate(value = round(value, 0)) %>%
+    group_by(time_start, time_span, sex, age_start, age_span) %>%
+    summarise(value = sum(value)) %>%
+    ungroup() %>%
+    pivot_wider(names_from = sex, values_from = value) %>%
+    mutate(both = female + male) %>%
+    pivot_longer(5:7, names_to = "sex", values_to = "value") %>%
     arrange(time_start, time_span, sex, age_start, age_span, value)
-  
+
   # compute age-specific mortality rates from deaths by sex and age and exposures by sex and age
-  lt_nMx <- do.call(rbind, death_count_age_sex_loc) %>% 
-    group_by(time_start, time_span, sex, age_start, age_span) %>% 
-    summarise(deaths = sum(value)) %>% 
-    ungroup() %>% 
-    left_join(do.call(rbind, exposure_count_age_sex_loc) %>% 
-                group_by(time_start, time_span, sex, age_start, age_span) %>% 
-                summarise(exposures = sum(value)) %>% 
-                ungroup(), by = c("time_start", "time_span", "sex", "age_start", "age_span")) %>% 
+  lt_nMx <- do.call(rbind, death_count_age_sex_loc) %>%
+    group_by(time_start, time_span, sex, age_start, age_span) %>%
+    summarise(deaths = sum(value)) %>%
+    ungroup() %>%
+    left_join(do.call(rbind, exposure_count_age_sex_loc) %>%
+                group_by(time_start, time_span, sex, age_start, age_span) %>%
+                summarise(exposures = sum(value)) %>%
+                ungroup(), by = c("time_start", "time_span", "sex", "age_start", "age_span")) %>%
     mutate(value = deaths/exposures)
 
- 
+
   # nax for first age group and last age group
   deaths_1A0_all <- do.call(rbind, lapply(1:length(location_outputs), function(x) {
-    nAx <- location_outputs[[x]]$lt_1A0 %>% 
-      dplyr::select(time_start, sex, age_start, value) %>% 
+    nAx <- location_outputs[[x]]$lt_1A0 %>%
+      dplyr::select(time_start, sex, age_start, value) %>%
       rename(nAx = value)
-    deaths_1A0 <- location_outputs[[x]]$death_count_age_sex %>%  dplyr::filter(age_start == 0) %>% 
-      rename(deaths = value) %>% 
-      left_join(nAx, by = c("time_start", "sex", "age_start")) 
+    deaths_1A0 <- location_outputs[[x]]$death_count_age_sex %>%  dplyr::filter(age_start == 0) %>%
+      rename(deaths = value) %>%
+      left_join(nAx, by = c("time_start", "sex", "age_start"))
   }))
   # weight aggregate nAx series for each period and sex by deaths and input nAx
-  lt_1A0 <- deaths_1A0_all %>% 
-    dplyr::group_by(time_start, sex, age_start) %>% 
-    summarise(value = sum(deaths*nAx)/sum(deaths)) 
-  
+  lt_1A0 <- deaths_1A0_all %>%
+    dplyr::group_by(time_start, sex, age_start) %>%
+    summarise(value = sum(deaths*nAx)/sum(deaths))
+
   years <- base_year:(last_year-1)
-  
+
   life_table_age_sex <- lapply(1:length(years), function(x){
-    
+
     nMx <- lt_nMx %>% dplyr::filter(time_start == years[x]) %>% arrange(time_start, sex, age_start)
-    lt_m <- lt_single_custom_ax(nMx = nMx$value[nMx$sex == "male"], nAx = c(lt_1A0$value[lt_1A0$time_start == years[x] & lt_1A0$sex == "male"], rep(0.5,130))) %>% 
-      dplyr::filter(Age <= 100) %>% 
+    lt_m <- lt_single_custom_ax(nMx = nMx$value[nMx$sex == "male"], nAx = c(lt_1A0$value[lt_1A0$time_start == years[x] & lt_1A0$sex == "male"], rep(0.5,130))) %>%
+      dplyr::filter(Age <= 100) %>%
       mutate(nqx = replace(nqx, Age == 100, 1),
              nLx = ifelse(Age == 100, Tx, nLx),
              nAx = ifelse(Age == 100, ex, nAx),
              AgeInt = ifelse(Age == 100, NA, AgeInt),
              nMx = ifelse(Age == 100, lx/Tx, nMx))
-    lt_f <- lt_single_custom_ax(nMx = nMx$value[nMx$sex == "female"], nAx = c(lt_1A0$value[lt_1A0$time_start == years[x] & lt_1A0$sex == "female"], rep(0.5,130))) %>% 
-      dplyr::filter(Age <= 100) %>% 
-      mutate(nqx = replace(nqx, Age == 100, 1),
-             nLx = ifelse(Age == 100, Tx, nLx),
-             nAx = ifelse(Age == 100, ex, nAx),
-             AgeInt = ifelse(Age == 100, NA, AgeInt),
-             nMx = ifelse(Age == 100, lx/Tx, nMx)) 
-    lt_b <- lt_single_custom_ax(nMx = nMx$value[nMx$sex == "both"], nAx = c(lt_1A0$value[lt_1A0$time_start == years[x] & lt_1A0$sex == "both"], rep(0.5,130))) %>% 
-      dplyr::filter(Age <= 100) %>% 
+    lt_f <- lt_single_custom_ax(nMx = nMx$value[nMx$sex == "female"], nAx = c(lt_1A0$value[lt_1A0$time_start == years[x] & lt_1A0$sex == "female"], rep(0.5,130))) %>%
+      dplyr::filter(Age <= 100) %>%
       mutate(nqx = replace(nqx, Age == 100, 1),
              nLx = ifelse(Age == 100, Tx, nLx),
              nAx = ifelse(Age == 100, ex, nAx),
              AgeInt = ifelse(Age == 100, NA, AgeInt),
              nMx = ifelse(Age == 100, lx/Tx, nMx))
-    
-    lts_one_year <- lt_m %>% 
-      mutate(sex = "male") %>% 
-      bind_rows(lt_f %>% mutate(sex = "female")) %>% 
-      bind_rows(lt_b %>% mutate(sex = "both")) %>% 
+    lt_b <- lt_single_custom_ax(nMx = nMx$value[nMx$sex == "both"], nAx = c(lt_1A0$value[lt_1A0$time_start == years[x] & lt_1A0$sex == "both"], rep(0.5,130))) %>%
+      dplyr::filter(Age <= 100) %>%
+      mutate(nqx = replace(nqx, Age == 100, 1),
+             nLx = ifelse(Age == 100, Tx, nLx),
+             nAx = ifelse(Age == 100, ex, nAx),
+             AgeInt = ifelse(Age == 100, NA, AgeInt),
+             nMx = ifelse(Age == 100, lx/Tx, nMx))
+
+    lts_one_year <- lt_m %>%
+      mutate(sex = "male") %>%
+      bind_rows(lt_f %>% mutate(sex = "female")) %>%
+      bind_rows(lt_b %>% mutate(sex = "both")) %>%
       mutate(time_start = years[x],
              AgeInt = replace(AgeInt, is.na(AgeInt), 1000)) %>%
       rename(age_start = Age,
-             age_span = AgeInt) %>% 
-      pivot_longer(cols = 3:11, names_to = "indicator", values_to = "value") %>% 
+             age_span = AgeInt) %>%
+      pivot_longer(cols = 3:11, names_to = "indicator", values_to = "value") %>%
       mutate(indicator = paste0("lt_", indicator),
-             time_span = 1) %>% 
-      arrange(indicator, time_start, sex, age_start) %>% 
+             time_span = 1) %>%
+      arrange(indicator, time_start, sex, age_start) %>%
       dplyr::select(indicator, time_start, time_span, sex, age_start, age_span, value)
-    
+
     return(lts_one_year)
-  }) 
+  })
   lt_complete_age_sex <- do.call(rbind, life_table_age_sex)
-  
-  
-  
+
+
+
   birth_count_age_b_loc <- lapply(location_outputs, "[[", "birth_count_age_b")
-  
-  birth_count_age_b <- do.call(rbind, birth_count_age_b_loc) %>% 
-    mutate(value = round(value, 0)) %>% 
-    group_by(time_start, time_span, age_start, age_span) %>% 
-    summarise(value = sum(value)) %>% 
-    ungroup() %>% 
-    group_by(time_start, time_span) %>% 
+
+  birth_count_age_b <- do.call(rbind, birth_count_age_b_loc) %>%
+    mutate(value = round(value, 0)) %>%
+    group_by(time_start, time_span, age_start, age_span) %>%
+    summarise(value = sum(value)) %>%
+    ungroup() %>%
+    group_by(time_start, time_span) %>%
     summarise(value = DemoTools::groupOAG(Value = value, Age = age_start, OAnew = 100),
               age_start = 0:100,
-              age_span = c(rep(1, 100), 1000)) %>% 
-    ungroup() %>% 
+              age_span = c(rep(1, 100), 1000)) %>%
+    ungroup() %>%
     arrange(time_start, time_span, age_start, age_span, value)
-  
-  
+
+
   birth_count_tot_sex_loc <- lapply(location_outputs, "[[", "birth_count_tot_sex")
-  
-  birth_count_tot_sex <- do.call(rbind, birth_count_tot_sex_loc) %>% 
-    dplyr::filter(sex %in% c("female", "male")) %>% 
-    mutate(value = round(value, 0)) %>% 
-    group_by(time_start, time_span, sex) %>% 
-    summarise(value = sum(value)) %>% 
-    pivot_wider(names_from = sex, values_from = value) %>% 
-    mutate(both = female + male) %>% 
-    pivot_longer(3:5, names_to = "sex", values_to = "value") %>% 
+
+  birth_count_tot_sex <- do.call(rbind, birth_count_tot_sex_loc) %>%
+    dplyr::filter(sex %in% c("female", "male")) %>%
+    mutate(value = round(value, 0)) %>%
+    group_by(time_start, time_span, sex) %>%
+    summarise(value = sum(value)) %>%
+    pivot_wider(names_from = sex, values_from = value) %>%
+    mutate(both = female + male) %>%
+    pivot_longer(3:5, names_to = "sex", values_to = "value") %>%
     arrange(time_start, time_span, sex, value)
-  
+
   # compute sex ratio at birth from total birth by sex
-  srb <- birth_count_tot_sex %>% 
-    dplyr::filter(sex %in% c("male", "female")) %>% 
-    pivot_wider(names_from = sex, values_from = value) %>% 
-    mutate(value = male/female) %>% 
+  srb <- birth_count_tot_sex %>%
+    dplyr::filter(sex %in% c("male", "female")) %>%
+    pivot_wider(names_from = sex, values_from = value) %>%
+    mutate(value = male/female) %>%
     dplyr::select(time_start, time_span, value)
-  
+
   # compute age-specific fertility rates from births by age of mother and female exposures
-  fert_rate_age_f <- do.call(rbind, birth_count_age_b_loc) %>% 
-    group_by(time_start, time_span, age_start, age_span) %>% 
-    summarise(births = sum(value)) %>% 
-    ungroup() %>% 
-    left_join(do.call(rbind, exposure_count_age_sex_loc) %>% 
-                dplyr::filter(sex == "female") %>% 
-                group_by(time_start, time_span, age_start, age_span) %>% 
-                summarise(exposures = sum(value)) %>% 
-                ungroup(), by = c("time_start", "time_span", "age_start", "age_span")) %>% 
-    mutate(value = births/exposures) %>% 
-    dplyr::filter(age_start <= 100) %>% 
-    mutate(age_span = replace(age_span, age_start == 100, 1000)) %>% 
+  fert_rate_age_f <- do.call(rbind, birth_count_age_b_loc) %>%
+    group_by(time_start, time_span, age_start, age_span) %>%
+    summarise(births = sum(value)) %>%
+    ungroup() %>%
+    left_join(do.call(rbind, exposure_count_age_sex_loc) %>%
+                dplyr::filter(sex == "female") %>%
+                group_by(time_start, time_span, age_start, age_span) %>%
+                summarise(exposures = sum(value)) %>%
+                ungroup(), by = c("time_start", "time_span", "age_start", "age_span")) %>%
+    mutate(value = births/exposures) %>%
+    dplyr::filter(age_start <= 100) %>%
+    mutate(age_span = replace(age_span, age_start == 100, 1000)) %>%
     dplyr::select(time_start, time_span, age_start, age_span, value)
-  
-  
+
+
   mig_net_count_age_sex_loc <- lapply(location_outputs, "[[", "mig_net_count_age_sex")
-  
+
   mig_net_count_age_sex <- lapply(1:length(mig_net_count_age_sex_loc), function(x) {
-    
-    mig_net_temp <- mig_net_count_age_sex_loc[[x]] %>%  
-      group_by(time_start, time_span, sex) %>% 
+
+    mig_net_temp <- mig_net_count_age_sex_loc[[x]] %>%
+      group_by(time_start, time_span, sex) %>%
       summarise(value = DemoTools::groupOAG(Value = value, Age = age_start, OAnew = 100),
                 age_start = 0:100,
-                age_span = c(rep(1, 100), 1000)) %>% 
+                age_span = c(rep(1, 100), 1000)) %>%
       ungroup()
-    
+
   } )
-  mig_net_count_age_sex <- do.call(rbind, mig_net_count_age_sex) %>% 
-    dplyr::filter(sex %in% c("female", "male")) %>% 
-    mutate(value = round(value, 0)) %>% 
-    group_by(time_start, time_span, sex, age_start, age_span) %>% 
-    summarise(value = sum(value)) %>% 
-    ungroup() %>% 
-    pivot_wider(names_from = sex, values_from = value) %>% 
-    mutate(both = female + male) %>% 
-    pivot_longer(5:7, names_to = "sex", values_to = "value") %>% 
+  mig_net_count_age_sex <- do.call(rbind, mig_net_count_age_sex) %>%
+    dplyr::filter(sex %in% c("female", "male")) %>%
+    mutate(value = round(value, 0)) %>%
+    group_by(time_start, time_span, sex, age_start, age_span) %>%
+    summarise(value = sum(value)) %>%
+    ungroup() %>%
+    pivot_wider(names_from = sex, values_from = value) %>%
+    mutate(both = female + male) %>%
+    pivot_longer(5:7, names_to = "sex", values_to = "value") %>%
     arrange(time_start, time_span, sex, age_start, age_span, value)
-  
+
   intermediate_output <- list(pop_count_age_sex = as.data.frame(pop_count_age_sex),
                               death_count_cohort_sex = as.data.frame(death_count_cohort_sex),
                               death_count_age_sex = as.data.frame(death_count_age_sex),
@@ -280,22 +281,22 @@ ccmppWPP_aggregate <- function(locationIDs, base_year, last_year, intermediate_o
                               birth_count_age_b = as.data.frame(birth_count_age_b),
                               birth_count_tot_sex = as.data.frame(birth_count_tot_sex),
                               mig_net_count_age_sex = as.data.frame(mig_net_count_age_sex))
-  
+
   attr(intermediate_output, "locid")    <- LocIDnew
   attr(intermediate_output, "locname")  <- LocNamenew
   attr(intermediate_output, "variant")  <- attributes(location_outputs)$variant
   attr(intermediate_output, "a0rule")   <- "aggregate"
-  
+
   return(intermediate_output)
-  
+
 }
 
 # compile the intermediate output files into a list with one record per location so that the demographic components can be aggregated
 ccmppWPP_compile <- function(locationIDs, base_year, last_year, intermediate_output_folder) {
-  
+
   location_outputs <- list()
   for (i in 1:length(locationIDs)) {
-    
+
     # load ccmpp intermediate outputs for one country
     ccmpp_output <- NULL
     has_outputs <- file.exists(paste0(intermediate_output_folder, locationIDs[i], "_ccmpp_output.RData"))
@@ -305,14 +306,14 @@ ccmppWPP_compile <- function(locationIDs, base_year, last_year, intermediate_out
       log_print(paste0("Warning: No CCMPP outputs available for LocID = ", locationIDs[i],". This location is excluded from aggregate."))
       next()
     }
-    
+
     # check whether base year agrees
     check_base_year <- min(ccmpp_output$pop_count_age_sex$time_start) == base_year
     if (!check_base_year) {
       log_print(paste0("Warning: Base year for LocID = ", locationIDs[i], " not equal to ", base_year,". This location is excluded from aggregate."))
       next()
     }
-    
+
     # check whether records for all years between base_year and last_year are present
     check_all_years <- all(base_year:last_year %in% unique(ccmpp_output$pop_count_age_sex$time_start))
     if (!check_all_years) {
@@ -320,25 +321,25 @@ ccmppWPP_compile <- function(locationIDs, base_year, last_year, intermediate_out
       log_print(paste0("Warning: CCMPP population outputs for LocID = ", locationIDs[i], " missing records for time_start = ", missing_years,". This location is excluded from aggregate."))
       next()
     }
-    
+
     if (check_base_year & check_all_years) {
       ccmpp_output$lt_1A0 <- ccmpp_output$lt_complete_age_sex %>% dplyr::filter(indicator == "lt_nAx" & age_start == 0)
       ccmpp_output  <- within(ccmpp_output, rm(lt_complete_age_sex, fert_rate_age_f, srb))
-      location_outputs[[i]] <- ccmpp_output 
-    } 
+      location_outputs[[i]] <- ccmpp_output
+    }
   }
 
   attr(location_outputs, "variant")  <- attributes(ccmpp_output)$variant
   # remove any null elements
   location_outputs <- location_outputs[!sapply(location_outputs, is.null)]
-  
+
   return(location_outputs)
 }
 
 # compute a life table with a custom defined nAx series
 # we use this for aggregating life tables with different ax rules
 lt_single_custom_ax <- function(nMx, nAx, radix = 1e5) {
-  
+
   nage <- length(nMx)
   Age <- 0:(nage-1)
   AgeInt <- c(rep(1,(nage-1)), NA)
@@ -356,21 +357,21 @@ lt_single_custom_ax <- function(nMx, nAx, radix = 1e5) {
   Tx <- rev(cumsum(rev(nLx)))
   ex <- Tx/lx
   ex[nage] <- 0.5
-  
+
   lt_out <- data.frame(Age = Age,
                        AgeInt = AgeInt,
                        nMx = nMx,
                        nAx = nAx,
-                       nqx = nqx, 
+                       nqx = nqx,
                        lx = lx,
                        ndx = ndx,
                        nLx = nLx,
                        Sx = Sx,
                        Tx = Tx,
                        ex = ex)
-  
+
   return(lt_out)
-  
-  
+
+
 }
 

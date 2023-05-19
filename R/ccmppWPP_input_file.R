@@ -11,7 +11,7 @@
 #' @param input_file_path character. string pointing to the file path for the Excel input file for one country.
 #' @param base_year numeric. If NA then base year will be read from excel input file.
 #'
-#' @return a list of data frames -- one for each type of input needed to produce the estimates variant with the ccmpp. 
+#' @return a list of data frames -- one for each type of input needed to produce the estimates variant with the ccmpp.
 #' attributes assigned to the list describe the location id and name, a0 rule and variant
 #' @export
 
@@ -37,31 +37,31 @@ ccmppWPP_input_file_estimates <- function(input_file_path, base_year = NA) {
   }
   begin_proj_year <- as.numeric(meta.list$Projection_First_Year)
 
-  # base year population by sex and single year of age 
+  # base year population by sex and single year of age
   pop_count_age_sex_base <- readxl::read_xlsx(path = input_file_path,
                                               sheet = "pop_count_age_sex_base",
-                                              n_max = 1048576) %>% 
+                                              n_max = 1048576) %>%
     mutate(value = replace(value, is.na(value), 0)) # replace any NA values with 0
 
 
   # asfr by single year of mother's age single year of time (jan 1 to dec 31)
   fert_rate_age_f <- readxl::read_xlsx(path = input_file_path,
                                        sheet = "fert_rate_age_f",
-                                       n_max = 1048576) %>% 
-    dplyr::filter(time_start >= base_year & time_start < begin_proj_year) %>% 
+                                       n_max = 1048576) %>%
+    dplyr::filter(time_start >= base_year & time_start < begin_proj_year) %>%
     arrange(time_start, age_start)
 
   # srb estimates by single year of time (jan 1 to dec 31)
   srb <- readxl::read_xlsx(path = input_file_path,
                            sheet = "srb",
-                           n_max = 1048576) %>% 
-    dplyr::filter(time_start >= base_year & time_start < begin_proj_year) %>% 
+                           n_max = 1048576) %>%
+    dplyr::filter(time_start >= base_year & time_start < begin_proj_year) %>%
     arrange(time_start)
 
   # mortality estimation parameters
   mp <- readxl::read_xlsx(path = input_file_path, sheet = "MORT_PARAMS",
-                          n_max = 1048576) %>% 
-    dplyr::filter(tolower(type) == "estimation") %>% 
+                          n_max = 1048576) %>%
+    dplyr::filter(tolower(type) == "estimation") %>%
     dplyr::select(parameter, value)
 
   # for classic model life table families, we use the Coale-Demeny a0 rule, otherwise we use Andreev-Kinkaid
@@ -74,28 +74,28 @@ ccmppWPP_input_file_estimates <- function(input_file_path, base_year = NA) {
   # life tables by sex and single year of age and single year of time (jan 1 to dec 31)
   life_table_age_sex <- readxl::read_xlsx(path = input_file_path,
                                        sheet = "life_table_age_sex",
-                                       n_max = 1048576) %>% 
-    dplyr::filter(time_start >= base_year & time_start < begin_proj_year) %>% 
+                                       n_max = 1048576) %>%
+    dplyr::filter(time_start >= base_year & time_start < begin_proj_year) %>%
     arrange(time_start, sex, age_start)
-  
+
   # net international migration
-  
+
     # estimates of counts by sex and single year of age and single year of time (jan 1 to dec 31)
     mig_net_count_age_sex <- readxl::read_xlsx(path = input_file_path,
                                                sheet = "mig_net_count_age_sex",
-                                               n_max = 1048576) %>% 
+                                               n_max = 1048576) %>%
       mutate(value = replace(value, is.na(value), 0)) %>% # replace any NA values with 0
-      dplyr::filter(time_start >= base_year & time_start < begin_proj_year) %>% 
+      dplyr::filter(time_start >= base_year & time_start < begin_proj_year) %>%
       arrange(time_start, sex, age_start)
-  
+
     # estimates of totals (in case need to apply age distribution) by single year of time (jan 1 to dec 31)
     mig_net_count_tot_b <- readxl::read_xlsx(path = input_file_path,
                                              sheet = "mig_net_count_tot_b",
-                                             n_max = 1048576) %>% 
+                                             n_max = 1048576) %>%
       mutate(value = replace(value, is.na(value), 0)) %>% # replace any NA values with 0
-      dplyr::filter(time_start >= base_year & time_start < begin_proj_year) %>% 
+      dplyr::filter(time_start >= base_year & time_start < begin_proj_year) %>%
       arrange(time_start)
-    
+
     # rates -- THIS IS NOT AN OPTION FOR THE 2022 or 2024 REVISIONS SO WE CREATE A PLACE HOLDER FOR FUTURE REVISIONS
     mig_net_rate_age_sex <- mig_net_count_age_sex
     mig_net_rate_age_sex$value <- 0
@@ -103,10 +103,9 @@ ccmppWPP_input_file_estimates <- function(input_file_path, base_year = NA) {
   # migration parameters
   mig_parameter <- readxl::read_xlsx(path = input_file_path,
                                      sheet = "mig_parameter",
-                                     n_max = 1048576) %>% 
-    arrange(time_start) %>% 
+                                     n_max = 1048576) %>%
+    arrange(time_start) %>%
     pivot_longer(3:4, names_to = "indicator", values_to = "value")
-  
 
   ccmppWPP_inputs_estimates <- list(pop_count_age_sex_base = as.data.frame(pop_count_age_sex_base),
                                     life_table_age_sex     = as.data.frame(life_table_age_sex),
@@ -137,9 +136,9 @@ ccmppWPP_input_file_extend <- function(ccmppWPP_inputs, OAnew = 130, a0rule = "a
   ############
   # life_table
   ############
-  lt_in <- ccmppWPP_inputs$life_table_age_sex %>% 
+  lt_in <- ccmppWPP_inputs$life_table_age_sex %>%
     arrange(time_start, sex, indicator, age_start)
-  
+
   ages  <- unique(lt_in$age_start)
   maxage <- max(ages)
 
@@ -169,7 +168,7 @@ ccmppWPP_input_file_extend <- function(ccmppWPP_inputs, OAnew = 130, a0rule = "a
       lts <- rbind(lts,lt)
     }
     }
-    
+
     # if the OA is greater than OAnew, then truncate life tables to OAnew
     if (maxage > OAnew) {
       for (i in unique(lt_in$time_start)) {
@@ -177,15 +176,15 @@ ccmppWPP_input_file_extend <- function(ccmppWPP_inputs, OAnew = 130, a0rule = "a
         names(mxM) <- ages
         mxF <- lt_in$value[lt_in$indicator == "lt_nMx" & lt_in$sex == "female" & lt_in$time_start == i]
         names(mxF) <- ages
-        
+
         lt_m <- DemoTools::lt_single_mx(nMx = mxM, Age = 0:maxage, a0rule = a0rule, Sex = "m", OAG = TRUE, OAnew = OAnew)
         lt_m$sex <- "male"
         lt_f <- DemoTools::lt_single_mx(nMx = mxF, Age = 0:maxage, a0rule = a0rule, Sex = "f", OAG = TRUE, OAnew = OAnew)
         lt_f$sex <- "female"
-        
+
         lt <- rbind(lt_m, lt_f)
         lt$time_start <- i
-        
+
         lts <- rbind(lts,lt)
       }
 
@@ -201,8 +200,8 @@ ccmppWPP_input_file_extend <- function(ccmppWPP_inputs, OAnew = 130, a0rule = "a
     names(life_table_age_sex)[c(1,2)] <- c("age_start", "age_span")
     life_table_age_sex$time_span <- 1
 
-    } 
-  
+    }
+
   if (maxage == OAnew) {
 
     # check to see that all of the life table columns are present
@@ -277,8 +276,8 @@ ccmppWPP_input_file_extend <- function(ccmppWPP_inputs, OAnew = 130, a0rule = "a
                                          sex = c(rep("female", OAnew + 1),rep("male", OAnew + 1)),
                                          value = c(pop_count_age_sex_f, pop_count_age_sex_m))
     pop_count_age_sex_base$age_span[pop_count_age_sex_base$age_start == OAnew] <- 1000
-  } 
-  
+  }
+
   if (maxage > OAnew) {
     # truncate back to OAnew, aggregating OAG
     pop_count_age_sex_m <- DemoTools::groupOAG(Value = pop_in$value[pop_in$sex == "male"], Age = pop_in$age_start[pop_in$sex == "male"], OAnew = OAnew)
@@ -290,9 +289,9 @@ ccmppWPP_input_file_extend <- function(ccmppWPP_inputs, OAnew = 130, a0rule = "a
                                          sex = c(rep("female", OAnew + 1),rep("male", OAnew + 1)),
                                          value = c(pop_count_age_sex_f, pop_count_age_sex_m))
     pop_count_age_sex_base$age_span[pop_count_age_sex_base$age_start == OAnew] <- 1000
-    
+
   }
-  
+
   if (maxage == OAnew) {
     pop_count_age_sex_base <- pop_in
   }
@@ -329,15 +328,15 @@ ccmppWPP_input_file_extend <- function(ccmppWPP_inputs, OAnew = 130, a0rule = "a
     fert_rate_age_f$age_span <- ifelse(fert_rate_age_f$age_start == OAnew, 1000, 1)
     fert_rate_age_f <- fert_rate_age_f[order(fert_rate_age_f$time_start, fert_rate_age_f$age_start),]
 
-  } 
-  
+  }
+
   if (maxage > OAnew) {
-    
+
     fert_rate_age_f <- fert_in[fert_in$age_start <= OAnew,]
-    
+
   }
   if (maxage == OAnew) {
-    
+
     fert_rate_age_f <- fert_in
   }
   rm(ages,maxage)
@@ -378,12 +377,12 @@ ccmppWPP_input_file_extend <- function(ccmppWPP_inputs, OAnew = 130, a0rule = "a
     mig_net_rate_age_sex <- mig_net_count_age_sex
     mig_net_rate_age_sex$value <- 0.0
 
-  } 
+  }
   if (maxage > OAnew) {
     mig_net_count_age_sex <- mig_in[mig_in$age_start <= OAnew,]
     mig_net_rate_age_sex <- ccmppWPP_inputs$mig_net_rate_age_sex[ccmppWPP_inputs$mig_net_rate_age_sex$age_start <= OAnew,]
   }
-  
+
   if (maxage == OAnew){
     mig_net_count_age_sex <- mig_in
     mig_net_rate_age_sex <- ccmppWPP_inputs$mig_net_rate_age_sex
@@ -427,7 +426,8 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
 
   # read metadata from parameters sheet of excel input file
   meta <-   readxl::read_xlsx(path = input_file_path,
-                              sheet = "parameters")
+                              sheet = "parameters",
+                              n_max = 1048576)
 
   meta <- meta %>%
     dplyr::select(parameter, value) %>%
@@ -509,7 +509,7 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
 
   ############################
   ############################
-  # get projected srb 
+  # get projected srb
 
   srb <-   srb_median_all_locs[srb_median_all_locs$LocID == locid & srb_median_all_locs$time_start %in% projection_years,]
 
@@ -517,39 +517,39 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
     ############################
     ############################
     # get projected 1mx from projected e0
-  
+
     # get mx estimates by single year of age from 0 to 130
     life_table_age_sex_mx <- ccmpp_output$lt_complete_age_sex[ccmpp_output$lt_complete_age_sex$indicator=="lt_nMx" &
                                                                 ccmpp_output$lt_complete_age_sex$sex %in% c("female", "male"),]
-  
+
     # transform life_table_age_sex_mx into the matrices needed by the MortCast functions
     mxM <- life_table_age_sex_mx[life_table_age_sex_mx$sex == "male", c("age_start", "time_start", "value")]
     mxMr <- reshape(mxM, idvar = "age_start", timevar = "time_start", direction = "wide")
     mx_mat_m <- as.matrix(mxMr[,2:ncol(mxMr)])
     rownames(mx_mat_m) <- unique(mxM$age_start)
     colnames(mx_mat_m) <- unique(mxM$time_start)
-  
+
     mxF <- life_table_age_sex_mx[life_table_age_sex_mx$sex == "female", c("age_start", "time_start", "value")]
     mxFr <- reshape(mxF, idvar = "age_start", timevar = "time_start", direction = "wide")
     mx_mat_f <- as.matrix(mxFr[,2:ncol(mxFr)])
     rownames(mx_mat_f) <- unique(mxF$age_start)
     colnames(mx_mat_f) <- unique(mxF$time_start)
-  
+
     # parse median projected e0f and e0m
     e0_median_all_locs <- e0_median_all_locs[order(e0_median_all_locs$time_start),]
     e0f_projected <- e0_median_all_locs$value[e0_median_all_locs$LocID == locid &
                                                e0_median_all_locs$sex == "female" &
                                                 e0_median_all_locs$time_start %in% projection_years]
     names(e0f_projected) <- projection_years
-  
+
     e0m_projected <- e0_median_all_locs$value[e0_median_all_locs$LocID == locid &
                                                 e0_median_all_locs$sex == "male" &
                                                 e0_median_all_locs$time_start %in% projection_years]
     names(e0m_projected) <- projection_years
-  
+
     # extract mortality parameters from Excel input file
     MORT_PARAMS <- readxl::read_xlsx(path = input_file_path, sheet = "MORT_PARAMS")
-  
+
     Age_Mort_Proj_arguments <- list(Age_Mort_Proj_Method1 = MORT_PARAMS$value[MORT_PARAMS$parameter=="Age_Mort_Proj_Method1"],
                                     Age_Mort_Proj_Method2 = MORT_PARAMS$value[MORT_PARAMS$parameter=="Age_Mort_Proj_Method2"],
                                     Age_Mort_Proj_Pattern = MORT_PARAMS$value[MORT_PARAMS$parameter=="Age_Mort_Proj_Pattern"],
@@ -559,7 +559,7 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
                                     Latest_Age_Mortality_Pattern_Years = eval(parse(text = MORT_PARAMS$value[MORT_PARAMS$parameter=="Latest_Age_Mortality_Pattern_Years"])),
                                     Smooth_Latest_Age_Mortality_Pattern = eval(parse(text = MORT_PARAMS$value[MORT_PARAMS$parameter=="Smooth_Latest_Age_Mortality_Pattern"])),
                                     Smooth_Latest_Age_Mortality_Pattern_Degree = eval(parse(text = MORT_PARAMS$value[MORT_PARAMS$parameter=="Smooth_Latest_Age_Mortality_Pattern_Degree"])))
-    
+
      mx_medium <- mx_given_e0(mx_mat_m = mx_mat_m, # matrix of mx estimates (age in rows, years in columns)
                              mx_mat_f = mx_mat_f,
                              e0m = e0m_projected, # vector of projected e0 (named with years)
@@ -573,7 +573,7 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
                              Latest_Age_Mortality_Pattern_Years = Age_Mort_Proj_arguments$Latest_Age_Mortality_Pattern_Years,
                              Smooth_Latest_Age_Mortality_Pattern = Age_Mort_Proj_arguments$Smooth_Latest_Age_Mortality_Pattern,
                              Smooth_Latest_Age_Mortality_Pattern_Degree = Age_Mort_Proj_arguments$Smooth_Latest_Age_Mortality_Pattern_Degree) # a number between 1 and nrow(mx_mat). Higher numbers give less smoothing
-  
+
     # # old
     #  mx_medium <- mx_given_e0(mx_mat_m = mx_mat_m, # matrix of mx estimates (age in rows, years in columns)
     #                           mx_mat_f = mx_mat_f,
@@ -586,9 +586,9 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
     #                           Age_Mort_Proj_Adj_SR = Age_Mort_Proj_arguments$Age_Mort_Proj_Adj_SR,
     #                           Latest_Age_Mortality_Pattern = Age_Mort_Proj_arguments$Latest_Age_Mortality_Pattern,
     #                           Smooth_Latest_Age_Mortality_Pattern = Age_Mort_Proj_arguments$Smooth_Latest_Age_Mortality_Pattern) # a number between 1 and nrow(mx_mat). Higher numbers give less smoothing
-    #  
+    #
     # organize into a long file required by ccmppWPP
-  
+
     mx_f <- mx_medium$female$mx[,colnames(mx_medium$female$mx) %in% projection_years]
     mx_f <- as.data.frame(mx_f)
     mx_f$age_start <- as.numeric(row.names(mx_f))
@@ -602,7 +602,7 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
     mx_f$age_span <- ifelse(mx_f$age_start < max(mx_f$age_start), 1, 1000)
     mx_f$time_span <- 1
     mx_f$sex <- "female"
-  
+
     mx_m <- mx_medium$male$mx[,colnames(mx_medium$male$mx) %in% projection_years]
     mx_m <- as.data.frame(mx_m)
     mx_m$age_start <- as.numeric(row.names(mx_m))
@@ -616,18 +616,18 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
     mx_m$age_span <- ifelse(mx_m$age_start < max(mx_m$age_start), 1, 1000)
     mx_m$time_span <- 1
     mx_m$sex <- "male"
-  
+
     mx_all_long <- rbind(mx_f, mx_m)
     mx_all_long$time_start <- as.numeric(mx_all_long$time_start)
   } else {
-    
+
     mx_all_long <- mx_median_all_locs[mx_median_all_locs$locid == locid, c("time_start", "time_span", "sex", "age_start", "age_span", "value")]
-    
+
   }
-  
+
   lts_all <- list()
   for (i in 1:(length(projection_years))) {
-    
+
     ltf <- DemoTools::lt_single_mx(nMx = mx_all_long$value[mx_all_long$sex == "female" & mx_all_long$time_start == projection_years[i]],
                                    Age = mx_all_long$age_start[mx_all_long$sex == "female" & mx_all_long$time_start == projection_years[i]],
                                    Sex = "f", a0rule = a0rule)
@@ -638,12 +638,12 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
                                    Sex = "m" , a0rule = a0rule)
     ltm$sex <- "male"
     ltm$time_start <- projection_years[i]
-    
+
     lts_all[[i]] <- rbind(ltf, ltm)
-    
+
   }
   lts_all <- do.call(rbind, lts_all)
-  
+
   lts_all_long <- reshape(lts_all,
                           idvar = c("time_start", "sex", "Age"),
                           drop = c("AgeInt"),
@@ -652,14 +652,14 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
                           times = names(lts_all)[3:11],
                           timevar = "indicator",
                           v.names = "value")
-  
+
   lts_all_long$age_start <- lts_all_long$Age
   lts_all_long$age_span <- 1
   lts_all_long$age_span[lts_all_long$age_start == 130] <- 1000
   lts_all_long$time_span <- 1
   lts_all_long$indicator <- paste0("lt_", lts_all_long$indicator)
   lts_all_long <- lts_all_long[,c("indicator", "time_start", "time_span", "sex", "age_start", "age_span", "value")]
-  
+
   # net international migration inputs
   mig_net_count_age_sex <- list()
   for (i in 1:length(projection_years)) {
@@ -669,7 +669,7 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
   }
   mig_net_count_age_sex <- do.call(rbind, mig_net_count_age_sex)
   mig_net_count_age_sex <- merge(mig_net_count_age_sex,
-                                 mig_net_count_proj_all_locs[mig_net_count_proj_all_locs$locid == locid & 
+                                 mig_net_count_proj_all_locs[mig_net_count_proj_all_locs$locid == locid &
                                                                mig_net_count_proj_all_locs$time_start %in% projection_years,
                                                              c("time_start", "sex", "age_start", "value")],
                                  by = c("time_start", "sex", "age_start"), all.x = TRUE, all.y= FALSE)
@@ -679,7 +679,7 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
   mig_net_count_age_sex$value[is.na(mig_net_count_age_sex$value)] <- 0
   mig_net_count_age_sex <- mig_net_count_age_sex[mig_net_count_age_sex$time_start <= max(projection_years),
                                                  c("time_start", "time_span", "sex", "age_start", "age_span", "value")]
-  
+
   mig_net_rate_age_sex <- mig_net_count_age_sex
   mig_net_rate_age_sex$value <- 0 # This is a placeholder -- not in use for WPP 2021
   mig_net_count_tot_b <- sum_last_column(mig_net_count_age_sex[,c("time_start", "time_span", "value")]) # This is a placeholder -- not in use for WPP 2022
@@ -740,12 +740,12 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
 
   # extract asfr estimates
   asfr_df <- ccmppWPP_estimates$fert_rate_age_f[, c("time_start", "age_start", "value")]
-  
+
   # extract tfr estimates
   tfr_est_df <- sum_last_column(asfr_df[,c("time_start", "value")])
   tfr_est <- tfr_est_df$value
   names(tfr_est) <- unique(asfr_df$time_start)
-  
+
   # compute pasfr
   pasfr_est <- merge(asfr_df, tfr_est_df, by = "time_start")
   pasfr_est$value <- pasfr_est$value.x/pasfr_est$value.y
@@ -781,7 +781,7 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
                                num_points = 15)
 
   asfr_low <- t(tfr_low * t(pasfr_low/100))
-  
+
   asfr_0_9 <- matrix(0, nrow = 10, ncol = ncol(asfr_low))
   asfr_55_130 <- matrix(0, nrow = 76, ncol = ncol(asfr_low))
 
@@ -829,7 +829,7 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
   fert_rate_age_f_high$age_span <- ifelse(fert_rate_age_f_high$age_start < 100, 1, 1000)
   fert_rate_age_f_high$time_span <- 1
   fert_rate_age_f_high <- fert_rate_age_f_high[, c("time_start", "time_span", "age_start", "age_span", "value")]
-  
+
 
   ############################
   ############################
@@ -928,12 +928,12 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
   mig_net_rate_age_sex <- ccmppWPP_medium$mig_net_count_age_sex[ccmppWPP_medium$mig_net_count_age_sex$sex %in% c("male","female"),]
   mig_net_rate_age_sex$value <- 0
   mig_net_count_tot_b <- sum_last_column(ccmppWPP_medium$mig_net_count_age_sex[,c("time_start", "time_span", "value")])
-  
+
   mig_parameter <- data.frame(indicator = c(rep("mig_type", length(projection_times)), rep("mig_assumption", length(projection_times))),
                               time_start = rep(projection_times,2),
                               time_span = rep(1, length(projection_times)*2),
                               value = c(rep("counts", length(projection_times)), rep("end", length(projection_times))))
-  
+
   # first, compile the medium variant inputs based on intermediate ccmpp outputs
   inputs_medium <- list(pop_count_age_sex_base = pop_count_age_sex_base,
                      life_table_age_sex = ccmppWPP_medium$lt_complete_age_sex[ccmppWPP_medium$lt_complete_age_sex$sex %in% c("male","female"),],
@@ -943,7 +943,7 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
                      mig_net_rate_age_sex = mig_net_rate_age_sex,
                      mig_net_count_tot_b = mig_net_count_tot_b,
                      mig_parameter = mig_parameter)
-  
+
   # all inputs same as medium variant, except asfr, which are low
   inputs_low <- inputs_medium
   inputs_low$fert_rate_age_f <- fert_rate_age_f_low
@@ -1018,8 +1018,8 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
   attr(inputs_zeromig, "locname") <- attributes(ccmppWPP_estimates)$locname
   attr(inputs_zeromig, "variant") <- "Zero migration"
   attr(inputs_zeromig, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
-  
-  # Instant replacement and zero migration 
+
+  # Instant replacement and zero migration
   inputs_instantzeromig <- inputs_instant
   inputs_instantzeromig$mig_net_count_age_sex$value <- 0
   inputs_instantzeromig$mig_net_count_tot_b$value <- 0
@@ -1043,6 +1043,5 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
 
   return(variant_inputs)
 }
-
 
 

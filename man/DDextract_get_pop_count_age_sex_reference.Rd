@@ -31,7 +31,24 @@ list of the kind returned by
 returned as a \code{\link{demog_change_component_df}} object.
 }
 \details{
+\code{x} must be a
+\code{\link{list}} with a \code{\link{data.frame}} element named
+\code{pop_count_age_sex_reference}. This \code{data.frame} must
+have colums \code{time_start}, \code{time_span}, \code{age_start},
+\code{age_span}, \code{sex}, \code{value}.
 
+Argument \code{times} can be used to return counts for specific
+times only. These can be specified explicitly as a numeric vector
+or one of the key words \describe{
+\item{\dQuote{excl_baseline}}{All years available except the
+baseline year.}
+\item{\dQuote{all}}{All years available.}
+\item{\dQuote{census}}{Only the years censuses were
+conducted. Census years are taken from the dataset
+\code{"census_years"} provided with the package.}
+\item{\dQuote{census_excl_baseline}}{Census years excluding the
+baseline year (if the baseline year was not a census year this will
+give the same result as \dQuote{census}).}}
 }
 \section{Note}{
 

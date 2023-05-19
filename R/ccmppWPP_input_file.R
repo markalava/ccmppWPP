@@ -9,12 +9,13 @@
 #' @author Sara Hertog
 #'
 #' @param input_file_path character. string pointing to the file path for the Excel input file for one country.
+#' @param base_year numeric. If NA then base year will be read from excel input file.
 #'
 #' @return a list of data frames -- one for each type of input needed to produce the estimates variant with the ccmpp.
 #' attributes assigned to the list describe the location id and name, a0 rule and variant
 #' @export
 
-ccmppWPP_input_file_estimates <- function(input_file_path) {
+ccmppWPP_input_file_estimates <- function(input_file_path, base_year = NA) {
 
   # read metadata from parameters sheet of excel input file
   meta <-   readxl::read_xlsx(path = input_file_path,
@@ -31,7 +32,9 @@ ccmppWPP_input_file_estimates <- function(input_file_path) {
   }
   rm(meta)
 
-  base_year <- as.numeric(meta.list$Base_Year)
+  if (is.na(base_year)) {
+    base_year <- as.numeric(meta.list$Base_Year)
+  }
   begin_proj_year <- as.numeric(meta.list$Projection_First_Year)
 
   # base year population by sex and single year of age
@@ -104,14 +107,14 @@ ccmppWPP_input_file_estimates <- function(input_file_path) {
     arrange(time_start) %>%
     pivot_longer(3:4, names_to = "indicator", values_to = "value")
 
-  ccmppWPP_inputs_estimates <- list(pop_count_age_sex_base = pop_count_age_sex_base,
-                                    life_table_age_sex     = life_table_age_sex,
-                                    fert_rate_age_f        = fert_rate_age_f,
-                                    srb                    = srb,
-                                    mig_net_count_age_sex  = mig_net_count_age_sex,
-                                    mig_net_rate_age_sex   = mig_net_rate_age_sex,
-                                    mig_net_count_tot_b    = mig_net_count_tot_b,
-                                    mig_parameter          = mig_parameter)
+  ccmppWPP_inputs_estimates <- list(pop_count_age_sex_base = as.data.frame(pop_count_age_sex_base),
+                                    life_table_age_sex     = as.data.frame(life_table_age_sex),
+                                    fert_rate_age_f        = as.data.frame(fert_rate_age_f),
+                                    srb                    = as.data.frame(srb),
+                                    mig_net_count_age_sex  = as.data.frame(mig_net_count_age_sex),
+                                    mig_net_rate_age_sex   = as.data.frame(mig_net_rate_age_sex),
+                                    mig_net_count_tot_b    = as.data.frame(mig_net_count_tot_b),
+                                    mig_parameter          = as.data.frame(mig_parameter))
 
   # set attributes
   attr(ccmppWPP_inputs_estimates, "locid")    <- meta.list$LocationID
@@ -387,14 +390,14 @@ ccmppWPP_input_file_extend <- function(ccmppWPP_inputs, OAnew = 130, a0rule = "a
   rm(ages,maxage)
 
 
-  ccmppWPP_inputs_extended <- list(pop_count_age_sex_base = pop_count_age_sex_base,
-                                   life_table_age_sex = life_table_age_sex,
-                                   fert_rate_age_f = fert_rate_age_f,
-                                   srb = ccmppWPP_inputs$srb,
-                                   mig_net_count_age_sex = mig_net_count_age_sex,
-                                   mig_net_rate_age_sex = mig_net_rate_age_sex,
-                                   mig_net_count_tot_b = ccmppWPP_inputs$mig_net_count_tot_b,
-                                   mig_parameter = ccmppWPP_inputs$mig_parameter)
+  ccmppWPP_inputs_extended <- list(pop_count_age_sex_base = as.data.frame(pop_count_age_sex_base),
+                                   life_table_age_sex = as.data.frame(life_table_age_sex),
+                                   fert_rate_age_f = as.data.frame(fert_rate_age_f),
+                                   srb = as.data.frame(ccmppWPP_inputs$srb),
+                                   mig_net_count_age_sex = as.data.frame(mig_net_count_age_sex),
+                                   mig_net_rate_age_sex = as.data.frame(mig_net_rate_age_sex),
+                                   mig_net_count_tot_b = as.data.frame(ccmppWPP_inputs$mig_net_count_tot_b),
+                                   mig_parameter = as.data.frame(ccmppWPP_inputs$mig_parameter))
 
   attr(ccmppWPP_inputs_extended, "revision") <- attributes(ccmppWPP_inputs)$revision
   attr(ccmppWPP_inputs_extended, "locid")    <- attributes(ccmppWPP_inputs)$locid
@@ -687,14 +690,14 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
                               value = c(rep("counts", length(projection_years)), rep("end", length(projection_years))))
 
   # assemble the ccmppWPP input file needed to carry out the deterministic projection for the medium variant
-  inputs <- list(pop_count_age_sex_base = pop_count_age_sex_base,
-                 life_table_age_sex     = lts_all_long[,c("indicator","time_start","time_span","sex","age_start","age_span","value")],
-                 fert_rate_age_f        = asfr_medium[,c("time_start", "time_span", "age_start", "age_span", "value")],
-                 srb                    = srb,
-                 mig_net_count_age_sex  = mig_net_count_age_sex,
-                 mig_net_rate_age_sex   = mig_net_rate_age_sex,
-                 mig_net_count_tot_b    = mig_net_count_tot_b,
-                 mig_parameter          = mig_parameter)
+  inputs <- list(pop_count_age_sex_base = as.data.frame(pop_count_age_sex_base),
+                 life_table_age_sex     = as.data.frame(lts_all_long[,c("indicator","time_start","time_span","sex","age_start","age_span","value")]),
+                 fert_rate_age_f        = as.data.frame(asfr_medium[,c("time_start", "time_span", "age_start", "age_span", "value")]),
+                 srb                    = as.data.frame(srb),
+                 mig_net_count_age_sex  = as.data.frame(mig_net_count_age_sex),
+                 mig_net_rate_age_sex   = as.data.frame(mig_net_rate_age_sex),
+                 mig_net_count_tot_b    = as.data.frame(mig_net_count_tot_b),
+                 mig_parameter          = as.data.frame(mig_parameter))
 
   # set attributes
   attributes <- attributes(ccmpp_output)
@@ -1041,386 +1044,4 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
   return(variant_inputs)
 }
 
-
-
-# THIS FUNCTION PERFORMS A BASEPOP ADJUSTMENT TO 1950 POPULATION SO THAT POP COUNTS ARE CONSISTENT WITH FERT AND MORT
-
-#' Adjust base population children for consistency with fertility and mortality
-#'
-#' @description Invokes DemoTools::basepop_five to adjust counts of children under age 10 to be consistent with 1950
-#' fertility and mortality
-#'
-#' @author Sara Hertog
-#'
-#' @param input_file_path character string pointing to excel input file
-#'
-#' @details uses life tables, asfr and srb from the excel input file
-#'
-#' @return data frame with adjusted 1950 base population
-#' @export
-#'
-basepop_adjust_1950_population <- function(pop_count_age_sex_base,
-                                           input_file_path) {
-
-  # read metadata from parameters sheet of excel input file
-  meta <-   readxl::read_xlsx(path = input_file_path,
-                              sheet = "parameters",
-                                              n_max = 1048576)
-
-  meta <- meta %>%
-    dplyr::select(parameter, value) %>%
-    dplyr::filter(!is.na(parameter))
-
-  meta.list <- list()
-  for (i in 1:nrow(meta)) {
-    meta.list[[i]] <- ifelse(!is.na(suppressWarnings(as.numeric(meta$value[i]))), as.numeric(meta$value[i]), meta$value[i])
-    names(meta.list)[i] <- gsub(" ", "_", meta$parameter[i])
-  }
-  rm(meta)
-
-  # import life tables from excel input file
-  life_table_age_sex <-   readxl::read_xlsx(path = input_file_path, sheet = "life_table_age_sex",
-                                              n_max = 1048576)
-  # import age specific fertility rates from excel input file
-  fert_rate_age_f <-   readxl::read_xlsx(path = input_file_path, sheet = "fert_rate_age_f",
-                                              n_max = 1048576)
-  # import sex ratios at birth from excel input file
-  srb <-   readxl::read_xlsx(path = input_file_path, sheet = "srb",
-                                              n_max = 1048576)
-
-  # parse nLx for males and females transform into the matrices needed for basepop
-  nLxDatesIn <- 1950.0 - c(0.5, 2.5, 7.5)
-
-  nLxMatMale <- life_table_age_sex %>%
-    dplyr::filter(indicator == "lt_nLx" & sex == "male" & time_start == 1950) %>%
-    select(value) %>%
-    apply(MARGIN = 2, FUN = function(S) {DemoTools::single2abridged(Age = S)}) %>%
-    as.data.frame() %>%
-    mutate(value2 = value,
-           value3 = value) %>%
-    as.matrix()
-  colnames(nLxMatMale) <- nLxDatesIn
-
-  nLxMatFemale <- life_table_age_sex %>%
-    dplyr::filter(indicator == "lt_nLx" & sex == "female" & time_start == 1950) %>%
-    select(value) %>%
-    apply(MARGIN = 2, FUN = function(S) {DemoTools::single2abridged(Age = S)}) %>%
-    as.data.frame() %>%
-    mutate(value2 = value,
-           value3 = value) %>%
-    as.matrix()
-  colnames(nLxMatFemale) <- nLxDatesIn
-
-  radix <- life_table_age_sex$value[life_table_age_sex$indicator=="lt_lx" &
-                                      life_table_age_sex$age_start == 0][1]
-
-  # parse ASFR and transform into the matrix needed for basepop
-
-  AsfrMat <- fert_rate_age_f[, c("time_start", "age_start", "value")]
-
-  AsfrMat <- AsfrMat %>%
-    dplyr::filter(time_start == 1950) %>%
-    mutate(age5 = 5 * floor(age_start/5)) %>%
-    group_by(age5) %>%
-    summarise(asfr = mean(value)) %>%
-    dplyr::filter(age5 >=15 & age5 <= 45) %>%
-    mutate(asfr2 = asfr,
-           asfr3 = asfr) %>%
-    select(-age5) %>%
-    as.matrix()
-
-  colnames(AsfrMat) <- nLxDatesIn
-  rownames(AsfrMat) <- seq(15,45,5)
-  AsfrDatesIn <- nLxDatesIn
-
-  # get SRB
-  SRBDatesIn <- floor(1950.5 - c(0.5, 2.5, 7.5))
-
-  parse_columns <- ifelse(SRBDatesIn < 1950, 1950, SRBDatesIn)
-
-  SRB <- NULL
-  for (k in 1:length(parse_columns)) {
-    SRB <- c(SRB, srb$value[srb$time_start == parse_columns[k]])
-  }
-  SRBDatesIn <- SRBDatesIn + 0.5
-
-
-  popin <- pop_count_age_sex_base %>%
-    mutate(value = replace(value, is.na(value), 0)) %>%
-    arrange(sex, age_start)
-  Age1 <- popin$age_start[popin$sex == "male"]
-  popM <- popin$value[popin$sex=="male"]
-  popF <- popin$value[popin$sex=="female"]
-
-  # group to abridged age groups
-  popM_abr <- DemoTools::single2abridged(popM)
-  popF_abr <- DemoTools::single2abridged(popF)
-  Age_abr  <- as.numeric(row.names(popM_abr))
-
-  # run basepop_five()
-  BP1 <- DemoTools::basepop_five(location = meta.list$LocationID,
-                                 refDate = 1950.0,
-                                 Age = Age_abr,
-                                 Females_five = popF_abr,
-                                 Males_five = popM_abr,
-                                 nLxFemale = nLxMatFemale,
-                                 nLxMale   = nLxMatMale,
-                                 nLxDatesIn = nLxDatesIn,
-                                 AsfrMat = AsfrMat,
-                                 AsfrDatesIn = AsfrDatesIn,
-                                 SRB = SRB,
-                                 SRBDatesIn = SRBDatesIn,
-                                 radix = radix,
-                                 verbose = FALSE)
-
-  # graduate result to single year of age
-  popM_BP1 <- DemoTools::graduate_mono(Value = BP1[[2]], Age = Age_abr, AgeInt = DemoTools::age2int(Age_abr), OAG = TRUE)
-  popF_BP1 <- DemoTools::graduate_mono(Value = BP1[[1]], Age = Age_abr, AgeInt = DemoTools::age2int(Age_abr), OAG = TRUE)
-
-  # define childhood ages to be adjusted with basepop
-  adjust_basepop_1950_maxage <- as.numeric(meta.list$adjust_basepop_1950_maxage)
-  adjust_basepop_1950_maxage <- ifelse(length(adjust_basepop_1950_maxage)==0, 9, adjust_basepop_1950_maxage)
-  adjust_basepop_1950_maxage <- ifelse(is.na(adjust_basepop_1950_maxage), 9, adjust_basepop_1950_maxage)
-
-  popM_out <- c(popM_BP1[1:(adjust_basepop_1950_maxage+1)],popM[(adjust_basepop_1950_maxage+2):length(popM)])
-  popF_out <- c(popF_BP1[1:(adjust_basepop_1950_maxage+1)],popF[(adjust_basepop_1950_maxage+2):length(popF)])
-
-  popout <- popin %>%
-    mutate(value = replace(value, sex == "male", round(popM_out)),
-           value = replace(value, sex == "female", round(popF_out)))
-
- return(popout)
-
-}
-
-# THIS FUNCTION BACK PROJECTS A CENSUS POPULATION TO JANUARY 1 1950
-
-#' Adjust base population children for consistency with fertility and mortality
-#'
-#' @description Back projects from census one year at a time using input survival ratios, then interpolates to 1 Jan 1950
-#'
-#' @author Sara Hertog
-#'
-#' @param census_protocol_adjusted data frame with census population by single year of age and sex output from census adjustment protocol
-#' @param census_reference_date numeric. census reference date as decimal
-#' @param life_table_age_sex data frame. the life_table_age_sex table from input file
-#'
-#' @details extends both population and life tables to oag = 130+; NO INTERNATIONAL MIGRATION
-#'
-#' @return data frame with 1950 base population back projected from the earliest census
-#' @export
-#'
-
-census_back_project_1950 <- function(census_protocol_adjusted, census_reference_date, life_table_age_sex) {
-
-  lts <- life_table_age_sex[life_table_age_sex$time_start <= census_reference_date,]
-  lts <- lts[order(lts$time_start, lts$sex, lts$indicator, lts$age_start),]
-  age_max <- max(lts$age_start)
-  if (age_max < 130) {
-    lts$id <- paste(lts$time_start, lts$sex, sep = " - ")
-    ids <- unique(lts$id)
-
-    lts_new <- list()
-    for (i in 1:length(ids)) {
-      df <- lts[lts$id == ids[i] & lts$indicator == "lt_nMx",]
-      df_ext <- DemoTools::lt_single_mx(nMx = df$value, Age = df$age_start, Sex = substr(df$sex[1],1,1), OAnew = 130,
-                                        extrapFit = 90:age_max, extrapFrom = age_max, extrapLaw = "Kannisto")
-
-      nMx_max1 <- ifelse(df_ext$nMx<1, df_ext$nMx, 1)
-      df_ext1 <- DemoTools::lt_single_mx(nMx = nMx_max1, Age = df_ext$Age, Sex = substr(df$sex[1],1,1), OAnew = 130)
-
-      df_ext1 <- reshape(df_ext1, idvar = c("Age", "AgeInt"),
-                         direction = "long",
-                         times = paste0("lt_",names(df_ext1)[3:11]), timevar = "indicator",
-                         varying = list(names(df_ext1)[3:11]), v.names = "value")
-
-      df_ext1$time_start <- df$time_start[1]
-      df_ext1$time_span <- df$time_span[1]
-      df_ext1$sex <- df$sex[1]
-      df_ext1$age_start <- df_ext1$Age
-      df_ext1$age_span <- df_ext1$AgeInt
-      df_ext1 <- df_ext1[,names(df)[1:7]]
-
-      lts_new[[i]] <- df_ext1
-    }
-    lts <- do.call(rbind,lts_new)
-  }
-
-  # get reference years for back projection
-  back_dts <- census_reference_date-(1:(census_reference_date-1949))
-
-  # extend census population to OAG 130+
-
-  redist_from_age <- max(65, census_adj_all[[1]]$age_redist_start - (length(back_dts) + 10))
-
-  census_extended_M <- DemoTools::OPAG(Pop = census_protocol_adjusted$DataValue[census_protocol_adjusted$SexID == 1],
-                                       Age_Pop = census_protocol_adjusted$AgeStart[census_protocol_adjusted$SexID == 1],
-                                       nLx = lts$value[lts$time_start == max(floor(census_reference_date),1950) &
-                                                         lts$sex == "male" & lts$indicator == "lt_nLx"],
-                                       Age_nLx = 0:130,
-                                       Redistribute_from = redist_from_age,
-                                       OAnew = 130)$Pop_out
-
-  # smooth the join point of the extension a bit
-
-  # if the value at the join point is lower than that of the previous age
-  if (census_extended_M[redist_from_age+1] < census_extended_M[redist_from_age]) {
-    census_extended_M[redist_from_age+1] <- (census_extended_M[redist_from_age] + census_extended_M[redist_from_age+2])/2
-    if (census_extended_M[redist_from_age+2] < census_extended_M[redist_from_age+1]) {
-      census_extended_M[redist_from_age+2] <- (census_extended_M[redist_from_age+1] + census_extended_M[redist_from_age+3])/2
-      if (census_extended_M[redist_from_age+3] < census_extended_M[redist_from_age+2]) {
-        census_extended_M[redist_from_age+3] <- (census_extended_M[redist_from_age+2] + census_extended_M[redist_from_age+4])/2
-      }
-    }
-  } else {
-
-  # identify the minimum age above the redist_from_age at which the difference between the value from extended and the
-  # previous age group value from original census is negative (such that population shrinks with age)
-  nages <- length(census_protocol_adjusted$DataValue[census_protocol_adjusted$SexID == 1])
-  compare <- data.frame(age_ext = 1:(nages-1),
-                        ext = census_extended_M[2:nages],
-                        age_cen = 0:(nages-2),
-                        cen = census_protocol_adjusted$DataValue[census_protocol_adjusted$SexID == 1][1:(nages-1)])
-  compare$diff <- compare$ext - compare$cen
-  compare$pct <- compare$diff/compare$cen *100
-  age_for_blend <- min(compare$age_ext[compare$age_ext >= redist_from_age & compare$pct <= -9])
-  rm(compare)
-
-  census_extended_M <- c(census_protocol_adjusted$DataValue[census_protocol_adjusted$SexID == 1][1:age_for_blend],
-                         census_extended_M[(age_for_blend+1):131])
-  names(census_extended_M) <- 0:130
-
-  }
-
-
-  census_extended_F <- DemoTools::OPAG(Pop = census_protocol_adjusted$DataValue[census_protocol_adjusted$SexID == 2],
-                                       Age_Pop = census_protocol_adjusted$AgeStart[census_protocol_adjusted$SexID == 2],
-                                       nLx = lts$value[lts$time_start == max(floor(census_reference_date),1950) &
-                                                         lts$sex == "female" & lts$indicator == "lt_nLx"],
-                                       Age_nLx = 0:130,
-                                       Redistribute_from = redist_from_age,
-                                       OAnew = 130)$Pop_out
-
-  # smooth the join point of the extension a bit
-
-  # if the value at the join point is lower than that of the previous age
-  if (census_extended_F[redist_from_age+1] < census_extended_F[redist_from_age]) {
-    census_extended_F[redist_from_age+1] <- (census_extended_F[redist_from_age] + census_extended_F[redist_from_age+2])/2
-    if (census_extended_F[redist_from_age+2] < census_extended_F[redist_from_age+1]) {
-      census_extended_F[redist_from_age+2] <- (census_extended_F[redist_from_age+1] + census_extended_F[redist_from_age+3])/2
-      if (census_extended_F[redist_from_age+3] < census_extended_F[redist_from_age+2]) {
-        census_extended_F[redist_from_age+3] <- (census_extended_F[redist_from_age+2] + census_extended_F[redist_from_age+4])/2
-      }
-    }
-  } else {
-
-  # identify the minimum age above the redist_from_age at which the difference between the value from extended and the
-  # previous age group value from original census is negative (such that population shrinks with age)
-  nages <- length(census_protocol_adjusted$DataValue[census_protocol_adjusted$SexID == 2])
-  compare <- data.frame(age_ext = 1:(nages-1),
-                        ext = census_extended_F[2:nages],
-                        age_cen = 0:(nages-2),
-                        cen = census_protocol_adjusted$DataValue[census_protocol_adjusted$SexID == 2][1:(nages-1)])
-  compare$diff <- compare$ext - compare$cen
-  compare$pct <- compare$diff/compare$cen *100
-  age_for_blend <- min(compare$age_ext[compare$age_ext >= redist_from_age & compare$pct <= -9])
-  rm(compare)
-
-  census_extended_F <- c(census_protocol_adjusted$DataValue[census_protocol_adjusted$SexID == 2][1:age_for_blend],
-                         census_extended_F[(age_for_blend+1):131])
-  names(census_extended_F) <- 0:130
-
-  }
-
-
-  # create a matrix to store population by age back projected
-  popM_back <- as.matrix(census_extended_M)
-  colnames(popM_back) <- census_reference_date
-
-  popF_back <- as.matrix(census_extended_F)
-  colnames(popF_back) <- census_reference_date
-
-  # initialize starting population
-  popM <- popM_back[,1]
-  popF <- popF_back[,1]
-
-  # loop thru back dates, one year back at a time
-  for (i in 1:length(back_dts)) {
-
-    # extract male Sx
-    Sx_age_m <- lts$value[lts$sex == "male" & lts$time_start == max(1950,floor(back_dts[i])) &
-                            lts$indicator == "lt_Sx"]
-
-    # back project males one step
-    popM <- project_backwards_no_mig(pop_count_age_start = popM, Sx_age = Sx_age_m)
-    # add a 0 for the last age group (fine because there's no one this old in 1950)
-    popM <- c(popM,0)
-    names(popM) <- 0:130
-
-    # extract female Sx
-    Sx_age_f <- lts$value[lts$sex == "female" & lts$time_start == max(1950,floor(back_dts[i])) &
-                            lts$indicator == "lt_Sx"]
-
-    # back project females one step
-    popF <- project_backwards_no_mig(pop_count_age_start = popF, Sx_age = Sx_age_f)
-    # add a 0 for the last age group
-    popF <- c(popF,0)
-    names(popF) <- 0:130
-
-    popM_back <- cbind(popM_back, popM)
-    colnames(popM_back)[i+1] <- back_dts[i]
-
-    popF_back <- cbind(popF_back, popF)
-    colnames(popF_back)[i+1] <- back_dts[i]
-
-  }
-
-  # interpolate to 1 January 1950
-
-  interpM <- DemoTools::interpolatePop(Pop1 = popM_back[,ncol(popM_back)],
-                                       Pop2 = popM_back[,ncol(popM_back)-1],
-                                       Date1 = as.numeric(colnames(popM_back)[ncol(popM_back)]),
-                                       Date2 = as.numeric(colnames(popM_back)[ncol(popM_back)-1]),
-                                       DesiredDate = 1950.0,
-                                       method = "linear")
-
-  interpF <- DemoTools::interpolatePop(Pop1 = popF_back[,ncol(popF_back)],
-                                       Pop2 = popF_back[,ncol(popF_back)-1],
-                                       Date1 = as.numeric(colnames(popF_back)[ncol(popF_back)]),
-                                       Date2 = as.numeric(colnames(popF_back)[ncol(popF_back)-1]),
-                                       DesiredDate = 1950.0,
-                                       method = "linear")
-
-  # assemble into a data frame
-
-  pop_out <- data.frame(time_start = rep(1950, 262),
-                        time_span = rep(0,262),
-                        sex = c(rep("male", 131), rep("female", 131)),
-                        age_start = rep(0:130,2),
-                        age_span = rep(c(rep(1,130),1000),2),
-                        value = c(interpM, interpF))
-
-  return(pop_out)
-
-}
-
-
-project_backwards_no_mig <- function(pop_count_age_start,
-                                     Sx_age) {
-
-  # check that lengths of inputs agree
-  check_length <- length(pop_count_age_start) == length(Sx_age)
-  if (isFALSE(check_length)) { stop("Input columns are not all the same length")}
-
-  # get input ages
-  ages <- names(pop_count_age_start)
-  nage <- length(ages) # number of age groups
-
-  # get backwards population
-  pop_count_age_end <- pop_count_age_start[2:nage]/ Sx_age[1:(nage-1)]
-  names(pop_count_age_end) <- ages[1:nage-1]
-
-  return(pop_count_age_end)
-
-}
 

@@ -38,7 +38,7 @@ ECHO. ==========================================================================
 ECHO. INSTALL
 ECHO. ================================================================================
 
-Rscript -e "devtools::install(build_vignettes = FALSE, upgrade = 'never')"
+chdir .. && R CMD INSTALL --build --install-tests ccmppWPP && chdir ccmppWPP
 if %ERRORLEVEL% GEQ 1 PAUSE
 
 

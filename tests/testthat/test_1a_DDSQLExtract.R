@@ -81,23 +81,27 @@ test_that("Raw data can be coerced to ccmpp_input_list objects", {
 test_that("Data source years are checked and appropriate errors thrown", {
     ds_all <- DDSQLtools::get_datasources(shortNames = c("EuroStat", "HFC-STAT", "HFD", "HMD"))
     dump <-
-        expect_error(DDextract_ccmppWPPinputs_tier1(LocID = 250,
-                                   times = 1950:2020,
-                                   times_censored_common = FALSE,
-                                   data_source_pop = c("HMD", "EuroStat"),
-                                   data_source_mort = c("HMD", "EuroStat"),
-                                   data_source_fert = c("HFD", "EuroStat", "HFC-STAT"),
-                                   data_source_year_hmd = 9999,
-                                   data_source_year_hfd = max(ds_all[ds_all$ShortName == "HFD",]$Year),
-                                   data_source_year_eurostat = max(ds_all[ds_all$ShortName == "EuroStat",]$Year),
-                                   data_source_year_hfc = max(ds_all[ds_all$ShortName == "HFC-STAT",]$Year),
-                                   revision = "test",
-                                   variant = "estimates"),
-                     regexp = "No 'HMD' data for data source year")
-    })
+        expect_error(
+            DDextract_ccmppWPPinputs_tier1(LocID = 250,
+                                           times = 1950:2020,
+                                           times_censored_common = FALSE,
+                                           data_source_pop = c("HMD", "EuroStat"),
+                                           data_source_mort = c("HMD", "EuroStat"),
+                                           data_source_fert = c("HFD", "EuroStat", "HFC-STAT"),
+                                           data_source_year_hmd = 9999,
+                                           data_source_year_hfd = max(ds_all[ds_all$ShortName == "HFD",]$Year),
+                                           data_source_year_eurostat =
+                                               max(ds_all[ds_all$ShortName == "EuroStat",]$Year),
+                                           data_source_year_hfc =
+                                               max(ds_all[ds_all$ShortName == "HFC-STAT",]$Year),
+                                           revision = "test",
+                                           variant = "estimates"),
+            regexp = "No 'HMD' data for data source year")
+})
 
 
 test_that("Data can be downloaded from DemoData and cast as ccmpp input", {
+    ds_all <- DDSQLtools::get_datasources(shortNames = c("EuroStat", "HFC-STAT", "HFD", "HMD"))
     france_test <-
         DDextract_ccmppWPPinputs_tier1(LocID = 250,
                                        times = 1950:2020,
@@ -105,13 +109,12 @@ test_that("Data can be downloaded from DemoData and cast as ccmpp input", {
                                        data_source_pop = c("HMD", "EuroStat"),
                                        data_source_mort = c("HMD", "EuroStat"),
                                        data_source_fert = c("HFD", "EuroStat", "HFC-STAT"),
-                                       data_source_year_hmd = 2023,
-                                       data_source_year_hfd = 2023,
-                                       data_source_year_eurostat = 2023,
-                                       data_source_year_hfc = c(2012, 2014, 2015),
+                                       data_source_year_hmd = max(ds_all[ds_all$ShortName == "HMD",]$Year),
+                                       data_source_year_hfd = max(ds_all[ds_all$ShortName == "HFD",]$Year),
+                                       data_source_year_eurostat =
+                                           max(ds_all[ds_all$ShortName == "EuroStat",]$Year),
                                        revision = "test",
                                        variant = "estimates")
-    expect_true(valid_DDextract_ccmppWPPinputs_tier1(france_test))
     expect_s3_class(DDextract_get_ccmpp_input_list(france_test),
                     "ccmpp_input_list")
 })

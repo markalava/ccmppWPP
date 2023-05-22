@@ -3,9 +3,8 @@ Title: Cohort Component Population Projection
 Version: 0.0.0.9000
 Date: 2022-04-20
 Authors@R: 
-    c(person(given = "Mark",
+    c(person(given = c("Mark", "C"),
            family = "Wheldon",
-	   middle = "C",
            role = c("aut", "cre"),
            email = "wheldon@un.org",
            comment = c(ORCID = "0000-0002-6897-9644")),

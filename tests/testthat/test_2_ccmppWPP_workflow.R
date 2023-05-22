@@ -41,7 +41,7 @@ test_that("canada workflow with invalid inputs throws error.", {
         intermediate_output_folder = tempdir()),
                  "'x' must have columns")
 
-    y <- as_ccmpp_input_list(x)
+    y <- suppressWarnings(as_ccmpp_input_list(x)) # mig rates are very high
     attr(y[["fert_rate_age_f"]], "time_span") <- 9
     expect_error(ccmppWPP_workflow_one_country_variant(wpp_input = y,
         intermediate_output_folder = tempdir()),

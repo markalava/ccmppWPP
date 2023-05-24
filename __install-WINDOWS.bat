@@ -58,6 +58,14 @@ ECHO. ==========================================================================
 CHDIR .. && R CMD INSTALL --build --install-tests %CurrDirName% && CHDIR %CurrDirName%
 if %ERRORLEVEL% GEQ 1 PAUSE
 
+ECHO.
+ECHO.
+ECHO.
+ECHO.
+ECHO.
+ECHO.
+ECHO.
+
 
 ECHO. ================================================================================
 ECHO. TESTS - PACKAGED - testthat

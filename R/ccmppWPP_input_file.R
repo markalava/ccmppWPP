@@ -104,8 +104,8 @@ ccmppWPP_input_file_estimates <- function(input_file_path, base_year = NA) {
   mig_parameter <- readxl::read_xlsx(path = input_file_path,
                                      sheet = "mig_parameter",
                                      n_max = 1048576) %>%
-    arrange(time_start)##  %>%
-    ## pivot_longer(3:4, names_to = "indicator", values_to = "value")
+    arrange(time_start) %>%
+    pivot_longer(3:4, names_to = "indicator", values_to = "value")
 
   ccmppWPP_inputs_estimates <- list(pop_count_age_sex_base = as.data.frame(pop_count_age_sex_base),
                                     life_table_age_sex     = as.data.frame(life_table_age_sex),

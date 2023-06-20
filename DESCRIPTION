@@ -1,6 +1,6 @@
 Package: ccmppWPP
 Title: Cohort Component Population Projection
-Version: 0.0.1
+Version: 0.0.2.9000
 Date: 2022-04-20
 Authors@R: 
     c(person(given = c("Mark", "C"),

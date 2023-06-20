@@ -61,7 +61,7 @@ validate_ccmppWPP_object.ccmpp_output_df <- function(x, ...) {
     ##         by_col_names <- by_col_names[!by_col_names %in% start_name]
     ##         if (length(by_col_names)) {
     ##         start_vs_span_diff <-
-    ##             lapply(split(x[, c(by_col_names, span_name, start_name)], x[, by_col_names]),
+    ##             lapply(split(x[, c(by_col_names, span_name, start_name)], x[, by_col_names], drop = TRUE),
     ##                    function(z) {
     ##                 sum(head(z[, span_name], -1) - diff(z[, start_name], differences = 1))
     ##             })

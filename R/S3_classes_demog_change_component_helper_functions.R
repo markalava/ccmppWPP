@@ -238,8 +238,11 @@ guess_span_from_start <- function(x, span_name = character()) {
         S3_class_warning("Cannot determine ", span_name, " span; setting it to '1'.")
         return(1)
     } else {
-        min(diff(unique_x, differences = 1))
+        out <- min(diff(unique_x, differences = 1))
+        if (identical(span_name, "age_span"))
+            out <- out[!out == 1000]
     }
+    return(out)
 }
 
 #' @rdname guess_span_for_dimension

@@ -167,6 +167,25 @@ validate_ccmppWPP_object.demog_change_component_df <-
         ## SPANS:
         ## 1. Spans must be numeric (already tested above)
 
+        ## *If* There is an age_span of 1000, it must be the oldest age group
+        if (is_by_age(x) && any(x$age_span == 1000)) {
+            by_col_names <- sapply(demog_change_component_dims_x,
+                                   FUN = "get_df_col_names_for_dimensions", spans = FALSE)
+            by_col_names <- by_col_names[!by_col_names %in% "age_start"]
+            if (length(by_col_names)) {
+                ## E.g., have to do it by 'sex' or by 'indicator'
+                dump <- lapply(split(x, x[, by_col_names], drop = TRUE), function(z) {
+                    if (!identical(which(z$age_span == 1000), which(z$age_start == max(z$age_start, na.rm = TRUE))))
+                        stop(not_a_valid_object_msg("demog_change_component_df",
+                                                    "There are 'age_span's of 1000 associated with 'age_start' values that are not the oldest age."))
+                })
+            } else {
+                if (!identical(which(x$age_span == 1000), which(x$age_start == max(x$age_start, na.rm = TRUE))))
+                        stop(not_a_valid_object_msg("demog_change_component_df",
+                                                    "There are 'age_span's of 1000 associated with 'age_start' values that are not the oldest age."))
+            }
+        }
+
         ## SEX:
         ## 1. Levels must be in allowed list
         if (is_by_sex(x)) {

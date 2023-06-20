@@ -4,9 +4,9 @@ test_that("valid member created from a data frame", {
     x <- data.frame(
         expand.grid(time_start = 1950:1954, age_start = 0:4, sex = c("male", "female"),
                      time_span = 0, age_span = 1),
-                     value = 1:50)
-    expect_s3_class(pop_count_age_sex(x),
-                    "pop_count_age_sex")
+        value = 1:50)
+    x[x$age_start == 4, "age_span"] <- 1000
+    expect_s3_class(pop_count_age_sex(x), "pop_count_age_sex")
 })
 
 test_that("valid member created from a ccmpp input list", {
@@ -26,10 +26,11 @@ test_that("valid member created from a ccmpp input list", {
 ### MAKE OBJECT AVAILABLE TO REMAINDER OF TESTS
 
 pop_count_age_sex_df <-
-    pop_count_age_sex(data.frame(
-        expand.grid(time_start = 1950:1954, age_start = 0:4, sex = c("male", "female"),
-                     time_span = 0, age_span = 1),
-        value = 1:50))
+    data.frame(expand.grid(time_start = 1950:1954, age_start = 0:4, sex = c("male", "female"),
+                           time_span = 0, age_span = 1), value = 1:50)
+pop_count_age_sex_df[pop_count_age_sex_df$age_start == 4, "age_span"] <- 1000
+
+pop_count_age_sex_df <- pop_count_age_sex(pop_count_age_sex_df)
 
 
 ## CHECKS for 'ccmpp_output_df's: ---->
@@ -63,6 +64,7 @@ test_that("Spans not all equal", {
                                 to = max(x$age_start),
                                 by = 2),]
     y$age_span <- 2
+    y[y$age_start == 4, "age_span"] <- 1000
     expect_error(pop_count_age_sex(y), NA)
 
     ## Not OK to have multiple age_spans

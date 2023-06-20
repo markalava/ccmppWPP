@@ -55,14 +55,15 @@ subset_time.ccmpp_input_list <- function(x, times, include = TRUE) {
 #' @rdname subset_ccmpp_input_list
 #' @export
 subset_age.ccmpp_input_list <- function(x, ages, include = TRUE) {
+    stop("'ccmpp_input_df' objects cannot be subset by age.")
 
-    if (isFALSE(0 %in% ages))
-        stop("'0' must be in 'ages' for the result to be a valid 'ccmpp_input_list'.")
+    ## if (isFALSE(0 %in% ages))
+    ##     stop("'0' must be in 'ages' for the result to be a valid 'ccmpp_input_list'.")
 
-    for (df_nm in names(x)) {
-        if (is_by_age(x[[df_nm]]))
-            x[[df_nm]] <- subset_age(x[[df_nm]], ages = ages, include = include)
-    }
-    return(as_ccmpp_input_list(as.list(x)))
+    ## for (df_nm in names(x)) {
+    ##     if (is_by_age(x[[df_nm]]))
+    ##         x[[df_nm]] <- subset_age(x[[df_nm]], ages = ages, include = include)
+    ## }
+    ## return(as_ccmpp_input_list(as.list(x)))
 }
 

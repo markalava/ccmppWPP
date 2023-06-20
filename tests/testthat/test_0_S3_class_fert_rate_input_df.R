@@ -100,17 +100,23 @@ test_that("dimensions are correctly detected", {
 })
 
 
+test_that("Age spans of 1000 are correctly placed: *must* be with the oldest age group", {
+    x <- fert_rate_input_df_time_age
+    x[x$age_span == 1000, "age_span"] <- 1
+    expect_error(ccmpp_input_df(x), "Not all oldest 'age_start's have 'age_span' == 1000.")
+
+    x <- fert_rate_input_df_time_age
+    x[, "age_start"] <- rev(x$age_start)
+    expect_error(ccmpp_input_df(x),
+                 "There are 'age_span's of 1000 associated with 'age_start' values that are not the oldest age.")
+})
+
+
 test_that("sorting is handled properly", {
 
     x <- fert_rate_input_df_time_age
 
     ## Should not Fail: Should re-sort correctly
-
-    z <- x
-    z[, "age_start"] <- rev(z$age_start)
-    z <- fert_rate_age_f(z)
-    expect_s3_class(z, "fert_rate_age_f")
-    expect_identical(z$age_start, x$age_start)
 
     z <- x
     z[, "time_start"] <- rev(z$time_start)
@@ -119,6 +125,18 @@ test_that("sorting is handled properly", {
     expect_identical(z$time_start, x$time_start)
 
     z <- x[order(x$time_start, x$age_start),]
+    z <- fert_rate_age_f(z)
+    expect_s3_class(z, "fert_rate_age_f")
+    expect_identical(z$sex, x$sex)
+
+    set.seed(1)
+    z <- x[sample(1:nrow(x), replace = FALSE), c("age_start", "time_start", "value")]
+    z <- fert_rate_age_f(z)
+    expect_s3_class(z, "fert_rate_age_f")
+    expect_identical(z$sex, x$sex)
+
+    set.seed(2)
+    z <- x[sample(1:nrow(x), replace = FALSE), ]
     z <- fert_rate_age_f(z)
     expect_s3_class(z, "fert_rate_age_f")
     expect_identical(z$sex, x$sex)
@@ -196,6 +214,7 @@ test_that("zero fertility rate ages that are non-zero are caught", {
     y <- expand.grid(age_start = 0:5, time_start = 1950:1952,
                     age_span = 1, time_span = 1,
                     value = 1)
+    y[y$age_start == max(y$age_start), "age_span"] <- 1000
     y <- new_fert_rate_age_f(y,
              age_span = 1,
              time_span = 1,

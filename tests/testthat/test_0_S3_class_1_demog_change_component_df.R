@@ -248,3 +248,24 @@ test_that("Non-squareness is OK", {
     expect_true(identical(names(demog_change_component_attributes(y)),
                           c("dimensions", "value_type", "value_scale")))
 })
+
+
+test_that("Age spans of 1000 are associated with maximum age_start", {
+    ## More than one age_start with span 1000
+    x <- S3_demog_change_component_time_age_sex_test_df
+    x[x$age_start == 2, "age_span"] <- 1000
+    expect_error(demog_change_component_df(x),
+                 "There are 'age_span's of 1000 associated with 'age_start' values that are not the oldest age.")
+
+    ## Only one age_start with span 1000
+    x <- S3_demog_change_component_time_age_sex_test_df
+    x[x$age_span == 1000, "age_span"] <- 1
+    x[x$age_start == 2, "age_span"] <- 1000
+    expect_error(demog_change_component_df(x),
+                 "There are 'age_span's of 1000 associated with 'age_start' values that are not the oldest age.")
+
+    ## OK that no age_spans of 1000
+    x <- S3_demog_change_component_time_age_sex_test_df
+    x[x$age_span == 1000, "age_span"] <- 1
+    y <- demog_change_component_df(x)
+})

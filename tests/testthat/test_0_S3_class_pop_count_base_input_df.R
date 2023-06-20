@@ -43,11 +43,13 @@ test_that("Spans not all equal", {
                                 to = max(x$age_start),
                                 by = 2),]
     y$age_span <- 2
+    y[y$age_start == max(y$age_start), "age_span"] <- 1000
     expect_error(pop_count_age_sex_base(y), NA)
 
     ## Not OK to have multiple age_spans
     z <- rbind(y, x[x$age_start == 1,])
     z[z$age_start == 0, "age_span"] <- 1
+    z[z$age_start == max(z$age_start), "age_span"] <- 1000
     expect_error(pop_count_age_sex_base(z), "All spans must be equal to a \\*single\\* common value")
 })
 

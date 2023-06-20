@@ -62,8 +62,6 @@ new_demog_change_component_df <-
         stopifnot(is.character(class))
         structure(x,
                   dimensions = ensure_these_dimensions_correctly_ordered(dimensions),
-                  ## age_span = age_span,
-                  ## time_span = time_span,
                   value_type = value_type,
                   value_scale = value_scale,
                   ...,
@@ -115,9 +113,15 @@ prepare_df_for_demog_change_component_df <- function(x,
              paste0(req_cols_spans, collapse = "', '"),
              "'; some or all are missing.")
 
+    ## -------* Subset and Sort
+
+    ## Keep only required columns, the sort by time, then sex, then age
+    req_cols <- get_all_req_col_names_for_dimensions(dimensions)
+    ## x <- x[, intersect(req_cols, colnames(x))]
+    x <- sort_demog_change_component_df(x[, intersect(req_cols, colnames(x))])
+
     ## -------* Coerce numeric and character columns
 
-    req_cols <- get_all_req_col_names_for_dimensions(dimensions)
     req_cols_types <- get_all_req_col_types_for_dimensions(dimensions)
     char_cols <- intersect(req_cols[req_cols_types == "character"],
                            coln_x)
@@ -153,30 +157,69 @@ prepare_df_for_demog_change_component_df <- function(x,
     if ("time" %in% dimensions) {
         if ("time_span" %in% coln_x) time_span_undefined <- FALSE
         else {
-            diff_x <- guess_span_for_dimension_for_df(x, "time")
-            if (!(is.numeric(diff_x) & is.finite(diff_x))) {
+            ## Any 'sex' or 'indicator' cols?
+            by_col_names <- sapply(dimensions,
+                                   FUN = "get_df_col_names_for_dimensions", spans = FALSE)
+            by_col_names <- by_col_names[!by_col_names %in% "time_start"]
+
+            if (length(by_col_names)) {
+                ## E.g., have to do it by 'sex' or by 'indicator'
+                x <- do.call("rbind",
+                             lapply(split(x, x[, by_col_names], drop = TRUE), function(z) {
+                                 z$time_span <- guess_span_for_dimension_for_df(z, "time")
+                                 return(z)
+                             }))
+            } else {
+                x$time_span <- guess_span_for_dimension_for_df(x, "time")
+            }
+
+            if (!(all(is.numeric(x$time_span)) && all(is.finite(x$time_span)))) {
                 time_span_undefined <- TRUE
             } else {
                 S3_class_message("'time_span' is not a column in 'x'; setting 'x$time_span' to '",
-                                 diff_x,
+                                 toString(x$time_span[1:max(length(unique(x$time_span)), 10, na.rm = TRUE)]),
                                  "'.")
-                x$time_span <- diff_x
                 time_span_undefined <- FALSE
             }
         }
     }
 
     if ("age" %in% dimensions) {
+
+        ## ### !!!!!!!!!! TEMPORARY !!!!!!!!!!!!
+        ##     ## Replace '1000' in x$age_span
+        ##     if (!is.null(x$age_span)) {
+        ##         x$age_span[x$age_span == 1000] <- unique(x$age_span[x$age_span != 1000])[1]
+        ##         ##age_span <- age_span[!age_span == 1000]
+        ##     }
+        ## ### !!!!!!!!!! TEMPORARY !!!!!!!!!!!!
+
         if ("age_span" %in% coln_x) age_span_undefined <- FALSE
         else {
-            diff_x <- guess_span_for_dimension_for_df(x, "age")
-            if (!(is.numeric(diff_x) & is.finite(diff_x))) {
+            ## Any 'sex' or 'indicator' cols?
+            by_col_names <- sapply(dimensions,
+                                   FUN = "get_df_col_names_for_dimensions", spans = FALSE)
+            by_col_names <- by_col_names[!by_col_names %in% "age_start"]
+
+            if (length(by_col_names)) {
+                ## E.g., have to do it by 'sex' or by 'indicator'
+                x <- do.call("rbind",
+                             lapply(split(x, x[, by_col_names], drop = TRUE), function(z) {
+                                 z$age_span <- guess_span_for_dimension_for_df(z, "age")
+                                 z[z$age_start == max(z$age_start, na.rm = TRUE), "age_span"] <- 1000
+                                 return(z)
+                             }))
+            } else {
+                x$age_span <- guess_span_for_dimension_for_df(x, "age")
+                x[x$age_start == max(x$age_start, na.rm = TRUE), "age_span"] <- 1000
+            }
+
+            if (!(all(is.numeric(x$age_span)) && all(is.finite(x$age_span)))) {
                 age_span_undefined <- TRUE
             } else {
                 S3_class_message("'age_span' is not a column in 'x'; setting 'x$age_span' to '",
-                                 diff_x,
+                                 toString(x$age_span[1:max(length(unique(x$age_span)), 10, na.rm = TRUE)]),
                                  "'.")
-                x$age_span <- diff_x
                 age_span_undefined <- FALSE
             }
         }
@@ -185,32 +228,28 @@ prepare_df_for_demog_change_component_df <- function(x,
     ## If only one of age or time span undeterimined, set it equal to
     ## the other.
     if ("age" %in% dimensions && "time" %in% dimensions) {
-        if (identical(time_span_undefined + age_span_undefined, 2L))
+        if (identical(time_span_undefined + age_span_undefined, 2L)) {
             stop("'time_span' is not a column in 'x' and cannot determine it from 'x$time_span'.",
                  "\n",
                  "'age_span' is not a column in 'x' and cannot determine it from 'x$age_span'.")
-        else if (identical(time_span_undefined + age_span_undefined, 1L)) {
-            if (time_span_undefined) {
-                x$time_span <- x$age_span
-                S3_class_message("'time_span' is not a column in 'x'; setting 'x$time_span' to 'age_span', which is '",
-                                 unique(x$age_span)[1],
-                                 "'.")
-            } else if (age_span_undefined) {
-                x$age_span <- x$time_span
-                S3_class_message("'age_span' is not a column in 'x'; setting 'x$age_span' to 'time_span', which is '",
-                                 unique(x$time_span)[1],
-                                 "'.")
+        } else {
+            if (identical(time_span_undefined + age_span_undefined, 1L)) {
+                if (time_span_undefined) {
+                    x$time_span <- x$age_span
+                    S3_class_message("'time_span' is not a column in 'x'; setting 'x$time_span' to 'age_span', which is '",
+                                     unique(x$age_span)[1],
+                                     "'.")
+                } else {
+                    if (age_span_undefined) {
+                        x$age_span <- x$time_span
+                        S3_class_message("'age_span' is not a column in 'x'; setting 'x$age_span' to 'time_span', which is '",
+                                         unique(x$time_span)[1],
+                                         "'.")
+                    }
+                }
             }
         }
     }
-
-### !!!!!!!!!! TEMPORARY !!!!!!!!!!!!
-    ## Replace '1000' in x$age_span
-    if ("age" %in% dimensions && !is.null(x$age_span) && !is.null(age_span)) {
-        x$age_span[x$age_span == 1000] <- unique(x$age_span)[1]
-        ##age_span <- age_span[!age_span == 1000]
-    }
-### !!!!!!!!!! TEMPORARY !!!!!!!!!!!!
 
     ## -------* Values
 
@@ -236,11 +275,8 @@ prepare_df_for_demog_change_component_df <- function(x,
 
     ## -------* Other
 
-    ## Keep only required columns
-    x <- x[, req_cols]
-
-    ## Sort by time, then sex, then age
-    x <- sort_demog_change_component_df(x)
+    ## Keep only required columns and sort again (split might have re-ordered)
+    x <- sort_demog_change_component_df(x[, req_cols])
 
     ## row.names might have been muddled by sorting so reset
     row.names(x) <- NULL

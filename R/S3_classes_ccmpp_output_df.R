@@ -46,6 +46,7 @@ prepare_df_for_ccmpp_output_df <- function(x,
         value_scale = value_scale)
 
     age_span <- unique(li$df$age_span)
+    age_span <- age_span[!age_span == 1000] # SPECIAL age_span for open-ended age interval
     time_span <- unique(li$df$time_span)
 
     li$age_span <- (if (is.null(age_span)) double() else age_span)

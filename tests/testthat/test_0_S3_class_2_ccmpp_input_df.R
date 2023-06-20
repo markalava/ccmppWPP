@@ -220,6 +220,18 @@ test_that("Inconsistency between spans and starts are detected", {
 })
 
 
+test_that("Age spans of 1000 are correctly placed: *must* be with the oldest age group", {
+    x <- S3_demog_change_component_time_age_sex_test_df
+    x[x$age_span == 1000, "age_span"] <- 1
+    expect_error(ccmpp_input_df(x), "Not all oldest 'age_start's have 'age_span' == 1000.")
+
+    x <- S3_demog_change_component_time_age_sex_test_df
+    x[, "age_start"] <- rev(x$age_start)
+    expect_error(ccmpp_input_df(x),
+                 "There are 'age_span's of 1000 associated with 'age_start' values that are not the oldest age.")
+})
+
+
 test_that("non-squareness is caught", {
     x <- S3_demog_change_component_time_age_sex_test_df
 
@@ -240,15 +252,9 @@ test_that("non-squareness is caught", {
 
 test_that("sorting is handled properly", {
 
-    x <- S3_demog_change_component_time_age_sex_test_df
-
     ## Should not Fail: Should re-sort correctly
 
-    z <- x
-    z[, "age_start"] <- rev(z$age_start)
-    z <- ccmpp_input_df(z)
-    expect_s3_class(z, "ccmpp_input_df")
-    expect_identical(z$age_start, x$age_start)
+    x <- S3_demog_change_component_time_age_sex_test_df
 
     z <- x
     z[, "time_start"] <- rev(z$time_start)
@@ -259,6 +265,29 @@ test_that("sorting is handled properly", {
     z <- x[order(x$time_start, x$age_start),] #sex = male,female,male,female,...
     z <- ccmpp_input_df(z)
     expect_s3_class(z, "ccmpp_input_df")
+    expect_identical(z$sex, x$sex)
+
+    z <- x[, c("time_start", "sex", "age_start", "value")]
+    z <- ccmpp_input_df(z)
+    expect_s3_class(z, "ccmpp_input_df")
+    expect_identical(z$age_start, x$age_start)
+    expect_identical(z$time_start, x$time_start)
+    expect_identical(z$sex, x$sex)
+
+    set.seed(1)
+    z <- x[sample(nrow(x), replace = FALSE), c("time_start", "sex", "age_start", "value")]
+    z <- ccmpp_input_df(z)
+    expect_s3_class(z, "ccmpp_input_df")
+    expect_identical(z$age_start, x$age_start)
+    expect_identical(z$time_start, x$time_start)
+    expect_identical(z$sex, x$sex)
+
+    set.seed(2)
+    z <- x[sample(nrow(x), replace = FALSE), ]
+    z <- ccmpp_input_df(z)
+    expect_s3_class(z, "ccmpp_input_df")
+    expect_identical(z$age_start, x$age_start)
+    expect_identical(z$time_start, x$time_start)
     expect_identical(z$sex, x$sex)
 
 })

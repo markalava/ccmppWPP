@@ -14,7 +14,9 @@ srb_time <- srb(wpp_input_example$srb)
 
 test_that("age dimension detected", {
     x <- srb_time
-    y <- cbind(x, age_start = 0, age_span = 1)
+    y <- rbind(cbind(x, age_start = 0, age_span = 1),
+               cbind(x, age_start = 2, age_span = 1000))
+    y <- sort_demog_change_component_df(y)
     z <- ccmppWPP:::new_srb(y, time_span = 1)
     attr(z, "dimensions") <- c(attr(z, "dimensions"), "age")
     attr(z, "age_span") <- 1

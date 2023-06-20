@@ -33,7 +33,7 @@ validate_ccmpp_in_out <- function(x, obj_class, ...) {
                    sort_demog_change_component_df(x)[, order_cols]))
         stop(not_a_valid_object_msg(obj_class,
                                     "'x' must be sorted by indicator, time, rev(sex), age_start (see ?",
-                                    obj_class, "ccmpp_input_df for class definition)."))
+                                    obj_class, "for class definition)."))
 
     ## AGE:
     ## Must start at age 0 within indicator * time * sex
@@ -67,15 +67,22 @@ validate_ccmpp_in_out <- function(x, obj_class, ...) {
     if (has_time_span_zero(x))
         attr_w_span_names <- attr_w_span_names[!attr_w_span_names %in% "time"]
 
-    if (!identical(length(unique(unlist(x[, paste0(attr_w_span_names, "_span")]))), 1L)) {
+    spans_in_df <- unlist(lapply(paste0(attr_w_span_names, "_span"), function(z, df) {
+        df <- df[[z]]
+        if (identical(z, "age_span")) df <- df[!df == 1000]
+        return(unique(df))
+    }, df = x))
+    if (!identical(length(unique(spans_in_df)), 1L)) {
         msg <- not_a_valid_object_msg(obj_class,
                                       "All spans must be equal to a *single* common value; instead they are:")
         for (att in attr_w_span_names) {
             span_name <- paste0(att, "_span")
+            spans <- unique(x[, span_name])
+            if (identical(span_name, "age_span")) spans <- spans[!spans == 1000]
             msg <- c(msg,
                      "\n\t", span_name, ":\n",
                      "\t\t",
-                     toString(unique(x[, span_name])))
+                     toString(spans))
         }
         stop(msg)
     }

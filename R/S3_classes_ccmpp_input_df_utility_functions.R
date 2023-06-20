@@ -5,7 +5,6 @@
 #' @rdname subset_demog_change_component_df
 #' @export
 subset_indicator.ccmpp_input_df <- function(x, indicators, include = TRUE) {
-
     x <- NextMethod()
     return(ccmpp_input_df(x,
                           value_type = value_type(x)))
@@ -14,7 +13,6 @@ subset_indicator.ccmpp_input_df <- function(x, indicators, include = TRUE) {
 #' @rdname subset_demog_change_component_df
 #' @export
 subset_time.ccmpp_input_df <- function(x, times, include = TRUE) {
-
     x <- NextMethod()
     return(ccmpp_input_df(x,
                           value_type = value_type(x)))
@@ -23,16 +21,15 @@ subset_time.ccmpp_input_df <- function(x, times, include = TRUE) {
 #' @rdname subset_demog_change_component_df
 #' @export
 subset_age.ccmpp_input_df <- function(x, ages, include = TRUE) {
-
-    x <- NextMethod()
-    return(ccmpp_input_df(x,
-                          value_type = value_type(x)))
+    ## x <- NextMethod()
+    ## return(ccmpp_input_df(x,
+    ##                       value_type = value_type(x)))
+    stop("'ccmpp_input_df' objects cannot be subset by age.")
 }
 
 #' @rdname subset_demog_change_component_df
 #' @export
 subset_sex.ccmpp_input_df <- function(x, sexes, include = TRUE) {
-
     x <- NextMethod()
     return(ccmpp_input_df(x,
                           value_type = value_type(x)))

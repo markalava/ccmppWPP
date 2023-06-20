@@ -111,7 +111,7 @@ verify_spans_equal_start_differences <- function(x, obj_class) {
         attr_w_span_names[attr_w_span_names %in% demog_change_component_dims_x]
 
     ## If time_span is zero remove it from 'attr_w_span_names': This
-    ## span _not_ be checked for consistency with first
+    ## span will _not_ be checked for consistency with first
     ## differences of time_start.
     if (has_time_span_zero(x))
         attr_w_span_names <- attr_w_span_names[!attr_w_span_names %in% "time"]
@@ -126,12 +126,6 @@ verify_spans_equal_start_differences <- function(x, obj_class) {
         ## Get the values of the attribute and column from x for
         ## use later.
         span_attr <- attr(x, span_name)
-        start_col <- x[[start_name]]
-
-        ## ## Check length of attribute
-        ## if (!identical(length(span_attr), 1L))
-        ##     stop(not_a_valid_object_msg("ccmpp_input_df",
-        ##                                 "'", span_name, "' is not of length 1."))
 
         ## Spans must be consistent with the differences between the
         ## '_start' column values.
@@ -143,13 +137,29 @@ verify_spans_equal_start_differences <- function(x, obj_class) {
         if (length(by_col_names)) {
             ## E.g., have to do it by 'sex' or by 'indicator'
             start_vs_span_diff <-
-                lapply(split(x[, c(by_col_names, span_name, start_name)], x[, by_col_names]),
-                       function(z) {
-                    sum(head(z[, span_name], -1) - diff(z[, start_name], differences = 1))
+                lapply(split(x[, c(by_col_names, span_name, start_name)],
+                             x[, by_col_names], drop = TRUE), function(z) {
+                    if (identical(span_name, "age_span")) {
+                        if (!all(z[z$age_start == max(z$age_start, na.rm = TRUE), "age_span"] == 1000))
+                            stop(not_a_valid_object_msg(obj_class,
+                                                        "Not all oldest 'age_start's have 'age_span' == 1000."))
+                        to_check <- which(!z$age_span == 1000)
+                    } else {
+                        to_check <- 1:nrow(z)
+                    }
+                    return(sum(head(z[to_check, span_name], -1) -
+                               diff(z[to_check, start_name], differences = 1)))
                 })
         } else {
+            if (identical(span_name, "age_span")) {
+                if (!all(x[x$age_start == max(x$age_start, na.rm = TRUE), "age_span"] == 1000))
+                            stop(not_a_valid_object_msg(obj_class,
+                                                        "Not all oldest 'age_start's have 'age_span' == 1000."))
+                to_check <- which(!x$age_span == 1000)
+            } else to_check <- 1:nrow(x)
             start_vs_span_diff <-
-                sum(head(x[, span_name], -1) - diff(x[, start_name], differences = 1))
+                sum(head(x[to_check, span_name], -1) -
+                    diff(x[to_check, start_name], differences = 1))
         }
         if (any(unlist(start_vs_span_diff) != 0))
             stop(not_a_valid_object_msg(obj_class,
@@ -161,11 +171,15 @@ verify_spans_equal_start_differences <- function(x, obj_class) {
         ## attribute would be defined if non-constant spans are
         ## allowed so, for now, assume the attribute will just list
         ## the unique values.
-        if (!identical(sort(as.numeric(unique(x[[span_name]]))), sort(as.numeric(span_attr))))
+        unique_span <- unique(x[[span_name]])
+        if (identical(span_name, "age_span"))
+            unique_span <- unique_span[!unique_span == 1000]
+        if (!identical(sort(as.numeric(unique_span)), sort(as.numeric(span_attr)))) {
             stop(not_a_valid_object_msg(obj_class,
                                         "The (sorted unique) spacings between each 'x$",
                                         start_name,
                                         "' do not equal 'attr(x, \"", span_name, "\")'."))
+        }
     }
     return(TRUE)
 }

@@ -17,6 +17,8 @@ strip_ccmpp_input_list_classes_attribute <- function(class_att) {
 #' elements required for an object to be a valid
 #' \code{ccmpp_input_list}.
 #'
+#' @seealso ccmpp_input_list
+#'
 #' @return Character vector naming required elements.
 #' @author Mark Wheldon
 #' @export
@@ -83,7 +85,8 @@ new_ccmpp_input_list <-
 #' \code{\link{ccmpp_input_df}}.
 #'
 #' @seealso \code{\link{as_ccmpp_input_list.list}} for creating
-#'     \code{ccmpp_input_list}s lists.
+#'     \code{ccmpp_input_list}s from already make lists rather than
+#'     the separate elements.
 #'
 #' @family ccmpp_input_objects
 #'

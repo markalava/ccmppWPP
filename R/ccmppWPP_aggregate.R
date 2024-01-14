@@ -299,9 +299,9 @@ ccmppWPP_compile <- function(locationIDs, base_year, last_year, intermediate_out
 
     # load ccmpp intermediate outputs for one country
     ccmpp_output <- NULL
-    has_outputs <- file.exists(paste0(intermediate_output_folder, locationIDs[i], "_ccmpp_output.RData"))
+    has_outputs <- file.exists(paste0(intermediate_output_folder, locationIDs[i], "_ccmpp_output.rda"))
     if (has_outputs) {
-      load(paste0(intermediate_output_folder, locationIDs[i], "_ccmpp_output.RData")) # need to verify whether we changed ccmpp intermediates to rda
+      load(paste0(intermediate_output_folder, locationIDs[i], "_ccmpp_output.rda")) # need to verify whether we changed ccmpp intermediates to rda
     } else {
       log_print(paste0("Warning: No CCMPP outputs available for LocID = ", locationIDs[i],". This location is excluded from aggregate."))
       next()

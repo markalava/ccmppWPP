@@ -135,7 +135,7 @@ ccmppWPP_project_one_country_variant <- function(ccmpp_input, atr) {
   life_table_age_b <- lt_complete_loop_over_time(mx = mx_b, sex="both", a0rule = atr$a0rule, OAnew = 130)
 
   # rbind both sexes life tables with life tables by sex
-  lt_complete_age_sex   <- rbind(ccmpp_input$life_table_age_sex, life_table_age_b)
+  lt_complete_age_sex   <- rbind(ccmpp_input$life_table_age_sex[ccmpp_input$life_table_age_sex$sex != "both",], life_table_age_b)
 
   intermediate_output <- list(pop_count_age_sex = pop_count_age_sex,
                               death_count_cohort_sex = ccmpp_output$death_count_cohort_sex,

@@ -980,17 +980,6 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
   attr(inputs_instant, "variant") <- "Instant replacement fertility"
   attr(inputs_instant, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
 
-  # momentum is instant replacement asfr, constant mortality, zero migration
-  inputs_momentum <- inputs_instant
-  inputs_momentum$life_table_age_sex <- life_table_age_sex_constant
-  inputs_momentum$mig_net_count_age_sex$value <- 0
-  inputs_momentum$mig_net_count_tot_b$value <- 0
-  # assign attributes
-  attr(inputs_momentum, "locid") <- attributes(ccmppWPP_estimates)$locid
-  attr(inputs_momentum, "locname") <- attributes(ccmppWPP_estimates)$locname
-  attr(inputs_momentum, "variant") <- "Momentum"
-  attr(inputs_momentum, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
-
   # no change is medium inputs with constant fertility and constant mortality
   inputs_nochange <- inputs_constant_fert
   inputs_nochange$life_table_age_sex <- life_table_age_sex_constant
@@ -1008,6 +997,17 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
   attr(inputs_constant_mort, "locname") <- attributes(ccmppWPP_estimates)$locname
   attr(inputs_constant_mort, "variant") <- "Constant mortality"
   attr(inputs_constant_mort, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
+  
+  # momentum is constant mortality, momentum fertility to maintain NRR = 1, and zero migration
+  inputs_momentum <- inputs_constant_mort
+  inputs_momentum$fert_rate_age_f <- fert_rate_age_f_momentum
+  inputs_momentum$mig_net_count_age_sex$value <- 0
+  inputs_momentum$mig_net_count_tot_b$value <- 0
+  # assign attributes
+  attr(inputs_momentum, "locid") <- attributes(ccmppWPP_estimates)$locid
+  attr(inputs_momentum, "locname") <- attributes(ccmppWPP_estimates)$locname
+  attr(inputs_momentum, "variant") <- "Momentum"
+  attr(inputs_momentum, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
 
   # zero migration is medium inputs but zero migration
   inputs_zeromig <- inputs_medium

@@ -365,26 +365,6 @@ ccmppWPP_compute_WPP_outputs <- function(ccmpp_output, atr) {
   # net migrants
   mig_net_count_tot_sex    <- sum_last_column(mig_net_count_age_sex_1x1[, c("time_start", "time_span", "sex", "value")])
 
-  # compute crude birth, death and net migration rates, as well as rate of natural increase
-  birth_rate_crude        <- data.frame(time_start = birth_count_tot_sex$time_start[birth_count_tot_sex$sex == "both"],
-                                        time_span  = birth_count_tot_sex$time_span[birth_count_tot_sex$sex == "both"],
-                                        value = birth_count_tot_sex$value[birth_count_tot_sex$sex == "both"] /
-                                          exposure_count_tot_sex$value[exposure_count_tot_sex$sex == "both"] * 1000)
-
-  death_rate_crude        <- data.frame(time_start = death_count_tot_sex$time_start[death_count_tot_sex$sex == "both"],
-                                        time_span  = death_count_tot_sex$time_span[death_count_tot_sex$sex == "both"],
-                                        value = death_count_tot_sex$value[death_count_tot_sex$sex == "both"] /
-                                          exposure_count_tot_sex$value[exposure_count_tot_sex$sex == "both"] * 1000)
-
-  mig_net_rate_crude      <- data.frame(time_start = mig_net_count_tot_sex$time_start[mig_net_count_tot_sex$sex == "both"],
-                                        time_span  = mig_net_count_tot_sex$time_span[mig_net_count_tot_sex$sex == "both"],
-                                        value = mig_net_count_tot_sex$value[mig_net_count_tot_sex$sex == "both"] /
-                                          exposure_count_tot_sex$value[exposure_count_tot_sex$sex == "both"] * 1000)
-
-  pop_change_rate_natural <- data.frame(time_start = birth_rate_crude$time_start,
-                                        time_span  = birth_rate_crude$time_span,
-                                        value      = birth_rate_crude$value - death_rate_crude$value)
-
   # compute average annual growth rate
   pop_count_tot_b         <- pop_count_tot_sex[pop_count_tot_sex$sex == "both",]
   pop_change_rate_tot     <- data.frame(time_start = pop_count_tot_b$time_start[1:(nrow(pop_count_tot_b)-1)],
@@ -479,6 +459,26 @@ ccmppWPP_compute_WPP_outputs <- function(ccmpp_output, atr) {
                                             value      = pop_count_tot_sex_mid$value[pop_count_tot_sex_mid$sex == "male"] /
                                               pop_count_tot_sex_mid$value[pop_count_tot_sex_mid$sex == "female"] * 100)
 
+  # compute crude birth, death and net migration rates, as well as rate of natural increase
+  birth_rate_crude        <- data.frame(time_start = birth_count_tot_sex$time_start[birth_count_tot_sex$sex == "both"],
+                                        time_span  = birth_count_tot_sex$time_span[birth_count_tot_sex$sex == "both"],
+                                        value = birth_count_tot_sex$value[birth_count_tot_sex$sex == "both"] /
+                                          pop_count_tot_sex_mid$value[pop_count_tot_sex_mid$sex == "both"] * 1000)
+  
+  death_rate_crude        <- data.frame(time_start = death_count_tot_sex$time_start[death_count_tot_sex$sex == "both"],
+                                        time_span  = death_count_tot_sex$time_span[death_count_tot_sex$sex == "both"],
+                                        value = death_count_tot_sex$value[death_count_tot_sex$sex == "both"] /
+                                          pop_count_tot_sex_mid$value[pop_count_tot_sex_mid$sex == "both"] * 1000)
+  
+  mig_net_rate_crude      <- data.frame(time_start = mig_net_count_tot_sex$time_start[mig_net_count_tot_sex$sex == "both"],
+                                        time_span  = mig_net_count_tot_sex$time_span[mig_net_count_tot_sex$sex == "both"],
+                                        value = mig_net_count_tot_sex$value[mig_net_count_tot_sex$sex == "both"] /
+                                          pop_count_tot_sex_mid$value[pop_count_tot_sex_mid$sex == "both"] * 1000)
+  
+  pop_change_rate_natural <- data.frame(time_start = birth_rate_crude$time_start,
+                                        time_span  = birth_rate_crude$time_span,
+                                        value      = birth_rate_crude$value - death_rate_crude$value)
+  
   # compute population percentage distributions by age
 
   # single year of age

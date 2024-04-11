@@ -874,8 +874,8 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
   # extract life table inputs for constant-mortality variant
 
   # take sex-specific life tables from last observed period
-  lt_last_estimated <- ccmppWPP_medium$lt_complete_age_sex[ccmppWPP_medium$lt_complete_age_sex$time_start == projection_start_year-1 &
-                                                              ccmppWPP_medium$lt_complete_age_sex$sex %in% c("male","female"),]
+  lt_last_estimated <- ccmppWPP_estimates$lt_complete_age_sex[ccmppWPP_estimates$lt_complete_age_sex$time_start == projection_start_year-1 &
+                                                              ccmppWPP_estimates$lt_complete_age_sex$sex %in% c("male","female"),]
   # initialize constant-mortality output
   lt_constant <- list()
   # repeat starting period sex-specific life table for each period in projection horizon

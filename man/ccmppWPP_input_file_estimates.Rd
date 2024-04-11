@@ -12,7 +12,7 @@ ccmppWPP_input_file_estimates(input_file_path, base_year = NA)
 \item{base_year}{numeric. If NA then base year will be read from excel input file.}
 }
 \value{
-a list of data frames -- one for each type of input needed to produce the estimates variant with the ccmpp. 
+a list of data frames -- one for each type of input needed to produce the estimates variant with the ccmpp.
 attributes assigned to the list describe the location id and name, a0 rule and variant
 }
 \description{

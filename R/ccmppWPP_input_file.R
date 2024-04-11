@@ -833,12 +833,12 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
 
   ############################
   ############################
-  # extract asfr inputs for constant-fertility variant (constant at first projected) (for 2022 revision to avoid a Covid year)
+  # extract asfr inputs for constant-fertility variant (constant at first last estimate) (for 2022 revision we used first projected to avoid a Covid year)
 
-  asfr_first_projected <- ccmppWPP_medium$fert_rate_age_f[ccmppWPP_medium$fert_rate_age_f$time_start == projection_start_year,]
+  asfr_last_estimated <- ccmppWPP_estimates$fert_rate_age_f[ccmppWPP_estimates$fert_rate_age_f$time_start == projection_start_year - 1,]
   fert_rate_age_f_constant <- NULL
   for (i in 1:length(projection_times)) {
-    asfr_add <- asfr_first_projected
+    asfr_add <- asfr_last_estimated
     asfr_add$time_start <- projection_times[i]
     fert_rate_age_f_constant <- rbind(fert_rate_age_f_constant, asfr_add)
   }
@@ -874,14 +874,14 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
   # extract life table inputs for constant-mortality variant
 
   # take sex-specific life tables from last observed period
-  lt_first_projected <- ccmppWPP_medium$lt_complete_age_sex[ccmppWPP_medium$lt_complete_age_sex$time_start == projection_start_year &
+  lt_last_estimated <- ccmppWPP_medium$lt_complete_age_sex[ccmppWPP_medium$lt_complete_age_sex$time_start == projection_start_year-1 &
                                                               ccmppWPP_medium$lt_complete_age_sex$sex %in% c("male","female"),]
   # initialize constant-mortality output
   lt_constant <- list()
   # repeat starting period sex-specific life table for each period in projection horizon
   for (i in 1:length(projection_times)) {
 
-    lt_time            <- lt_first_projected
+    lt_time            <- lt_last_estimated
     lt_time$time_start <- projection_times[i]
     lt_constant[[i]]   <- lt_time
 

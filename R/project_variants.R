@@ -139,8 +139,7 @@ pasfr_given_tfr <- function(PasfrGlobalNorm, PasfrNorm, pasfr_observed, tfr_obse
     
     # assemble the country-specific inputs required for the bayesPop:::kantorova.pasfr function
     inputs <- list(PASFRpattern = data.frame(PasfrNorm = "Global Norm"),
-                           # observed pasfr can be overwritten here if different from the initial pasfr file
-                           observed = list(PASFR = as.matrix(pasfr_observed)))
+                           observed = list(PASFR = as.matrix(pasfr_observed*100)))
     
     # computation
     #############
@@ -158,9 +157,7 @@ pasfr_given_tfr <- function(PasfrGlobalNorm, PasfrNorm, pasfr_observed, tfr_obse
 
   }
   
-  # as percentage
-  pasfr <- pasfr*100
-  
+
   # set time as column names and age as row names
   colnames(pasfr) <- years_projection
   rownames(pasfr) <- rownames(pasfr_observed)

@@ -161,6 +161,7 @@ pasfr_given_tfr <- function(PasfrGlobalNorm, PasfrNorm, pasfr_observed, tfr_obse
   # set time as column names and age as row names
   colnames(pasfr) <- years_projection
   rownames(pasfr) <- rownames(pasfr_observed)
+  pasfr <- pasfr*100
 
   return(pasfr)
   

@@ -480,7 +480,7 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
   # project pasfr given projected tfr and historical observed pasfr
   pasfr_medium <- pasfr_given_tfr(PasfrGlobalNorm,
                                   PasfrNorm = PasfrNorm,
-                                  pasfr_observed = pasfr_observed,
+                                  pasfr_observed = pasfr_observed_matrix,
                                   tfr_observed_projected = tfr_observed_projected,
                                   years_projection = projection_years)
 

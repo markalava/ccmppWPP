@@ -139,7 +139,7 @@ pasfr_given_tfr <- function(PasfrGlobalNorm, PasfrNorm, pasfr_observed, tfr_obse
     
     # assemble the country-specific inputs required for the bayesPop:::kantorova.pasfr function
     inputs <- list(PASFRpattern = data.frame(PasfrNorm = "Global Norm"),
-                           observed = list(PASFR = as.matrix(pasfr_observed*100)))
+                           observed = list(PASFR = pasfr_observed))
     
     # computation
     #############
@@ -150,6 +150,34 @@ pasfr_given_tfr <- function(PasfrGlobalNorm, PasfrNorm, pasfr_observed, tfr_obse
                                         tfr.med = tfr_observed_projected[length(tfr_observed_projected)], 
                                         annual = TRUE, 
                                         nr.est.points = num_points)
+    
+    # extra step to keep constant ASFR at youngest ages if trends increase instead of decrease 
+    # for ages 10-19 
+    asfr_tfr <- t(t(pasfr) * tfr_observed_projected[(length(tfr_observed_projected)- ncol(pasfr) +1):length(tfr_observed_projected)])
+    for(t in 1:(ncol(asfr_tfr)-1)){
+      for(a in 1:10){
+        if (asfr_tfr[a,t+1] > asfr_tfr[a,t]) {
+          asfr_tfr[a,t+1] <- asfr_tfr[a,t]
+        }
+      }
+    }
+    
+    # extra step to keep constant ASFR less than 5* starting value at oldest ages if trends increase instead of decrease compared to baseline
+    # 45-54
+    asfr_base <- inputs$observed$PASFR[,ncol(inputs$observed$PASFR)] * tfr_observed_projected[length(tfr_observed_projected)- ncol(asfr_tfr)]
+    for(t in 1:(ncol(asfr_tfr))){
+      for(a in 36:45){
+        if (asfr_tfr[a,t] > (asfr_base[a] * 5)) {
+            asfr_tfr[a,t] <- asfr_base[a] *5
+        }
+      }
+    }
+    
+    # now we scale back to original TFR in case anything has changed by proportionally adjusting asfr in non-constrained age groups
+    diff_tfr <- tfr_observed_projected[(length(tfr_observed_projected)- ncol(pasfr) +1):length(tfr_observed_projected)] - colSums(asfr_tfr)
+    asfr_tfr[11:35,] <- asfr_tfr[11:35,] + t(diff_tfr * t(asfr_tfr[11:35,])/colSums(asfr_tfr[11:35,]))
+    pasfr <- t(t(asfr_tfr)/colSums(asfr_tfr))
+
   } else {
     
     pasfr_last_observed <- as.matrix(pasfr_observed[, ncol(pasfr_observed)])

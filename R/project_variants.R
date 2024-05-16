@@ -180,7 +180,7 @@ pasfr_given_tfr <- function(PasfrGlobalNorm, PasfrNorm, pasfr_observed, tfr_obse
 
   } else {
     
-    pasfr_last_observed <- as.matrix(pasfr_observed[, ncol(pasfr_observed)])
+    pasfr_last_observed <- as.matrix(pasfr_observed[, ncol(pasfr_observed)])/100
     pasfr <- pasfr_last_observed[, rep(1, length(years_projection))]
 
   }

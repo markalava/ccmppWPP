@@ -164,7 +164,7 @@ pasfr_given_tfr <- function(PasfrGlobalNorm, PasfrNorm, pasfr_observed, tfr_obse
     
     # extra step to keep constant ASFR less than 5* starting value at oldest ages if trends increase instead of decrease compared to baseline
     # 45-54
-    asfr_base <- inputs$observed$PASFR[,ncol(inputs$observed$PASFR)] * tfr_observed_projected[length(tfr_observed_projected)- ncol(asfr_tfr)]
+    asfr_base <- inputs$observed$PASFR[,ncol(inputs$observed$PASFR)]/100 * tfr_observed_projected[length(tfr_observed_projected)- ncol(asfr_tfr)]
     for(t in 1:(ncol(asfr_tfr))){
       for(a in 36:45){
         if (asfr_tfr[a,t] > (asfr_base[a] * 5)) {

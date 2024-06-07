@@ -775,7 +775,7 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
 
   pasfr_low <- pasfr_given_tfr(PasfrGlobalNorm = PasfrGlobalNorm,
                                PasfrNorm = PasfrNorm,
-                               pasfr_observed = pasfr_estimates[11:55,],
+                               pasfr_observed = pasfr_estimates[11:55,]*100,
                                tfr_observed_projected = c(tfr_est, tfr_low),
                                years_projection = projection_times,
                                num_points = 15)
@@ -807,7 +807,7 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
 
   pasfr_high <- pasfr_given_tfr(PasfrGlobalNorm = PasfrGlobalNorm,
                                 PasfrNorm = PasfrNorm,
-                                pasfr_observed = pasfr_estimates[11:55,],
+                                pasfr_observed = pasfr_estimates[11:55,]*100,
                                 tfr_observed_projected = c(tfr_est, tfr_high),
                                 years_projection = projection_times,
                                 num_points = 15)

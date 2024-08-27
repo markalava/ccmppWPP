@@ -262,12 +262,12 @@ ccmppWPP_aggregate <- function(locationIDs, base_year, last_year, intermediate_o
   } )
   mig_net_count_age_sex <- do.call(rbind, mig_net_count_age_sex) %>%
     dplyr::filter(sex %in% c("female", "male")) %>%
-    mutate(value = round(value, 0)) %>%
     group_by(time_start, time_span, sex, age_start, age_span) %>%
     summarise(value = sum(value)) %>%
     ungroup() %>%
     pivot_wider(names_from = sex, values_from = value) %>%
     mutate(both = female + male) %>%
+    mutate(both = round(both, 0)) %>%
     pivot_longer(5:7, names_to = "sex", values_to = "value") %>%
     arrange(time_start, time_span, sex, age_start, age_span, value)
 
@@ -299,9 +299,9 @@ ccmppWPP_compile <- function(locationIDs, base_year, last_year, intermediate_out
 
     # load ccmpp intermediate outputs for one country
     ccmpp_output <- NULL
-    has_outputs <- file.exists(paste0(intermediate_output_folder, locationIDs[i], "_ccmpp_output.RData"))
+    has_outputs <- file.exists(paste0(intermediate_output_folder, locationIDs[i], "_ccmpp_output.rda"))
     if (has_outputs) {
-      load(paste0(intermediate_output_folder, locationIDs[i], "_ccmpp_output.RData")) # need to verify whether we changed ccmpp intermediates to rda
+      load(paste0(intermediate_output_folder, locationIDs[i], "_ccmpp_output.rda")) # need to verify whether we changed ccmpp intermediates to rda
     } else {
       log_print(paste0("Warning: No CCMPP outputs available for LocID = ", locationIDs[i],". This location is excluded from aggregate."))
       next()

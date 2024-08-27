@@ -480,7 +480,7 @@ ccmppWPP_input_file_medium <- function(tfr_median_all_locs, # medium tfr from ba
   # project pasfr given projected tfr and historical observed pasfr
   pasfr_medium <- pasfr_given_tfr(PasfrGlobalNorm,
                                   PasfrNorm = PasfrNorm,
-                                  pasfr_observed = pasfr_observed,
+                                  pasfr_observed = pasfr_observed_matrix*100,
                                   tfr_observed_projected = tfr_observed_projected,
                                   years_projection = projection_years)
 
@@ -775,7 +775,7 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
 
   pasfr_low <- pasfr_given_tfr(PasfrGlobalNorm = PasfrGlobalNorm,
                                PasfrNorm = PasfrNorm,
-                               pasfr_observed = pasfr_estimates[11:55,],
+                               pasfr_observed = pasfr_estimates[11:55,]*100,
                                tfr_observed_projected = c(tfr_est, tfr_low),
                                years_projection = projection_times,
                                num_points = 15)
@@ -807,7 +807,7 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
 
   pasfr_high <- pasfr_given_tfr(PasfrGlobalNorm = PasfrGlobalNorm,
                                 PasfrNorm = PasfrNorm,
-                                pasfr_observed = pasfr_estimates[11:55,],
+                                pasfr_observed = pasfr_estimates[11:55,]*100,
                                 tfr_observed_projected = c(tfr_est, tfr_high),
                                 years_projection = projection_times,
                                 num_points = 15)
@@ -833,12 +833,12 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
 
   ############################
   ############################
-  # extract asfr inputs for constant-fertility variant (constant at first projected) (for 2022 revision to avoid a Covid year)
+  # extract asfr inputs for constant-fertility variant (constant at first last estimate) (for 2022 revision we used first projected to avoid a Covid year)
 
-  asfr_first_projected <- ccmppWPP_medium$fert_rate_age_f[ccmppWPP_medium$fert_rate_age_f$time_start == projection_start_year,]
+  asfr_last_estimated <- ccmppWPP_estimates$fert_rate_age_f[ccmppWPP_estimates$fert_rate_age_f$time_start == projection_start_year - 1,]
   fert_rate_age_f_constant <- NULL
   for (i in 1:length(projection_times)) {
-    asfr_add <- asfr_first_projected
+    asfr_add <- asfr_last_estimated
     asfr_add$time_start <- projection_times[i]
     fert_rate_age_f_constant <- rbind(fert_rate_age_f_constant, asfr_add)
   }
@@ -868,20 +868,94 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
 
   }
   fert_rate_age_f_instant <- do.call(rbind, fert_rate_age_f_instant)
+  
+  ############################
+  ############################
+  #   compute ASFR for accelerated adolescent birth rate decline scenario
+  
+  asfr5 <- sum_five_year_age_groups(indata = ccmppWPP_medium$fert_rate_age_f, byvar = "time_start") %>% 
+    mutate(value = value/5 *1000)
+  if (max(asfr5$value[asfr5$age_start == 15]) > 10) { # if abr > 10 at any point during projection period, then do this scenario
+    
+    fert_rate_age_f_accelerated_abr <- NULL
+    proj_goes_below_10 <- any(asfr5$value[asfr5$age_start == 15] < 10)
+    yr_abr_below_10 <- ifelse(proj_goes_below_10, min(asfr5$time_start[asfr5$age_start == 15 & asfr5$value < 10]), 2101) # year that projected abr falls below 10
+    yrs_to_adj <- projection_start_year:(yr_abr_below_10-1)
+    for(i in 1:length(yrs_to_adj)) {
+      if (i == 1) {
+        asfr_adj <- ccmppWPP_estimates$fert_rate_age_f %>% 
+          dplyr::filter(time_start == projection_start_year-1,
+                        age_start < 20) %>% 
+          mutate(value = value * 0.8,
+                 time_start = time_start + 1) %>% 
+          bind_rows(ccmppWPP_medium$fert_rate_age_f %>% 
+                      dplyr::filter(time_start == projection_start_year,
+                                    age_start >= 20))
+        abr_adj <- sum(asfr_adj$value[asfr_adj$age_start %in% 15:19])/5 * 1000
+        below_10 <- abr_adj < 10
+      } else {
+        if (!below_10) { # if abr still above 10 then adjust downward by 20%
+          asfr_adj <- asfr_adj %>% 
+            dplyr::filter(age_start < 20) %>% 
+            mutate(value = value * 0.8,
+                   time_start = yrs_to_adj[i]) %>% 
+            bind_rows(ccmppWPP_medium$fert_rate_age_f %>% 
+                        dplyr::filter(time_start == yrs_to_adj[i],
+                                      age_start >= 20))
+          # recompute adjusted abr
+          abr_adj <- sum(asfr_adj$value[asfr_adj$age_start %in% 15:19])/5 * 1000
+          below_10 <- abr_adj < 10
+        } else {
+          asfr_adj <- asfr_adj %>% 
+            dplyr::filter(age_start < 20) %>% 
+            mutate(time_start = yrs_to_adj[i]) %>% # keep constant if adjustment has already put abr below 10
+            bind_rows(ccmppWPP_medium$fert_rate_age_f %>% 
+                        dplyr::filter(time_start == yrs_to_adj[i],
+                                      age_start >= 20))
+        }
+      }
+      fert_rate_age_f_accelerated_abr <- rbind(fert_rate_age_f_accelerated_abr, asfr_adj)
+    }
+    fert_rate_age_f_accelerated_abr <- fert_rate_age_f_accelerated_abr %>% 
+      bind_rows(ccmppWPP_medium$fert_rate_age_f %>% dplyr::filter(!(time_start %in% yrs_to_adj)))
+  
+  } else {
+    
+    fert_rate_age_f_accelerated_abr <- ccmppWPP_medium$fert_rate_age_f
+  }
+  
+  ############################
+  ############################
+  #   compute ASFR for accelerated adolescent birth rate decline with recuperation scenario
+  # recuperation is half of the difference in abr between accelerated abr decline and medium variant
+  # added back to cohorts 10 years later
+  asfr_recup <- ccmppWPP_medium$fert_rate_age_f %>% 
+    mutate(diff = value - fert_rate_age_f_accelerated_abr$value,
+           half_diff = diff/2,
+           time_start = time_start + 10,
+           age_start = age_start + 10) %>% 
+    dplyr::filter(age_start >= 20 & age_start <= 29) %>% 
+    dplyr::select(time_start, age_start, half_diff)
+  
+  fert_rate_age_f_abr_recup <- fert_rate_age_f_accelerated_abr %>% 
+    left_join(asfr_recup, by = c("time_start", "age_start")) %>% 
+    mutate(half_diff = ifelse(is.na(half_diff), 0, half_diff),
+           value = value + half_diff) %>% 
+    dplyr::select(-half_diff)
 
   ############################
   ############################
   # extract life table inputs for constant-mortality variant
 
   # take sex-specific life tables from last observed period
-  lt_first_projected <- ccmppWPP_medium$lt_complete_age_sex[ccmppWPP_medium$lt_complete_age_sex$time_start == projection_start_year &
-                                                              ccmppWPP_medium$lt_complete_age_sex$sex %in% c("male","female"),]
+  lt_last_estimated <- ccmppWPP_estimates$lt_complete_age_sex[ccmppWPP_estimates$lt_complete_age_sex$time_start == projection_start_year-1 &
+                                                              ccmppWPP_estimates$lt_complete_age_sex$sex %in% c("male","female"),]
   # initialize constant-mortality output
   lt_constant <- list()
   # repeat starting period sex-specific life table for each period in projection horizon
   for (i in 1:length(projection_times)) {
 
-    lt_time            <- lt_first_projected
+    lt_time            <- lt_last_estimated
     lt_time$time_start <- projection_times[i]
     lt_constant[[i]]   <- lt_time
 
@@ -971,6 +1045,34 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
   attr(inputs_constant_fert, "variant") <- "Constant fertility"
   attr(inputs_constant_fert, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
 
+  # same as medium variant, but with asfr at ages under 18 instantly at zero
+  inputs_no_fertility_below_age_18 <- inputs_medium
+  inputs_no_fertility_below_age_18$fert_rate_age_f$value[inputs_no_fertility_below_age_18$fert_rate_age_f$age_start < 18] <- 0
+  # assign attributes
+  attr(inputs_no_fertility_below_age_18, "locid") <- attributes(ccmppWPP_estimates)$locid
+  attr(inputs_no_fertility_below_age_18, "locname") <- attributes(ccmppWPP_estimates)$locname
+  attr(inputs_no_fertility_below_age_18, "variant") <- "No fertility below age 18"
+  attr(inputs_no_fertility_below_age_18, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
+  
+  # same as medium variant, but with asfr below 18 declining at 20% annually until asfr 15-19 falls below 10
+  inputs_accelerated_abr_decline <- inputs_medium
+  inputs_accelerated_abr_decline$fert_rate_age_f <- fert_rate_age_f_accelerated_abr
+  # assign attributes
+  attr(inputs_accelerated_abr_decline, "locid") <- attributes(ccmppWPP_estimates)$locid
+  attr(inputs_accelerated_abr_decline, "locname") <- attributes(ccmppWPP_estimates)$locname
+  attr(inputs_accelerated_abr_decline, "variant") <- "Accelerated ABR decline"
+  attr(inputs_accelerated_abr_decline, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
+  
+  # same as medium variant, but with accelerated abr decline with partial recuperation
+  inputs_accelerated_abr_decline_recup <- inputs_medium
+  inputs_accelerated_abr_decline_recup$fert_rate_age_f <- fert_rate_age_f_abr_recup
+  # assign attributes
+  attr(inputs_accelerated_abr_decline_recup, "locid") <- attributes(ccmppWPP_estimates)$locid
+  attr(inputs_accelerated_abr_decline_recup, "locname") <- attributes(ccmppWPP_estimates)$locname
+  attr(inputs_accelerated_abr_decline_recup, "variant") <- "Accelerated ABR decline with recuperation"
+  attr(inputs_accelerated_abr_decline_recup, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
+    
+  
   # instant replacement same as medium variant, but with instant replacement asfr
   inputs_instant <- inputs_medium
   inputs_instant$fert_rate_age_f <- fert_rate_age_f_instant
@@ -979,17 +1081,6 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
   attr(inputs_instant, "locname") <- attributes(ccmppWPP_estimates)$locname
   attr(inputs_instant, "variant") <- "Instant replacement fertility"
   attr(inputs_instant, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
-
-  # momentum is instant replacement asfr, constant mortality, zero migration
-  inputs_momentum <- inputs_instant
-  inputs_momentum$life_table_age_sex <- life_table_age_sex_constant
-  inputs_momentum$mig_net_count_age_sex$value <- 0
-  inputs_momentum$mig_net_count_tot_b$value <- 0
-  # assign attributes
-  attr(inputs_momentum, "locid") <- attributes(ccmppWPP_estimates)$locid
-  attr(inputs_momentum, "locname") <- attributes(ccmppWPP_estimates)$locname
-  attr(inputs_momentum, "variant") <- "Momentum"
-  attr(inputs_momentum, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
 
   # no change is medium inputs with constant fertility and constant mortality
   inputs_nochange <- inputs_constant_fert
@@ -1008,6 +1099,17 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
   attr(inputs_constant_mort, "locname") <- attributes(ccmppWPP_estimates)$locname
   attr(inputs_constant_mort, "variant") <- "Constant mortality"
   attr(inputs_constant_mort, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
+  
+  # momentum is constant mortality, momentum fertility to maintain NRR = 1, and zero migration
+  inputs_momentum <- inputs_constant_mort
+  inputs_momentum$fert_rate_age_f <- fert_rate_age_f_momentum
+  inputs_momentum$mig_net_count_age_sex$value <- 0
+  inputs_momentum$mig_net_count_tot_b$value <- 0
+  # assign attributes
+  attr(inputs_momentum, "locid") <- attributes(ccmppWPP_estimates)$locid
+  attr(inputs_momentum, "locname") <- attributes(ccmppWPP_estimates)$locname
+  attr(inputs_momentum, "variant") <- "Momentum"
+  attr(inputs_momentum, "a0rule")  <- attributes(ccmppWPP_estimates)$a0rule
 
   # zero migration is medium inputs but zero migration
   inputs_zeromig <- inputs_medium
@@ -1039,7 +1141,10 @@ ccmpp_input_file_proj_variants <- function(ccmppWPP_estimates,
                          momentum = inputs_momentum,
                          no_change = inputs_nochange,
                          constant_mort = inputs_constant_mort,
-                         zero_mig = inputs_zeromig)
+                         zero_mig = inputs_zeromig,
+                         no_fertility_below_age_18 = inputs_no_fertility_below_age_18,
+                         accelerated_abr_decline = inputs_accelerated_abr_decline,
+                         accelerated_abr_decline_recup = inputs_accelerated_abr_decline_recup)
 
   return(variant_inputs)
 }
